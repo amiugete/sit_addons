@@ -48,18 +48,12 @@ $secret_pwd = 'XXXXXXXXXXXX';
 
 ## Dipendenze
 
-### Scaricate
-
-- jquery scaricata (ultima versione stabile)
-- fontawasome-free (ultima versione stabile)
-
 ### Usando composer
 
-- Bootstrap versione 5.1.3 è stato scaricato nella sua versione compilata usando composer
-- Stesso discorso per la libreria con le icone *bootstrap-icons*
-- libreria per generare i codici a barre
+Tutte le librerie sono state installate usando composer che garantisce una più semplice mantenibilità futura
 
 ```
+composer require components/jquery
 composer require twbs/bootstrap:5.3.1
 composer require twbs/bootstrap-icons
 composer require FortAwesome/Font-Awesome
