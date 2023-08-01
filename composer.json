@@ -1,0 +1,11 @@
+{
+    "require": {
+        "twbs/bootstrap": "^5.3",
+        "twbs/bootstrap-icons": "^1.10",
+        "snapappointments/bootstrap-select": "^1.13",
+        "picqer/php-barcode-generator": "^2.3",
+        "wenzhixin/bootstrap-table": "^1.22",
+        "firebase/php-jwt": "^6.8",
+        "fortawesome/font-awesome": "^6.4"
+    }
+}
