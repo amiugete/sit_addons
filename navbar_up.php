@@ -1,6 +1,6 @@
 <?php
 require_once('./check_utente.php');
-$check_edit=0;
+
 // Faccio il controllo su SIT
 
 $query_role='SELECT  su.id_user, sr.id_role, sr."name" as "role" FROM util.sys_users su
@@ -23,18 +23,25 @@ if ($check_SIT==0){
   redirect('login.php');
   //exit;
 }
+
+$check_edit=0;
+$check_superedit=0;
 $ruoli_edit=array('UT', 'IT', 'ADMIN', 'SUPERUSER');
+$ruoli_superedit=array('ADMIN', 'SUPERUSER');
 
 if (in_array($role_SIT, $ruoli_edit)) {
   $check_edit=1;
 }
 
+if (in_array($role_SIT, $ruoli_superedit)) {
+  $check_superedit=1;
+}
 ?>
 
 <div id="intestazione" class="banner"> <div id="banner-image">
 <h3>  <a class="navbar-brand link-light" href="#">
     <img class="pull-left" src="img\amiu_small_white.png" alt="SIT" width="85px">
-    <span>SIT - Passaggio a bilaterale <?php ?>
+    <span>SIT - Add ons <?php ?>
 
 
     </span> 
@@ -55,22 +62,20 @@ if (in_array($role_SIT, $ruoli_edit)) {
         <!--li class="nav-item">
           <a class="nav-link active" aria-current="page" href="#">Home</a>
         </li-->
-        <?php if ($id_role_SIT > 0) { ?>
+        <?php if ($check_superedit == 1) { ?>
         <li class="nav-item">
-          <a class="nav-link" href="./piazzola.php">Modifica piazzole</a>
+          <a class="nav-link" href="./nuovo_percorso.php">Nuovo servizio</a>
         </li>
+        <?php
+        } 
+        if ($id_role_SIT > 0) { ?>
         <li class="nav-item">
-          <a class="nav-link" href="./nuova_piazzola.php">Nuova piazzola</a>
-        </li>
-        <?php } ?>
-        <?php if ($id_role_SIT > 1) { ?>
-        <li id="link_pc1" class="nav-item">
-          <a class="nav-link" href="./duplica_percorso.php">Percorso altra frazione</a>
+          <a class="nav-link" href="./percorsi.php">Elenco servizi UO/SIT</a>
         </li>
         <?php } ?>
         <?php if ($id_role_SIT >=5) { ?>
         <li id="link_pc2" class="nav-item">
-          <a class="nav-link" href="./vie_percorsi.php">Vie - Percorsi</a>
+          <a class="nav-link" href="<?php echo $url_sit?>">Torna a SIT</a>
         </li>
         <!--li class="nav-item">
           <a class="nav-link" href="./ordini.php"> Modifica percorsi</a>
@@ -94,6 +99,10 @@ if (in_array($role_SIT, $ruoli_edit)) {
             } else {
               echo '<i class="fa-solid fa-pencil"></i>';
             }
+            if ($check_superedit==1){
+              echo '<i class="fa-solid fa-unlock-keyhole"></i>';
+            }
+
             ?>
             )
         </span>

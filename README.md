@@ -1,6 +1,6 @@
 # sit_addons
-Componenti aggiuntivi (add-ons) del SIT aziendale
 
+Componenti aggiuntivi (add-ons) del SIT aziendale
 
 ## Installazione
 
@@ -53,6 +53,8 @@ $secret_pwd = 'XXXXXXXXXXXX';
 Tutte le librerie sono state installate usando composer che garantisce una più semplice mantenibilità futura
 
 ```
+
+composer require eternicode/bootstrap-datepicker
 composer require components/jquery
 composer require twbs/bootstrap:5.3.1
 composer require twbs/bootstrap-icons
@@ -61,9 +63,9 @@ composer require snapappointments/bootstrap-select
 composer require wenzhixin/bootstrap-table
 composer require picqer/php-barcode-generator
 composer require firebase/php-jwt
+composer require moment/moment
 ```
 
 Per installare l'applicazione è sufficiente lanciare un `composer install` nella cartella principale dlel'applicazione dove è contenuto il file `composer.json`.
 
 Per fare update di versione è sufficiente un `composer update`
-
