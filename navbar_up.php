@@ -27,7 +27,7 @@ if ($check_SIT==0){
 $check_edit=0;
 $check_superedit=0;
 $ruoli_edit=array('UT', 'IT', 'ADMIN', 'SUPERUSER');
-$ruoli_superedit=array('ADMIN', 'SUPERUSER');
+$ruoli_superedit=array('IT','ADMIN', 'SUPERUSER');
 
 if (in_array($role_SIT, $ruoli_edit)) {
   $check_edit=1;

@@ -52,7 +52,7 @@ $versione= $_GET['v'];
 <div class="container">
 <?php
 $query_testata = 'select ep.cod_percorso, 
-ep.descrizione, t.cod_turno, ep.durata, fo.descrizione_long 
+ep.descrizione, t.cod_turno, ep.durata, fo.descrizione_long
 from anagrafe_percorsi.elenco_percorsi ep 
 join elem.turni t on t.id_turno = ep.id_turno
 join etl.frequenze_ok fo on fo.cod_frequenza = ep.freq_testata
@@ -68,12 +68,27 @@ $result = pg_execute($conn, "query_testata", array($cod_percorso, $versione));
 echo '<ul>';
 while($r = pg_fetch_assoc($result)) {
   echo '<li><b> Codice percorso </b>'.$r["cod_percorso"].'</li>';
+  echo '<li><b> Versione percorso </b>'.$versione.'</li>';
   echo '<li><b> Descrizione </b>'.$r["descrizione"].'</li>'; 
   echo '<li><b> Turno </b>'.$r["cod_turno"].'</li>';
   echo '<li><b> Durata </b>'.$r["durata"].'</li>';
   echo '<li><b> Frequenza </b>'.$r["descrizione_long"].'</li>';
 }
 echo '</ul>';
+
+# percorso su SIT
+$query_sit = 'select p.id_percorso
+from elem.percorsi p 
+where cod_percorso = $1 and versione = (select max(versione)
+    from elem.percorsi p1 where cod_percorso = $1)';
+$result_sit = pg_prepare($conn, "query_sit", $query_sit);
+$result_sit = pg_execute($conn, "query_sit", array($cod_percorso));  
+
+
+while($r_s = pg_fetch_assoc($result_sit)) {
+  echo '<a class="btn btn-primary" href="'.$url_sit.'/#!/percorsi/percorso-details/?idPercorso='.$r_s["id_percorso"].'"> <i class="fa-solid fa-map-location-dot"></i> Percorso su SIT</a>';
+}
+
 ?>
 <hr>
 <h3> Risorse umane e risorse tecniche </h3>
