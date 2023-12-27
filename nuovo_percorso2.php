@@ -72,7 +72,7 @@ while($r1 = pg_fetch_assoc($result1)) {
   $id_servizio_sit=$r1['id_servizio_sit'];
 }
 
-$query2="SELECT lpad(CAST(max(CAST(substr(ID_PERCORSO,5,4) AS integer))+1 AS varchar(4)),4,'0') AS ID
+$query2="SELECT lpad(CAST(nvl(max(CAST(substr(ID_PERCORSO,5,4) AS integer)),0)+1 AS varchar(4)),4,'0') AS ID
 FROM ANAGR_SER_PER_UO aspu
 WHERE LENGTH(ID_PERCORSO)=10 AND SUBSTR(ID_PERCORSO,0,4)=:p1
 AND REGEXP_LIKE(substr(ID_PERCORSO,5,4), '^[[:digit:]]+$')";
