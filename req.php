@@ -166,7 +166,7 @@ function the_page_title()
     $len_page_dir = count($each_page_name) -1;
     $temp = explode('_', $each_page_name[$len_page_dir]);
     $len_temp=count($temp)-1;
-    if ($temp[$len_temp]=='bilaterale'){
+    if ($temp[$len_temp]=='addons'){
         $_SESSION['test']=0;
     } else if($temp[$len_temp]=='test') {
         ?>
