@@ -175,12 +175,12 @@ if ((int)$id_role_SIT = 0) {
 
  	<tr>
         <!--th data-checkbox="true" data-field="id"></th-->  
-        <!--th data-field="state" data-checkbox="true" ></th-->   
-        <th data-field="cod_percorso" data-sortable="true" data-visible="true" data-filter-control="input">Codice</th>
-        <th data-field="descrizione" data-sortable="true" data-visible="true" data-filter-control="input">Descrizione</th>
+        <!--th data-field="state" data-checkbox="true" ></th-->  
         <th data-field="famiglia" data-sortable="true" data-visible="true" data-filter-control="select">Famiglia</th>
         <th data-field="tipo" data-sortable="true" data-visible="true"  data-filter-control="select">Tipo</th>
-        <th data-field="ut" data-sortable="true" data-visible="true" data-filter-control="select">UT</th>
+        <th data-field="ut" data-sortable="true" data-visible="true" data-filter-control="select">UT</th> 
+        <th data-field="cod_percorso" data-sortable="true" data-visible="true" data-filter-control="input">Codice</th>
+        <th data-field="descrizione" data-sortable="true" data-visible="true" data-filter-control="input">Descrizione</th>
         <th data-field="freq" data-sortable="true" data-visible="true" data-filter-control="input">Frequenza</th>
         <th data-field="turno" data-sortable="true" data-visible="true" data-filter-control="select">Turno</th>
         <th data-field="versione" data-sortable="true" data-visible="true" data-filter-control="select">Versione</th>

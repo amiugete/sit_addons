@@ -62,20 +62,40 @@ if (in_array($role_SIT, $ruoli_superedit)) {
         <!--li class="nav-item">
           <a class="nav-link active" aria-current="page" href="#">Home</a>
         </li-->
+        <?php if ($id_role_SIT > 0) { ?>
+          <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Anagrafica percorsi / servizi
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="./percorsi.php">Elenco servizi UO/SIT</a>
+          <?php if ($check_superedit == 1) { ?>
+          <a class="dropdown-item" href="./nuovo_percorso.php">Nuovo servizio</a>
+          <?php } ?>
+          <!--a class="dropdown-item" href="http://amiupostgres/SIT/downloadTemplateImport()">Template per import</a-->
+        </div>
+      </li>
+      <?php } ?>
+      
+
+
         <?php if ($check_superedit == 1) { ?>
-        <li class="nav-item">
+        <!--li class="nav-item">
           <a class="nav-link" href="./nuovo_percorso.php">Nuovo servizio</a>
-        </li>
+        </li-->
         <?php
         } 
         if ($id_role_SIT > 0) { ?>
-        <li class="nav-item">
+        <!--li class="nav-item">
           <a class="nav-link" href="./percorsi.php">Elenco servizi UO/SIT</a>
-        </li>
+        </li-->
         <?php } ?>
-        <?php if ($id_role_SIT >=5) { ?>
+        <?php if ($id_role_SIT >=0) { ?>
         <li id="link_pc2" class="nav-item">
-          <a class="nav-link" href="<?php echo $url_sit?>">Torna a SIT</a>
+          <a class="nav-link" href="./report_contenitori.php"> Report contenitori bilaterali</a>
+        </li>
+        <li id="link_pc2" class="nav-item">
+          <a class="nav-link" target="SIT" href="<?php echo $url_sit?>"> Torna a SIT</a>
         </li>
         <!--li class="nav-item">
           <a class="nav-link" href="./ordini.php"> Modifica percorsi</a>
@@ -110,3 +130,10 @@ if (in_array($role_SIT, $ruoli_superedit)) {
     </div>
   </div>
 </nav>
+<?php 
+if ($_SESSION['test']==1) {
+?>
+<div> <h4><i class="fa-solid fa-triangle-exclamation"></i> Ambiente di TEST ma dati in esercizio!</h4>
+</div>
+<hr>
+<?php } ?>

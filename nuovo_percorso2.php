@@ -207,17 +207,25 @@ echo '<li><b>Durata</b>: '.$durata.'</li>';
 
 
 
-<h4>Gruppo di coordinamento (UT)</h4>
+<h4>Gruppo di coordinamento o UT Responsabile</h4>
+<small id="ut" class="form-text text-muted"> Deve sempre esserci un Gruppo di Coordinamento. <b>Per tutti i servizi di raccolta deve essere una Unità territoriale.</b> 
+    Nel caso di servizi della sola rimessa (es. Ganci) è la rimessa stessa.</small>
 <div class="row g-3 align-items-center">
 
 
 <div class="form-group  col-md-6">
   <label for="ut">UT:</label> <font color="red">*</font>
                 <select name="ut" id="ut" class="selectpicker show-tick form-control" data-live-search="true" data-size="5" required="">
-                <option name="ut" value="">Seleziona la tipologia di servizio</option>
+                <option name="ut" value="">Seleziona il Gruppo di Coordinamento (UT)</option>
   <?php            
-  $query1="select id_ut, descrizione from topo.ut 
+  /*$query1="select id_ut, descrizione from topo.ut 
   where id_zona not in (5) 
+  order by descrizione ;";*/
+
+
+  //Tengo anche le rimesse (poi faccio un controllo dopo)
+
+  $query1="select id_ut, descrizione from topo.ut  
   order by descrizione ;";
   $result1 = pg_query($conn, $query1);
   //echo $query1;    
@@ -228,14 +236,15 @@ echo '<li><b>Durata</b>: '.$durata.'</li>';
         <option name="ut" value="<?php echo $r1['id_ut']?>" ><?php echo $r1['descrizione'] ?></option>
   <?php } ?>
 
-  </select>            
+  </select>  
+            
 </div>
 
 
 <div class="form-group  col-md-6">
   <label for="sq_ut">Squadra UT:</label> <font color="red">*</font>
                 <select name="sq_ut" id="sq_ut" class="selectpicker show-tick form-control" data-size="5"  data-live-search="true" required="">
-                <option name="sq_ut" value="">Seleziona la squadra della rimessa</option>
+                <option name="sq_ut" value="">Seleziona la squadra del Gruppo di Coordinamento</option>
   <?php            
   /*$query0_1="select id_squadra, 
   concat(cod_squadra, ' - ', desc_squadra) as descr 
@@ -254,7 +263,7 @@ echo '<li><b>Durata</b>: '.$durata.'</li>';
 </div>
 
 </div>
-
+<hr>
 <div class="row g-3 align-items-center">
 
 
@@ -286,7 +295,7 @@ echo '<li><b>Durata</b>: '.$durata.'</li>';
 <div class="form-group  col-md-6">
   <label for="cdaog3">Mezzo:</label> <font color="red">*</font>
                 <select name="cdaog3" id="cdaog3" class="selectpicker show-tick form-control" data-live-search="true" data-size="5" required="">
-                <option name="cdaog3" value="">Seleziona la tipologia di servizio</option>
+                <option name="cdaog3" value="">Seleziona la tipologia di mezzo</option>
   <?php            
   $query2="select cdaog3,
   concat(categoria, ' (', nome, ')') as cat_estesa  from elem.automezzi a 
@@ -306,7 +315,11 @@ echo '<li><b>Durata</b>: '.$durata.'</li>';
 </div>
 
 
-
+<div class="alert alert-error collapse" role="alert" id="alert_UT">
+  <span>
+  <p>ATTENZIONE. Non posso selezionare la rimessa se il gruppo di coordinamento è già la rimessa!</p>
+  </span>
+</div>
 <hr>
 <?php if ($check_edit==1){?>
 <div class="row g-3 align-items-center">
@@ -341,6 +354,32 @@ $('#js-date1').datepicker({
     startDate: '31/12/2099', 
     language:'it'
 });
+
+
+
+
+var bk1 = document.getElementById("rim").value;
+var bk2 = document.getElementById("ut").value;
+
+
+var test = [bk1, bk2];
+var res = true; 
+for(var i = 0; i < test.length; i++) { 
+  if (test.indexOf(test[i], i + 1) >= 0) {
+    res = false; 
+    break;
+  } 
+}
+
+if(res){
+    //alert("yes");
+    document.block_form.submit();
+}else{
+  alert("ATTENZIONE. Non posso selezionare la rimessa se il gruppo di coordinamento è già la rimessa");
+  $('#alert_UT').show();
+  //document.getElementById("block_error").value = "Non posso selezionare la rimessa se il gruppo di coordinamento è già la rimessa";
+}
+
 </script>
 
 
