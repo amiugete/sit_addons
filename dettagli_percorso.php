@@ -120,8 +120,10 @@ while($r_s = pg_fetch_assoc($result_sit)) {
 $mezzo='';
 $query0="select 
 u.descrizione as ut,
-pu.id_squadra, 
+pu.id_squadra,
+concat(s.cod_squadra, ' - ',s.desc_squadra) as squadra,
 pu.cdaog3,
+a.categoria as mezzo,
 pu.responsabile, 
 pu.solo_visualizzazione, 
 pu.rimessa, 
@@ -130,7 +132,9 @@ pu.data_disattivazione,
 u.id_ut
 from anagrafe_percorsi.percorsi_ut pu 
 join anagrafe_percorsi.cons_mapping_uo cmu on cmu.id_uo = pu.id_ut 
-join topo.ut u on u.id_ut = cmu.id_uo_sit 
+join elem.automezzi a on a.cdaog3 = pu.cdaog3 
+join elem.squadre s on s.id_squadra = pu.id_squadra 
+join topo.ut u on u.id_ut = cmu.id_uo_sit  
 where cod_percorso = $1  and data_attivazione = $2";
 
 // RIMESSA / SEDE OPERATIVA
@@ -140,12 +144,12 @@ $result1 = pg_execute($conn, "query_rimessa", array($cod_percorso, $data_attivaz
 echo '<ul>';
 while($r1 = pg_fetch_assoc($result1)) {
   echo '<h4><li><b> Sede operativa </b>'.$r1["ut"].'</li></h4>';
-  echo '<li><b> Id Squadra </b>'.$r1["id_squadra"].'</li>'; 
+  echo '<li><b> Id Squadra </b>'.$r1["squadra"].'</li>'; 
 
   // inserire composizione squadra con funzioncina da recuperare anche sotto 
 
 
-  echo '<li><b> Mezzo </b>'.$r1["cdaog3"].'</li>';
+  echo '<li><b> Mezzo </b>'.$r1["mezzo"].'</li>';
   echo '<li><b> Responsabile </b>'.$r1["responsabile"].'</li>';
   echo '<li><b> Solo visualizzazione </b>'.$r1["solo_visualizzazione"].'</li>';
   echo '<li><b> Data attivazione </b>'.$r1["data_attivazione"].'</li>';
@@ -172,16 +176,16 @@ if (pg_num_rows($result2) > 0){
 echo '<ul>';
 while($r2 = pg_fetch_assoc($result2)) {
   echo '<h4><li><b> Gruppo di coordinamento</b> '.$r2["ut"].'</li></h4>';
-  echo '<li><b> Id Squadra </b>'.$r2["id_squadra"].'</li>'; 
+  echo '<li><b> Id Squadra </b>'.$r2["squadra"].'</li>'; 
 
   // inserire composizione squadra con funzioncina da recuperare anche sotto 
 
 
-  echo '<li><b> Mezzo </b>'.$r2["cdaog3"].'</li>';
+  echo '<li><b> Mezzo </b>'.$r2["mezzo"].'</li>';
   echo '<li><b> Responsabile </b>'.$r2["responsabile"].'</li>';
   if ($r2["responsabile"]=='S'){
     $gc=$r2["id_ut"];
-    $sq_gc=$r2["id_squadra"];
+    $sq_gc=$r2["squadra"];
     if ($mezzo==''){
       $mezzo=$r2["cdaog3"];
     }
