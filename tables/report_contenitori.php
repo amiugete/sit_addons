@@ -26,7 +26,10 @@ cc.descrizione as frazione,
 ci.targa_contenitore, 
 ci.volume_contenitore,
 date_trunc('minute', ci.data_ultimo_agg) as data_ultimo_agg, /* approssimo al minuto */
-ci.val_riemp, 
+case 
+    when ci.val_riemp > 100 then null
+    else ci.val_riemp
+end val_riemp,
 ci.val_bat_elettronica,
 ci.val_bat_bocchetta, 
 date_trunc('minute', sv.data_ora_last_sv) as data_ora_last_sv,  /* approssimo al minuto */

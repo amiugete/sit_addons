@@ -63,19 +63,19 @@ if (in_array($role_SIT, $ruoli_superedit)) {
           <a class="nav-link active" aria-current="page" href="#">Home</a>
         </li-->
         <?php if ($id_role_SIT > 0) { ?>
-          <li class="nav-item dropdown">
+        <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
           Anagrafica percorsi / servizi
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="./percorsi.php">Elenco servizi UO/SIT</a>
-          <?php if ($check_superedit == 1) { ?>
-          <a class="dropdown-item" href="./nuovo_percorso.php">Nuovo servizio</a>
-          <?php } ?>
-          <!--a class="dropdown-item" href="http://amiupostgres/SIT/downloadTemplateImport()">Template per import</a-->
-        </div>
-      </li>
-      <?php } ?>
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="./percorsi.php">Elenco servizi UO/SIT</a>
+            <?php if ($check_superedit == 1) { ?>
+            <a class="dropdown-item" href="./nuovo_percorso.php">Nuovo servizio</a>
+            <?php } ?>
+            <!--a class="dropdown-item" href="http://amiupostgres/SIT/downloadTemplateImport()">Template per import</a-->
+          </div>
+        </li>
+        <?php } ?>
       
 
 
@@ -91,9 +91,19 @@ if (in_array($role_SIT, $ruoli_superedit)) {
         </li-->
         <?php } ?>
         <?php if ($id_role_SIT >=0) { ?>
-        <li id="link_pc2" class="nav-item">
+        <!--li id="link_pc2" class="nav-item">
           <a class="nav-link" href="./report_contenitori.php"> Report contenitori bilaterali</a>
+        </li-->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Reportistica avanzata
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="./report_contenitori.php">Report contenitori bilaterali</a>
+            <!--a class="dropdown-item" href="http://amiupostgres/SIT/downloadTemplateImport()">Template per import</a-->
+          </div>
         </li>
+
         <li id="link_pc2" class="nav-item">
           <a class="nav-link" target="SIT" href="<?php echo $url_sit?>"> Torna a SIT</a>
         </li>
