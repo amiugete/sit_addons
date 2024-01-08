@@ -68,7 +68,7 @@ $result = pg_execute($conn, "query_testata", array($cod_percorso, $versione));
 //echo $versione . '<br>';
 ?>
 <h3> Testata percorso  
-<a class="btn btn-info"  href=".percorsi.php"> <i class="fa-solid fa-table-list"></i> Torna a elenco percorsi </a>
+<a class="btn btn-info"  href="./percorsi.php"> <i class="fa-solid fa-table-list"></i> Torna a elenco percorsi </a>
 
 </h3>
 <?php
