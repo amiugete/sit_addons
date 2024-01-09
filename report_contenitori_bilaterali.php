@@ -147,7 +147,7 @@ while($rmax = pg_fetch_assoc($result_max)) {
 				<table  id="contenitori" class="table" 
         idfield="targa_contenitore" 
         data-show-columns="true"
-        data-toggle="table" data-url="./tables/report_contenitori.php?" 
+        data-toggle="table" data-url="./tables/report_contenitori_bilaterali.php?" 
         data-group-by="false"
         data-group-by-field='["indirizzo", "frazione"]'
         data-sort-name="val_riemp"

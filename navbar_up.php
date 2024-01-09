@@ -99,7 +99,7 @@ if (in_array($role_SIT, $ruoli_superedit)) {
           Reportistica avanzata
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="./report_contenitori.php">Report contenitori bilaterali</a>
+            <a class="dropdown-item" href="./report_contenitori_bilaterali.php">Report contenitori bilaterali</a>
             <!--a class="dropdown-item" href="http://amiupostgres/SIT/downloadTemplateImport()">Template per import</a-->
           </div>
         </li>

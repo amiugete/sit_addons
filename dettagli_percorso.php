@@ -216,7 +216,7 @@ while($r2 = pg_fetch_assoc($result2)) {
   // inserire composizione squadra con funzioncina da recuperare anche sotto 
 
 
-  echo '<li><b> Mezzo </b>'.$r2["cdaog3"].'</li>';
+  echo '<li><b> Mezzo </b>'.$r2["mezzo"].'</li>';
   echo '<li><b> Responsabile </b>'.$r2["responsabile"].'</li>';
   if ($r2["responsabile"]=='S'){
     $gc=$r2["id_ut"];
