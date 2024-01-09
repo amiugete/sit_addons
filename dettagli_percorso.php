@@ -135,12 +135,12 @@ join anagrafe_percorsi.cons_mapping_uo cmu on cmu.id_uo = pu.id_ut
 join elem.automezzi a on a.cdaog3 = pu.cdaog3 
 join elem.squadre s on s.id_squadra = pu.id_squadra 
 join topo.ut u on u.id_ut = cmu.id_uo_sit  
-where cod_percorso = $1  and data_attivazione = $2";
+where cod_percorso = $1  and data_disattivazione = $2";
 
 // RIMESSA / SEDE OPERATIVA
 $query_rimessa=$query0 ." and rimessa = 'S'";
 $result1 = pg_prepare($conn, "query_rimessa", $query_rimessa);
-$result1 = pg_execute($conn, "query_rimessa", array($cod_percorso, $data_attivazione_testata));
+$result1 = pg_execute($conn, "query_rimessa", array($cod_percorso, $data_disattivazione_testata));
 echo '<ul>';
 while($r1 = pg_fetch_assoc($result1)) {
   echo '<h4><li><b> Sede operativa </b>'.$r1["ut"].'</li></h4>';
@@ -166,7 +166,7 @@ echo '</ul>';
 
 $query_ut=$query0 ." and pu.id_squadra!= 15 and rimessa = 'N'";
 $result2 = pg_prepare($conn, "query_ut", $query_ut);
-$result2 = pg_execute($conn, "query_ut", array($cod_percorso, $data_attivazione_testata));
+$result2 = pg_execute($conn, "query_ut", array($cod_percorso, $data_disattivazione_testata));
 //echo '<hr>';
 if (pg_num_rows($result2) > 0){
   echo '<h4> <b>Gruppo di coordinamento</b></h4>';
@@ -201,7 +201,7 @@ echo '</ul>';
 
 $query_ut2=$query0 ." and pu.id_squadra= 15 and rimessa = 'N' order by responsabile desc";
 $result2 = pg_prepare($conn, "query_ut2", $query_ut2);
-$result2 = pg_execute($conn, "query_ut2", array($cod_percorso, $data_attivazione_testata));
+$result2 = pg_execute($conn, "query_ut2", array($cod_percorso, $data_disattivazione_testata));
 //echo '<hr>';
 
 if (pg_num_rows($result2) > 0){

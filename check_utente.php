@@ -19,13 +19,15 @@ session_set_cookie_params($lifetime);
 
 // provo a vedere se c'è già il nome utente salvato
 if(!isset($_COOKIE['un'])) {
-  //echo "Cookie named un is not set!";
+  //echo "Caso 1 Cookie named un is not set!<br>";
   // se non ho il nome provo con il token
   $token0=$_GET['jwt'];
 
   if($token0){
+    //echo "Caso 1 A <br>". $token0;
     //set the duration to 0, so that cookie duration will end only when users browser is close
-    setcookie("tokenCookie", $token0, 0);
+    setcookie("tokenCookie", $token0, time() + ($lifetime * 7));
+    //echo 'cookie tokenCookie =' .$_COOKIE["tokenCookie"]."<br>";
     $token=$token0;
   } else {
     //echo $_COOKIE['tokenCookie'];
@@ -44,7 +46,13 @@ if(!isset($_COOKIE['un'])) {
               $userId = (int)$value;
         }
         if ($key=='name') {
+          //echo "sono qua<br>";
           $_SESSION['username'] = $value;
+          setcookie("un", $value, time() + (86400 * 7)); // 86400 = 1 day
+          //$_COOKIE["un"]=$_SESSION['username'];
+          $_SESSION['start'] = time(); // Taking now logged in time.
+          // Ending a session in 8 hours from the starting time.
+          $_SESSION['expire'] = $_SESSION['start'] + (8* 60 * 60);
         }
         if ($key=='userId') {
           $userId = (int)$value;
@@ -57,14 +65,22 @@ if(!isset($_COOKIE['un'])) {
         }
       }
     }
-  } /*else {
-    redirect('login.php');
-    //header("location: ./login.php");
-  }*/
+  } else {
+    // se c'è lo username setto i cookies
+    setcookie("un", $_SESSION['username'], time() + (86400 * 7)); // 86400 = 1 day
+  }
 
   //echo 'Now: '. time()."<br><br>";
   //echo 'Exp: '.$exp ."<br><br>";
   //echo 'userId: '.$userId ."<br><br>";
+} else if ( $_SESSION['username']){
+  // sessione aperta
+  //echo "Caso 2<br>";
+  $_SESSION['username']=$_SESSION['username'];
+  setcookie("un", $_SESSION['username'], time() + (86400 * 7)); // 86400 = 1 day
+  if (time()>$_SESSION['expire']){
+    die ('Token di autorizzazione scaduto <br><br><a href="./login.php" class="btn btn-info"> Vai al login </a>');
+}
 } else {
   //echo "Cookie un is set!<br>";
   //echo "Value is: " . $_COOKIE['un'];
@@ -82,9 +98,12 @@ if (!$_SESSION['username']){
   //echo 'NON VA BENE';
   $_SESSION['origine']=basename($_SERVER['PHP_SELF']);
   $_COOKIE['origine']=basename($_SERVER['PHP_SELF']);
-  redirect('login.php');
+  echo $_SESSION['expire'] ."<br>";
+  die ('Sessione scaduta <br><br><a href="./login.php" class="btn btn-info"> Vai al login </a>');
+  //redirect('login.php');
   //header("location: ./login.php");
   //exit;
 }
 
+//echo $_SESSION['expire'] ."<br>";
 ?>

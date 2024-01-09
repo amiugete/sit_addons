@@ -1,5 +1,7 @@
 <?php
 session_start();
+// setcookie funziona solo se non ci sono degli output prima per cui l'ho spostato qua;
+require_once('./check_utente.php');
 ?>
 <!--link rel="stylesheet" href="https://kit-free.fontawesome.com/releases/latest/css/free.min.css"-->
 <link rel="stylesheet" href="./vendor/fortawesome/font-awesome/css/all.min.css">

@@ -76,6 +76,9 @@ if (isset($_POST["ldapLogin"])){
 				ldap_close($ldapConnection);	// close ldap connection
 				$successMessage = "Login done correctly with user ".$ldapUser."!!";
 				$_SESSION['username']=$ldapUser;
+				$_SESSION['start'] = time(); // Taking now logged in time.
+				// Ending a session in 8 hours from the starting time.
+				$_SESSION['expire'] = $_SESSION['start'] + (8* 60 * 60);
 				setcookie('un', $ldapUser, time() + (86400 * 7), "/"); // 86400 = 1 day
 				//header("Location: ./piazzola.php");
 				//header("Location:./piazzola.php");

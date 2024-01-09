@@ -144,6 +144,17 @@ if (in_array($role_SIT, $ruoli_superedit)) {
 if ($_SESSION['test']==1) {
 ?>
 <div> <h4><i class="fa-solid fa-triangle-exclamation"></i> Ambiente di TEST ma dati in esercizio!</h4>
+<?php 
+// TEST e DEBUG COOKIES
+/*
+foreach ($_COOKIE as $key=>$val)
+{
+  echo $key.' is '.$val."<br>\n";
+}
+echo ' session username= '. $_SESSION['username']."<br>";
+echo ' session expire= '. $_SESSION['expire']."<br>";
+echo 'time = ' .time()."<br>";*/
+?>
 </div>
 <hr>
 <?php } ?>
