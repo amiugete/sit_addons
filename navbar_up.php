@@ -41,7 +41,7 @@ if (in_array($role_SIT, $ruoli_superedit)) {
 <div id="intestazione" class="banner"> <div id="banner-image">
 <h3>  <a class="navbar-brand link-light" href="#">
     <img class="pull-left" src="img\amiu_small_white.png" alt="SIT" width="85px">
-    <span>SIT - Add ons <?php ?>
+    <span>Sistema Informativo Territoriale - Funzionalità avanzate <?php ?>
 
 
     </span> 
