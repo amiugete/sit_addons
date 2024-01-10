@@ -80,7 +80,7 @@ if ($_GET['jwt']){
   //echo "Caso 2<br>";
   $_SESSION['username']=$_SESSION['username'];
   setcookie("un", $_SESSION['username'], time() + (86400 * 7)); // 86400 = 1 day
-  if (time()>$_SESSION['expire']){
+  if (time()>$_SESSION['expire'] AND  basename($_SERVER['PHP_SELF'])!='login.php'){
     die ('Token di autorizzazione scaduto <br><br><a href="./login.php" class="btn btn-info"> Vai al login </a>');
 }
 } else {
@@ -96,7 +96,7 @@ if ($_GET['jwt']){
 //$username = $_SERVER['PHP_AUTH_USER'];
 
 
-if (!$_SESSION['username']){
+if (!$_SESSION['username'] AND  basename($_SERVER['PHP_SELF'])!='login.php'){
   //echo 'NON VA BENE';
   $_SESSION['origine']=basename($_SERVER['PHP_SELF']);
   $_COOKIE['origine']=basename($_SERVER['PHP_SELF']);
