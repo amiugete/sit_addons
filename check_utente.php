@@ -6,7 +6,7 @@ function redirect($url)
     $string .= 'window.location = "' . $url . '"';
     $string .= '</script>';
 
-    echo $string;
+    //echo $string;
 }
 
 
@@ -61,6 +61,7 @@ if ($_GET['jwt']){
         if ($key=='name') {
           //echo "sono qua<br>";
           $_SESSION['username'] = $value;
+          setcookie($name, '', time()-1000);
           setcookie("un", $value, time() + (86400 * 7)); // 86400 = 1 day
           //$_COOKIE["un"]=$_SESSION['username'];
           $_SESSION['start'] = time(); // Taking now logged in time.
@@ -73,7 +74,7 @@ if ($_GET['jwt']){
         if ($key=='exp') {
               $exp = (int)$value;
               if (time()>$exp){
-                  die ('Token di autorizzazione scaduto <br><br><a href="./login.php" class="btn btn-info"> Vai al login </a>');
+                  die ('Token di autorizzazione SIT scaduto <br><br><a href="./login.php" class="btn btn-info"> Vai al login </a>');
               }
         }
       }
@@ -90,14 +91,25 @@ if ($_GET['jwt']){
   // sessione aperta
   //echo "Caso 2<br>";
   $_SESSION['username']=$_SESSION['username'];
+  $_SESSION['start'] = time(); // Taking now logged in time.
+  // Ending a session in 8 hours from the starting time.
+  $_SESSION['expire'] = $_SESSION['start'] + (8* 60 * 60);
   setcookie("un", $_SESSION['username'], time() + (86400 * 7)); // 86400 = 1 day
   if (time()>$_SESSION['expire'] AND  basename($_SERVER['PHP_SELF'])!='login.php'){
     die ('Token di autorizzazione scaduto <br><br><a href="./login.php" class="btn btn-info"> Vai al login </a>');
-}
-} else {
+  }
+} else if ( $_COOKIE['un']) {
   //echo "Cookie un is set!<br>";
   //echo "Value is: " . $_COOKIE['un'];
   $_SESSION['username']=$_COOKIE['un'];
+  $_SESSION['start'] = time(); // Taking now logged in time.
+  // Ending a session in 8 hours from the starting time.
+  $_SESSION['expire'] = $_SESSION['start'] + (8* 60 * 60);
+  if (time()>$_SESSION['expire'] AND  basename($_SERVER['PHP_SELF'])!='login.php'){
+    die ('Token di autorizzazione scaduto <br><br><a href="./login.php" class="btn btn-info"> Vai al login </a>');
+  }
+} else {
+  die ('Token di autorizzazione scaduto <br><br><a href="./login.php" class="btn btn-info"> Vai al login </a>');
 }
 
 
@@ -107,16 +119,16 @@ if ($_GET['jwt']){
 //$username = $_SERVER['PHP_AUTH_USER'];
 
 
-if (!$_SESSION['username'] AND  basename($_SERVER['PHP_SELF'])!='login.php'){
+/*if (!$_SESSION['username'] AND  basename($_SERVER['PHP_SELF'])!='login.php'){
   //echo 'NON VA BENE';
   $_SESSION['origine']=basename($_SERVER['PHP_SELF']);
   $_COOKIE['origine']=basename($_SERVER['PHP_SELF']);
-  echo $_SESSION['expire'] ."<br>";
+  //echo $_SESSION['expire'] ."<br>";
   die ('Sessione scaduta <br><br><a href="./login.php" class="btn btn-info"> Vai al login </a>');
   //redirect('login.php');
   //header("location: ./login.php");
   //exit;
-}
+}*/
 
 //echo $_SESSION['expire'] ."<br>";
 ?>
