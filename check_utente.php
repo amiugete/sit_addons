@@ -15,12 +15,12 @@ session_start();
 // definisco la variabile lifetime
 $lifetime=86400;
 session_set_cookie_params($lifetime);
-if ($_GET['jwt']){
+/*if ($_GET['jwt']){
   setcookie("tokenCookie", $_GET['jwt'], time() + ($lifetime * 7));
-}
+}*/
 
 // provo a vedere se c'è già il nome utente salvato
-if(!isset($_COOKIE['un'])) {
+if ($_GET['jwt']){
   //echo "Caso 1 Cookie named un is not set!<br>";
   // se non ho il nome provo con il token
   $token0=$_GET['jwt'];
