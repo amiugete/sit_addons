@@ -60,7 +60,7 @@ $versione= $_GET['v'];
 $tipo = $_POST['tipo'];
 
 $query1="select id, descrizione, lpad(codice_servizio,4,'0') as cod_start, 
-id_servizio_uo, id_servizio_sit
+id_servizio_uo, coalesce(id_servizio_sit,0) as id_servizio_sit
 from anagrafe_percorsi.anagrafe_tipo at2 
 where id=$1;";
 $result1 = pg_prepare($conn, "query1", $query1);
