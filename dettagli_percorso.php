@@ -46,6 +46,17 @@ if ((int)$id_role_SIT = 0) {
 
 $cod_percorso= $_GET['cp'];
 $versione= $_GET['v'];
+
+
+// verifico se c'è già una versione successiva
+$check_versione_successiva=0;
+$query_check_versione="select ep.cod_percorso from anagrafe_percorsi.elenco_percorsi ep
+where ep.cod_percorso = $1 and ep.versione_testata > $2";
+$result0 = pg_prepare($conn, "query_check_versione", $query_check_versione);
+$result0 = pg_execute($conn, "query_check_versione", array($cod_percorso, intval($versione)));
+while($r0 = pg_fetch_assoc($result0)) {
+  $check_versione_successiva=1;
+}
 ?>
 
 
@@ -55,6 +66,7 @@ $query_testata = "select ep.cod_percorso,
 ep.descrizione, t.cod_turno, t.id_turno, ep.durata, fo.descrizione_long, 
 ep.freq_testata, fo.freq_binaria, ep.id_tipo,
 at2.id_servizio_uo, at2.id_servizio_sit, 
+to_char(ep.data_inizio_validita, 'DD/MM/YYYY') as data_inizio_print,
 ep.data_inizio_validita, to_char(ep.data_fine_validita, 'DD/MM/YYYY') as data_disattivazione_testata
 from anagrafe_percorsi.elenco_percorsi ep
 join elem.turni t on t.id_turno = ep.id_turno
@@ -69,6 +81,14 @@ $result = pg_execute($conn, "query_testata", array($cod_percorso, $versione));
 ?>
 <h3> Testata percorso  
 <a class="btn btn-info"  href="./percorsi.php"> <i class="fa-solid fa-table-list"></i> Torna a elenco percorsi </a>
+<?php if (intval($versione) > 1) { ?>
+  <a class="btn btn-info"  href="./dettagli_percorso.php?cp=<?php echo $cod_percorso;?>&v=<?php echo (intval($versione)-1);?>"> 
+  <i class="fa-solid fa-arrow-up"></i> Visualizza versione precedente </a>
+<?php } ?>
+<?php if ($check_versione_successiva==1) { ?>
+  <a class="btn btn-info"  href="./dettagli_percorso.php?cp=<?php echo $cod_percorso;?>&v=<?php echo (intval($versione)+1);?>"> 
+  <i class="fa-solid fa-arrow-down"></i> Visualizza versione successiva </a>
+<?php } ?>
 
 </h3>
 <?php
@@ -81,6 +101,7 @@ while($r = pg_fetch_assoc($result)) {
   echo '<li><b> Turno </b>'.$r["cod_turno"].'</li>';
   echo '<li><b> Durata </b>'.$r["durata"].'</li>';
   echo '<li><b> Frequenza </b>'.$r["descrizione_long"].'</li>';
+  echo '<li><b> Data attivazione testata </b>'.$r["data_inizio_print"].'</li>';
   echo '<li><b> Data disattivazione </b>'.$r["data_disattivazione_testata"].'</li>';
   $freq_sit=$r["freq_testata"];
   $freq_uo=$r["freq_binaria"];
@@ -233,7 +254,7 @@ echo '</ul>';
 
 
 
-
+if($check_versione_successiva==0){
 ?>
 
 <form name="bilat" method="post" autocomplete="off" action="./nuova_versione.php">
@@ -262,6 +283,7 @@ echo '</ul>';
 </div>
 <?php }?>
 </form>
+
 
 <hr>
 <form name="bilat" method="post" autocomplete="off" action="./backoffice/nuova_visualizzazione.php">
@@ -316,6 +338,9 @@ echo '</ul>';
 </div>
 <?php }?>
 </form>
+<?php } else {
+    echo '<i class="fa-solid fa-ghost"></i> Non è ultima versione del percorso.. non posso fare modifiche.';
+}?>
 
 
 </div>
