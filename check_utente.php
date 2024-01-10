@@ -21,6 +21,17 @@ session_set_cookie_params($lifetime);
 
 // provo a vedere se c'è già il nome utente salvato
 if ($_GET['jwt']){
+
+  // unset cookies che ricreo
+  if (isset($_SERVER['HTTP_COOKIE'])) {
+    $cookies = explode(';', $_SERVER['HTTP_COOKIE']);
+    foreach($cookies as $cookie) {
+        $parts = explode('=', $cookie);
+        $name = trim($parts[0]);
+        setcookie($name, '', time()-1000);
+        setcookie($name, '', time()-1000, '/');
+    }
+}
   //echo "Caso 1 Cookie named un is not set!<br>";
   // se non ho il nome provo con il token
   $token0=$_GET['jwt'];
