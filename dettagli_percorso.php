@@ -110,7 +110,7 @@ while($r = pg_fetch_assoc($result)) {
 
   
   echo '<li class="mt-1"><b> Descrizione </b>'.$r["descrizione"].' ';
-  if($check_versione_successiva==0 and $check_edit==1){
+  if($check_versione_successiva==0 and $check_edit==1 and $r["flg_disattivo"]==0){
       echo '- <button type="button" class="btn btn-sm btn-info" title="Modifica descrizione" 
       data-bs-toggle="modal" data-bs-target="#edit_desc">
       <i class="fa-solid fa-pencil"></i></button>';
