@@ -350,8 +350,7 @@ $('#js-date').datepicker({
 });
 
 $('#js-date1').datepicker({
-    format: 'dd/mm/yyyy',
-    startDate: '31/12/2099', 
+    format: 'dd/mm/yyyy', 
     language:'it'
 });
 
