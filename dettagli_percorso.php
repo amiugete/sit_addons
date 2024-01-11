@@ -67,7 +67,11 @@ ep.descrizione, t.cod_turno, t.id_turno, ep.durata, fo.descrizione_long,
 ep.freq_testata, fo.freq_binaria, ep.id_tipo,
 at2.id_servizio_uo, at2.id_servizio_sit, 
 to_char(ep.data_inizio_validita, 'DD/MM/YYYY') as data_inizio_print,
-ep.data_inizio_validita, to_char(ep.data_fine_validita, 'DD/MM/YYYY') as data_disattivazione_testata
+ep.data_inizio_validita, to_char(ep.data_fine_validita, 'DD/MM/YYYY') as data_disattivazione_testata,
+case 
+when ep.data_fine_validita < now() then 1
+else 0
+end flg_disattivo
 from anagrafe_percorsi.elenco_percorsi ep
 join elem.turni t on t.id_turno = ep.id_turno
 join etl.frequenze_ok fo on fo.cod_frequenza = ep.freq_testata
@@ -91,18 +95,44 @@ $result = pg_execute($conn, "query_testata", array($cod_percorso, $versione));
 <?php } ?>
 
 </h3>
+
+
+
+
+
 <?php
-echo '<ul>';
+echo '<ul class="mt-1">';
 while($r = pg_fetch_assoc($result)) {
-  echo '<li><b> Codice percorso </b>'.$r["cod_percorso"].'</li>';
-  echo '<li><b> Versione percorso </b>'.$versione.'</li>';
+  echo '<li class="mt-1"><b> Codice percorso </b>'.$r["cod_percorso"].'</li>';
+  echo '<li class="mt-1"><b> Versione percorso </b>'.$versione.'</li>';
   $desc=$r["descrizione"];
-  echo '<li><b> Descrizione </b>'.$r["descrizione"].'</li>'; 
-  echo '<li><b> Turno </b>'.$r["cod_turno"].'</li>';
-  echo '<li><b> Durata </b>'.$r["durata"].'</li>';
-  echo '<li><b> Frequenza </b>'.$r["descrizione_long"].'</li>';
-  echo '<li><b> Data attivazione testata </b>'.$r["data_inizio_print"].'</li>';
-  echo '<li><b> Data disattivazione </b>'.$r["data_disattivazione_testata"].'</li>';
+
+
+  
+  echo '<li class="mt-1"><b> Descrizione </b>'.$r["descrizione"].' ';
+  if($check_versione_successiva==0 and $check_edit==1){
+      echo '- <button type="button" class="btn btn-sm btn-info" title="Modifica descrizione" 
+      data-bs-toggle="modal" data-bs-target="#edit_desc">
+      <i class="fa-solid fa-pencil"></i></button>';
+  }
+  echo '</li>'; 
+  echo '<li class="mt-1"><b> Turno </b>'.$r["cod_turno"].'</li>';
+  echo '<li class="mt-1"><b> Durata </b>'.$r["durata"].'</li>';
+  echo '<li class="mt-1"><b> Frequenza </b>'.$r["descrizione_long"].'</li>';
+  echo '<li class="mt-1"><b> Data attivazione testata </b>'.$r["data_inizio_print"].'</li>';
+  $tomorrow = new DateTime('tomorrow');
+  $today = new DateTime('today');
+  echo '<li class="mt-1"><b> Data disattivazione </b>'.$r["data_disattivazione_testata"]. ' ';
+  if($check_versione_successiva==0 and $check_edit==1 and $r["flg_disattivo"]==0){
+      echo '- <button type="button" class="btn btn-sm btn-info" title="Modifica data disattivazione" 
+      data-bs-toggle="modal" data-bs-target="#edit_dd">
+      <i class="fa-solid fa-pencil"></i></button>';
+  }
+  if ($r["flg_disattivo"]==1){
+    echo ' - <b><font color=red>Percorso disattivo</font></b>';
+  }
+  echo '</li>';
+
   $freq_sit=$r["freq_testata"];
   $freq_uo=$r["freq_binaria"];
   $id_servizio_uo=$r['id_servizio_uo'];
@@ -113,6 +143,108 @@ while($r = pg_fetch_assoc($result)) {
   $data_disattivazione_testata=$r['data_disattivazione_testata'];
 }
 echo '</ul>';
+
+
+
+
+?>
+
+<!-- Modal -->
+<div class="modal fade" id="edit_desc" tabindex="-1" aria-labelledby="edit_descLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="edit_descLabel">Modifica descrizione</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+      
+
+        <form name="bilat" method="post" autocomplete="off" action="./backoffice/update_descrizione.php">
+        <input type="hidden" id="id_percorso" name="id_percorso" value="<?php echo $cod_percorso;?>">
+        <input type="hidden" id="old_vers" name="old_vers" value="<?php echo $versione;?>">
+
+        <div class="form-group col-md-6">
+          <label for="desc"> Descrizione </label> <font color="red">*</font>
+          <input type="text" name="desc" id="desc" class="form-control" value="<?php echo $desc;?>" required="">
+        </div>
+
+        <br>
+        
+        
+        <div class="row">
+        <button type="submit" class="btn btn-info">
+        <i class="fa-solid fa-arrow-up-from-bracket"></i> Salva
+        </button>
+        </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <!--button type="button" class="btn btn-primary">Save changes</button-->
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="edit_dd" tabindex="-1" aria-labelledby="edit_dd_Label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="edit_dd_Label">Modifica data disattivazione</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+      
+
+        <form name="bilat" method="post" autocomplete="off" action="./backoffice/update_data_disattivazione.php">
+        <input type="hidden" id="id_percorso" name="id_percorso" value="<?php echo $cod_percorso;?>">
+        <input type="hidden" id="old_vers" name="old_vers" value="<?php echo $versione;?>">
+
+
+
+        <?php 
+        $tomorrow = new DateTime('tomorrow');
+        ?>
+        
+
+        <div class="form-group  col-md-6">
+          <label for="data_inizio" >Nuova data disattivazione (GG/MM/AAAA) </label><font color="red">*</font>
+              <input name="data_disatt" id="js-date" type="text" class="form-control" value="<?php echo $tomorrow->format('d/m/Y');?>" required="">
+              <div class="input-group-addon">
+                  <span class="glyphicon glyphicon-th"></span>
+              </div>
+
+        </div>
+
+
+
+
+        <br>
+        
+        
+        <div class="row">
+        <button type="submit" class="btn btn-info">
+        <i class="fa-solid fa-arrow-up-from-bracket"></i> Salva
+        </button>
+        </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <!--button type="button" class="btn btn-primary">Save changes</button-->
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<?php
 
 # percorso su SIT
 $query_sit = 'select p.id_percorso
@@ -153,7 +285,7 @@ pu.data_disattivazione,
 u.id_ut
 from anagrafe_percorsi.percorsi_ut pu 
 join anagrafe_percorsi.cons_mapping_uo cmu on cmu.id_uo = pu.id_ut 
-join elem.automezzi a on a.cdaog3 = pu.cdaog3 
+left join elem.automezzi a on a.cdaog3 = pu.cdaog3 
 join elem.squadre s on s.id_squadra = pu.id_squadra 
 join topo.ut u on u.id_ut = cmu.id_uo_sit  
 where cod_percorso = $1  and data_disattivazione = $2";
@@ -164,17 +296,17 @@ $result1 = pg_prepare($conn, "query_rimessa", $query_rimessa);
 $result1 = pg_execute($conn, "query_rimessa", array($cod_percorso, $data_disattivazione_testata));
 echo '<ul>';
 while($r1 = pg_fetch_assoc($result1)) {
-  echo '<h4><li><b> Sede operativa </b>'.$r1["ut"].'</li></h4>';
-  echo '<li><b> Id Squadra </b>'.$r1["squadra"].'</li>'; 
+  echo '<h4><li class="mt-1"><b> Sede operativa </b>'.$r1["ut"].'</li></h4>';
+  echo '<li class="mt-1"><b> Id Squadra </b>'.$r1["squadra"].'</li>'; 
 
   // inserire composizione squadra con funzioncina da recuperare anche sotto 
 
 
-  echo '<li><b> Mezzo </b>'.$r1["mezzo"].'</li>';
-  echo '<li><b> Responsabile </b>'.$r1["responsabile"].'</li>';
-  echo '<li><b> Solo visualizzazione </b>'.$r1["solo_visualizzazione"].'</li>';
-  echo '<li><b> Data attivazione </b>'.$r1["data_attivazione"].'</li>';
-  echo '<li><b> Data disattivazione  </b>'.$r1["data_disattivazione"].'</li>';
+  echo '<li class="mt-1"><b> Mezzo </b>'.$r1["mezzo"].'</li>';
+  echo '<li class="mt-1"><b> Responsabile </b>'.$r1["responsabile"].'</li>';
+  echo '<li class="mt-1"><b> Solo visualizzazione </b>'.$r1["solo_visualizzazione"].'</li>';
+  echo '<li class="mt-1"><b> Data attivazione </b>'.$r1["data_attivazione"].'</li>';
+  echo '<li class="mt-1"><b> Data disattivazione  </b>'.$r1["data_disattivazione"].'</li>';
   $rimessa=$r1["id_ut"];
   $sq_rimessa=$r1["id_squadra"];
   $mezzo=$r1["cdaog3"];
@@ -196,14 +328,14 @@ if (pg_num_rows($result2) > 0){
 }
 echo '<ul>';
 while($r2 = pg_fetch_assoc($result2)) {
-  echo '<h4><li><b> Gruppo di coordinamento</b> '.$r2["ut"].'</li></h4>';
-  echo '<li><b> Id Squadra </b>'.$r2["squadra"].'</li>'; 
+  echo '<h4><li class="mt-1"><b> Gruppo di coordinamento</b> '.$r2["ut"].'</li></h4>';
+  echo '<li class="mt-1"><b> Id Squadra </b>'.$r2["squadra"].'</li>'; 
 
   // inserire composizione squadra con funzioncina da recuperare anche sotto 
 
 
-  echo '<li><b> Mezzo </b>'.$r2["mezzo"].'</li>';
-  echo '<li><b> Responsabile </b>'.$r2["responsabile"].'</li>';
+  echo '<li class="mt-1"><b> Mezzo </b>'.$r2["mezzo"].'</li>';
+  echo '<li class="mt-1"><b> Responsabile </b>'.$r2["responsabile"].'</li>';
   if ($r2["responsabile"]=='S'){
     $gc=$r2["id_ut"];
     $sq_gc=$r2["squadra"];
@@ -211,9 +343,9 @@ while($r2 = pg_fetch_assoc($result2)) {
       $mezzo=$r2["cdaog3"];
     }
   }
-  echo '<li><b> Solo visualizzazione </b>'.$r2["solo_visualizzazione"].'</li>';
-  echo '<li><b> Data attivazione </b>'.$r2["data_attivazione"].'</li>';
-  echo '<li><b> Data disattivazione  </b>'.$r2["data_disattivazione"].'</li>';
+  echo '<li class="mt-1"><b> Solo visualizzazione </b>'.$r2["solo_visualizzazione"].'</li>';
+  echo '<li class="mt-1"><b> Data attivazione </b>'.$r2["data_attivazione"].'</li>';
+  echo '<li class="mt-1"><b> Data disattivazione  </b>'.$r2["data_disattivazione"].'</li>';
 }
 echo '</ul>';
 
@@ -231,14 +363,14 @@ if (pg_num_rows($result2) > 0){
 
 echo '<ul>';
 while($r2 = pg_fetch_assoc($result2)) {
-  echo '<h4><li>'.$r2["ut"].'</li></h4>';
-  //echo '<li><b> Id Squadra </b>'.$r2["id_squadra"].'</li>'; 
+  echo '<h4><li class="mt-1">'.$r2["ut"].'</li></h4>';
+  //echo '<li class="mt-1"><b> Id Squadra </b>'.$r2["id_squadra"].'</li>'; 
 
   // inserire composizione squadra con funzioncina da recuperare anche sotto 
 
 
-  echo '<li><b> Mezzo </b>'.$r2["mezzo"].'</li>';
-  echo '<li><b> Responsabile </b>'.$r2["responsabile"].'</li>';
+  echo '<li class="mt-1"><b> Mezzo </b>'.$r2["mezzo"].'</li>';
+  echo '<li class="mt-1"><b> Responsabile </b>'.$r2["responsabile"].'</li>';
   if ($r2["responsabile"]=='S'){
     $gc=$r2["id_ut"];
     $sq_gc=$r2["id_squadra"];
@@ -246,9 +378,9 @@ while($r2 = pg_fetch_assoc($result2)) {
       $mezzo=$r2["cdaog3"];
     }
   }
-  echo '<li><b> Solo visualizzazione </b>'.$r2["solo_visualizzazione"].'</li>';
-  echo '<li><b> Data attivazione </b>'.$r2["data_attivazione"].'</li>';
-  echo '<li><b> Data disattivazione  </b>'.$r2["data_disattivazione"].'</li>';
+  echo '<li class="mt-1"><b> Solo visualizzazione </b>'.$r2["solo_visualizzazione"].'</li>';
+  echo '<li class="mt-1"><b> Data attivazione </b>'.$r2["data_attivazione"].'</li>';
+  echo '<li class="mt-1"><b> Data disattivazione  </b>'.$r2["data_disattivazione"].'</li>';
 }
 echo '</ul>';
 
@@ -352,7 +484,15 @@ require('./footer.php');
 
 
 
+<script>
 
+$('#js-date').datepicker({
+    format: 'dd/mm/yyyy',
+    startDate: '+1d', 
+    language:'it' 
+});
+
+</script>
 
 </body>
 

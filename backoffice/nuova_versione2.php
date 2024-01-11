@@ -175,7 +175,7 @@ echo  pg_last_error($conn);
 echo "<br><br>Update anagrafe_percorsi.elenco_percorsi_old<br>";
 
 
-$update_sit3="UPDATE anagrafe_percorsi.elenco_percorsi_ut epo
+$update_sit3="UPDATE anagrafe_percorsi.percorsi_ut epo
 SET data_disattivazione= To_DATE($1, 'DD/MM/YYYY')
 where cod_percorso LIKE $2 and data_disattivazione > now()";
 
@@ -184,7 +184,7 @@ echo  pg_last_error($conn);
 $result_usit3 = pg_execute($conn, "update_sit3", array($data_disatt, $cod_percorso)); 
 echo  pg_last_error($conn);
 
-echo "<br><br>Update anagrafe_percorsi.elenco_percorsi_ut<br>";
+echo "<br><br>Update anagrafe_percorsi.percorsi_ut<br>";
 
 
 

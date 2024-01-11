@@ -184,6 +184,8 @@ if ((int)$id_role_SIT = 0) {
         <th data-field="freq" data-sortable="true" data-visible="true" data-filter-control="input">Frequenza</th>
         <th data-field="turno" data-sortable="true" data-visible="true" data-filter-control="select">Turno</th>
         <th data-field="versione" data-sortable="true" data-visible="true" data-filter-control="select">Versione</th>
+        <th data-field="flg_disattivo" data-sortable="true" data-visible="true" data-formatter="nameFormatterAtt" 
+        data-filter-strict-search="true" data-search-formatter="false" data-filter-data="var:opzioni" data-filter-control="select"></th>
         <th data-field="cp_edit" data-sortable="false" data-formatter="nameFormatterEdit" data-visible="true" >Edit</th>
         <!--th data-field="quartiere" data-sortable="true" data-visible="true" data-filter-control="select">Quartiere<br>/Comune</th>
         <th data-field="ut" data-sortable="true" data-visible="true" data-filter-control="select">UT</th>
@@ -206,6 +208,17 @@ if ((int)$id_role_SIT = 0) {
     
     function dateFormatter(date) {
       return moment(date).format('DD/MM/YYYY HH:mm')
+    }
+
+
+    var opzioni =['Attivo', 'Disattivo']; 
+
+    function nameFormatterAtt(value) {
+      if (value =='Attivo'){
+        return '<span style="font-size: 1em; color: green;"> <i title='+value+' class="fa-solid fa-play"></i></span>';
+      } else if (value =='Disattivo') {
+        return '<span style="font-size: 1em; color: Tomato;"> <i title='+value+' class="fa-solid fa-stop"></i></span>'
+      }
     }
 
     function nameFormatterEdit(value, row) {

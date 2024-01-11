@@ -24,7 +24,11 @@ if(!$conn) {
     count(distinct pu.id_turno) as count_distinct_turni,
     fo.descrizione_long as freq,
     string_agg(distinct t.descrizione, ',') as turno, 
-    ep.versione_testata as versione
+    ep.versione_testata as versione, 
+    case 
+    when ep.data_fine_validita <= now()::date then 'Disattivo'
+    else 'Attivo'
+    end flg_disattivo
     from anagrafe_percorsi.elenco_percorsi ep 
     left join elem.percorsi p on p.cod_percorso = ep.cod_percorso 
     	and p.id_categoria_uso in (3,6) 
@@ -37,7 +41,7 @@ if(!$conn) {
     join elem.turni t on t.id_turno = pu.id_turno 
     left join etl.frequenze_ok fo on fo.cod_frequenza::int = ep.freq_testata 
     group by ep.cod_percorso, p.id_percorso, 
-    ep.descrizione, af.descrizione, at2.descrizione, fo.descrizione_long, ep.versione_testata
+    ep.descrizione, af.descrizione, at2.descrizione, fo.descrizione_long, ep.versione_testata,  ep.data_fine_validita
     order by 1,9";
     
     if($_GET['ut']) {
