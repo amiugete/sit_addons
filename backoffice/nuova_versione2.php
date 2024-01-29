@@ -176,17 +176,27 @@ echo "<br><br>Update anagrafe_percorsi.elenco_percorsi_old<br>";
 
 
 $update_sit3="UPDATE anagrafe_percorsi.percorsi_ut epo
-SET data_disattivazione= To_DATE($1, 'DD/MM/YYYY')
+SET data_disattivazione = To_DATE($1, 'DD/MM/YYYY')
 where cod_percorso LIKE $2 and data_disattivazione > now()";
 
 $result_usit3 = pg_prepare($conn, "update_sit3", $update_sit3);
 echo  pg_last_error($conn);
-$result_usit3 = pg_execute($conn, "update_sit3", array($data_disatt, $cod_percorso)); 
+$result_usit3 = pg_execute($conn, "update_sit3", array($data_att, $cod_percorso)); 
 echo  pg_last_error($conn);
 
 echo "<br><br>Update anagrafe_percorsi.percorsi_ut<br>";
 
 
+$update_sit4="UPDATE anagrafe_percorsi.date_percorsi_sit_uo dps
+SET data_fine_validita = To_DATE($1, 'DD/MM/YYYY')
+where cod_percorso LIKE $2 and data_fine_validita > now()";
+
+$result_usit4 = pg_prepare($conn, "update_sit4", $update_sit4);
+echo  pg_last_error($conn);
+$result_usit4 = pg_execute($conn, "update_sit4", array($data_att, $cod_percorso)); 
+echo  pg_last_error($conn);
+
+echo "<br><br>Update anagrafe_percorsi.percordate_percorsi_sit_uo<br>";
 
 
 
@@ -476,6 +486,30 @@ echo  pg_last_error($conn);
 
 
 
+echo "<br><br>Insert in date_percorsi_sit_uo<br>";
+$insert_date_percorsi_sit_uo = "INSERT INTO anagrafe_percorsi.date_percorsi_sit_uo 
+(id_percorso_sit,
+ cod_percorso, versioni_uo, data_inizio_validita, data_fine_validita) 
+ VALUES(
+   (select max(id_percorso) from elem.percorsi where cod_percorso = $1),
+   $1, 1,
+  to_timestamp($2,'DD/MM/YYYY'), to_timestamp($3,'DD/MM/YYYY')
+   )";
+
+$result_date_percorsi_sit_uo = pg_prepare($conn, "insert_date_percorsi_sit_uo", $insert_date_percorsi_sit_uo);
+echo "<br><br> ERRORI 1: <br>";
+echo  pg_last_error($conn);
+$result_date_percorsi_sit_uo = pg_execute($conn, "insert_date_percorsi_sit_uo", array($cod_percorso, $data_att, $data_disatt)); 
+
+
+echo  pg_result_error($result_date_percorsi_sit_uo);
+echo "<br><br> ERRORI 2: <br>";
+echo  pg_last_error($conn);
+
+
+
+
+
 #######################################################################
 # qua dovrebbe essere ok com le date modificate nella pag precedente
 
@@ -533,10 +567,10 @@ if($_POST['rim']){
     cdaog3) 
     VALUES($1, $2,
     $3,
-    'N', $4, 'S',
-    $5, $6,
-    to_timestamp($7,'DD/MM/YYYY'), to_timestamp($8,'DD/MM/YYYY'),
-    $9)";
+    'N', 'N', 'S',
+    $4, $5,
+    to_timestamp($6,'DD/MM/YYYY'), to_timestamp($7,'DD/MM/YYYY'),
+    $8)";
   
   $result_percorsi_rim = pg_prepare($conn, "insert_elenco_percorsi_rim", $insert_elenco_percorsi_rim);
   echo "<br><br> ERRORI 1: <br>";
@@ -544,7 +578,6 @@ echo  pg_last_error($conn);
   $result_percorsi_rim = pg_execute($conn, "insert_elenco_percorsi_rim", 
   array($cod_percorso, $rim_uo, 
   $sq_rim,
-  $vis,
   $turno, $durata,
   $data_att, $data_disatt, 
   $cdaog3

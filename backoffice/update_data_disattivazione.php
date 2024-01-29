@@ -102,6 +102,17 @@ echo "<br><br>Update anagrafe_percorsi.percorsi_ut<br>";
 
 
 
+$update_sit4="UPDATE anagrafe_percorsi.date_percorsi_sit_uo dps
+SET data_fine_validita = To_DATE($1, 'DD/MM/YYYY')
+where cod_percorso LIKE $2 and data_fine_validita > now()";
+
+$result_usit4 = pg_prepare($conn, "update_sit4", $update_sit4);
+echo  pg_last_error($conn);
+$result_usit4 = pg_execute($conn, "update_sit4", array($data_disatt, $cod_percorso)); 
+echo  pg_last_error($conn);
+
+echo "<br><br>Update anagrafe_percorsi.percordate_percorsi_sit_uo<br>";
+
 
 
 #exit();

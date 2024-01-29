@@ -251,6 +251,8 @@ $query_sit = 'select p.id_percorso
 from elem.percorsi p 
 where cod_percorso = $1 and versione = (select max(versione)
     from elem.percorsi p1 where cod_percorso = $1)';
+
+
 $result_sit = pg_prepare($conn, "query_sit", $query_sit);
 $result_sit = pg_execute($conn, "query_sit", array($cod_percorso));  
 
@@ -265,6 +267,47 @@ while($r_s = pg_fetch_assoc($result_sit)) {
   echo '<a class="btn btn-primary" target="SIT" href="'.$url_sit.'/#!/percorsi/percorso-details/?idPercorso='.$r_s["id_percorso"].'"> 
   <i class="fa-solid fa-map-location-dot"></i> '.$testo_tasto.' </a>';
 }
+
+
+$query_anomalie_sit = "select dpsu.*,  /*p.data_attivazione ,*/p.versione as versione_sit,
+date_trunc('day',p.data_dismissione) as  data_dismissione 
+from anagrafe_percorsi.date_percorsi_sit_uo dpsu
+join elem.percorsi p on p.id_percorso = dpsu.id_percorso_sit 
+where dpsu.cod_percorso in (
+	select /*count(id_percorso_sit),*/ cod_percorso/*, data_fine_validita*/
+	from anagrafe_percorsi.date_percorsi_sit_uo dpsu1  
+	where data_inizio_validita != data_fine_validita 
+	group by cod_percorso, data_fine_validita 
+	having count(id_percorso_sit) > 1)
+	and dpsu.cod_percorso = $1
+order by 2,1";
+
+$result_anomalie_sit = pg_prepare($conn, "query_anomalie_sit", $query_anomalie_sit);
+$result_anomalie_sit = pg_execute($conn, "query_anomalie_sit", array($cod_percorso));  
+$check_anomalie=0;
+while($r_as = pg_fetch_assoc($result_anomalie_sit)) {
+  $check_anomalie=1;
+  echo '<br><br><i class="fa-solid fa-triangle-exclamation"></i> ';
+  echo '<b> Anomalia sulla tabella anagrafe_percorsi.date_percorsi_sit_uo da correggere </b>';
+  echo '<ul>';
+  ?>
+
+
+
+
+  <?php
+  echo '<li> <i class="fa-solid fa-question"></i> Data attivazione da controllare versione ' .$r_as['versione_sit'] .' del SIT: '.$r_as['data_inizio_validita'] .'</li>';
+  echo '<li> <i class="fa-solid fa-question"></i> Data disattivazione da controllare versione ' .$r_as['versione_sit'] .' del SIT: '.$r_as['data_fine_validita'] .'</li>';
+  echo '<li> <i class="fa-solid fa-check"></i> Data dismissione da SIT versione ' .$r_as['versione_sit'] .' del SIT: '.$r_as['data_dismissione'] .'</li>';
+  echo '</ul>';
+}
+
+if ($check_anomalie==1){
+  echo '<i class="fa-solid fa-list-check"></i> Per correggere occorre modificare la dara di attivzione / disattivazione della tabella 
+  anagrafe_percorsi.date_percorsi_sit_uo';
+}
+
+
 
 ?>
 <hr>
@@ -443,13 +486,17 @@ if($check_versione_successiva==0){
                 <select name="ut" id="ut" class="selectpicker show-tick form-control" data-live-search="true" data-size="5" required="">
                 <option name="ut" value="">Seleziona UT in visualizzazione</option>
   <?php            
+  
+
   $query3="select id_ut, descrizione 
-  from topo.ut 
-  where id_zona not in (5) and id_ut not in ($1)
-  order by descrizione ;";
+  from topo.ut   
+  where id_ut not in (select distinct cmu.id_uo_sit  from anagrafe_percorsi.percorsi_ut pu 
+join anagrafe_percorsi.cons_mapping_uo cmu on cmu.id_uo = pu.id_ut 
+where cod_percorso = $1 and data_disattivazione  =$2)
+  order by descrizione  ;";
   
   $result3 = pg_prepare($conn, "query3", $query3);
-  $result3 = pg_execute($conn, "query3", array($gc));
+  $result3 = pg_execute($conn, "query3", array($cod_percorso , $data_disattivazione_testata));
   //$result1 = pg_query($conn, $query1);
   //echo $query1;    
   while($r3 = pg_fetch_assoc($result3)) { 
