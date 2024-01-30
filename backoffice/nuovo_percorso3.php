@@ -222,15 +222,15 @@ if ($id_servizio_sit!=0){
   $2, 1,
   $3, $4,
   3,
-  $5, now()::date,
-  $6,
+  $5, to_timestamp($6,'DD/MM/YYYY')::date,
+  $7,
   NULL, 
-  $7, 
+  $8, 
   NULL,
   NULL,
-  $8)";
+  $9)";
   $result_sit = pg_prepare($conn, "insert_sit", $insert_sit);
-  $result_sit = pg_execute($conn, "insert_sit", array($cod_percorso,$desc, $cdaog3,$turno,$_SESSION['username'], $freq_sit, $sq_ut, $id_servizio_sit)); 
+  $result_sit = pg_execute($conn, "insert_sit", array($cod_percorso,$desc, $cdaog3, $turno, $_SESSION['username'], $data_att, $freq_sit, $sq_ut, $id_servizio_sit)); 
 }
 
 echo  pg_last_error($conn);
