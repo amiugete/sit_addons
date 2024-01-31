@@ -472,6 +472,7 @@ if($check_versione_successiva==0){
 <input type="hidden" id="durata" name="durata" value="<?php echo $durata;?>">
 <input type="hidden" id="turno" name="turno" value="<?php echo $turno;?>">
 <input type="hidden" id="tipo" name="tipo" value="<?php echo $tipo;?>">
+<input type="hidden" id="data_attivazione" name="data_attivazione" value="<?php echo $data_attivazione_testata;?>">
 <input type="hidden" id="data_disattivazione" name="data_disattivazione" value="<?php echo $data_disattivazione_testata;?>">
 <!--input type="hidden" id="gc" name="gc" value="<?php echo $gc;?>"-->
 <input type="hidden" id="sq_ut" name="sq_ut" value="15">

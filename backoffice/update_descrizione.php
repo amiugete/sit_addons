@@ -54,14 +54,28 @@ oci_free_statement($result_uo0);
 
 $update_sit0="UPDATE elem.percorsi p
 SET descrizione = $1
-where cod_percorso LIKE $2 and data_disattivazione > now()";
+where cod_percorso LIKE $2 and data_dismissione > now()";
 
 $result_usit0 = pg_prepare($conn, "update_sit0", $update_sit0);
 echo  pg_last_error($conn);
-$result_usit0 = pg_execute($conn, "update_sit3", array($desc, $cod_percorso)); 
+$result_usit0 = pg_execute($conn, "update_sit0", array($desc, $cod_percorso)); 
 echo  pg_last_error($conn);
 
 echo "<br><br>Update elem.percorsi<br>";
+
+$descrizione_storico='Nuova descrizione percorso: '.$desc;
+$insert_sit0="INSERT INTO util.sys_history (\"type\", \"action\", description, datetime,  id_percorso, id_user)
+ VALUES( 'PERCORSO', 'UPDATE', $1 , CURRENT_TIMESTAMP, (select id_percorso from elem.percorsi 
+ WHERE cod_percorso LIKE $2 and data_dismissione > now()), 
+ (select id_user from util.sys_users su where \"name\" ilike $3));";
+
+$result_isit0 = pg_prepare($conn, "insert_sit0", $insert_sit0);
+echo  pg_last_error($conn);
+$result_isit0 = pg_execute($conn, "insert_sit0", array($descrizione_storico, $cod_percorso, $_SESSION['username'])); 
+echo  pg_last_error($conn);
+
+echo "<br><br>Insert util.sys_history<br>";
+
 
 
 $update_sit1="UPDATE anagrafe_percorsi.elenco_percorsi ep
@@ -88,7 +102,7 @@ echo  pg_last_error($conn);
 echo "<br><br>Update anagrafe_percorsi.elenco_percorsi_old<br>";
 
 
-$update_sit3="UPDATE anagrafe_percorsi.percorsi_ut epo
+/*$update_sit3="UPDATE anagrafe_percorsi.percorsi_ut epo
 SET descrizione = $1
 where cod_percorso LIKE $2 and data_disattivazione > now()";
 
@@ -97,10 +111,10 @@ echo  pg_last_error($conn);
 $result_usit3 = pg_execute($conn, "update_sit3", array($desc, $cod_percorso)); 
 echo  pg_last_error($conn);
 
-echo "<br><br>Update anagrafe_percorsi.percorsi_ut<br>";
+echo "<br><br>Update anagrafe_percorsi.percorsi_ut<br>";*/
 
 
-
+//exit;
 
 
 header("location: ../dettagli_percorso.php?cp=".$cod_percorso."&v=".$vers."");

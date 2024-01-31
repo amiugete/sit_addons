@@ -74,9 +74,18 @@ $data_disatt = $_POST['data_disattivazione'];
 
 
 // bisogna calcolare la data di attivazione a domani
-$tomorrow = new DateTime('tomorrow');
-$data_att=$tomorrow->format('d/m/Y');
+//$tomorrow = new DateTime('tomorrow');
+//$data_att=$tomorrow->format('d/m/Y');
+
+// modificato nella pagina dettaglio
+$data_att = $_POST['data_attivazione'];
+
+
 echo $data_att."<br>";
+
+
+
+
 
 echo $data_disatt."<br>";
 
