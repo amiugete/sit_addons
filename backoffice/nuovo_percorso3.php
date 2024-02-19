@@ -39,6 +39,15 @@ echo $id_servizio_uo."<br>";
 echo $id_servizio_sit."<br>";
 
 
+if ($_POST['check_SIT']){
+  $check_SIT = intval($_POST['check_SIT']);
+} else {
+  $check_SIT = 0;
+}
+echo "check_SIT:".$check_SIT."<br>";
+
+#exit();
+
 
 $durata = intval($_POST['durata']);
 
@@ -198,7 +207,7 @@ oci_free_statement($result_uo2);
 
 
 
-if ($id_servizio_sit!=0){
+if ($id_servizio_sit!=0 and $check_SIT==1){
   # INSERT SIT
 
   $insert_sit="INSERT INTO elem.percorsi 

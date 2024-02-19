@@ -154,6 +154,19 @@ echo '<li><b>Durata</b>: '.$durata.'</li>';
 <input type="hidden" id="tipo" name="tipo" value="<?php echo $tipo;?>">
 
 
+<?php
+if ($id_servizio_sit){
+?>
+<div class="form-check">
+  <input class="form-check-input" type="checkbox" value="1" id="check_SIT" name="check_SIT" checked>
+  <label class="form-check-label" for="check_SIT">
+    Creo il percorso anche su SIT (disabilitare nel caso in cui si voglia clonare il percorso su SIT ad esempio per un cambio servizio)
+  </label>
+</div>
+<hr>
+<?php
+}
+?>
 <h4>Sede Operativa (rimessa) se presente</h4>
 
 <div class="row g-3 align-items-center">
