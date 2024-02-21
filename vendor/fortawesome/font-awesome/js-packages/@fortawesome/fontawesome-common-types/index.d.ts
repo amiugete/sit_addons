@@ -1,5 +1,5 @@
 export type IconFamily = "classic" | "sharp" | "duotone";
-export type IconPrefix = "fas" | "far" | "fal" | "fat" | "fad" | "fab" | "fak" | "fass" | "fasr" | "fasl" ;
+export type IconPrefix = "fas" | "far" | "fal" | "fat" | "fad" | "fab" | "fak" | "fass" | "fasr" | "fasl" | "fast" ;
 export type CssStyleClass = "fa-solid" | "fa-regular" | "fa-light" | "fa-thin" | "fa-duotone" | "fa-brands" ;
 export type IconStyle = "solid" | "regular" | "light" | "thin" | "duotone" | "brands" ;
 export type IconPathData = string | string[]
@@ -36,6 +36,7 @@ export type IconName = 'monero' |
   'yoast' | 
   'cloudflare' | 
   'ups' | 
+  'pixiv' | 
   'wpexplorer' | 
   'dyalog' | 
   'bity' | 
@@ -71,6 +72,7 @@ export type IconName = 'monero' |
   'contao' | 
   'square-font-awesome' | 
   'deskpro' | 
+  'brave' | 
   'sistrix' | 
   'square-instagram' | 
   'instagram-square' | 
@@ -79,6 +81,7 @@ export type IconName = 'monero' |
   'square-hacker-news' | 
   'hacker-news-square' | 
   'edge' | 
+  'threads' | 
   'napster' | 
   'square-snapchat' | 
   'snapchat-square' | 
@@ -126,6 +129,7 @@ export type IconName = 'monero' |
   'centos' | 
   'adn' | 
   'cloudsmith' | 
+  'opensuse' | 
   'pied-piper-alt' | 
   'square-dribbble' | 
   'dribbble-square' | 
@@ -135,6 +139,7 @@ export type IconName = 'monero' |
   'steam' | 
   'cc-apple-pay' | 
   'scribd' | 
+  'debian' | 
   'openid' | 
   'instalod' | 
   'expeditedssl' | 
@@ -173,6 +178,7 @@ export type IconName = 'monero' |
   'laravel' | 
   'hotjar' | 
   'bluetooth-b' | 
+  'square-letterboxd' | 
   'sticker-mule' | 
   'creative-commons-zero' | 
   'hips' | 
@@ -184,6 +190,7 @@ export type IconName = 'monero' |
   'cc-discover' | 
   'wpbeginner' | 
   'confluence' | 
+  'shoelace' | 
   'mdb' | 
   'dochub' | 
   'accessible-icon' | 
@@ -215,6 +222,7 @@ export type IconName = 'monero' |
   'phoenix-framework' | 
   'shopify' | 
   'neos' | 
+  'square-threads' | 
   'hackerrank' | 
   'researchgate' | 
   'swift' | 
@@ -224,6 +232,7 @@ export type IconName = 'monero' |
   'y-combinator' | 
   'empire' | 
   'envira' | 
+  'google-scholar' | 
   'square-gitlab' | 
   'gitlab-square' | 
   'studiovinari' | 
@@ -268,6 +277,7 @@ export type IconName = 'monero' |
   'blogger-b' | 
   'opencart' | 
   'vine' | 
+  'signal-messenger' | 
   'paypal' | 
   'gitlab' | 
   'typo3' | 
@@ -279,6 +289,7 @@ export type IconName = 'monero' |
   'bootstrap' | 
   'odnoklassniki' | 
   'nfc-symbol' | 
+  'mintbit' | 
   'ethereum' | 
   'speaker-deck' | 
   'creative-commons-nc-eu' | 
@@ -287,6 +298,7 @@ export type IconName = 'monero' |
   'ello' | 
   'gofore' | 
   'bimobject' | 
+  'brave-reverse' | 
   'facebook-f' | 
   'square-google-plus' | 
   'google-plus-square' | 
@@ -321,6 +333,7 @@ export type IconName = 'monero' |
   'soundcloud' | 
   'digg' | 
   'tencent-weibo' | 
+  'letterboxd' | 
   'symfony' | 
   'maxcdn' | 
   'etsy' | 
@@ -329,6 +342,7 @@ export type IconName = 'monero' |
   'think-peaks' | 
   'bilibili' | 
   'erlang' | 
+  'x-twitter' | 
   'cotton-bureau' | 
   'dashcube' | 
   '42-group' | 
@@ -366,6 +380,7 @@ export type IconName = 'monero' |
   'dropbox' | 
   'instagram' | 
   'cmplid' | 
+  'upwork' | 
   'facebook' | 
   'gripfire' | 
   'jedi-order' | 
@@ -424,6 +439,7 @@ export type IconName = 'monero' |
   'square-behance' | 
   'behance-square' | 
   'supple' | 
+  'webflow' | 
   'rebel' | 
   'css3' | 
   'staylinked' | 
@@ -494,6 +510,7 @@ export type IconName = 'monero' |
   'tumblr' | 
   'vaadin' | 
   'quora' | 
+  'square-x-twitter' | 
   'reacteurope' | 
   'medium' | 
   'medium-m' | 
@@ -2610,7 +2627,6 @@ export type IconName = 'monero' |
   'warning' | 
   'database' | 
   'share' | 
-  'arrow-turn-right' | 
   'mail-forward' | 
   'bottle-droplet' | 
   'mask-face' | 

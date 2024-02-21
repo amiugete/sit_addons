@@ -46,7 +46,7 @@ class BarcodeGeneratorPNG extends BarcodeGenerator
      * Return a PNG image representation of barcode (requires GD or Imagick library).
      *
      * @param string $barcode code to print
-     * @param BarcodeGenerator::Type_* $type (string) type of barcode
+     * @param BarcodeGenerator::TYPE_* $type (string) type of barcode
      * @param int $widthFactor Width of a single bar element in pixels.
      * @param int $height Height of a single bar element in pixels.
      * @param array $foregroundColor RGB (0-255) foreground color for bar elements (background is transparent).
@@ -76,7 +76,7 @@ class BarcodeGeneratorPNG extends BarcodeGenerator
                 $barHeight = round(($bar->getHeight() * $height / $barcodeData->getHeight()), 3);
 
                 // draw a vertical bar
-                if ($this->useImagick && isset($imagickBarsShape)) {
+                if ($this->useImagick) {
                     $imagickBarsShape->rectangle($positionHorizontal, $y, ($positionHorizontal + $barWidth - 1), ($y + $barHeight));
                 } else {
                     imagefilledrectangle($image, $positionHorizontal, $y, ($positionHorizontal + $barWidth - 1), ($y + $barHeight), $gdForegroundColor);
@@ -85,7 +85,7 @@ class BarcodeGeneratorPNG extends BarcodeGenerator
             $positionHorizontal += $barWidth;
         }
 
-        if ($this->useImagick && isset($imagickBarsShape)) {
+        if ($this->useImagick) {
             $image = $this->createImagickImageObject($width, $height);
             $image->drawImage($imagickBarsShape);
             return $image->getImageBlob();
