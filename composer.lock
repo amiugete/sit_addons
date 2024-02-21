@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ce91eea6619bdc859b5c4d66c1011877",
+    "content-hash": "c0d888e4416296495603327050930b70",
     "packages": [
         {
             "name": "components/bootstrap",
@@ -80,16 +80,16 @@
         },
         {
             "name": "components/jquery",
-            "version": "3.6.0",
+            "version": "v3.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/components/jquery.git",
-                "reference": "6cf38ee1fd04b6adf8e7dda161283aa35be818c3"
+                "reference": "8edc7785239bb8c2ad2b83302b856a1d61de60e7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/components/jquery/zipball/6cf38ee1fd04b6adf8e7dda161283aa35be818c3",
-                "reference": "6cf38ee1fd04b6adf8e7dda161283aa35be818c3",
+                "url": "https://api.github.com/repos/components/jquery/zipball/8edc7785239bb8c2ad2b83302b856a1d61de60e7",
+                "reference": "8edc7785239bb8c2ad2b83302b856a1d61de60e7",
                 "shasum": ""
             },
             "type": "component",
@@ -125,7 +125,7 @@
                 "source": "https://github.com/jquery/jquery",
                 "wiki": "http://docs.jquery.com/"
             },
-            "time": "2021-03-20T19:13:42+00:00"
+            "time": "2023-09-22T01:43:46+00:00"
         },
         {
             "name": "composer/installers",
@@ -333,16 +333,16 @@
         },
         {
             "name": "firebase/php-jwt",
-            "version": "v6.8.1",
+            "version": "v6.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/firebase/php-jwt.git",
-                "reference": "5dbc8959427416b8ee09a100d7a8588c00fb2e26"
+                "reference": "a49db6f0a5033aef5143295342f1c95521b075ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/5dbc8959427416b8ee09a100d7a8588c00fb2e26",
-                "reference": "5dbc8959427416b8ee09a100d7a8588c00fb2e26",
+                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/a49db6f0a5033aef5143295342f1c95521b075ff",
+                "reference": "a49db6f0a5033aef5143295342f1c95521b075ff",
                 "shasum": ""
             },
             "require": {
@@ -390,22 +390,22 @@
             ],
             "support": {
                 "issues": "https://github.com/firebase/php-jwt/issues",
-                "source": "https://github.com/firebase/php-jwt/tree/v6.8.1"
+                "source": "https://github.com/firebase/php-jwt/tree/v6.10.0"
             },
-            "time": "2023-07-14T18:33:00+00:00"
+            "time": "2023-12-01T16:26:39+00:00"
         },
         {
             "name": "fortawesome/font-awesome",
-            "version": "6.4.0",
+            "version": "6.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FortAwesome/Font-Awesome.git",
-                "reference": "0698449d50f2b95517562295a59d414afc68b369"
+                "reference": "deeea78c52bfe00b6e251ffddccf5570d5fdb05e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/0698449d50f2b95517562295a59d414afc68b369",
-                "reference": "0698449d50f2b95517562295a59d414afc68b369",
+                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/deeea78c52bfe00b6e251ffddccf5570d5fdb05e",
+                "reference": "deeea78c52bfe00b6e251ffddccf5570d5fdb05e",
                 "shasum": ""
             },
             "type": "library",
@@ -437,7 +437,7 @@
                 "issues": "https://github.com/FortAwesome/Font-Awesome/issues",
                 "source": "https://github.com/FortAwesome/Font-Awesome"
             },
-            "time": "2023-03-27T16:58:41+00:00"
+            "time": "2023-11-30T22:38:48+00:00"
         },
         {
             "name": "kriswallsmith/assetic",
@@ -522,16 +522,16 @@
         },
         {
             "name": "moment/moment",
-            "version": "2.29.4",
+            "version": "2.30.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/moment/moment.git",
-                "reference": "000ac1800e620f770f4eb31b5ae908f6167b0ab2"
+                "reference": "485d9a7d709bd5f3869a7ad24630cf0746d072dc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/moment/moment/zipball/000ac1800e620f770f4eb31b5ae908f6167b0ab2",
-                "reference": "000ac1800e620f770f4eb31b5ae908f6167b0ab2",
+                "url": "https://api.github.com/repos/moment/moment/zipball/485d9a7d709bd5f3869a7ad24630cf0746d072dc",
+                "reference": "485d9a7d709bd5f3869a7ad24630cf0746d072dc",
                 "shasum": ""
             },
             "require": {
@@ -574,9 +574,9 @@
             ],
             "support": {
                 "issues": "https://github.com/moment/moment/issues",
-                "source": "https://github.com/moment/moment/tree/2.29.4"
+                "source": "https://github.com/moment/moment/tree/2.30.1"
             },
-            "time": "2022-07-06T16:00:01+00:00"
+            "time": "2023-12-27T10:35:18+00:00"
         },
         {
             "name": "oomphinc/composer-installers-extender",
@@ -637,16 +637,16 @@
         },
         {
             "name": "picqer/php-barcode-generator",
-            "version": "v2.3.2",
+            "version": "v2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/picqer/php-barcode-generator.git",
-                "reference": "dab19f2afe42d2e3dda1504f5834e36f2ecf0553"
+                "reference": "4cec18909dffd86e14beb69b1040f2520c2e1bb1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/picqer/php-barcode-generator/zipball/dab19f2afe42d2e3dda1504f5834e36f2ecf0553",
-                "reference": "dab19f2afe42d2e3dda1504f5834e36f2ecf0553",
+                "url": "https://api.github.com/repos/picqer/php-barcode-generator/zipball/4cec18909dffd86e14beb69b1040f2520c2e1bb1",
+                "reference": "4cec18909dffd86e14beb69b1040f2520c2e1bb1",
                 "shasum": ""
             },
             "require": {
@@ -654,6 +654,7 @@
                 "php": "^7.3|^8.0"
             },
             "require-dev": {
+                "phpstan/phpstan": "^1.10",
                 "phpunit/phpunit": "^9.5"
             },
             "suggest": {
@@ -711,7 +712,7 @@
             ],
             "support": {
                 "issues": "https://github.com/picqer/php-barcode-generator/issues",
-                "source": "https://github.com/picqer/php-barcode-generator/tree/v2.3.2"
+                "source": "https://github.com/picqer/php-barcode-generator/tree/v2.4.0"
             },
             "funding": [
                 {
@@ -719,7 +720,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-07-25T06:37:46+00:00"
+            "time": "2023-09-16T08:58:52+00:00"
         },
         {
             "name": "robloach/component-installer",
@@ -893,16 +894,16 @@
         },
         {
             "name": "twbs/bootstrap",
-            "version": "v5.3.1",
+            "version": "v5.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twbs/bootstrap.git",
-                "reference": "2a1bf52b73fc9a97f6fef75aa1b29b3e9f0288b3"
+                "reference": "6e1f75f420f68e1d52733b8e407fc7c3766c9dba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twbs/bootstrap/zipball/2a1bf52b73fc9a97f6fef75aa1b29b3e9f0288b3",
-                "reference": "2a1bf52b73fc9a97f6fef75aa1b29b3e9f0288b3",
+                "url": "https://api.github.com/repos/twbs/bootstrap/zipball/6e1f75f420f68e1d52733b8e407fc7c3766c9dba",
+                "reference": "6e1f75f420f68e1d52733b8e407fc7c3766c9dba",
                 "shasum": ""
             },
             "replace": {
@@ -937,22 +938,22 @@
             ],
             "support": {
                 "issues": "https://github.com/twbs/bootstrap/issues",
-                "source": "https://github.com/twbs/bootstrap/tree/v5.3.1"
+                "source": "https://github.com/twbs/bootstrap/tree/v5.3.3"
             },
-            "time": "2023-07-26T07:46:38+00:00"
+            "time": "2024-02-20T15:14:29+00:00"
         },
         {
             "name": "twbs/bootstrap-icons",
-            "version": "v1.10.5",
+            "version": "v1.11.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twbs/icons.git",
-                "reference": "648aa8238437d9da9227f6273cc163ec5841382d"
+                "reference": "8d88686c03c3768a2d82ba4f20c3c4e1b100fa29"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twbs/icons/zipball/648aa8238437d9da9227f6273cc163ec5841382d",
-                "reference": "648aa8238437d9da9227f6273cc163ec5841382d",
+                "url": "https://api.github.com/repos/twbs/icons/zipball/8d88686c03c3768a2d82ba4f20c3c4e1b100fa29",
+                "reference": "8d88686c03c3768a2d82ba4f20c3c4e1b100fa29",
                 "shasum": ""
             },
             "type": "library",
@@ -976,22 +977,22 @@
             ],
             "support": {
                 "issues": "https://github.com/twbs/icons/issues",
-                "source": "https://github.com/twbs/icons/tree/v1.10.5"
+                "source": "https://github.com/twbs/icons/tree/v1.11.3"
             },
-            "time": "2023-04-26T19:56:04+00:00"
+            "time": "2024-01-03T15:44:45+00:00"
         },
         {
             "name": "wenzhixin/bootstrap-table",
-            "version": "1.22.1",
+            "version": "1.22.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wenzhixin/bootstrap-table.git",
-                "reference": "0d94c462f432a99bc5dafe4b350e683cd4afeeb1"
+                "reference": "42b43458792ff10018088324d2324a51c5fa7788"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wenzhixin/bootstrap-table/zipball/0d94c462f432a99bc5dafe4b350e683cd4afeeb1",
-                "reference": "0d94c462f432a99bc5dafe4b350e683cd4afeeb1",
+                "url": "https://api.github.com/repos/wenzhixin/bootstrap-table/zipball/42b43458792ff10018088324d2324a51c5fa7788",
+                "reference": "42b43458792ff10018088324d2324a51c5fa7788",
                 "shasum": ""
             },
             "require": {
@@ -1029,7 +1030,7 @@
             ],
             "support": {
                 "issues": "https://github.com/wenzhixin/bootstrap-table/issues",
-                "source": "https://github.com/wenzhixin/bootstrap-table/tree/1.22.1"
+                "source": "https://github.com/wenzhixin/bootstrap-table/tree/1.22.2"
             },
             "funding": [
                 {
@@ -1041,7 +1042,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2023-07-06T00:38:26+00:00"
+            "time": "2024-01-11T06:40:07+00:00"
         }
     ],
     "packages-dev": [],
