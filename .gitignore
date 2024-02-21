@@ -7,3 +7,6 @@ copia_file_base.sh
 
 
 uploads/*
+
+vendor/composer/*
+composer.lock
