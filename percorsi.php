@@ -162,11 +162,12 @@ if ((int)$id_role_SIT = 0) {
 				data-search="true" data-click-to-select="true" data-show-print="false"  
         data-show-pagination-switch="true"
 				data-pagination="true" data-page-size=75 data-page-list=[10,25,50,75,100,200,500]
-				data-sidePagination="false" data-show-refresh="true" data-show-toggle="true"
+				data-side-pagination="false" data-show-refresh="true" data-show-toggle="true"
 				data-filter-control="true"
         data-sort-select-options = "true"
         data-filter-control-multiple-search="false"
-        data-toolbar="#toolbar" >
+        data-toolbar="#toolbar" 
+        data-query-params="queryParams">
         
         
 <thead>
@@ -201,6 +202,25 @@ if ((int)$id_role_SIT = 0) {
   $(function() {
     $('#percorsi').bootstrapTable()
   })
+
+
+    //************************************
+  // Per esportare tutto
+  var $table = $('#percorsi')
+  
+  $(function() {
+    $table.bootstrapTable()
+  })
+
+  function queryParams(params) {
+    var options = $table.bootstrapTable('getOptions')
+    if (!options.pagination) {
+      params.limit = options.totalRows
+    }
+    return params
+  }
+  //************************************
+
 
   /*data.forEach(d=>{
        data_creazione = moment(d.data_creazione).format('DD/MM/YYYY HH24:MI')

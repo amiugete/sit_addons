@@ -128,7 +128,8 @@ $codice_percorso=$cod_start.''.$id_percorso_parte2.''.$id_percorso_turno;
 ?>
 <h3>Testata percorso</h3>
 <ul><?php
-echo '<li><b>Nuovo codice</b>: '.$codice_percorso.'</li>';
+//echo '<li><b>Nuovo codice</b>: '.$codice_percorso.'</li>';
+echo '<li><b>Id percorso</b>: '.$id_percorso_parte2.'</li>';
 echo '<li><b>Descrizione</b>: '.$desc.'</li>';
 echo '<li><b>Frequenza</b>: '.$descrizione_long.'</li>';
 echo '<li><b>Durata</b>: '.$durata.'</li>';
