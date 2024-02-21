@@ -334,7 +334,7 @@ join topo.ut u on u.id_ut = cmu.id_uo_sit
 where cod_percorso = $1  and data_disattivazione = $2";
 
 // RIMESSA / SEDE OPERATIVA
-$query_rimessa=$query0 ." and rimessa = 'S'";
+$query_rimessa=$query0 ." and rimessa = 'S' and responsabile = 'N'";
 $result1 = pg_prepare($conn, "query_rimessa", $query_rimessa);
 $result1 = pg_execute($conn, "query_rimessa", array($cod_percorso, $data_disattivazione_testata));
 echo '<ul>';
@@ -360,7 +360,7 @@ echo '</ul>';
 
 // GRUPPO DI COORDINAMENTO
 
-$query_ut=$query0 ." and pu.id_squadra!= 15 and rimessa = 'N'";
+$query_ut=$query0 ." and pu.id_squadra!= 15";
 $result2 = pg_prepare($conn, "query_ut", $query_ut);
 $result2 = pg_execute($conn, "query_ut", array($cod_percorso, $data_disattivazione_testata));
 //echo '<hr>';
@@ -381,7 +381,7 @@ while($r2 = pg_fetch_assoc($result2)) {
   echo '<li class="mt-1"><b> Responsabile </b>'.$r2["responsabile"].'</li>';
   if ($r2["responsabile"]=='S'){
     $gc=$r2["id_ut"];
-    $sq_gc=$r2["squadra"];
+    $sq_gc=$r2["id_squadra"];
     if ($mezzo==''){
       $mezzo=$r2["cdaog3"];
     }
@@ -414,14 +414,6 @@ while($r2 = pg_fetch_assoc($result2)) {
 
   echo '<li class="mt-1"><b> Mezzo </b>'.$r2["mezzo"].'</li>';
   echo '<li class="mt-1"><b> Responsabile </b>'.$r2["responsabile"].'</li>';
-  if ($r2["responsabile"]=='S'){
-    $gc=$r2["id_ut"];
-    $sq_gc=$r2["id_squadra"];
-    if ($mezzo==''){
-      $mezzo=$r2["cdaog3"];
-    }
-  }
-  echo '<li class="mt-1"><b> Solo visualizzazione </b>'.$r2["solo_visualizzazione"].'</li>';
   echo '<li class="mt-1"><b> Data attivazione </b>'.$r2["data_attivazione"].'</li>';
   echo '<li class="mt-1"><b> Data disattivazione  </b>'.$r2["data_disattivazione"].'</li>';
 }

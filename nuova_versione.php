@@ -257,18 +257,23 @@ while($r3bis = pg_fetch_assoc($result3bis)) {
 </div>
 
 
-
-<h4>UT responsabile </h4>
+<hr>
+<h4>Gruppo di coordinamento o UT Responsabile</h4>
+<small id="ut" class="form-text text-muted"> Deve sempre esserci un Gruppo di Coordinamento. <b>Per tutti i servizi di raccolta deve essere una Unità territoriale.</b> 
+    Nel caso di servizi della sola rimessa (es. Ganci) è la rimessa stessa.</small>
 <div class="row g-3 align-items-center">
 
 
 <div class="form-group  col-md-6">
-  <label for="ut">UT:</label> <font color="red">*</font>
+  <label for="ut">UT (o Rimessa):</label> <font color="red">*</font>
                 <select name="ut" id="ut" class="selectpicker show-tick form-control" data-live-search="true" data-size="5" required="">
                 <!--option name="ut" value="">Seleziona la tipologia di servizio</option-->
+                <?php if (!$_POST["gc"]){?>
+                  <option name="ut" value="">Seleziona il GC</option>
+                <?php } ?>
   <?php            
   $query1="select id_ut, descrizione from topo.ut 
-  where id_zona not in (5) 
+  /*where id_zona not in (5) */
   order by descrizione ;";
   $result1 = pg_query($conn, $query1);
   //echo $query1;    
@@ -291,6 +296,9 @@ while($r3bis = pg_fetch_assoc($result3bis)) {
 <div class="form-group  col-md-6">
   <label for="sq_ut">Squadra UT:</label> <font color="red">*</font>
                 <select name="sq_ut" id="sq_ut" class="selectpicker show-tick form-control" data-size="5"  data-live-search="true" required="">
+                <?php if (!$_POST["gc"]){?>
+                  <option name="ut" value="">Seleziona la squadra del GC</option>
+                <?php } ?>
                 <!--option name="sq_ut" value="">Seleziona la squadra della rimessa</option-->
   <?php            
   /*$query0_1="select id_squadra, 
@@ -315,7 +323,7 @@ while($r3bis = pg_fetch_assoc($result3bis)) {
 </div>
 
 </div>
-
+<hr>
 <div class="row g-3 align-items-center">
 
 <?php 
@@ -369,7 +377,7 @@ oci_free_statement($result_dd);
 <div-->
 
 
-
+<hr>
 <div class="form-group  col-md-6">
   <label for="cdaog3">Mezzo:</label> <font color="red">*</font>
                 <select name="cdaog3" id="cdaog3" class="selectpicker show-tick form-control" data-live-search="true" data-size="5" required="">
