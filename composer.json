@@ -9,7 +9,8 @@
         "fortawesome/font-awesome": "^6.4",
         "components/jquery": "^3.6",
         "moment/moment": "^2.29",
-        "eternicode/bootstrap-datepicker": "^1.10"
+        "eternicode/bootstrap-datepicker": "^1.10",
+        "oomphinc/composer-installers-extender": "^2.0"
     },
     "config": {
         "allow-plugins": {
