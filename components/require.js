@@ -2034,6 +2034,10 @@ var components = {
         {
             "name": "moment",
             "main": "moment-built.js"
+        },
+        {
+            "name": "tableexport.jquery.plugin",
+            "main": "tableexport.jquery.plugin-built.js"
         }
     ],
     "shim": {

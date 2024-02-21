@@ -452,6 +452,68 @@
             "install-path": "../fortawesome/font-awesome"
         },
         {
+            "name": "hhurz/tableexport.jquery.plugin",
+            "version": "dev-master",
+            "version_normalized": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/hhurz/tableExport.jquery.plugin.git",
+                "reference": "e075634e5f14ca701ad44b4a53e4e92630065fa0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hhurz/tableExport.jquery.plugin/zipball/e075634e5f14ca701ad44b4a53e4e92630065fa0",
+                "reference": "e075634e5f14ca701ad44b4a53e4e92630065fa0",
+                "shasum": ""
+            },
+            "require": {
+                "components/jquery": "^3.2.1"
+            },
+            "time": "2023-10-30T19:06:17+00:00",
+            "default-branch": true,
+            "type": "component",
+            "extra": {
+                "component": {
+                    "scripts": [
+                        "tableExport.js"
+                    ],
+                    "files": [
+                        "tableExport.js",
+                        "tableExport.min.js",
+                        "libs/FileSaver/*",
+                        "libs/html2canvas/*",
+                        "libs/js-xlsx/*",
+                        "libs/jsPDF/*",
+                        "libs/pdfmake/*"
+                    ]
+                }
+            },
+            "installation-source": "dist",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "hhurz"
+                }
+            ],
+            "description": "Export HTML table to CSV, DOC, JSON, PDF, PNG, SQL, TSV, TXT, XLS, XLSX, XML",
+            "homepage": "https://github.com/hhurz/tableExport.jquery.plugin",
+            "keywords": [
+                "HTML5",
+                "export",
+                "javascript",
+                "jquery",
+                "table"
+            ],
+            "support": {
+                "issues": "https://github.com/hhurz/tableExport.jquery.plugin/issues",
+                "source": "https://github.com/hhurz/tableExport.jquery.plugin/tree/master"
+            },
+            "install-path": "../hhurz/tableexport.jquery.plugin"
+        },
+        {
             "name": "kriswallsmith/assetic",
             "version": "v1.4.0",
             "version_normalized": "1.4.0.0",
@@ -1088,5 +1150,7 @@
         }
     ],
     "dev": true,
-    "dev-package-names": []
+    "dev-package-names": [
+        "hhurz/tableexport.jquery.plugin"
+    ]
 }

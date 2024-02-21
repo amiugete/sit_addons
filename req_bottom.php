@@ -50,12 +50,14 @@
 
 
 
-<script src="./vendor/wenzhixin/bootstrap-table/dist/extensions/print/bootstrap-table-print.min.js" ></script>
+<script src="./vendor/hhurz/tableexport.jquery.plugin/tableExport.min.js" ></script>
+<!--script src="./vendor/hhurz/tableexport.jquery.plugin/libs/jsPDF/jspdf.min.js" ></script>
+<script src="./vendor/hhurz/tableexport.jquery.plugin/libs/jsPDF-AutoTable/jspdf.plugin.autotable.js" ></script-->
+
 <script src="./vendor/wenzhixin/bootstrap-table/dist/extensions/filter-control/bootstrap-table-filter-control.js" ></script>
 <script src="./vendor/wenzhixin/bootstrap-table/dist/extensions/auto-refresh/bootstrap-table-auto-refresh.js"></script>
 <script src="./vendor/wenzhixin/bootstrap-table/dist/extensions/group-by-v2/bootstrap-table-group-by.min.js"></script>
-
-
+<script src="./vendor/wenzhixin/bootstrap-table/dist/extensions/export/bootstrap-table-export.js"></script>
 
 
 

@@ -5,7 +5,7 @@
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '4691e98c60af28355e872897eac94fdd70d6599d',
+        'reference' => '6e6e14f7e2efb28121c6a424f0c5f3ea29ef901b',
         'name' => '__root__',
         'dev' => true,
     ),
@@ -16,7 +16,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '4691e98c60af28355e872897eac94fdd70d6599d',
+            'reference' => '6e6e14f7e2efb28121c6a424f0c5f3ea29ef901b',
             'dev_requirement' => false,
         ),
         'components/bootstrap' => array(
@@ -72,6 +72,17 @@
             'aliases' => array(),
             'reference' => 'deeea78c52bfe00b6e251ffddccf5570d5fdb05e',
             'dev_requirement' => false,
+        ),
+        'hhurz/tableexport.jquery.plugin' => array(
+            'pretty_version' => 'dev-master',
+            'version' => 'dev-master',
+            'type' => 'component',
+            'install_path' => __DIR__ . '/../hhurz/tableexport.jquery.plugin',
+            'aliases' => array(
+                0 => '9999999-dev',
+            ),
+            'reference' => 'e075634e5f14ca701ad44b4a53e4e92630065fa0',
+            'dev_requirement' => true,
         ),
         'kriswallsmith/assetic' => array(
             'pretty_version' => 'v1.4.0',

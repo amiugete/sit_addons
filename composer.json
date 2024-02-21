@@ -18,5 +18,8 @@
             "oomphinc/composer-installers-extender": true,
             "robloach/component-installer": true
         }
+    },
+    "require-dev": {
+        "hhurz/tableexport.jquery.plugin": "dev-master"
     }
 }

@@ -150,25 +150,39 @@ if ((int)$id_role_SIT = 0) {
         <button id="showSelectedRows" class="btn btn-primary" type="button">Crea ordine di lavoro</button>
       </div-->
     
-
+      <!--div id="toolbar" class="select">
+  <select class="form-control">
+    <option value="all">Export All</option>
+    <option value="">Export Basic</option>
+    <option value="selected">Export Selected</option>
+  </select>
+</div-->
+  <div id="toolbar"> Per esportare i dati completi rimuovere la paginazione (primo tasto dopo la ricerca)
+</div>
 				<table  id="percorsi" class="table-hover" 
-        idfield="id"
-        data-toggle="table" data-url="./tables/percorsi_raggruppati.php?ut=<?php echo $_POST['ut'];?>" 
+        idfield="id" 
+        data-toolbar="#toolbar" 
         data-group-by="false"
         data-group-by-field='["cod_percorso", "descrizione", "famiglia", "tipo"]'
         data-show-search-clear-button="true"   
         data-show-export="true" 
         data-export-type=['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'doc', 'pdf'] 
 				data-search="true" data-click-to-select="true" data-show-print="false"  
-        data-show-pagination-switch="true"
 				data-pagination="true" data-page-size=75 data-page-list=[10,25,50,75,100,200,500]
-				data-side-pagination="false" data-show-refresh="true" data-show-toggle="true"
+        data-show-pagination-switch="true"
+				data-side-pagination="false" 
+        data-search-on-enter-key="true"  
+        data-remember-order="true"
+        data-search-highlight = "true" 
+        data-show-refresh="true" data-show-toggle="true"
+        data-show-columns="true"
 				data-filter-control="true"
         data-sort-select-options = "true"
         data-filter-control-multiple-search="false"
-        data-toolbar="#toolbar" 
-        data-query-params="queryParams">
+        data-query-params="queryParams"
+        data-url="./tables/percorsi_raggruppati.php?ut=<?php echo $_POST['ut'];?>"-->
         
+
         
 <thead>
 
@@ -199,18 +213,16 @@ if ((int)$id_role_SIT = 0) {
 
 
 <script type="text/javascript">
-  $(function() {
-    $('#percorsi').bootstrapTable()
-  })
 
 
-    //************************************
-  // Per esportare tutto
+
   var $table = $('#percorsi')
   
   $(function() {
     $table.bootstrapTable()
   })
+  
+
 
   function queryParams(params) {
     var options = $table.bootstrapTable('getOptions')
@@ -219,19 +231,14 @@ if ((int)$id_role_SIT = 0) {
     }
     return params
   }
-  //************************************
 
 
-  /*data.forEach(d=>{
-       data_creazione = moment(d.data_creazione).format('DD/MM/YYYY HH24:MI')
-    });*/
-    
-    function dateFormatter(date) {
-      return moment(date).format('DD/MM/YYYY HH:mm')
-    }
 
 
-    var opzioni =['Attivo', 'Disattivo']; 
+ 
+
+
+    var opzioni = ['Attivo', 'Disattivo'] 
 
     function nameFormatterAtt(value) {
       if (value =='Attivo'){
@@ -265,7 +272,7 @@ if ((int)$id_role_SIT = 0) {
 
 <?php
 require_once('req_bottom.php');
-require('./footer.php');
+require_once('./footer.php');
 ?>
 
 

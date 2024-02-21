@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c0d888e4416296495603327050930b70",
+    "content-hash": "ba81d428bc50d4fb7101f2a083922dce",
     "packages": [
         {
             "name": "components/bootstrap",
@@ -1045,10 +1045,72 @@
             "time": "2024-01-11T06:40:07+00:00"
         }
     ],
-    "packages-dev": [],
+    "packages-dev": [
+        {
+            "name": "hhurz/tableexport.jquery.plugin",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/hhurz/tableExport.jquery.plugin.git",
+                "reference": "e075634e5f14ca701ad44b4a53e4e92630065fa0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hhurz/tableExport.jquery.plugin/zipball/e075634e5f14ca701ad44b4a53e4e92630065fa0",
+                "reference": "e075634e5f14ca701ad44b4a53e4e92630065fa0",
+                "shasum": ""
+            },
+            "require": {
+                "components/jquery": "^3.2.1"
+            },
+            "default-branch": true,
+            "type": "component",
+            "extra": {
+                "component": {
+                    "scripts": [
+                        "tableExport.js"
+                    ],
+                    "files": [
+                        "tableExport.js",
+                        "tableExport.min.js",
+                        "libs/FileSaver/*",
+                        "libs/html2canvas/*",
+                        "libs/js-xlsx/*",
+                        "libs/jsPDF/*",
+                        "libs/pdfmake/*"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "hhurz"
+                }
+            ],
+            "description": "Export HTML table to CSV, DOC, JSON, PDF, PNG, SQL, TSV, TXT, XLS, XLSX, XML",
+            "homepage": "https://github.com/hhurz/tableExport.jquery.plugin",
+            "keywords": [
+                "HTML5",
+                "export",
+                "javascript",
+                "jquery",
+                "table"
+            ],
+            "support": {
+                "issues": "https://github.com/hhurz/tableExport.jquery.plugin/issues",
+                "source": "https://github.com/hhurz/tableExport.jquery.plugin/tree/master"
+            },
+            "time": "2023-10-30T19:06:17+00:00"
+        }
+    ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "hhurz/tableexport.jquery.plugin": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
