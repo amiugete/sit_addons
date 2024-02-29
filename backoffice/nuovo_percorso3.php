@@ -308,8 +308,10 @@ echo "<br><br>Insert in elenco percorsi UT<br>";
 
 if ($sq_ut==15){
   $vis='S';
+  $rim_resp='S';
 } else {
   $vis='N';
+  $rim_resp='N';
 }
 
 
@@ -354,7 +356,7 @@ if($_POST['rim']){
     cdaog3) 
     VALUES($1, $2,
     $3,
-    'N', $4, 'S',
+    $4, 'N' ,'S',
     $5, $6,
     to_timestamp($7,'DD/MM/YYYY'), to_timestamp($8,'DD/MM/YYYY'),
     $9)";
@@ -365,7 +367,7 @@ echo  pg_last_error($conn);
   $result_percorsi_rim = pg_execute($conn, "insert_elenco_percorsi_rim", 
   array($cod_percorso, $rim_uo, 
   $sq_rim,
-  $vis,
+  $rim_resp,
   $turno, $durata,
   $data_att, $data_disatt, 
   $cdaog3

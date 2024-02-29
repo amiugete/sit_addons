@@ -35,7 +35,7 @@ if(!$conn) {
     	and ep.versione_testata  = (select max(versione_testata) from anagrafe_percorsi.elenco_percorsi ep2 where ep2.cod_percorso=ep.cod_percorso)
     join anagrafe_percorsi.anagrafe_tipo at2 on at2.id = ep.id_tipo  
     join anagrafe_percorsi.anagrafe_famiglie af on af.id = at2.id_famiglia 
-    left join anagrafe_percorsi.percorsi_ut pu on pu.cod_percorso = ep.cod_percorso 
+    left join anagrafe_percorsi.percorsi_ut pu on pu.cod_percorso = ep.cod_percorso and pu.data_attivazione=ep.data_inizio_validita
     left join anagrafe_percorsi.cons_mapping_uo cmu on cmu.id_uo = pu.id_ut
     left join topo.ut u on u.id_ut  = cmu.id_uo_sit 
     join elem.turni t on t.id_turno = pu.id_turno 

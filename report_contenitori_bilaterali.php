@@ -143,26 +143,36 @@ while($rmax = pg_fetch_assoc($result_max)) {
         <button id="showSelectedRows" class="btn btn-primary" type="button">Crea ordine di lavoro</button>
       </div-->
     
-
-				<table  id="contenitori" class="table" 
+      <div id="toolbar"> 
+        <a target="_new" class="btn btn-primary btn-sm"
+         href="./export_contenitori_bilaterali.php"><i class="fa-solid fa-file-excel"></i> Esporta xlsx completo</a>
+      </div>
+				<table  id="contenitori" class="table-hover" 
+        data-cache="true"
         idfield="targa_contenitore" 
         data-show-columns="true"
-        data-toggle="table" data-url="./tables/report_contenitori_bilaterali.php?" 
         data-group-by="false"
         data-group-by-field='["indirizzo", "frazione"]'
         data-sort-name="val_riemp"
         data-sort-order="desc"
         data-show-search-clear-button="true"   
-        data-show-export="true" 
+        data-show-export="false" 
         data-export-type=['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'doc', 'pdf'] 
 				data-search="true" data-click-to-select="true" data-show-print="false"  
+        data-virtual-scroll="false"
         data-show-pagination-switch="true"
 				data-pagination="true" data-page-size=75 data-page-list=[10,25,50,75,100,200,500]
-				data-sidePagination="false" data-show-refresh="true" data-show-toggle="true"
+				data-side-pagination="false" 
+        data-show-refresh="true" data-show-toggle="true"
+        data-show-columns="true"
 				data-filter-control="true"
         data-sort-select-options = "true"
         data-filter-control-multiple-search="false"
-        data-toolbar="#toolbar" >
+        data-query-params="queryParams"
+        data-url="./tables/report_contenitori_bilaterali.php" 
+        data-toolbar="#toolbar" 
+        data-show-footer="false"
+        >
         
         
 <thead>
@@ -172,9 +182,9 @@ while($rmax = pg_fetch_assoc($result_max)) {
  	<tr>
         <!--th data-checkbox="true" data-field="id"></th-->  
         <!--th data-field="state" data-checkbox="true" ></th-->  
-        <th data-field="id_piazzola" data-sortable="true" data-visible="false" data-filter-control="input">id</th-->
-        <th data-field="indirizzo" data-sortable="true" data-visible="true"  data-filter-control="input">Piazzola</th>
-        <th data-field="municipio" data-sortable="true" data-visible="true" data-filter-control="select">Municipio</th> 
+        <th data-field="id_piazzola" data-sortable="true" data-visible="false"  data-filter-control="input">id</th>
+        <th data-field="indirizzo" data-sortable="true" data-visible="true" data-footer-formatter="idFormatter" data-filter-control="input">Piazzola</th>
+        <th data-field="municipio" data-sortable="true" data-visible="true" data-footer-formatter="countFormatter" data-filter-control="select">Municipio</th> 
         <th data-field="quartiere" data-sortable="true" data-visible="false" data-filter-control="select">Quartiere</th>
         <th data-field="frazione" data-sortable="true" data-visible="true" data-filter-control="select">Frazione<br>rifiuto</th>
         <th data-field="targa_contenitore" data-sortable="true" data-visible="false" data-filter-control="input">Targa<br>cont</th>
@@ -201,7 +211,32 @@ while($rmax = pg_fetch_assoc($result_max)) {
 <script type="text/javascript">
 
 
+
+function idFormatter() {
+    return 'Tot contenitori:'
+  }
+
+  function countFormatter(data) {
+    return data.length
+  }
+
+
 var $table = $('#contenitori')
+
+$(function() {
+    $table.bootstrapTable()
+  })
+  
+
+
+  function queryParams(params) {
+    var options = $table.bootstrapTable('getOptions')
+    if (!options.pagination) {
+      params.limit = options.totalRows
+    }
+    return params
+  }
+
 
 
 function dateFormat(value, row, index) {
@@ -209,9 +244,6 @@ function dateFormat(value, row, index) {
 }
 
 
-  $(function() {
-    $('#contenitori').bootstrapTable()
-  })
 
   /*data.forEach(d=>{
        data_creazione = moment(d.data_creazione).format('DD/MM/YYYY HH24:MI')

@@ -10,7 +10,8 @@
         "components/jquery": "^3.6",
         "moment/moment": "^2.29",
         "eternicode/bootstrap-datepicker": "^1.10",
-        "oomphinc/composer-installers-extender": "^2.0"
+        "oomphinc/composer-installers-extender": "^2.0",
+        "phpoffice/phpspreadsheet": "^1.29"
     },
     "config": {
         "allow-plugins": {

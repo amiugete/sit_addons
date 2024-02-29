@@ -28,10 +28,6 @@
 <!--script src="./bootstrap-table-1.18.3/dist/bootstrap-table.js"></script-->
 
 
-<script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/tableExport.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/libs/jsPDF/jspdf.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/libs/jsPDF-AutoTable/jspdf.plugin.autotable.js"></script>
-
 
 <script src="./vendor/moment/moment/moment.js"></script>
 <script src="./vendor/moment/moment/locale/it.js"></script>
@@ -41,8 +37,7 @@
 <script src="./vendor/wenzhixin/bootstrap-table/dist/bootstrap-table.min.js"></script>
 
 <script src="./vendor/wenzhixin/bootstrap-table/dist/locale/bootstrap-table-it-IT.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/libs/FileSaver/FileSaver.min.js"></script>
-<script src="./vendor/wenzhixin/bootstrap-table/dist/extensions/export/bootstrap-table-export.js" ></script>
+
 
 
 <!--script src="./vendor/leaflet/leaflet.js"></script>
@@ -53,6 +48,10 @@
 <script src="./vendor/hhurz/tableexport.jquery.plugin/tableExport.min.js" ></script>
 <!--script src="./vendor/hhurz/tableexport.jquery.plugin/libs/jsPDF/jspdf.min.js" ></script>
 <script src="./vendor/hhurz/tableexport.jquery.plugin/libs/jsPDF-AutoTable/jspdf.plugin.autotable.js" ></script-->
+<script src="./vendor/hhurz/tableexport.jquery.plugin/libs/FileSaver/FileSaver.min.js" ></script>
+<script src="./vendor/hhurz/tableexport.jquery.plugin/libs/js-clsx/xlsx.core.min.js" ></script>
+
+
 
 <script src="./vendor/wenzhixin/bootstrap-table/dist/extensions/filter-control/bootstrap-table-filter-control.js" ></script>
 <script src="./vendor/wenzhixin/bootstrap-table/dist/extensions/auto-refresh/bootstrap-table-auto-refresh.js"></script>
