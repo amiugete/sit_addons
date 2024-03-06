@@ -331,7 +331,7 @@ join anagrafe_percorsi.cons_mapping_uo cmu on cmu.id_uo = pu.id_ut
 left join elem.automezzi a on a.cdaog3 = pu.cdaog3 
 join elem.squadre s on s.id_squadra = pu.id_squadra 
 join topo.ut u on u.id_ut = cmu.id_uo_sit  
-where cod_percorso = $1  and data_disattivazione = $2";
+where pu.cod_percorso = $1  and pu.data_disattivazione = $2";
 
 // RIMESSA / SEDE OPERATIVA
 $query_rimessa=$query0 ." and rimessa = 'S' and responsabile = 'N'";
