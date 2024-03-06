@@ -78,7 +78,7 @@ echo "<br><br>Update anagrafe_percorsi.elenco_percorsi<br>";
 
 
 $update_sit2="UPDATE anagrafe_percorsi.elenco_percorsi_old epo
-SET data_fine_validita= To_DATE($1, 'DD/MM/YYYY')
+SET data_fine_validita= To_DATE($1, 'DD/MM/YYYY'), data_ultima_modifica=now() 
 where cod_percorso LIKE $2 and data_fine_validita > now()";
 
 

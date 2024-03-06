@@ -251,14 +251,14 @@ $insert_elenco_percorsi= "INSERT INTO anagrafe_percorsi.elenco_percorsi (
   id_tipo, freq_testata,
   id_turno, durata, codice_cer,
   versione_testata, 
-  data_inizio_validita, data_fine_validita ) 
+  data_inizio_validita, data_fine_validita, data_ultima_modifica ) 
   VALUES
   (
     $1, $2,
     $3, $4,
     $5, $6, NULL, 
     1,
-    to_timestamp($7,'DD/MM/YYYY'), to_timestamp($8,'DD/MM/YYYY')
+    to_timestamp($7,'DD/MM/YYYY'), to_timestamp($8,'DD/MM/YYYY', now())
   )";
 
 

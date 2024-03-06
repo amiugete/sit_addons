@@ -152,7 +152,7 @@ oci_free_statement($result_uo0);
 
 
 $update_sit1="UPDATE anagrafe_percorsi.elenco_percorsi ep
-SET data_fine_validita= To_DATE($1, 'DD/MM/YYYY')
+SET data_fine_validita= To_DATE($1, 'DD/MM/YYYY'), data_ultima_modifica=now() 
 where cod_percorso LIKE $2 and data_fine_validita > now()";
 
 $result_usit1 = pg_prepare($conn, "update_sit1", $update_sit1);
@@ -428,14 +428,14 @@ $insert_elenco_percorsi= "INSERT INTO anagrafe_percorsi.elenco_percorsi (
   id_tipo, freq_testata,
   id_turno, durata, codice_cer,
   versione_testata, 
-  data_inizio_validita, data_fine_validita ) 
+  data_inizio_validita, data_fine_validita, data_ultima_modifica ) 
   VALUES
   (
     $1, $2,
     $3, $4,
     $5, $6, NULL, 
     $7,
-    to_timestamp($8,'DD/MM/YYYY'), to_timestamp($9,'DD/MM/YYYY')
+    to_timestamp($8,'DD/MM/YYYY'), to_timestamp($9,'DD/MM/YYYY'), now()
   )";
 
 

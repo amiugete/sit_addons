@@ -79,7 +79,7 @@ echo "<br><br>Insert util.sys_history<br>";
 
 
 $update_sit1="UPDATE anagrafe_percorsi.elenco_percorsi ep
-SET descrizione = $1
+SET descrizione = $1, data_ultima_modifica=now() 
 where cod_percorso LIKE $2 and data_fine_validita > now()";
 
 $result_usit1 = pg_prepare($conn, "update_sit1", $update_sit1);
