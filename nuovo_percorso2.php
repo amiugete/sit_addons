@@ -239,9 +239,9 @@ if ($id_servizio_sit){
 
   //Tengo anche le rimesse (poi faccio un controllo dopo)
 
-  $query1="select id_ut, descrizione from topo.ut  
+  $query1="select id_ut, descrizione from topo.ut  u
   join anagrafe_percorsi.cons_mapping_uo cmu on cmu.id_uo_sit = u.id_ut
-  where (data_disattivazione is null or u.data_disattivazione> now())
+  where (u.data_disattivazione is null or u.data_disattivazione> now())
   order by descrizione ;";
   $result1 = pg_query($conn, $query1);
   //echo $query1;    
