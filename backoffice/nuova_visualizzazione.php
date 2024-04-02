@@ -30,7 +30,7 @@ while($r3 = oci_fetch_assoc($result3)) {
 oci_free_statement($result3);
 
 
-echo $duarata;
+echo $durata;
 
 
 
@@ -81,13 +81,13 @@ $data_disatt = $_POST['data_disattivazione'];
 $data_att = $_POST['data_attivazione'];
 
 
-echo $data_att."<br>";
+echo "data_att: ".$data_att."<br>";
 
 
 
 
 
-echo $data_disatt."<br>";
+echo "data_disatt: ".$data_disatt."<br>";
 
 
 
@@ -126,13 +126,13 @@ $insert_uo = "INSERT INTO UNIOPE.ANAGR_SER_PER_UO
     (SELECT max(id_ser_per_uo)+1 FROM  UNIOPE.ANAGR_SER_PER_UO),
     :p1, :p2,
     :p3, 0, 
-    to_date(:p4,'DD/MM/YYYY'), to_date(:p5,'DD/MM/YYYY'),
+    to_date(:p4,'YYYY-MM-DD'), to_date(:p5,'DD/MM/YYYY'),
     :p6, NULL, 
-    :p8,
-    :p9, 
-    :p10,
+    :p7,
+    :p8, 
+    :p9,
     1,
-    :p11)";
+    :p10)";
 
 
 
@@ -174,10 +174,10 @@ oci_bind_by_name($result_uo2, ':p4', $data_att);
 oci_bind_by_name($result_uo2, ':p5', $data_disatt);
 oci_bind_by_name($result_uo2, ':p6', $durata);
 //oci_bind_by_name($result_uo2, ':p7', $automezzo);
-oci_bind_by_name($result_uo2, ':p8', $desc);
-oci_bind_by_name($result_uo2, ':p9', $id_servizio_uo);
-oci_bind_by_name($result_uo2, ':p10', $sq_ut);
-oci_bind_by_name($result_uo2, ':p11', $freq_uo);
+oci_bind_by_name($result_uo2, ':p7', $desc);
+oci_bind_by_name($result_uo2, ':p8', $id_servizio_uo);
+oci_bind_by_name($result_uo2, ':p9', $sq_ut);
+oci_bind_by_name($result_uo2, ':p10', $freq_uo);
 
 
 
@@ -201,7 +201,7 @@ oci_free_statement($result_uo2);
 
 
 
-
+#exit();
 // DA CONTROLLARE!!!
 
 
@@ -234,7 +234,7 @@ $insert_elenco_percorsi_ut = "INSERT INTO anagrafe_percorsi.percorsi_ut (
   $3,
   'N', $4, 'N',
   $5, $6,
-  to_timestamp($7,'DD/MM/YYYY'), to_timestamp($8,'DD/MM/YYYY'),
+  to_timestamp($7,'YYYY-MM-DD'), to_timestamp($8,'DD/MM/YYYY'),
   NULL)";
 
 $result_percorsi_ut = pg_prepare($conn, "insert_elenco_percorsi_ut", $insert_elenco_percorsi_ut);

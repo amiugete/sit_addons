@@ -250,7 +250,7 @@ if ((int)$id_role_SIT = 0) {
 
     function nameFormatterEdit(value, row) {
         
-        return '<a class="btn btn-warning" href=./dettagli_percorso.php?cp='+row.cod_percorso+'&v='+row.versione+'><i class="fa-solid fa-pencil"></i></a>';
+        return '<a class="btn btn-warning" href="./dettagli_percorso.php?cp='+row.cod_percorso+'&v='+row.versione+'"><i class="fa-solid fa-pencil"></i></a>';
      
         }
 
