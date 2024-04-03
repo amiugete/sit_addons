@@ -142,7 +142,7 @@ oci_execute($result2bis);
       }?>
         value="<?php echo $r2bis['ID_TURNO']?>" ><?php echo $r2bis['DESCR'];?></option>
   <?php } 
-   oci_free_statement($result2);
+   oci_free_statement($result2bis);
   ?>
  
   </select>            
