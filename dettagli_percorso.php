@@ -360,7 +360,8 @@ echo '</ul>';
 
 // GRUPPO DI COORDINAMENTO
 
-$query_ut=$query0 ." and pu.id_squadra!= 15";
+//$query_ut=$query0 ." and pu.id_squadra!= 15 and (rimessa = 'N' and responsabile = 'N') or ";
+$query_ut=$query0 ." AND responsabile = 'S' and pu.id_squadra!= 15 ";
 $result2 = pg_prepare($conn, "query_ut", $query_ut);
 $result2 = pg_execute($conn, "query_ut", array($cod_percorso, $data_disattivazione_testata));
 //echo '<hr>';
