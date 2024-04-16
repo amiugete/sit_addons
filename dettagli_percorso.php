@@ -57,6 +57,8 @@ $result0 = pg_execute($conn, "query_check_versione", array($cod_percorso, intval
 while($r0 = pg_fetch_assoc($result0)) {
   $check_versione_successiva=1;
 }
+
+$check_in_attivazione=0;
 ?>
 
 
@@ -71,7 +73,11 @@ ep.data_inizio_validita, to_char(ep.data_fine_validita, 'DD/MM/YYYY') as data_di
 case 
 when ep.data_fine_validita < now() then 1
 else 0
-end flg_disattivo
+end flg_disattivo, 
+case 
+when ep.data_inizio_validita > now()::date then 1
+else 0
+end flg_in_attivazione
 from anagrafe_percorsi.elenco_percorsi ep
 join elem.turni t on t.id_turno = ep.id_turno
 join etl.frequenze_ok fo on fo.cod_frequenza = ep.freq_testata
@@ -141,6 +147,10 @@ while($r = pg_fetch_assoc($result)) {
   $turno=$r["id_turno"];
   $data_attivazione_testata=$r['data_inizio_validita'];
   $data_disattivazione_testata=$r['data_disattivazione_testata'];
+
+  if($r["flg_in_attivazione"]==1){
+    $check_in_attivazione=1;
+  }
 }
 echo '</ul>';
 
@@ -443,13 +453,15 @@ if($check_versione_successiva==0){
 <input type="hidden" id="sq_gc" name="sq_gc" value="<?php echo $sq_gc;?>">
 <input type="hidden" id="mezzo" name="mezzo" value="<?php echo $mezzo;?>">
 
-<?php if ($check_edit==1){?>
+<?php if ($check_edit==1 and $check_in_attivazione==0){?>
 <div class="row g-3 align-items-center">
 <button type="submit" class="btn btn-info">
 <i class="fa-solid fa-plus"></i> <i class="fa-solid fa-arrow-up-from-bracket"></i> Nuova versione
 </button>
 </div>
-<?php }?>
+<?php } else {
+    echo '<i class="fa-solid fa-ghost"></i> Percorso non ancora attivo. Per modifiche contattare assterritorio@amiu.genova.it.';
+}?>
 </form>
 
 
