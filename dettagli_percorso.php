@@ -460,7 +460,7 @@ if($check_versione_successiva==0){
 </button>
 </div>
 <?php } else {
-    echo '<i class="fa-solid fa-ghost"></i> Percorso non ancora attivo. Per modifiche contattare assterritorio@amiu.genova.it.';
+    echo '<i class="fa-solid fa-ghost"></i> Percorso non ancora attivo. Per modifiche contattare <a href="mailto:assterritorio@amiu.genova.it">AssTerritorio</a>.';
 }?>
 </form>
 
