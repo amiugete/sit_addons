@@ -27,6 +27,7 @@ if(!$conn) {
     ep.versione_testata as versione, 
     case 
     when ep.data_fine_validita <= now()::date then 'Disattivo'
+    when ep.data_inizio_validita > now()::date and ep.data_fine_validita > now()::date then 'In attivazione'
     else 'Attivo'
     end flg_disattivo
     from anagrafe_percorsi.elenco_percorsi ep 
@@ -43,7 +44,8 @@ if(!$conn) {
     join elem.turni t on t.id_turno = pu.id_turno 
     left join etl.frequenze_ok fo on fo.cod_frequenza::int = ep.freq_testata 
     group by ep.cod_percorso, p.id_percorso, 
-    ep.descrizione, af.descrizione, at2.descrizione, fo.descrizione_long, ep.versione_testata,  ep.data_fine_validita
+    ep.descrizione, af.descrizione, at2.descrizione, fo.descrizione_long, ep.versione_testata,  
+    ep.data_inizio_validita, ep.data_fine_validita
     order by 1,9";
     
     if($_GET['ut']) {
