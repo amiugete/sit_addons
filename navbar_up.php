@@ -76,7 +76,18 @@ if (in_array($role_SIT, $ruoli_superedit)) {
           </div>
         </li>
         <?php } ?>
-      
+        <?php if ($check_superedit == 1) { ?>
+          <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Funzionalità amministratori SIT
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="./update_elementi.php">Forzare update elementi</a>
+            <!--a class="dropdown-item" href="./nuovo_percorso.php">Nuovo servizio</a-->
+          </div>
+        </li>
+        <?php } ?>
+              
 
 
         <?php if ($check_superedit == 1) { ?>

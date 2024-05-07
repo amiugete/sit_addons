@@ -49,7 +49,7 @@
 <!--script src="./vendor/hhurz/tableexport.jquery.plugin/libs/jsPDF/jspdf.min.js" ></script>
 <script src="./vendor/hhurz/tableexport.jquery.plugin/libs/jsPDF-AutoTable/jspdf.plugin.autotable.js" ></script-->
 <script src="./vendor/hhurz/tableexport.jquery.plugin/libs/FileSaver/FileSaver.min.js" ></script>
-<script src="./vendor/hhurz/tableexport.jquery.plugin/libs/js-clsx/xlsx.core.min.js" ></script>
+<script src="./vendor/hhurz/tableexport.jquery.plugin/libs/js-xlsx/xlsx.core.min.js" ></script>
 
 
 
