@@ -4,6 +4,61 @@ title: News
 description: News and announcements for all things Bootstrap Table, including new releases.
 ---
 
+## Bootstrap Table 1.22.5
+
+<span class="post-date">29 Apr 2024</span>
+
+#### Core
+
+- **New:** Added `sl-SI` locales.
+- **New:** Added support for HTML to the `updateColumnTitle` method.
+- **Update:** Fixed the `getRowByUniqueId` bug when `uniqueId` is of mixed data formats.
+- **Update:** Fixed not triggering `sort` event bug using server-side pagination.
+- **Update:** Fixed custom `iconPrefix` and `icons` bugs.
+- **Update:** Fixed virtual scroll cannot work bug in modal.
+
+#### Extensions
+
+- **Update(multiple-sort):** Fixed the duplicated ID bug in the multiple-sort extension.
+
+## Bootstrap Table 1.22.4
+
+<span class="post-date">26 Mar 2024</span>
+
+#### Core
+
+- **New:** Added `paginationLoadMore` option.
+- **Update:** Fixed change visibility of multiple headers with the same index.
+- **Update:** Fixed footer height bug when setting `table-sm`.
+- **Update:** Fixed the `locale` not changed bug using the `refreshOptions` method.
+- **Update:** Fixed custom iconPrefix and icons bugs.
+- **Update:** Updated `vi-VN`, `zh-CN` and `zh-TW` locales.
+
+#### Extensions
+
+- **New(copy-rows):** Added `copyRowsHandler` option to handle the copy rows data.
+- **New(print):** Added `printStyles` option.
+- **Update(export):** Updated the trigger timing for export-started.
+- **Update(multiple-sort):** Fixed the missing parameters error of the `sorter` function.
+- **Update(pipeline):** Fixed loading message not display bug.
+
+## Bootstrap Table 1.22.3
+
+<span class="post-date">27 Feb 2024</span>
+
+#### Core
+
+- **New:** Added `fixedScroll` option.
+- **New:** Added support for setting icons automatically by `iconsPrefix`.
+- **Update:** Fixed search bug when the field has `.` character.
+- **Update:** Updated `tr-TR`, `es-ES`, `pt-BR` and `pt-PT` locales.
+
+#### Extensions
+
+- **New(addrbar):** Fixed addrbar bug when using `sortReset` option.
+- **Update(jump-to):** Fixed page jump to bug when using both pagination display.
+- **Update(print):** Fixed print bug when field is not set.
+
 ## Bootstrap Table 1.22.2
 
 <span class="post-date">11 Jan 2024</span>

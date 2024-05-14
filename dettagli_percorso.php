@@ -129,7 +129,7 @@ while($r = pg_fetch_assoc($result)) {
   $tomorrow = new DateTime('tomorrow');
   $today = new DateTime('today');
   echo '<li class="mt-1"><b> Data disattivazione </b>'.$r["data_disattivazione_testata"]. ' ';
-  if($check_versione_successiva==0 and $check_edit==1 and $r["flg_disattivo"]==0){
+  if($check_versione_successiva==0 and $check_superedit==1 and $r["flg_disattivo"]==0){
       echo '- <button type="button" class="btn btn-sm btn-info" title="Modifica data disattivazione" 
       data-bs-toggle="modal" data-bs-target="#edit_dd">
       <i class="fa-solid fa-pencil"></i></button>';
@@ -453,7 +453,7 @@ if($check_versione_successiva==0){
 <input type="hidden" id="sq_gc" name="sq_gc" value="<?php echo $sq_gc;?>">
 <input type="hidden" id="mezzo" name="mezzo" value="<?php echo $mezzo;?>">
 
-<?php if ($check_edit==1 and $check_in_attivazione==0){?>
+<?php if ($check_superedit==1 and $check_in_attivazione==0){?>
 <div class="row g-3 align-items-center">
 <button type="submit" class="btn btn-info">
 <i class="fa-solid fa-plus"></i> <i class="fa-solid fa-arrow-up-from-bracket"></i> Nuova versione
@@ -515,7 +515,7 @@ where cod_percorso = $1 and data_disattivazione  =$2)
   </select>            
 </div>
 
-<?php if ($check_edit==1){?>
+<?php if ($check_superedit==1){?>
 <div class="row g-3 align-items-center">
 <button type="submit" class="btn btn-info">
 <i class="fa-solid fa-plus"></i> <i class="fa-solid fa-eye"></i> Aggiungi in visualizzazione

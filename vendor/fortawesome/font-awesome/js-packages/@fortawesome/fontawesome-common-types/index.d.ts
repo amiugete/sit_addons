@@ -57,6 +57,7 @@ export type IconName = 'monero' |
   'centercode' | 
   'glide-g' | 
   'drupal' | 
+  'jxl' | 
   'hire-a-helper' | 
   'creative-commons-by' | 
   'unity' | 
@@ -158,6 +159,7 @@ export type IconName = 'monero' |
   'itunes-note' | 
   'golang' | 
   'kickstarter' | 
+  'square-kickstarter' | 
   'grav' | 
   'weibo' | 
   'uncharted' | 
@@ -302,6 +304,7 @@ export type IconName = 'monero' |
   'facebook-f' | 
   'square-google-plus' | 
   'google-plus-square' | 
+  'web-awesome' | 
   'mandalorian' | 
   'first-order-alt' | 
   'osi' | 
@@ -356,6 +359,7 @@ export type IconName = 'monero' |
   'superpowers' | 
   'resolving' | 
   'xbox' | 
+  'square-web-awesome-stroke' | 
   'searchengin' | 
   'tiktok' | 
   'square-facebook' | 
@@ -392,6 +396,7 @@ export type IconName = 'monero' |
   'trade-federation' | 
   'autoprefixer' | 
   'whatsapp' | 
+  'square-upwork' | 
   'slideshare' | 
   'google-play' | 
   'viadeo' | 
@@ -418,6 +423,7 @@ export type IconName = 'monero' |
   'readme' | 
   'html5' | 
   'sellsy' | 
+  'square-web-awesome' | 
   'sass' | 
   'wirsindhandwerk' | 
   'wsh' | 
@@ -430,6 +436,7 @@ export type IconName = 'monero' |
   'apper' | 
   'fort-awesome' | 
   'waze' | 
+  'bluesky' | 
   'cc-jcb' | 
   'snapchat' | 
   'snapchat-ghost' | 
@@ -1560,6 +1567,7 @@ export type IconName = 'monero' |
   'couch' | 
   'cedi-sign' | 
   'italic' | 
+  'table-cells-column-lock' | 
   'church' | 
   'comments-dollar' | 
   'democrat' | 
@@ -2284,6 +2292,7 @@ export type IconName = 'monero' |
   'tree-city' | 
   'play' | 
   'font' | 
+  'table-cells-row-lock' | 
   'rupiah-sign' | 
   'magnifying-glass' | 
   'search' | 

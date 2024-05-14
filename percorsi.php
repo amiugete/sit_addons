@@ -244,9 +244,9 @@ if ((int)$id_role_SIT = 0) {
       if (value =='Attivo'){
         return '<span style="font-size: 1em; color: green;"> <i title='+value+' class="fa-solid fa-play"></i></span>';
       } else if (value =='In attivazione') {
-        return '<span style="font-size: 1em; color: blue;"> <i title='+value+' class="fa-solid fa-pause"></i></span>'
+        return '<span style="font-size: 1em; color: blue;"> <i title='+value+' class="fa-solid fa-pause"></i></span>';
       } else if (value =='Disattivo') {
-        return '<span style="font-size: 1em; color: Tomato;"> <i title='+value+' class="fa-solid fa-stop"></i></span>'
+        return '<span style="font-size: 1em; color: Tomato;"> <i title='+value+' class="fa-solid fa-stop"></i></span>';
       }
     }
 
