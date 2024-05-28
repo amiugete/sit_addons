@@ -13,13 +13,22 @@ if ($_SESSION['test']==1) {
 
 
 require_once "vendor/autoload.php";
+//  output buffering per non fare stampe
 
-require_once "tables/query_contenitori_bilaterali.php";
+require_once "tables/query_consuntivazione_ekovision.php";
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
+echo 'Test <br>';
+//$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+
+$cache = new MyCustomPsr16Implementation();
+echo 'OK 1<br>';
+
+\PhpOffice\PhpSpreadsheet\Settings::setCache($cache);
+echo 'OK 2<br>';
 
  
 $spreadsheet = new Spreadsheet();
@@ -32,67 +41,49 @@ $activeSheet = $spreadsheet->getActiveSheet();
 
 
 
-$activeSheet->setCellValue('A1', 'Id piazzola');
-$activeSheet->setCellValue('B1', 'Piazzola');
-$activeSheet->setCellValue('C1', 'Municipio');
-$activeSheet->setCellValue('D1', 'Quartiere');
-$activeSheet->setCellValue('E1', 'Frazione rifiuto');
-$activeSheet->setCellValue('F1', 'Targa contenitore');
-$activeSheet->setCellValue('G1', 'Volume');
-$activeSheet->setCellValue('H1', 'Data ora aggiornamento');
-$activeSheet->setCellValue('I1', 'Riempimentp');
-$activeSheet->setCellValue('J1', 'Batteria');
-$activeSheet->setCellValue('K1', 'Batteria bocchetta');
-$activeSheet->setCellValue('L1', 'Data e ora ultimo svuotamento');
-$activeSheet->setCellValue('M1', 'Riempimento ultimo svuotamento');
-$activeSheet->setCellValue('N1', 'Media conferimento al giorno');
-$activeSheet->setCellValue('O1', 'Percorsi');
+$activeSheet->setCellValue('A1', 'Fam servizio');
+$activeSheet->setCellValue('B1', 'Desc servizio');
+$activeSheet->setCellValue('C1', 'UT');
+$activeSheet->setCellValue('D1', 'Data pianificata');
+$activeSheet->setCellValue('E1', 'Data esecuzione');
+$activeSheet->setCellValue('F1', 'Cod percorso');
+$activeSheet->setCellValue('G1', 'Descrizione');
+$activeSheet->setCellValue('H1', 'Previsto');
+$activeSheet->setCellValue('I1', 'Ora esecuzione');
+$activeSheet->setCellValue('J1', 'Fascia turno');
+$activeSheet->setCellValue('K1', 'FLAG serv non completato');
+$activeSheet->setCellValue('L1', 'FLAG serv non effettuato');
+$activeSheet->setCellValue('M1', 'Stato');
+$activeSheet->setCellValue('N1', 'Id scheda Ekovision');
 
 
 
-/*$query = $db->query("SELECT * FROM products");
- 
-if($query->num_rows > 0) {
-    $i = 2;
-    while($row = $query->fetch_assoc()) {
-        $activeSheet->setCellValue('A'.$i , $row['product_name']);
-        $activeSheet->setCellValue('B'.$i , $row['product_sku']);
-        $activeSheet->setCellValue('C'.$i , $row['product_price']);
-        $i++;
-    }
-}*/
-
-//echo $query;
-//exit;
-if($_GET['ut']) {
-    $result = pg_execute($conn, "my_query", array($_GET['ut']));  
-} else {
-    $result = pg_execute($conn, "my_query", array());
-}
-
-
+//oci_bind_by_name($result3, ':p1', $turno);
+oci_execute($result);
 $i = 2;
-while($r = pg_fetch_assoc($result)) {
-    //echo $r['id_piazzola'];
-    $activeSheet->setCellValue('A'.$i , $r['id_piazzola']);
-    $activeSheet->setCellValue('B'.$i , $r['indirizzo']);
-    $activeSheet->setCellValue('C'.$i , $r['municipio']);
-    $activeSheet->setCellValue('D'.$i , $r['quartiere']);
-    $activeSheet->setCellValue('E'.$i , $r['frazione']);
-    $activeSheet->setCellValue('F'.$i , $r['targa_contenitore']);
-    $activeSheet->setCellValue('G'.$i , $r['volume_contenitore']);
-    $activeSheet->setCellValue('H'.$i , $r['data_ultimo_agg']);
-    $activeSheet->setCellValue('I'.$i , $r['val_riemp']);
-    $activeSheet->setCellValue('J'.$i , $r['val_bat_elettronica']);
-    $activeSheet->setCellValue('K'.$i , $r['val_bat_bocchetta']);
-    $activeSheet->setCellValue('L'.$i , $r['data_ora_last_sv']);
-    $activeSheet->setCellValue('M'.$i , $r['riempimento_svuotamento']);
-    $activeSheet->setCellValue('N'.$i , $r['media_conf_giorno']);
-    $activeSheet->setCellValue('O'.$i , $r['percorsi']);
+while($r = oci_fetch_assoc($result)) { 
+    echo $i.'<br>';
+    exit;
+    $activeSheet->setCellValue('A'.$i , $r['FAM_SERVIZIO']);
+    $activeSheet->setCellValue('B'.$i , $r['DESC_SERVIZIO']);
+    $activeSheet->setCellValue('C'.$i , $r['UT']);
+    $activeSheet->setCellValue('D'.$i , $r['DATA_PIANIFICATA']);
+    $activeSheet->setCellValue('E'.$i , $r['DATA_ESECUZIONE']);
+    $activeSheet->setCellValue('F'.$i , $r['COD_PERCORSO']);
+    $activeSheet->setCellValue('G'.$i , $r['DESCRIZIONE']);
+    $activeSheet->setCellValue('H'.$i , $r['PREVISTO']);
+    $activeSheet->setCellValue('I'.$i , $r['ORARIO_ESECUZIONE']);
+    $activeSheet->setCellValue('J'.$i , $r['FASCIA_TURNO']);
+    $activeSheet->setCellValue('K'.$i , $r['FLG_SEGN_SRV_NON_COMPL']);
+    $activeSheet->setCellValue('L'.$i , $r['FLG_SEGN_SRV_NON_EFFETT']);
+    $activeSheet->setCellValue('M'.$i , $r['STATO']);
+    $activeSheet->setCellValue('N'.$i , $r['ID_SCHEDA']);
     $i++;
 }
+//echo $i;
 //exit;
-
+oci_free_statement($result);
+oci_close($oraconn);
 
 // autosize
 foreach (range('A', $activeSheet->getHighestColumn()) as $col) {
@@ -105,13 +96,13 @@ foreach (range('A', $activeSheet->getHighestColumn()) as $col) {
  $firstrow=1;
  $lastrow=$i-1;
 // set autofilter
-$activeSheet->setAutoFilter("A".$firstrow.":O".$lastrow);
+$activeSheet->setAutoFilter("A".$firstrow.":N".$lastrow);
 
 
 
 
 
-$filename = 'report_contenitori_bilaterali.xlsx';
+$filename = 'report_consuntivazione_ekovision.xlsx';
  
 header('Content-Type: application/vnd.ms-excel');
 header('Content-Disposition: attachment;filename='. $filename);

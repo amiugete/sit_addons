@@ -41,7 +41,12 @@ if (in_array($role_SIT, $ruoli_superedit)) {
 <div id="intestazione" class="banner"> <div id="banner-image">
 <h3>  <a class="navbar-brand link-light" href="#">
     <img class="pull-left" src="img\amiu_small_white.png" alt="SIT" width="85px">
-    <span>Sistema Informativo Territoriale - Funzionalità avanzate <?php ?>
+    <span>Sistema Informativo Territoriale - Funzionalità avanzate 
+    <?php 
+    if ($_SESSION['test']==1) {
+       echo "(ambiente di TEST)";
+    }
+    ?>
 
 
     </span> 
@@ -110,6 +115,9 @@ if (in_array($role_SIT, $ruoli_superedit)) {
           Reportistica avanzata
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <?php if ($check_superedit == 1) { ?>
+              <a class="dropdown-item" href="./consuntivazione_ekovision.php">Report consuntivazione Ekovision</a>
+            <?php } ?>
             <a class="dropdown-item" href="./report_contenitori_bilaterali.php">Report contenitori bilaterali</a>
             <!--a class="dropdown-item" href="http://amiupostgres/SIT/downloadTemplateImport()">Template per import</a-->
           </div>

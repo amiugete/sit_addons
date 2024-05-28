@@ -172,6 +172,7 @@ function the_page_title()
     $len_temp=count($temp)-1;
     if ($temp[$len_temp]=='addons'){
         $_SESSION['test']=0;
+        $ambiente="";
     } else if($temp[$len_temp]=='test') {
         ?>
         <style>
