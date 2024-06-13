@@ -3,6 +3,7 @@
 
 $query0 = "SELECT ss.DESCRIZIONE AS FAM_SERVIZIO, 
 as2.DESC_SERVIZIO, 
+LISTAGG(au.ID_UO, ', ') within group (order by au.ID_UO) AS ID_UTS,
 LISTAGG(au.DESC_UO, ', ') within group (order by au.ID_UO) AS UT,
 vrpe.DATA_PIANIFICATA, vrpe.DATA_ESECUZIONE, vrpe.COD_PERCORSO,
 vrpe.DESCRIZIONE, 
@@ -32,13 +33,13 @@ vrpe.FASCIA_TURNO, vrpe.FLG_SEGN_SRV_NON_COMPL,
 vrpe.FLG_SEGN_SRV_NON_EFFETT, vrpe.STATO, vrpe.ID_SCHEDA, cd.DESCRIZIONE
 ORDER BY vrpe.DATA_PIANIFICATA, ss.ID_SERVZIO_STAMPA, vrpe.COD_PERCORSO";
 
-$query = $query0 ." WHERE vrpe.DATA_PIANIFICATA >= to_date('20240415', 'YYYYMMDD' )". $query1;
+
 
 //print $query."<br>";
 
 
 
-$result = oci_parse($oraconn, $query);
+
 
 
 ?>

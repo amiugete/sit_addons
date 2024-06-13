@@ -60,9 +60,6 @@ if ((int)$id_role_SIT = 0) {
 
 <form class="row" name="open_ut" method="post" id="open_ut" autocomplete="off" action="percorsi.php" >
 
-
-
-
 <?php //echo $username;?>
 
 <div class="form-group col-lg-4">
@@ -91,24 +88,27 @@ if ((int)$id_role_SIT = 0) {
   }
 
   
-  $query1='select id_ut, descrizione
-  from topo.ut where id_ut in   
+  $query1="select id_ut, descrizione
+  from topo.ut u 
+  where id_ut in   
   (select 
     id_ut
     from util.sys_users_ut suu where id_user in (
-        select id_user from util.sys_users su where "name" ILIKE $1
+        select id_user from util.sys_users su where \"name\" ILIKE $1
   )   
   and id_ut > 0
+  and coalesce(u.data_disattivazione, (now()+ interval '1' year)) > now()
   union 
   select 
   u.id_ut 
     from util.sys_users_ut suu, topo.ut u
     where suu.id_user in (
-        select id_user from util.sys_users su where "name" ILIKE $1
+        select id_user from util.sys_users su where \"name\" ILIKE $1
   )   
   and suu.id_ut = -1
   ) and id_ut in (select id_uo_sit from anagrafe_percorsi.cons_mapping_uo)
-  order by 2';
+  and coalesce(u.data_disattivazione, (now()+ interval '1' year)) > now()
+  order by 2";
 
   //echo "<br>". $query;
 
@@ -180,7 +180,7 @@ if ((int)$id_role_SIT = 0) {
         data-sort-select-options = "true"
         data-filter-control-multiple-search="false"
         data-query-params="queryParams"
-        data-url="./tables/percorsi_raggruppati.php?ut=<?php echo $_POST['ut'];?>"-->
+        data-url="./tables/percorsi_raggruppati.php?ut=<?php echo $_POST['ut'];?>">
         
 
         

@@ -52,7 +52,7 @@ if ((int)$id_role_SIT = 0) {
 
 
 
-$query_max1="SELECT TO_CHAR(max(DATA_ORA_INSER),'DD/MM/YYYY HH:MI') as MAX_DATA_AGG_JSON 
+$query_max1="SELECT TO_CHAR(max(DATA_ORA_INSER),'DD/MM/YYYY HH24:MI') as MAX_DATA_AGG_JSON 
             FROM EKOVISION_LETTURA_CONSUNT elc";
 
 $result_max1 = oci_parse($oraconn, $query_max1);
@@ -75,17 +75,132 @@ oci_close($oraconn);
 ?>
   </div>
   <div class="col-6">
-  FILTRO PER UT sulla base delle UT del mio profilo SIT (TODO)
+  <!--FILTRO PER UT sulla base delle UT del mio profilo SIT-->
+<div class="rfix">
+  <script>
+  function utScelta(val) {
+    document.getElementById('open_ut').submit();
+  }
+</script>
+<form class="row" name="open_ut" method="post" id="open_ut" autocomplete="off" action="consuntivazione_ekovision.php" >
+
+<?php //echo $username;?>
+
+<div class="form-group col-lg-4">
+  <select class="selectpicker show-tick form-control" 
+  data-live-search="true" name="ut" id="ut" onchange="utScelta(this.value);" required="">
+  
+  <?php 
+  if ($_POST['ut']) {
+    $query0='select id_ut, descrizione
+    from topo.ut u
+    join anagrafe_percorsi.cons_mapping_uo cmu on cmu.id_uo_sit = u.id_ut 
+    where cmu.id_uo = $1';
+
+    $result0 = pg_prepare($conn, "my_query0", $query0);
+    $result0 = pg_execute($conn, "my_query0", array($_POST['ut']));
+    
+    while($r0 = pg_fetch_assoc($result0)) { 
+  ?>    
+          <option name="ut" value="<?php echo $_POST['ut'];?>" ><?php echo $r0['descrizione']?></option>
+  <?php }
+  pg_free_result($result0); 
+  } else {
+  ?>
+    <option name="ut" value="NO">Seleziona una UT</option>
+  
+  
+  <?php            
+  }
+
+  
+  $query1=" select u.id_ut, cmu.id_uo, descrizione
+  from topo.ut u 
+  join anagrafe_percorsi.cons_mapping_uo cmu on cmu.id_uo_sit = u.id_ut 
+  where id_ut in  
+  (select 
+    id_ut
+    from util.sys_users_ut suu where id_user in (
+        select id_user from util.sys_users su where \"name\" ILIKE $1
+  )   
+  and id_ut > 0
+  and coalesce(u.data_disattivazione, (now()+ interval '1' year)) > now()
+  union 
+  select 
+  u.id_ut 
+    from util.sys_users_ut suu, topo.ut u
+    where suu.id_user in (
+        select id_user from util.sys_users su where \"name\" ILIKE $1
+  )   
+  and suu.id_ut = -1
+  ) and id_ut in (select id_uo_sit from anagrafe_percorsi.cons_mapping_uo)
+  and coalesce(u.data_disattivazione, (now()+ interval '1' year)) > now()
+  order by 2";
+
+  //echo "<br>". $query;
+
+
+  $result1 = pg_prepare($conn, "my_query1", $query1);
+  $result1 = pg_execute($conn, "my_query1", array($_SESSION['username']));
+
+  while($r1 = pg_fetch_assoc($result1)) { 
+?>    
+        <option name="ut" value="<?php echo $r1['id_uo'];?>" ><?php echo $r1['descrizione']?></option>
+<?php 
+  }
+  pg_free_result($result1); 
+?>
+
+  </select>  
+       
+</div>
+<div class="form-group col-lg-4">
+<a class="btn btn-primary" href="./consuntivazione_ekovision.php">Tutte le UT (da rivedere)</a>
+</div>
+  </form>
+
+  </div>
+
+<!--FINE FILTRO PER UT sulla base delle UT del mio profilo SIT -->
+
   </div>
 </div>
 <div class="row justify-content-start">
+<?php 
+$dt= new DateTime();
+$today = new DateTime();
+$last_month = $dt->modify("-1 month");
+?>
 
-  <div class="col-6">
-  FILTRO PER DATA DA (TODO in questo momento dal 15/04/2024 ) 
-  </div>
-  <div class="col-6">
-  FILTRO PER DATA A (TODO in questo momento fino ad oggi) 
-  </div>
+
+<div class="form-group col-lg-6">
+<label for="data_inizio" >Da  (GG/MM/AAAA) - A (GG/MM/AAAA)</label><font color="red">*</font>
+    <input type="text" class="form-control" name="daterange" value="<?php echo $last_month->format('d/m/Y');?> - <?php echo $today->format('d/m/Y');?>"/>
+    <small>Massimo 31 giorni <font color="red">Ancora in test. Non funziona la query</font></small>
+</div>
+
+
+<script>
+$(function() {
+  $('input[name="daterange"]').daterangepicker({
+    opens: 'left',
+    maxSpan: {
+        days: 31
+    },
+    showISOWeekNumbers: true,
+    minDate: "20/11/2023" 
+
+    
+  }, function(start, end, label) {
+    var data_inizio = start.format('YYYY-MM-DD') ;
+    var data_fine= end.format('YYYY-MM-DD');
+    console.log("A new date selection was made: " + data_inizio + ' to ' + data_fine);
+    
+  });
+});
+</script>
+
+
 </div>
 <hr>
 
@@ -126,7 +241,7 @@ oci_close($oraconn);
         data-sort-select-options = "true"
         data-filter-control-multiple-search="false"
         data-query-params="queryParams"
-        data-url="./tables/report_consuntivazione_ekovision.php" 
+        data-url="./tables/report_consuntivazione_ekovision.php?ut=<?php echo $_POST['ut']?>&data_inizio="+data_inizio+"&data_fine="+data_fine 
         data-toolbar="#toolbar" 
         data-show-footer="false"
         >
@@ -323,7 +438,19 @@ require('./footer.php');
 ?>
 
 
+<script>
 
+$('#js-date').datepicker({
+    format: 'dd/mm/yyyy',
+    //startDate: '+1d', 
+    language:'it' 
+});
+
+$('#js-date1').datepicker({
+    format: 'dd/mm/yyyy', 
+    language:'it'
+});
+</script>
 
 
 </body>

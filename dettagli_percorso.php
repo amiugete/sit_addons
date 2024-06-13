@@ -77,7 +77,8 @@ end flg_disattivo,
 case 
 when ep.data_inizio_validita > now()::date then 1
 else 0
-end flg_in_attivazione
+end flg_in_attivazione,
+to_char(ep.data_ultima_modifica, 'DD/MM/YYYY HH:MI') as data_ultima_modifica
 from anagrafe_percorsi.elenco_percorsi ep
 join elem.turni t on t.id_turno = ep.id_turno
 join etl.frequenze_ok fo on fo.cod_frequenza = ep.freq_testata
@@ -125,10 +126,10 @@ while($r = pg_fetch_assoc($result)) {
   echo '<li class="mt-1"><b> Turno </b>'.$r["cod_turno"].'</li>';
   echo '<li class="mt-1"><b> Durata </b>'.$r["durata"].'</li>';
   echo '<li class="mt-1"><b> Frequenza </b>'.$r["descrizione_long"].'</li>';
-  echo '<li class="mt-1"><b> Data attivazione testata </b>'.$r["data_inizio_print"].'</li>';
+  echo '<li class="mt-1"><b> Data attivazione testata (inclusa) </b>'.$r["data_inizio_print"].'</li>';
   $tomorrow = new DateTime('tomorrow');
   $today = new DateTime('today');
-  echo '<li class="mt-1"><b> Data disattivazione </b>'.$r["data_disattivazione_testata"]. ' ';
+  echo '<li class="mt-1"><b> Data disattivazione (esclusa*) </b>'.$r["data_disattivazione_testata"]. ' ';
   if($check_versione_successiva==0 and $check_superedit==1 and $r["flg_disattivo"]==0){
       echo '- <button type="button" class="btn btn-sm btn-info" title="Modifica data disattivazione" 
       data-bs-toggle="modal" data-bs-target="#edit_dd">
@@ -138,7 +139,7 @@ while($r = pg_fetch_assoc($result)) {
     echo ' - <b><font color=red>Percorso disattivo</font></b>';
   }
   echo '</li>';
-
+  echo '<li>Ultima modifica il '.$r['data_ultima_modifica'].'</li>';
   $freq_sit=$r["freq_testata"];
   $freq_uo=$r["freq_binaria"];
   $id_servizio_uo=$r['id_servizio_uo'];
@@ -153,6 +154,7 @@ while($r = pg_fetch_assoc($result)) {
   }
 }
 echo '</ul>';
+
 
 
 
@@ -527,7 +529,10 @@ where cod_percorso = $1 and data_disattivazione  =$2)
     echo '<i class="fa-solid fa-ghost"></i> Non è ultima versione del percorso.. non posso fare modifiche.';
 }?>
 
-
+<hr>
+<b> NOTE </b>
+<small>* la data di disattivazione si intende esclusa. Il che significa che se indico il 31/12 il 31/12 quel percorso non ci sarà più. Se voglio che sia attiva fino al 31/12 devo disattivarlo il 01/01
+</small>
 </div>
 
 <?php

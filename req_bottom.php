@@ -78,6 +78,11 @@ integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwV
 
 
 
+<!-- Per questo non uso composer perchè il pacchetto è obsoleto -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+
+
 <script>
 function printClass(className) {
 	//it is an array so i using only the first element
@@ -104,5 +109,14 @@ function printDiv(divName) {
      document.body.innerHTML = originalContents;
 }
 
+
+
+// prevent multiple submit
+$("body").on("submit", "form", function () {
+        $(this).submit(function () {
+            return false;
+        });
+        return true;
+    });
 
 </script>

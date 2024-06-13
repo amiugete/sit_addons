@@ -103,6 +103,9 @@ $(function() {
 <script src="./vendor/components/jquery/jquery.min.js"></script>
 
 
+<!-- Per questo non uso composer perchè il pacchetto è obsoleto -->
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
 
 
 
