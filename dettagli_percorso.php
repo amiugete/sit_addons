@@ -178,7 +178,7 @@ echo '</ul>';
 
         <div class="form-group col-md-6">
           <label for="desc"> Descrizione </label> <font color="red">*</font>
-          <input type="text" name="desc" id="desc" class="form-control" value="<?php echo $desc;?>" required="">
+          <input type="text" name="desc" id="desc" maxlength="60" class="form-control" value="<?php echo $desc;?>" required="">
         </div>
 
         <br>

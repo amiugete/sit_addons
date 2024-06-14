@@ -88,7 +88,7 @@ $versione= $_GET['v'];
   <!--div class="col-md-6"--> 
   <div class="form-group col-md-6">
     <label for="desc"> Descrizione </label> <font color="red">*</font>
-    <input type="text" name="desc" id="desc" class="form-control" required="">
+    <input type="text" name="desc" id="desc" maxlength="60" class="form-control" required="">
   </div>
 
   </div>
