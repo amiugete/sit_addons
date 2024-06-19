@@ -78,7 +78,7 @@ case
 when ep.data_inizio_validita > now()::date then 1
 else 0
 end flg_in_attivazione,
-to_char(ep.data_ultima_modifica, 'DD/MM/YYYY HH:MI') as data_ultima_modifica
+to_char(ep.data_ultima_modifica, 'DD/MM/YYYY HH24:MI') as data_ultima_modifica
 from anagrafe_percorsi.elenco_percorsi ep
 join elem.turni t on t.id_turno = ep.id_turno
 join etl.frequenze_ok fo on fo.cod_frequenza = ep.freq_testata
@@ -114,7 +114,9 @@ while($r = pg_fetch_assoc($result)) {
   echo '<li class="mt-1"><b> Versione percorso </b>'.$versione.'</li>';
   $desc=$r["descrizione"];
 
-
+  if($r["flg_in_attivazione"]==1){
+    $check_in_attivazione=1;
+  }
   
   echo '<li class="mt-1"><b> Descrizione </b>'.$r["descrizione"].' ';
   if($check_versione_successiva==0 and $check_edit==1 and $r["flg_disattivo"]==0){
@@ -126,7 +128,13 @@ while($r = pg_fetch_assoc($result)) {
   echo '<li class="mt-1"><b> Turno </b>'.$r["cod_turno"].'</li>';
   echo '<li class="mt-1"><b> Durata </b>'.$r["durata"].'</li>';
   echo '<li class="mt-1"><b> Frequenza </b>'.$r["descrizione_long"].'</li>';
-  echo '<li class="mt-1"><b> Data attivazione testata (inclusa) </b>'.$r["data_inizio_print"].'</li>';
+  echo '<li class="mt-1"><b> Data attivazione testata (inclusa) </b>'.$r["data_inizio_print"].'';
+  if ($check_versione_successiva==0 and $check_superedit==1 and $check_in_attivazione==1 and $r["flg_disattivo"]==0){
+      echo '- <button type="button" class="btn btn-sm btn-info" title="Modifica data attivazione" 
+      data-bs-toggle="modal" data-bs-target="#edit_da">
+      <i class="fa-solid fa-pencil"></i></button>';
+  }
+  echo '</li>';
   $tomorrow = new DateTime('tomorrow');
   $today = new DateTime('today');
   echo '<li class="mt-1"><b> Data disattivazione (esclusa*) </b>'.$r["data_disattivazione_testata"]. ' ';
@@ -149,9 +157,7 @@ while($r = pg_fetch_assoc($result)) {
   $data_attivazione_testata=$r['data_inizio_validita'];
   $data_disattivazione_testata=$r['data_disattivazione_testata'];
 
-  if($r["flg_in_attivazione"]==1){
-    $check_in_attivazione=1;
-  }
+  
 }
 echo '</ul>';
 
@@ -198,6 +204,62 @@ echo '</ul>';
     </div>
   </div>
 </div>
+
+
+
+
+<!-- Modal  data attivazione-->
+<div class="modal fade" id="edit_da" tabindex="-1" aria-labelledby="edit_da_Label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="edit_da_Label">Modifica data attivazione</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+      
+
+        <form name="bilat" method="post" autocomplete="off" action="./backoffice/update_data_attivazione.php">
+        <input type="hidden" id="id_percorso" name="id_percorso" value="<?php echo $cod_percorso;?>">
+        <input type="hidden" id="old_vers" name="old_vers" value="<?php echo $versione;?>">
+
+
+
+        <?php 
+        $tomorrow = new DateTime('tomorrow');
+        ?>
+        
+
+        <div class="form-group  col-md-6">
+          <label for="data_inizio" >Nuova data attivazione (GG/MM/AAAA) </label><font color="red">*</font>
+              <input name="data_att" id="js-date" type="text" class="form-control" value="<?php echo $tomorrow->format('d/m/Y');?>" required="">
+              <div class="input-group-addon">
+                  <span class="glyphicon glyphicon-th"></span>
+              </div>
+
+        </div>
+
+
+
+
+        <br>
+        
+        
+        <div class="row">
+        <button type="submit" class="btn btn-info">
+        <i class="fa-solid fa-arrow-up-from-bracket"></i> Salva
+        </button>
+        </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <!--button type="button" class="btn btn-primary">Save changes</button-->
+      </div>
+    </div>
+  </div>
+</div>
+
 
 
 
