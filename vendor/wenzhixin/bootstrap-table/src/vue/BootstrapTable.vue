@@ -31,6 +31,11 @@ export default {
       }
     }
   },
+  data () {
+    return {
+      optionsChangedIdx: 0
+    }
+  },
   mounted () {
     this.$table = $(this.$el)
 
@@ -70,15 +75,18 @@ export default {
   watch: {
     options: {
       handler () {
-        this._initTable()
+        this.optionsChangedIdx++
       },
       deep: true
     },
     columns: {
       handler () {
-        this._initTable()
+        this.optionsChangedIdx++
       },
       deep: true
+    },
+    optionsChangedIdx () {
+      this._initTable()
     },
     data: {
       handler () {

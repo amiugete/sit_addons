@@ -326,10 +326,10 @@
   var store$3 = sharedStore.exports = globalThis$1[SHARED] || defineGlobalProperty$2(SHARED, {});
 
   (store$3.versions || (store$3.versions = [])).push({
-    version: '3.36.1',
+    version: '3.37.1',
     mode: 'global',
     copyright: '© 2014-2024 Denis Pushkarev (zloirock.ru)',
-    license: 'https://github.com/zloirock/core-js/blob/v3.36.1/LICENSE',
+    license: 'https://github.com/zloirock/core-js/blob/v3.37.1/LICENSE',
     source: 'https://github.com/zloirock/core-js'
   });
 
@@ -2839,7 +2839,8 @@
   }
   function collectBootstrapTableFilterCookies() {
     var cookies = [];
-    var foundCookies = document.cookie.match(/bs\.table\.(filterControl|searchText)/g);
+    var cookieRegex = /bs\.table\.(filterControl|searchText)/g;
+    var foundCookies = document.cookie.match(cookieRegex);
     var foundLocalStorage = localStorage;
     if (foundCookies) {
       $$b.each(foundCookies, function (i, _cookie) {
@@ -2852,17 +2853,18 @@
         }
       });
     }
-    if (foundLocalStorage) {
-      for (var i = 0; i < foundLocalStorage.length; i++) {
-        var cookie = foundLocalStorage.key(i);
-        if (/./.test(cookie)) {
-          cookie = cookie.split('.').pop();
-        }
-        if (!cookies.includes(cookie)) {
-          cookies.push(cookie);
-        }
-      }
+    if (!foundLocalStorage) {
+      return cookies;
     }
+    Object.keys(localStorage).forEach(function (cookie) {
+      if (!cookieRegex.test(cookie)) {
+        return;
+      }
+      cookie = cookie.split('.').pop();
+      if (!cookies.includes(cookie)) {
+        cookies.push(cookie);
+      }
+    });
     return cookies;
   }
   function escapeID(id) {
@@ -2969,7 +2971,7 @@
 
       // Filtering by default when it is set.
       if (column.filterControl && '' !== column.filterDefault && 'undefined' !== typeof column.filterDefault) {
-        if ($$b.isEmptyObject(that.filterColumnsPartial)) {
+        if (Utils.isEmptyObject(that.filterColumnsPartial)) {
           that.filterColumnsPartial = {};
         }
         if (!(column.field in that.filterColumnsPartial)) {

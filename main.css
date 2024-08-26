@@ -22,9 +22,9 @@
     width: 100%;
 }
 
-.container {
-    /*padding-top: 117px;*/
-}
+/*.container {
+    padding-top: 117px;
+}*/
 
 .pc{
     margin: auto;
@@ -187,10 +187,10 @@
             padding-left: 10px;
 		}
 
-		.collapse {
+		/*.collapse {
    	display: block !important;
    	height: auto !important;
-	}
+	}*/
 	
 
 	
@@ -221,3 +221,11 @@
 	  
 	  
    }
+
+
+  
+  
+
+
+
+

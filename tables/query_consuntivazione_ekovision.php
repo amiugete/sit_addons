@@ -1,7 +1,7 @@
 <?php 
 
 
-$query0 = "SELECT ss.DESCRIZIONE AS FAM_SERVIZIO, 
+$query0 = "SELECT concat(concat(ss.ID_SERVZIO_STAMPA, '-'), ss.DESCRIZIONE) AS FAM_SERVIZIO, 
 as2.DESC_SERVIZIO, 
 LISTAGG(au.ID_UO, ', ') within group (order by au.ID_UO) AS ID_UTS,
 LISTAGG(au.DESC_UO, ', ') within group (order by au.ID_UO) AS UT,

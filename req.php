@@ -3,13 +3,15 @@ session_start();
 // setcookie funziona solo se non ci sono degli output prima per cui l'ho spostato qua;
 require_once('./check_utente.php');
 ?>
+
+
 <!--link rel="stylesheet" href="https://kit-free.fontawesome.com/releases/latest/css/free.min.css"-->
 <link rel="stylesheet" href="./vendor/fortawesome/font-awesome/css/all.min.css">
 
-<script
+<!--script
   src="https://code.jquery.com/jquery-3.6.0.min.js"
   integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-  crossorigin="anonymous"></script>
+  crossorigin="anonymous"></script-->
 
 
 <!-- Production version -->
@@ -17,7 +19,7 @@ require_once('./check_utente.php');
   
 
 
-<link rel='icon' href='./favicon.ico' type='image/x-icon' sizes="16x16">
+
 
 <!--script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script-->
 
@@ -38,15 +40,26 @@ require_once('./check_utente.php');
 <link rel="stylesheet" href="./vendor/wenzhixin/bootstrap-table/dist/extensions/group-by-v2/bootstrap-table-group-by.min.css">
 
 
-<!-- BOOTSTRAP SELECT -->
+<!-- BOOTSTRAP SELECT  problem version 1.13 with bootstrap 5-->
 <!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
+<!--link rel="stylesheet" href="./vendor/snapappointments/bootstrap-select/dist/css/bootstrap-select.min.css"-->
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="./vendor/bootstrap-select-beta//css/bootstrap-select.min.css">
+<!--link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css"-->
+
+
+
+
+
+
+
 
 
 <!-- BOOTSTRAP DATEPICKER -->
 <link rel="stylesheet" href="./vendor/eternicode/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css"/>
 
-<link href="./main.css" rel="stylesheet">
+
 
 <!--link href="./bootstrap-table-1.18.3/dist/bootstrap-table.css" rel="stylesheet"-->
 
@@ -89,6 +102,33 @@ var onResize = function() {
     
 };
 
+</script>
+
+
+
+
+<!--script src="./jquery.js"></script-->
+
+
+<?php if ($check_modal!=1){?>
+<!-- jQuery -->
+<script src="./vendor/components/jquery/jquery.min.js"></script>
+<?php }?>
+
+<!-- Per questo non uso composer perchè il pacchetto è obsoleto -->
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+<link rel="stylesheet" href="./main.css">
+
+<?php if (!isset($check_modal)){
+    $check_modal=0;
+}
+if ($check_modal!=1) { ?>
+
+
+<link rel='icon' href='./favicon.ico' type='image/x-icon' sizes="16x16">
+
+<script>
 // attach the function to the window resize event
 $(window).resize(onResize);
 
@@ -97,16 +137,6 @@ $(function() {
   onResize();
 });
 </script>
-
-<!--script src="./jquery.js"></script-->
-<!-- jQuery -->
-<script src="./vendor/components/jquery/jquery.min.js"></script>
-
-
-<!-- Per questo non uso composer perchè il pacchetto è obsoleto -->
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-
-
 
 
 <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -164,6 +194,7 @@ $(function() {
 
 
 <?php
+}
 $problemi =  'contattare l\'<a href="mailto:assterritorio@amiu.genova.it">amministratore di sistema</a>';
 
 function the_page_title()
@@ -191,5 +222,6 @@ function the_page_title()
     }
     return $test;
 }
+
 
 ?>

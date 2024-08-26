@@ -129,16 +129,16 @@
         },
         {
             "name": "composer/installers",
-            "version": "v2.2.0",
+            "version": "v2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/installers.git",
-                "reference": "c29dc4b93137acb82734f672c37e029dfbd95b35"
+                "reference": "12fb2dfe5e16183de69e784a7b84046c43d97e8e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/installers/zipball/c29dc4b93137acb82734f672c37e029dfbd95b35",
-                "reference": "c29dc4b93137acb82734f672c37e029dfbd95b35",
+                "url": "https://api.github.com/repos/composer/installers/zipball/12fb2dfe5e16183de69e784a7b84046c43d97e8e",
+                "reference": "12fb2dfe5e16183de69e784a7b84046c43d97e8e",
                 "shasum": ""
             },
             "require": {
@@ -146,12 +146,12 @@
                 "php": "^7.2 || ^8.0"
             },
             "require-dev": {
-                "composer/composer": "1.6.* || ^2.0",
-                "composer/semver": "^1 || ^3",
-                "phpstan/phpstan": "^0.12.55",
-                "phpstan/phpstan-phpunit": "^0.12.16",
-                "symfony/phpunit-bridge": "^5.3",
-                "symfony/process": "^5"
+                "composer/composer": "^1.10.27 || ^2.7",
+                "composer/semver": "^1.7.2 || ^3.4.0",
+                "phpstan/phpstan": "^1.11",
+                "phpstan/phpstan-phpunit": "^1",
+                "symfony/phpunit-bridge": "^7.1.1",
+                "symfony/process": "^5 || ^6 || ^7"
             },
             "type": "composer-plugin",
             "extra": {
@@ -208,6 +208,7 @@
                 "cockpit",
                 "codeigniter",
                 "concrete5",
+                "concreteCMS",
                 "croogo",
                 "dokuwiki",
                 "drupal",
@@ -254,7 +255,7 @@
             ],
             "support": {
                 "issues": "https://github.com/composer/installers/issues",
-                "source": "https://github.com/composer/installers/tree/v2.2.0"
+                "source": "https://github.com/composer/installers/tree/v2.3.0"
             },
             "funding": [
                 {
@@ -270,7 +271,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-08-20T06:45:11+00:00"
+            "time": "2024-06-24T20:46:46+00:00"
         },
         {
             "name": "eternicode/bootstrap-datepicker",
@@ -394,26 +395,26 @@
         },
         {
             "name": "firebase/php-jwt",
-            "version": "v6.10.0",
+            "version": "v6.10.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/firebase/php-jwt.git",
-                "reference": "a49db6f0a5033aef5143295342f1c95521b075ff"
+                "reference": "500501c2ce893c824c801da135d02661199f60c5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/a49db6f0a5033aef5143295342f1c95521b075ff",
-                "reference": "a49db6f0a5033aef5143295342f1c95521b075ff",
+                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/500501c2ce893c824c801da135d02661199f60c5",
+                "reference": "500501c2ce893c824c801da135d02661199f60c5",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.4||^8.0"
+                "php": "^8.0"
             },
             "require-dev": {
-                "guzzlehttp/guzzle": "^6.5||^7.4",
+                "guzzlehttp/guzzle": "^7.4",
                 "phpspec/prophecy-phpunit": "^2.0",
                 "phpunit/phpunit": "^9.5",
-                "psr/cache": "^1.0||^2.0",
+                "psr/cache": "^2.0||^3.0",
                 "psr/http-client": "^1.0",
                 "psr/http-factory": "^1.0"
             },
@@ -451,22 +452,22 @@
             ],
             "support": {
                 "issues": "https://github.com/firebase/php-jwt/issues",
-                "source": "https://github.com/firebase/php-jwt/tree/v6.10.0"
+                "source": "https://github.com/firebase/php-jwt/tree/v6.10.1"
             },
-            "time": "2023-12-01T16:26:39+00:00"
+            "time": "2024-05-18T18:05:11+00:00"
         },
         {
             "name": "fortawesome/font-awesome",
-            "version": "6.5.2",
+            "version": "6.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FortAwesome/Font-Awesome.git",
-                "reference": "c0f460dca7f7688761120415ff3c9cf7f73119be"
+                "reference": "37eff7fa00de26db41183a3ad8ed0e9119fbc44b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/c0f460dca7f7688761120415ff3c9cf7f73119be",
-                "reference": "c0f460dca7f7688761120415ff3c9cf7f73119be",
+                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/37eff7fa00de26db41183a3ad8ed0e9119fbc44b",
+                "reference": "37eff7fa00de26db41183a3ad8ed0e9119fbc44b",
                 "shasum": ""
             },
             "type": "library",
@@ -498,7 +499,7 @@
                 "issues": "https://github.com/FortAwesome/Font-Awesome/issues",
                 "source": "https://github.com/FortAwesome/Font-Awesome"
             },
-            "time": "2024-04-02T18:54:47+00:00"
+            "time": "2024-07-16T17:13:31+00:00"
         },
         {
             "name": "kriswallsmith/assetic",
@@ -1548,16 +1549,16 @@
         },
         {
             "name": "wenzhixin/bootstrap-table",
-            "version": "1.22.5",
+            "version": "1.23.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wenzhixin/bootstrap-table.git",
-                "reference": "fc4e37a32754e8c737253f4617508b9a004ab679"
+                "reference": "a22516e6ecc26ee3a3bcbfc765a331b811b7caa8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wenzhixin/bootstrap-table/zipball/fc4e37a32754e8c737253f4617508b9a004ab679",
-                "reference": "fc4e37a32754e8c737253f4617508b9a004ab679",
+                "url": "https://api.github.com/repos/wenzhixin/bootstrap-table/zipball/a22516e6ecc26ee3a3bcbfc765a331b811b7caa8",
+                "reference": "a22516e6ecc26ee3a3bcbfc765a331b811b7caa8",
                 "shasum": ""
             },
             "require": {
@@ -1595,7 +1596,7 @@
             ],
             "support": {
                 "issues": "https://github.com/wenzhixin/bootstrap-table/issues",
-                "source": "https://github.com/wenzhixin/bootstrap-table/tree/1.22.5"
+                "source": "https://github.com/wenzhixin/bootstrap-table/tree/1.23.2"
             },
             "funding": [
                 {
@@ -1607,7 +1608,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2024-04-29T00:23:27+00:00"
+            "time": "2024-07-27T15:57:42+00:00"
         }
     ],
     "packages-dev": [

@@ -1,5 +1,5 @@
 <?php
-require_once('./check_utente.php');
+//require_once('./check_utente.php');
 
 // Faccio il controllo su SIT
 
@@ -20,8 +20,12 @@ while($r = pg_fetch_assoc($result_n)) {
 //echo "<script type='text/javascript'>alert('$check_SIT');</script>";
 
 if ($check_SIT==0){
+  if ($check_modal!=1){
   redirect('login.php');
   //exit;
+  } else {
+    echo 'Problema autenticazione';
+  }
 }
 
 $check_edit=0;
@@ -36,8 +40,12 @@ if (in_array($role_SIT, $ruoli_edit)) {
 if (in_array($role_SIT, $ruoli_superedit)) {
   $check_superedit=1;
 }
-?>
 
+
+if ($check_modal!=1){
+
+?>
+<div class="navbar-header">
 <div id="intestazione" class="banner"> <div id="banner-image">
 <h3>  <a class="navbar-brand link-light" href="#">
     <img class="pull-left" src="img\amiu_small_white.png" alt="SIT" width="85px">
@@ -59,7 +67,8 @@ if (in_array($role_SIT, $ruoli_superedit)) {
     <!--a class="navbar-brand" href="#">
     <img class="pull-left" src="img\amiu_small_white.png" alt="SIT" width="85px">
     </a-->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" 
+    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -69,10 +78,10 @@ if (in_array($role_SIT, $ruoli_superedit)) {
         </li-->
         <?php if ($id_role_SIT > 0) { ?>
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <a class="nav-link dropdown-toggle" href="#"  role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="navbarDropdown1">
           Anagrafica percorsi / servizi
           </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <div class="dropdown-menu" id="navbarDropdown1" aria-labelledby="navbarDropdown1">
             <a class="dropdown-item" href="./percorsi.php">Elenco servizi UO/SIT</a>
             <?php if ($check_superedit == 1) { ?>
             <a class="dropdown-item" href="./nuovo_percorso.php">Nuovo servizio</a>
@@ -83,10 +92,10 @@ if (in_array($role_SIT, $ruoli_superedit)) {
         <?php } ?>
         <?php if ($check_superedit == 1) { ?>
           <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <a class="nav-link dropdown-toggle" href="#"  role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="navbarDropdown2">
           Funzionalità amministratori SIT
           </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <div class="dropdown-menu" id="navbarDropdown2" aria-labelledby="navbarDropdown2">
             <a class="dropdown-item" href="./update_elementi.php">Forzare update elementi</a>
             <!--a class="dropdown-item" href="./nuovo_percorso.php">Nuovo servizio</a-->
           </div>
@@ -111,10 +120,10 @@ if (in_array($role_SIT, $ruoli_superedit)) {
           <a class="nav-link" href="./report_contenitori.php"> Report contenitori bilaterali</a>
         </li-->
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <a class="nav-link dropdown-toggle" href="#"  role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="navbarDropdown3">
           Reportistica avanzata
           </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <div class="dropdown-menu" id="navbarDropdown3" aria-labelledby="navbarDropdown3">
             <?php if ($check_superedit == 1) { ?>
               <a class="dropdown-item" href="./consuntivazione_ekovision.php">Report consuntivazione Ekovision</a>
             <?php } ?>
@@ -175,5 +184,7 @@ echo ' session expire= '. $_SESSION['expire']."<br>";
 echo 'time = ' .time()."<br>";*/
 ?>
 </div>
+</div>
 <hr>
-<?php } ?>
+<?php } // check_modal 
+ } ?>

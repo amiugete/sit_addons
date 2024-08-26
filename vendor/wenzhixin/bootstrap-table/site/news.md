@@ -4,6 +4,45 @@ title: News
 description: News and announcements for all things Bootstrap Table, including new releases.
 ---
 
+## Bootstrap Table 1.23.2
+
+<span class="post-date">27 Jul 2024</span>
+
+## Bootstrap Table 1.23.1
+
+<span class="post-date">13 Jul 2024</span>
+
+## Bootstrap Table 1.23.0
+
+<span class="post-date">30 Jun 2024</span>
+
+#### Core
+
+- **New:** Add support for vue3 instead of vue2.
+- **Update:** Fixed `getData` with `formatted` data bug when a column is missing.
+- **Update:** Fixed `toggleColumn` exception when the field does not exist.
+- **Update:** Fixed vue component init twice when options and columns both changed.
+
+#### Extensions
+
+- **New(addrbar):** Added `addrCustomParams` option for custom parameters.
+- **New(filter-control):** Added `filterControlSearchClear` option to stop clearing the filters when using `showSearchButton` option.
+- **Update(filter-control):** Fixed error with clear filters button when not enabled cookie extension.
+- **Update(filter-control):** Fixed bug with enabled cookie extension using `localStorage`.
+- **Update(multiple-sort):** Fixed not trigger event bug when using server-side pagination.
+
+## Bootstrap Table 1.22.6
+
+<span class="post-date">15 May 2024</span>
+
+#### Extensions
+
+- **Update(cookie):** Fixed cookie does not work bug with pagination ALL list.
+- **Update(editable):** Fixed the `formatter` function does not include the `field` parameter bug.
+- **Update(toolbar):** Fixed toolbar display bug when using an HTML title.
+- **Update(toolbar):** Fixed toolbar does not update bug when column visible updated.
+- **Update(toolbar):** Fixed toolbar does not update bug when the locale is changed.
+
 ## Bootstrap Table 1.22.5
 
 <span class="post-date">29 Apr 2024</span>

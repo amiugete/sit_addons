@@ -13,7 +13,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 20
           cache: 'yarn'
 
       - name: Build theme with node
@@ -21,13 +21,9 @@ jobs:
           cd ${{ github.workspace }}/site/_themes
           yarn install --frozen-lockfile
           yarn build
-          mv dist/js ../assets/js/themes
-          cd ../assets/js/themes
-          FILE=../../../_includes/themes.html
-          echo "" > $FILE
-          for f in *.js; do
-            echo "<script src=/assets/js/themes/$f></script>" >> $FILE
-          done
+          rm -rf ../assets/js/themes
+          mv dist/themes.html ../_includes/themes.html
+          mv dist ../assets/js/themes
 
       - uses: ruby/setup-ruby@v1
         with:

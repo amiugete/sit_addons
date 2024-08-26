@@ -16,7 +16,7 @@ if(!$conn) {
 } else {
 
 
-    $query0= "select ep.cod_percorso as cp_edit, ep.cod_percorso, p.id_percorso as id_percorso_sit, 
+    $query0= "select ep.cod_percorso as cp_edit, ep.cod_percorso, ep.cod_percorso as cp_report, p.id_percorso as id_percorso_sit, 
     ep.descrizione, af.descrizione as famiglia,
     at2.descrizione as tipo,
     array_agg(u.id_ut) as id_uts,

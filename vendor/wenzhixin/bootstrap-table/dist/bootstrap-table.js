@@ -4,6 +4,82 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.BootstrapTable = factory(global.jQuery));
 })(this, (function ($$q) { 'use strict';
 
+  function _arrayLikeToArray(r, a) {
+    (null == a || a > r.length) && (a = r.length);
+    for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
+    return n;
+  }
+  function _arrayWithHoles(r) {
+    if (Array.isArray(r)) return r;
+  }
+  function _arrayWithoutHoles(r) {
+    if (Array.isArray(r)) return _arrayLikeToArray(r);
+  }
+  function _classCallCheck(a, n) {
+    if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function");
+  }
+  function _defineProperties(e, r) {
+    for (var t = 0; t < r.length; t++) {
+      var o = r[t];
+      o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o);
+    }
+  }
+  function _createClass(e, r, t) {
+    return r && _defineProperties(e.prototype, r), Object.defineProperty(e, "prototype", {
+      writable: !1
+    }), e;
+  }
+  function _createForOfIteratorHelper(r, e) {
+    var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
+    if (!t) {
+      if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e) {
+        t && (r = t);
+        var n = 0,
+          F = function () {};
+        return {
+          s: F,
+          n: function () {
+            return n >= r.length ? {
+              done: !0
+            } : {
+              done: !1,
+              value: r[n++]
+            };
+          },
+          e: function (r) {
+            throw r;
+          },
+          f: F
+        };
+      }
+      throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+    }
+    var o,
+      a = !0,
+      u = !1;
+    return {
+      s: function () {
+        t = t.call(r);
+      },
+      n: function () {
+        var r = t.next();
+        return a = r.done, r;
+      },
+      e: function (r) {
+        u = !0, o = r;
+      },
+      f: function () {
+        try {
+          a || null == t.return || t.return();
+        } finally {
+          if (u) throw o;
+        }
+      }
+    };
+  }
+  function _iterableToArray(r) {
+    if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r);
+  }
   function _iterableToArrayLimit(r, l) {
     var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
     if (null != t) {
@@ -15,10 +91,7 @@
         f = !0,
         o = !1;
       try {
-        if (i = (t = t.call(r)).next, 0 === l) {
-          if (Object(t) !== t) return;
-          f = !1;
-        } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0);
+        if (i = (t = t.call(r)).next, 0 === l) ; else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0);
       } catch (r) {
         o = !0, n = r;
       } finally {
@@ -31,15 +104,27 @@
       return a;
     }
   }
+  function _nonIterableRest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+  function _nonIterableSpread() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+  function _slicedToArray(r, e) {
+    return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest();
+  }
+  function _toConsumableArray(r) {
+    return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread();
+  }
   function _toPrimitive(t, r) {
     if ("object" != typeof t || !t) return t;
     var e = t[Symbol.toPrimitive];
     if (void 0 !== e) {
-      var i = e.call(t, r || "default");
+      var i = e.call(t, r);
       if ("object" != typeof i) return i;
       throw new TypeError("@@toPrimitive must return a primitive value.");
     }
-    return ("string" === r ? String : Number)(t);
+    return (String )(t);
   }
   function _toPropertyKey(t) {
     var i = _toPrimitive(t, "string");
@@ -54,112 +139,12 @@
       return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
     }, _typeof(o);
   }
-  function _classCallCheck(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
+  function _unsupportedIterableToArray(r, a) {
+    if (r) {
+      if ("string" == typeof r) return _arrayLikeToArray(r, a);
+      var t = {}.toString.call(r).slice(8, -1);
+      return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0;
     }
-  }
-  function _defineProperties(target, props) {
-    for (var i = 0; i < props.length; i++) {
-      var descriptor = props[i];
-      descriptor.enumerable = descriptor.enumerable || false;
-      descriptor.configurable = true;
-      if ("value" in descriptor) descriptor.writable = true;
-      Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor);
-    }
-  }
-  function _createClass(Constructor, protoProps, staticProps) {
-    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-    if (staticProps) _defineProperties(Constructor, staticProps);
-    Object.defineProperty(Constructor, "prototype", {
-      writable: false
-    });
-    return Constructor;
-  }
-  function _slicedToArray(arr, i) {
-    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
-  }
-  function _toConsumableArray(arr) {
-    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
-  }
-  function _arrayWithoutHoles(arr) {
-    if (Array.isArray(arr)) return _arrayLikeToArray(arr);
-  }
-  function _arrayWithHoles(arr) {
-    if (Array.isArray(arr)) return arr;
-  }
-  function _iterableToArray(iter) {
-    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
-  }
-  function _unsupportedIterableToArray(o, minLen) {
-    if (!o) return;
-    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
-    var n = Object.prototype.toString.call(o).slice(8, -1);
-    if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(o);
-    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
-  }
-  function _arrayLikeToArray(arr, len) {
-    if (len == null || len > arr.length) len = arr.length;
-    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
-    return arr2;
-  }
-  function _nonIterableSpread() {
-    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-  }
-  function _nonIterableRest() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-  }
-  function _createForOfIteratorHelper(o, allowArrayLike) {
-    var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"];
-    if (!it) {
-      if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") {
-        if (it) o = it;
-        var i = 0;
-        var F = function () {};
-        return {
-          s: F,
-          n: function () {
-            if (i >= o.length) return {
-              done: true
-            };
-            return {
-              done: false,
-              value: o[i++]
-            };
-          },
-          e: function (e) {
-            throw e;
-          },
-          f: F
-        };
-      }
-      throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-    }
-    var normalCompletion = true,
-      didErr = false,
-      err;
-    return {
-      s: function () {
-        it = it.call(o);
-      },
-      n: function () {
-        var step = it.next();
-        normalCompletion = step.done;
-        return step;
-      },
-      e: function (e) {
-        didErr = true;
-        err = e;
-      },
-      f: function () {
-        try {
-          if (!normalCompletion && it.return != null) it.return();
-        } finally {
-          if (didErr) throw err;
-        }
-      }
-    };
   }
 
   var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -476,10 +461,10 @@
   var store$3 = sharedStore.exports = globalThis$1[SHARED] || defineGlobalProperty$2(SHARED, {});
 
   (store$3.versions || (store$3.versions = [])).push({
-    version: '3.36.1',
+    version: '3.37.1',
     mode: 'global',
     copyright: '© 2014-2024 Denis Pushkarev (zloirock.ru)',
-    license: 'https://github.com/zloirock/core-js/blob/v3.36.1/LICENSE',
+    license: 'https://github.com/zloirock/core-js/blob/v3.37.1/LICENSE',
     source: 'https://github.com/zloirock/core-js'
   });
 
@@ -4879,10 +4864,40 @@
         timeout = setTimeout(later, wait);
         if (callNow) func.apply(context, args);
       };
+    },
+    replaceSearchMark: function replaceSearchMark(html, searchText) {
+      var node = document.createElement('div');
+      var replaceMark = function replaceMark(node, searchText) {
+        var regExp = new RegExp(searchText, 'gim');
+        var _iterator12 = _createForOfIteratorHelper(node.childNodes),
+          _step12;
+        try {
+          for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
+            var child = _step12.value;
+            if (child.nodeType === document.TEXT_NODE) {
+              child.data = child.data.replace(regExp, function (match) {
+                return "___".concat(match, "___");
+              });
+            }
+            if (child.nodeType === document.ELEMENT_NODE) {
+              replaceMark(child, searchText);
+            }
+          }
+        } catch (err) {
+          _iterator12.e(err);
+        } finally {
+          _iterator12.f();
+        }
+      };
+      node.innerHTML = html;
+      replaceMark(node, searchText);
+      return node.innerHTML.replace(new RegExp("___".concat(searchText, "___"), 'gim'), function (match) {
+        return "<mark>".concat(match.slice(3, -3), "</mark>");
+      });
     }
   };
 
-  var VERSION = '1.22.5';
+  var VERSION = '1.23.2';
   var bootstrapVersion = Utils.getBootstrapVersion();
   var CONSTANTS = {
     3: {
@@ -5127,6 +5142,7 @@
     toolbarAlign: 'left',
     buttonsToolbar: undefined,
     buttonsAlign: 'right',
+    buttonsAttributeTitle: 'title',
     buttonsOrder: ['paginationSwitch', 'refresh', 'toggle', 'fullscreen', 'columns'],
     buttonsPrefix: CONSTANTS.classes.buttonsPrefix,
     buttonsClass: CONSTANTS.classes.buttons,
@@ -6076,7 +6092,7 @@
             render: false,
             html: function html() {
               var html = [];
-              html.push("<div class=\"keep-open ".concat(_this4.constants.classes.buttonsDropdown, "\">\n            <button class=\"").concat(_this4.constants.buttonsClass, " dropdown-toggle\" type=\"button\" ").concat(_this4.constants.dataToggle, "=\"dropdown\"\n            aria-label=\"").concat(opts.formatColumns(), "\" title=\"").concat(opts.formatColumns(), "\">\n            ").concat(opts.showButtonIcons ? Utils.sprintf(_this4.constants.html.icon, opts.iconsPrefix, opts.icons.columns) : '', "\n            ").concat(opts.showButtonText ? opts.formatColumns() : '', "\n            ").concat(_this4.constants.html.dropdownCaret, "\n            </button>\n            ").concat(_this4.constants.html.toolbarDropdown[0]));
+              html.push("<div class=\"keep-open ".concat(_this4.constants.classes.buttonsDropdown, "\">\n            <button class=\"").concat(_this4.constants.buttonsClass, " dropdown-toggle\" type=\"button\" ").concat(_this4.constants.dataToggle, "=\"dropdown\"\n            aria-label=\"").concat(opts.formatColumns(), "\" ").concat(opts.buttonsAttributeTitle, "=\"").concat(opts.formatColumns(), "\">\n            ").concat(opts.showButtonIcons ? Utils.sprintf(_this4.constants.html.icon, opts.iconsPrefix, opts.icons.columns) : '', "\n            ").concat(opts.showButtonText ? opts.formatColumns() : '', "\n            ").concat(_this4.constants.html.dropdownCaret, "\n            </button>\n            ").concat(_this4.constants.html.toolbarDropdown[0]));
               if (opts.showColumnsSearch) {
                 html.push(Utils.sprintf(_this4.constants.html.toolbarDropdownItem, Utils.sprintf('<input type="text" class="%s" name="columnsSearch" placeholder="%s" autocomplete="off">', _this4.constants.classes.input, opts.formatSearch())));
                 html.push(_this4.constants.html.toolbarDropdownSeparator);
@@ -6139,7 +6155,8 @@
                 if (attributeName === 'class') {
                   continue;
                 }
-                buttonHtml += " ".concat(attributeName, "=\"").concat(value, "\"");
+                var attribute = attributeName === 'title' ? this.options.buttonsAttributeTitle : attributeName;
+                buttonHtml += " ".concat(attribute, "=\"").concat(value, "\"");
               }
             }
             buttonHtml += '>';
@@ -6407,11 +6424,11 @@
                 value = item;
                 var props = key.split('.');
                 for (var _i8 = 0; _i8 < props.length; _i8++) {
-                  if (value[props[_i8]] !== null) {
-                    value = value[props[_i8]];
-                  } else {
+                  if (value[props[_i8]] === null || value[props[_i8]] === undefined) {
                     value = null;
                     break;
+                  } else {
+                    value = value[props[_i8]];
                   }
                 }
               } else {
@@ -6879,7 +6896,6 @@
             value = typeof value === 'undefined' || value === null ? _this7.options.undefinedText : value;
           }
           if (column.searchable && _this7.searchText && _this7.options.searchHighlight && !(column.checkbox || column.radio)) {
-            var defValue = '';
             var searchText = _this7.searchText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             if (_this7.options.searchAccentNeutralise) {
               var indexRegex = new RegExp("".concat(Utils.normalizeAccent(searchText)), 'gmi');
@@ -6888,19 +6904,7 @@
                 searchText = value.substring(match.index, match.index + searchText.length);
               }
             }
-            var regExp = new RegExp("(".concat(searchText, ")"), 'gim');
-            var marker = '<mark>$1</mark>';
-            var isHTML = value && /<(?=.*? .*?\/ ?>|br|hr|input|!--|wbr)[a-z]+.*?>|<([a-z]+).*?<\/\1>/i.test(value);
-            if (isHTML) {
-              // value can contains a HTML tags
-              var textContent = new DOMParser().parseFromString(value.toString(), 'text/html').documentElement.textContent;
-              var textReplaced = textContent.replace(regExp, marker);
-              textContent = textContent.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-              defValue = value.replace(new RegExp("(>\\s*)(".concat(textContent, ")(\\s*)"), 'gm'), "$1".concat(textReplaced, "$3"));
-            } else {
-              // but usually not
-              defValue = value.toString().replace(regExp, marker);
-            }
+            var defValue = Utils.replaceSearchMark(value, searchText);
             value = Utils.calculateObjectValue(column, column.searchHighlightFormatter, [value, _this7.searchText], defValue);
           }
           if (item["_".concat(field, "_data")] && !Utils.isEmptyObject(item["_".concat(field, "_data")])) {
@@ -7599,16 +7603,16 @@
           data = data.slice(this.pageFrom - 1, this.pageTo);
         }
         if (params && params.formatted) {
-          data.forEach(function (row) {
+          return data.map(function (row) {
             for (var _i15 = 0, _Object$entries14 = Object.entries(row); _i15 < _Object$entries14.length; _i15++) {
               var _Object$entries14$_i = _slicedToArray(_Object$entries14[_i15], 2),
                 key = _Object$entries14$_i[0],
                 value = _Object$entries14$_i[1];
               var column = _this17.columns[_this17.fieldsColumnsIndex[key]];
               if (!column) {
-                return;
+                continue;
               }
-              row[key] = Utils.calculateObjectValue(column, _this17.header.formatters[column.fieldIndex], [value, row, row.index, column.field], value);
+              return Utils.calculateObjectValue(column, _this17.header.formatters[column.fieldIndex], [value, row, row.index, column.field], value);
             }
           });
         }
@@ -7690,6 +7694,7 @@
       key: "removeAll",
       value: function removeAll() {
         if (this.options.data.length > 0) {
+          this.data.splice(0, this.data.length);
           this.options.data.splice(0, this.options.data.length);
           this.initSearch();
           this.initPagination();
@@ -7702,7 +7707,10 @@
         if (!params.hasOwnProperty('index') || !params.hasOwnProperty('row')) {
           return;
         }
-        this.options.data.splice(params.index, 0, params.row);
+        var row = this.data[params.index];
+        var originalIndex = this.options.data.indexOf(row);
+        this.data.splice(params.index, 0, params.row);
+        this.options.data.splice(originalIndex, 0, params.row);
         this.initSearch();
         this.initPagination();
         this.initSort();
@@ -7720,10 +7728,14 @@
             if (!_params.hasOwnProperty('index') || !_params.hasOwnProperty('row')) {
               continue;
             }
+            var row = this.data[_params.index];
+            var originalIndex = this.options.data.indexOf(row);
             if (_params.hasOwnProperty('replace') && _params.replace) {
-              this.options.data[_params.index] = _params.row;
+              this.data[_params.index] = _params.row;
+              this.options.data[originalIndex] = _params.row;
             } else {
-              Utils.extend(this.options.data[_params.index], _params.row);
+              Utils.extend(this.data[_params.index], _params.row);
+              Utils.extend(this.options.data[originalIndex], _params.row);
             }
           }
         } catch (err) {
@@ -7823,7 +7835,7 @@
     }, {
       key: "_updateCellOnly",
       value: function _updateCellOnly(field, index) {
-        var rowHtml = this.initRow(this.options.data[index], index);
+        var rowHtml = this.initRow(this.data[index], index);
         var fieldIndex = this.getVisibleFields().indexOf(field);
         if (fieldIndex === -1) {
           return;
@@ -7841,7 +7853,10 @@
         if (!params.hasOwnProperty('index') || !params.hasOwnProperty('field') || !params.hasOwnProperty('value')) {
           return;
         }
-        this.options.data[params.index][params.field] = params.value;
+        var row = this.data[params.index];
+        var originalIndex = this.options.data.indexOf(row);
+        this.data[params.index][params.field] = params.value;
+        this.options.data[originalIndex][params.field] = params.value;
         if (params.reinit === false) {
           this._updateCellOnly(params.field, params.index);
           return;
@@ -7951,7 +7966,7 @@
     }, {
       key: "_toggleColumn",
       value: function _toggleColumn(index, checked, needUpdate) {
-        if (index === -1 || this.columns[index].visible === checked) {
+        if (index === undefined || this.columns[index].visible === checked) {
           return;
         }
         this.columns[index].visible = checked;
@@ -8320,8 +8335,8 @@
         this.options.cardView = !this.options.cardView;
         this.initHeader();
         var icon = this.options.showButtonIcons ? this.options.cardView ? this.options.icons.toggleOn : this.options.icons.toggleOff : '';
-        var text = this.options.showButtonText ? this.options.cardView ? this.options.formatToggleOff() : this.options.formatToggleOn() : '';
-        this.$toolbar.find('button[name="toggle"]').html("".concat(Utils.sprintf(this.constants.html.icon, this.options.iconsPrefix, icon), " ").concat(text)).attr('aria-label', text).attr('title', text);
+        var text = this.options.cardView ? this.options.formatToggleOff() : this.options.formatToggleOn();
+        this.$toolbar.find('button[name="toggle"]').html("".concat(Utils.sprintf(this.constants.html.icon, this.options.iconsPrefix, icon), " ").concat(this.options.showButtonText ? text : '')).attr('aria-label', text).attr(this.options.buttonsAttributeTitle, text);
         this.initBody();
         this.trigger('toggle', this.options.cardView);
       }

@@ -58,12 +58,14 @@ $.BootstrapTable = class extends $.BootstrapTable {
         }
       }
 
+      const formatterIsSet = column.formatter ? true : false
+
       $.each(this.options, processDataOptions)
 
       column.formatter = column.formatter || (value => value)
       column._formatter = column._formatter ? column._formatter : column.formatter
       column.formatter = (value, row, index, field) => {
-        let result = Utils.calculateObjectValue(column, column._formatter, [value, row, index], value)
+        let result = Utils.calculateObjectValue(column, column._formatter, [value, row, index, field], value)
 
         result = typeof result === 'undefined' || result === null ? this.options.undefinedText : result
         if (this.options.uniqueId !== undefined && !column.alwaysUseFormatter) {
@@ -95,7 +97,7 @@ $.BootstrapTable = class extends $.BootstrapTable {
           data-name="${column.field}"
           data-pk="${row[this.options.idField]}"
           data-value="${value || ''}"
-          ${editableDataMarkup}>${result}</a>` // expand all data-editable-XXX
+          ${editableDataMarkup}>${formatterIsSet ? result : ''}</a>` // expand all data-editable-XXX
       }
     })
   }

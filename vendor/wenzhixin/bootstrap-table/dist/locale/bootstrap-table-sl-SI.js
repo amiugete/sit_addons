@@ -316,10 +316,10 @@
 	var store$3 = sharedStore.exports = globalThis$1[SHARED] || defineGlobalProperty$2(SHARED, {});
 
 	(store$3.versions || (store$3.versions = [])).push({
-	  version: '3.36.1',
+	  version: '3.37.1',
 	  mode: 'global',
 	  copyright: '© 2014-2024 Denis Pushkarev (zloirock.ru)',
-	  license: 'https://github.com/zloirock/core-js/blob/v3.36.1/LICENSE',
+	  license: 'https://github.com/zloirock/core-js/blob/v3.37.1/LICENSE',
 	  source: 'https://github.com/zloirock/core-js'
 	});
 

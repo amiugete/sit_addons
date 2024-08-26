@@ -41,7 +41,7 @@ echo $vers."<br>";
 $update_uo= "UPDATE ANAGR_SER_PER_UO aspu
 SET DTA_ATTIVAZIONE = to_date(:c0, 'DD/MM/YYYY') 
 WHERE ID_PERCORSO = :c1 
-AND DTA_ATTIVAZIONE > SYSDATE";
+AND DTA_ATTIVAZIONE > SYSDATE or DTA_ATTIVAZIONE is null ";
 
 $result_uo0 = oci_parse($oraconn, $update_uo);
 # passo i parametri
