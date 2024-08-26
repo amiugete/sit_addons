@@ -51,7 +51,11 @@ if(!$conn) {
     if($_GET['ut']) {
         $query= "select * from (".$query0.") a where $1 = any(id_uts) " ;  
     } else {
-        $query= $query0;
+        require_once("../query_ut.php");
+        $query= "select * from (".$query0.") a 
+                where (select array_agg(id_ut) from (".$query1.") b) && (id_uts) ";
+
+
     }
 
     //print $query."<br>";
@@ -61,7 +65,8 @@ if(!$conn) {
     if($_GET['ut']) {
         $result = pg_execute($conn, "my_query", array($_GET['ut']));  
     } else {
-        $result = pg_execute($conn, "my_query", array());
+        $result = pg_execute($conn, "my_query", array($_SESSION['username']));
+        //$result = pg_execute($conn, "my_query", array());
     }
 
    

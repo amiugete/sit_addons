@@ -132,8 +132,27 @@ if ($check_modal!=1){
           </div>
         </li>
 
+
+
+        <script type="text/javascript">
+          function closeWindow() {
+
+              // Open the new window 
+              // with the URL replacing the
+              // current page using the
+              // _self value
+              let new_window =
+                  open(location, '_self');
+
+              // Close this window
+              new_window.close();
+
+              return false;
+          }
+      </script>
         <li id="link_pc2" class="nav-item">
-          <a class="nav-link" target="SIT" href="<?php echo $url_sit?>"> Torna a SIT</a>
+          <!--a class="nav-link" target="SIT" href="<?php echo $url_sit?>"> Torna a SIT</a-->
+          <a class="nav-link" target="SIT" title="Chiudere funzionalità avanzate" href="#" onclick="return closeWindow();"> Chiudi e torna a SIT</a>
         </li>
         <!--li class="nav-item">
           <a class="nav-link" href="./ordini.php"> Modifica percorsi</a>

@@ -165,7 +165,7 @@ if ((int)$id_role_SIT = 0) {
         <!--th data-field="state" data-checkbox="true" ></th-->  
         <th data-field="famiglia" data-sortable="true" data-visible="true" data-filter-control="select">Famiglia</th>
         <th data-field="tipo" data-sortable="true" data-visible="true"  data-filter-control="select">Tipo</th>
-        <th data-field="ut" data-sortable="true" data-visible="true" data-filter-control="select">UT</th> 
+        <th data-field="ut" data-sortable="true" data-visible="true" data-filter-control="select">UT/Rimessa</th> 
         <th data-field="cod_percorso" data-sortable="true" data-visible="true" data-filter-control="input">Codice</th>
         <th data-field="descrizione" data-sortable="true" data-visible="true" data-filter-control="input">Descrizione</th>
         <th data-field="freq" data-sortable="true" data-visible="true" data-filter-control="input">Frequenza</th>
@@ -295,7 +295,7 @@ window.dpEvents = {
 
     function nameFormatterReport(value, row) {
       if (row.flg_disattivo == 'Attivo' && !row.tipo.includes('SOLO TESTATA')) {
-        return '<a class="btn btn-warning" href="./download_report_percorso.php?cod='+row.cod_percorso+'"><i class="fa-solid fa-list-check"></i></a>';
+        return '<a class="btn btn-info" href="./download_report_percorso.php?cod='+row.cod_percorso+'"><i class="fa-solid fa-list-check"></i></a>';
       }  
      
     };
