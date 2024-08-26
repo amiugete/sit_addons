@@ -76,7 +76,7 @@ if ($check_modal!=1){
         <!--li class="nav-item">
           <a class="nav-link active" aria-current="page" href="#">Home</a>
         </li-->
-        <?php if ($id_role_SIT > 0) { ?>
+        <?php if ($id_role_SIT >= 0) { ?>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#"  role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="navbarDropdown1">
           Anagrafica percorsi / servizi
@@ -168,6 +168,10 @@ if ($check_modal!=1){
       <!--div class="collapse navbar-collapse flex-grow-1 text-right" id="myNavbar">
         <ul class="navbar-nav ms-auto flex-nowrap"-->
         <span class="navbar-light">
+        <!--li class="nav-item dropdown"-->
+        <a class="nav-link dropdown-toggle" href="#"  role="button" data-bs-toggle="dropdown" 
+        aria-expanded="false" aria-controls="navbarDropdown4">
+
           <i class="fas fa-user"></i> Connesso come <?php echo $_SESSION['username'];?> (
             <?php 
               echo $role_SIT;
@@ -180,8 +184,48 @@ if ($check_modal!=1){
               echo '<i class="fa-solid fa-unlock-keyhole"></i>';
             }
 
-            ?>
-            )
+            ?>)
+          </a>
+          <?php
+          $query_utente="select su.\"name\", su.email, 
+          concat(sr.name, ' - ', sr.description) as ruolo, 
+          case
+            when min(suu.id_ut) = -1 then 'Tutte le UT/Rimesse'
+            else string_agg(u.descrizione, ', ') 
+          end uts
+          from util.sys_users su 
+          join util.sys_roles sr on sr.id_role = su.id_role 
+          left join util.sys_users_ut suu on suu.id_user = su.id_user 
+          left join topo.ut u on u.id_ut = suu.id_ut 
+          where su.\"name\" ilike $1
+          group by su.\"name\", su.email, sr.name, sr.description";
+
+          
+          $result1 = pg_prepare($conn, "my_queryUser", $query_utente);
+          $result1 = pg_execute($conn, "my_queryUser", array($_SESSION['username']));
+
+          while($r1 = pg_fetch_assoc($result1)) {
+            $mail_user=$r1['email'];
+            $profilo=$r1['ruolo'];
+            
+            $uts=$r1['uts'];
+            
+
+          }
+
+          ?>
+        <div class="dropdown-menu" style="left: auto" id="navbarDropdown4" aria-labelledby="navbarDropdown4">
+          <ul>
+            <li><b>Mail: </b><?php echo $mail_user?></li>
+            <li><b>Profilo: </b><?php echo $profilo?></li>
+            <li><b>UT/Rimesse: </b><?php echo $uts?></li>
+          </ul>
+        <hr>
+          In caso di modifiche fare scrivere dal proprio responsabile a assterritorio@amiu.genova.it    
+        </div>
+
+
+        <!--/li-->
         </span>
 
     </div>

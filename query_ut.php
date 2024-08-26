@@ -1,6 +1,6 @@
 <?php
 
-$query1="select id_ut, descrizione
+$query_ut="select id_ut, descrizione
   from topo.ut u 
   where id_ut in   
   (select 

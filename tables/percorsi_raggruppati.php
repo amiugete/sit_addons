@@ -10,6 +10,12 @@ if ($_SESSION['test']==1) {
 }
 //echo "OK";
 
+if ($_SESSION['username']){
+    $user=$_SESSION['username'];
+} else {
+    $user= $_COOKIE['un'];
+}
+
 
 if(!$conn) {
     die('Connessione fallita !<br />');
@@ -53,19 +59,18 @@ if(!$conn) {
     } else {
         require_once("../query_ut.php");
         $query= "select * from (".$query0.") a 
-                where (select array_agg(id_ut) from (".$query1.") b) && (id_uts) ";
-
-
+                where (select array_agg(id_ut) from (".$query_ut.") b) && (id_uts) ";
     }
 
     //print $query."<br>";
+    //print $_SESSION['username'];
 
     $result = pg_prepare($conn, "my_query", $query);
     
     if($_GET['ut']) {
         $result = pg_execute($conn, "my_query", array($_GET['ut']));  
     } else {
-        $result = pg_execute($conn, "my_query", array($_SESSION['username']));
+        $result = pg_execute($conn, "my_query", array($user));
         //$result = pg_execute($conn, "my_query", array());
     }
 

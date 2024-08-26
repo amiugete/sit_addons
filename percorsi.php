@@ -95,7 +95,7 @@ if ((int)$id_role_SIT = 0) {
   //echo "<br>". $query1;
 
 
-  $result1 = pg_prepare($conn, "my_query1", $query1);
+  $result1 = pg_prepare($conn, "my_query1", $query_ut);
   $result1 = pg_execute($conn, "my_query1", array($_SESSION['username']));
 
   while($r1 = pg_fetch_assoc($result1)) { 
@@ -110,7 +110,7 @@ if ((int)$id_role_SIT = 0) {
   <!--small>L'elenco delle piazzole..  </small-->        
 </div>
 <div class="form-group col-lg-4">
-<a class="btn btn-primary" href="./percorsi.php">Tutte le UT</a>
+<a class="btn btn-primary" href="./percorsi.php">Tutte le mie UT</a>
 </div>
   </form>
 
