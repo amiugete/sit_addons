@@ -10,20 +10,18 @@ if ($_SESSION['test']==1) {
 }
 
 
-
+$res_ok=0;
 
 
 
 $data_att = $_POST['data_att'];
-echo $data_att."<br>";
+//echo $data_att."<br>";
 
 $cod_percorso = $_POST['id_percorso'];
-echo $cod_percorso."<br>";
-
-
+//echo $cod_percorso."<br>";
 
 $vers = intval($_POST['old_vers']);
-echo $vers."<br>";
+//echo $vers."<br>";
 
 
 
@@ -57,36 +55,66 @@ SET data_attivazione=To_DATE($1, 'DD/MM/YYYY')
 where cod_percorso LIKE $2 and (data_attivazione > now() or data_dismissione is null or data_attivazione is null )";
 
 $result_usit0 = pg_prepare($conn, "update_sit0", $update_sit0);
-echo  pg_last_error($conn);
+if (!pg_last_error($conn)){
+    #$res_ok=0;
+} else {
+    pg_last_error($conn);
+    $res_ok= $res_ok+1;
+}
 $result_usit0 = pg_execute($conn, "update_sit0", array($data_att, $cod_percorso)); 
-echo  pg_last_error($conn);
+if (!pg_last_error($conn)){
+    #$res_ok=0;
+} else {
+    pg_last_error($conn);
+    $res_ok= $res_ok+1;
+}
 
-echo "<br><br>Update anagrafe_percorsi.elenco_percorsi_ut<br>";
+//echo "<br><br>Update anagrafe_percorsi.elenco_percorsi_ut<br>";
 
 
 
 $update_sit1="UPDATE anagrafe_percorsi.elenco_percorsi ep
-SET data_inizio_validita= To_DATE($1, 'DD/MM/YYYY')
+SET data_inizio_validita= To_DATE($1, 'DD/MM/YYYY'), data_ultima_modifica=now()
 where cod_percorso LIKE $2 and data_inizio_validita > now()";
 
 $result_usit1 = pg_prepare($conn, "update_sit1", $update_sit1);
-echo  pg_last_error($conn);
-$result_usit1 = pg_execute($conn, "update_sit1", array($data_att, $cod_percorso)); 
+if (!pg_last_error($conn)){
+    #$res_ok=0;
+} else {
+    pg_last_error($conn);
+    $res_ok= $res_ok+1;
+}
+//$result_usit1 = pg_execute($conn, "update_sit1", array($data_att, $cod_percorso)); 
 
-echo  pg_last_error($conn);
-echo "<br><br>Update anagrafe_percorsi.elenco_percorsi<br>";
+if (!pg_last_error($conn)){
+    #$res_ok=0;
+} else {
+    pg_last_error($conn);
+    $res_ok= $res_ok+1;
+}
+//echo "<br><br>Update anagrafe_percorsi.elenco_percorsi<br>";
 
 
 $update_sit2="UPDATE anagrafe_percorsi.elenco_percorsi_old epo
-SET data_inizio_validita= To_DATE($1, 'DD/MM/YYYY'), data_ultima_modifica=now() 
+SET data_inizio_validita= To_DATE($1, 'DD/MM/YYYY') 
 where cod_percorso LIKE $2 and data_inizio_validita > now()";
 
 
 $result_usit2 = pg_prepare($conn, "update_sit2", $update_sit2);
-echo  pg_last_error($conn);
+if (!pg_last_error($conn)){
+    #$res_ok=0;
+} else {
+    pg_last_error($conn);
+    $res_ok= $res_ok+1;
+}
 $result_usit2 = pg_execute($conn, "update_sit2", array($data_att, $cod_percorso)); 
-echo  pg_last_error($conn);
-echo "<br><br>Update anagrafe_percorsi.elenco_percorsi_old<br>";
+if (!pg_last_error($conn)){
+    #$res_ok=0;
+} else {
+    pg_last_error($conn);
+    $res_ok= $res_ok+1;
+}
+//echo "<br><br>Update anagrafe_percorsi.elenco_percorsi_old<br>";
 
 
 $update_sit3="UPDATE anagrafe_percorsi.percorsi_ut epo
@@ -94,11 +122,21 @@ SET data_attivazione= To_DATE($1, 'DD/MM/YYYY')
 where cod_percorso LIKE $2 and data_attivazione > now()";
 
 $result_usit3 = pg_prepare($conn, "update_sit3", $update_sit3);
-echo  pg_last_error($conn);
+if (!pg_last_error($conn)){
+    #$res_ok=0;
+} else {
+    pg_last_error($conn);
+    $res_ok= $res_ok+1;
+}
 $result_usit3 = pg_execute($conn, "update_sit3", array($data_att, $cod_percorso)); 
-echo  pg_last_error($conn);
+if (!pg_last_error($conn)){
+    #$res_ok=0;
+} else {
+    pg_last_error($conn);
+    $res_ok= $res_ok+1;
+}
 
-echo "<br><br>Update anagrafe_percorsi.percorsi_ut<br>";
+//echo "<br><br>Update anagrafe_percorsi.percorsi_ut<br>";
 
 
 
@@ -107,15 +145,29 @@ SET data_inizio_validita = To_DATE($1, 'DD/MM/YYYY')
 where cod_percorso LIKE $2 and data_inizio_validita > now()";
 
 $result_usit4 = pg_prepare($conn, "update_sit4", $update_sit4);
-echo  pg_last_error($conn);
+if (!pg_last_error($conn)){
+    #$res_ok=0;
+} else {
+    pg_last_error($conn);
+    $res_ok= $res_ok+1;
+}
 $result_usit4 = pg_execute($conn, "update_sit4", array($data_att, $cod_percorso)); 
-echo  pg_last_error($conn);
+if (!pg_last_error($conn)){
+    #$res_ok=0;
+} else {
+    pg_last_error($conn);
+    $res_ok= $res_ok+1;
+}
 
-echo "<br><br>Update anagrafe_percorsi.percordate_percorsi_sit_uo<br>";
+//echo "<br><br>Update anagrafe_percorsi.percordate_percorsi_sit_uo<br>";
 
-
+if ($res_ok==0){
+    echo '<font color="green"> Data attivazione salvata correttamente!</font>';
+} else {
+    echo '<font color="red"> ERRORE - contatta assterritorio@amiu.genova.it</font>';
+} 
 
 #exit();
-header("location: ../dettagli_percorso.php?cp=".$cod_percorso."&v=".$vers."");
+//eader("location: ../dettagli_percorso.php?cp=".$cod_percorso."&v=".$vers."");
 
 ?>

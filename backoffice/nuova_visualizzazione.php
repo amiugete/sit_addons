@@ -3,6 +3,9 @@ session_start();
 #require('../validate_input.php');
 
 
+$res_ok=0;
+
+
 if ($_SESSION['test']==1) {
     require_once ('../conn_test.php');
 } else {
@@ -12,7 +15,7 @@ if ($_SESSION['test']==1) {
 
 // TURNO
 $turno = intval($_POST['turno']);
-echo $turno."<br>";
+//echo $turno."<br>";
 
 $query3="SELECT aft.CODICE_TURNO, at2.DURATA
 FROM ANAGR_TURNI at2
@@ -30,21 +33,23 @@ while($r3 = oci_fetch_assoc($result3)) {
 oci_free_statement($result3);
 
 
-echo $durata;
+//echo $durata;
 
 
 
 $desc = $_POST['desc'];
-echo $desc."<br>";
+//echo $desc."<br>";
+
+
 
 $cod_percorso = $_POST['id_percorso'];
-echo $cod_percorso."<br>";
+//echo $cod_percorso."<br>";
 
 $freq_uo = $_POST['freq_uo'];
 $freq_sit = floor($_POST['freq_sit']);
 
-echo $freq_uo."<br>";
-echo $freq_sit."<br>";
+//echo $freq_uo."<br>";
+//echo $freq_sit."<br>";
 
 
 
@@ -54,9 +59,9 @@ if($_POST['id_servizio_sit']){
 }
 $tipo = $_POST['tipo'];
 
-echo $tipo."<br>";
-echo $id_servizio_uo."<br>";
-echo $id_servizio_sit."<br>";
+//echo $tipo."<br>";
+//echo $id_servizio_uo."<br>";
+//echo $id_servizio_sit."<br>";
 
 
 
@@ -64,7 +69,7 @@ echo $id_servizio_sit."<br>";
 //echo $durata."<br>";
 
 $new_vers = intval($_POST['new_vers']);
-echo $new_vers."<br>";
+//echo $new_vers."<br>";
 
 
 
@@ -81,13 +86,13 @@ $data_disatt = $_POST['data_disattivazione'];
 $data_att = $_POST['data_attivazione'];
 
 
-echo "data_att: ".$data_att."<br>";
+//echo "data_att: ".$data_att."<br>";
 
 
 
 
 
-echo "data_disatt: ".$data_disatt."<br>";
+//echo "data_disatt: ".$data_disatt."<br>";
 
 
 
@@ -153,14 +158,14 @@ $result2 = pg_execute($conn, "query2", array($ut_sit));
 while($r2 = pg_fetch_assoc($result2)) { 
   $ut_uo=intval($r2['id_uo']);
 }
-echo $sq_ut."<br>";
-echo $ut_sit."<br>";
-echo $ut_uo."<br>";
-echo $data_att."<br>";
-echo $data_disatt."<br>";
+//echo $sq_ut."<br>";
+//echo $ut_sit."<br>";
+//echo $ut_uo."<br>";
+//echo $data_att."<br>";
+//echo $data_disatt."<br>";
 
 
-echo $insert_uo."<br>";
+//echo $insert_uo."<br>";
 //exit();
 
 
@@ -185,6 +190,7 @@ oci_bind_by_name($result_uo2, ':p10', $freq_uo);
 $ris=oci_execute($result_uo2);
 
 if (!$ris) {
+  $res_ok= $res_ok+1;
   echo "<br>ci sono errori<br>";
   $e = oci_error($result_uo2);  // For oci_execute errors pass the statement handle
   echo $e;
@@ -194,7 +200,7 @@ if (!$ris) {
   echo htmlentities($e['sqltext']);
   echo "\n%".($e['offset']+1)."s", "^";
   echo  "\n</pre>\n";
-}
+} 
 
 echo "<br> sono arrivato qua";
 oci_free_statement($result_uo2);
@@ -238,8 +244,16 @@ $insert_elenco_percorsi_ut = "INSERT INTO anagrafe_percorsi.percorsi_ut (
   NULL)";
 
 $result_percorsi_ut = pg_prepare($conn, "insert_elenco_percorsi_ut", $insert_elenco_percorsi_ut);
-echo "<br><br> ERRORI 1: <br>";
-echo  pg_last_error($conn);
+//echo "<br><br> ERRORI 1: <br>";
+if (!pg_last_error($conn)){
+  #$res_ok=0;
+} else {
+  pg_last_error($conn);
+  $res_ok= $res_ok+1;
+}
+
+
+
 $result_percorsi_ut = pg_execute($conn, "insert_elenco_percorsi_ut", 
 array($cod_percorso, $ut_uo, 
 $sq_ut,
@@ -248,11 +262,20 @@ $turno,  $durata,
 $data_att, $data_disatt
 ));
 
-echo  pg_result_error($result_percorsi_ut);
+if (!pg_last_error($conn)){
+  #$res_ok=0;
+} else {
+  pg_last_error($conn);
+  $res_ok= $res_ok+1;
+}
 
 
-
+if ($res_ok==0){
+  echo '<font color="green"> Visualizzazione aggiunta, chiudi e apri il form per visualizzare i risultati!</font>';
+} else {
+  echo '<font color="red"> ERRORE - contatta assterritorio@amiu.genova.it</font>';
+}
 #exit();
-header("location: ../dettagli_percorso.php?cp=".$cod_percorso."&v=".$new_vers."");
+//header("location: ../dettagli_percorso.php?cp=".$cod_percorso."&v=".$new_vers."");
 
 ?>
