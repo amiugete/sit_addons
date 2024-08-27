@@ -109,7 +109,8 @@ while($r = pg_fetch_assoc($result)) {
   if($check_versione_successiva==0 and $check_edit==1 and $r["flg_disattivo"]==0){
     ?>
     <li><b>Descrizione</b>
-    <form class="row row-cols-lg-auto g-3 align-items-center" name="form_dd" method="post" autocomplete="off" action="./backoffice/update_descrizione.php">
+    <!--form class="row row-cols-lg-auto g-3 align-items-center" name="form_desc" method="post" autocomplete="off" action="./backoffice/update_descrizione.php"-->
+    <form class="row row-cols-lg-auto g-3 align-items-center" name="form_desc" id="form_desc" autocomplete="off">
     <input type="hidden" id="id_percorso" name="id_percorso" value="<?php echo $cod_percorso;?>">
     <input type="hidden" id="old_vers" name="old_vers" value="<?php echo $versione;?>">
 
@@ -140,7 +141,34 @@ while($r = pg_fetch_assoc($result)) {
     </button>
     </div> 
   </form>
-
+<!-- lancio il form e scrivo il risultato -->
+<p><div id="results_desc"></div></p>
+            <script> 
+            $(document).ready(function () {                 
+                $('#form_desc').submit(function (event) { 
+                    console.log('Bottone form dd cliccato e finito qua');
+                    event.preventDefault();                  
+                    var formData = $(this).serialize();
+                    console.log(formData);
+                    $.ajax({ 
+                        url: 'backoffice/update_descrizione.php', 
+                        method: 'POST', 
+                        data: formData, 
+                        //processData: true, 
+                        //contentType: false, 
+                        success: function (response) {                       
+                            //alert('Your form has been sent successfully.'); 
+                            console.log(response);
+                            $("#results_desc").html(response).fadeIn("slow");
+                        }, 
+                        error: function (jqXHR, textStatus, errorThrown) {                        
+                            alert('Your form was not sent successfully.'); 
+                            console.error(errorThrown); 
+                        } 
+                    }); 
+                }); 
+            }); 
+        </script>
       <?php 
   } else {
     echo '<li class="mt-1"><b> Descrizione </b>'.$r["descrizione"].' ';
@@ -160,7 +188,8 @@ while($r = pg_fetch_assoc($result)) {
   if ($check_versione_successiva==0 and $check_superedit==1 and $check_in_attivazione==1 and $r["flg_disattivo"]==0){
   ?>
     <li><b>Data attivazione testata (inclusa)</b>
-    <form class="row row-cols-lg-auto g-3 align-items-center" name="form_dd" method="post" autocomplete="off" action="./backoffice/update_data_attivazione.php">
+    <!--form class="row row-cols-lg-auto g-3 align-items-center" name="form_dd" method="post" autocomplete="off" action="./backoffice/update_data_attivazione.php"-->
+    <form class="row row-cols-lg-auto g-3 align-items-center" name="form_da" id="form_da" autocomplete="off" >
     <input type="hidden" id="id_percorso" name="id_percorso" value="<?php echo $cod_percorso;?>">
     <input type="hidden" id="old_vers" name="old_vers" value="<?php echo $versione;?>">
 
@@ -192,6 +221,39 @@ while($r = pg_fetch_assoc($result)) {
     </button>
     </div> 
   </form>
+<!-- lancio il form e scrivo il risultato -->
+<p><div id="results_da"></div></p>
+            <script> 
+            $(document).ready(function () {                 
+                $('#form_da').submit(function (event) { 
+                    console.log('Bottone form dd cliccato e finito qua');
+                    event.preventDefault();                  
+                    var formData = $(this).serialize();
+                    console.log(formData);
+                    $.ajax({ 
+                        url: 'backoffice/update_data_attivazione.php', 
+                        method: 'POST', 
+                        data: formData, 
+                        //processData: true, 
+                        //contentType: false, 
+                        success: function (response) {                       
+                            //alert('Your form has been sent successfully.'); 
+                            console.log(response);
+                            $("#results_da").html(response).fadeIn("slow");
+                        }, 
+                        error: function (jqXHR, textStatus, errorThrown) {                        
+                            alert('Your form was not sent successfully.'); 
+                            console.error(errorThrown); 
+                        } 
+                    }); 
+                }); 
+            }); 
+        </script>
+
+
+
+
+
 
       <?php 
   } else { 
@@ -202,14 +264,22 @@ while($r = pg_fetch_assoc($result)) {
   $today = new DateTime('today');
 
 
+
+
+  
+
   if($check_versione_successiva==0 and $check_superedit==1 and $r["flg_disattivo"]==0){
       /*echo '- <button type="button" class="btn btn-sm btn-info" title="Modifica data disattivazione" 
       data-bs-toggle="collapse" data-bs-target="#edit_dd'.$cod_percorso.'_'.$versione.'" aria-expanded="false" aria-controls="edit_dd'.$cod_percorso.'_'.$versione.'">
       <i class="fa-solid fa-pencil"></i></button>';*/
       ?> 
-      <!-- Data disattivazione -->            
+      <!-- Data disattivazione -->
+         
+      
       <li><b>Data disattivazione (esclusa)</b>
-              <form class="row row-cols-lg-auto g-3 align-items-center" name="form_dd" method="post" autocomplete="off" action="./backoffice/update_data_disattivazione.php">
+              <!--form class="row row-cols-lg-auto g-3 align-items-center" name="form_dd" method="post" autocomplete="off" action="./backoffice/update_data_disattivazione.php"-->
+              <form class="row row-cols-lg-auto g-3 align-items-center" name="form_dd" id="form_dd">
+
               <input type="hidden" id="id_percorso" name="id_percorso" value="<?php echo $cod_percorso;?>">
               <input type="hidden" id="old_vers" name="old_vers" value="<?php echo $versione;?>">
       
@@ -228,7 +298,8 @@ while($r = pg_fetch_assoc($result)) {
                     <div class="input-group-addon">
                         <span class="glyphicon glyphicon-th"></span>
                     </div>
-      
+                    <button type="button" id="btnTomorrow" class="btn btn-info btn-sm" title="Imposta a domani"><i class="fa-solid fa-calendar-day"></i></button>
+                    <button type="button" id="btnInf" class="btn btn-info btn-sm" title="Imposta all'infinito"><i class="fa-solid fa-calendar-xmark"></i></button>
               </div>
               </div>
       
@@ -242,7 +313,43 @@ while($r = pg_fetch_assoc($result)) {
               <i class="fa-solid fa-arrow-up-from-bracket"></i> Salva
               </button>
               </div> 
+
+              
             </form>
+            
+            <!-- lancio il form e scrivo il risultato -->
+            <p><div id="results_dd"></div></p>
+            <script> 
+            $(document).ready(function () {                 
+                $('#form_dd').submit(function (event) { 
+                    console.log('Bottone form dd cliccato e finito qua');
+                    event.preventDefault();                  
+                    var formData = $(this).serialize();
+                    console.log(formData);
+                    $.ajax({ 
+                        url: 'backoffice/update_data_disattivazione.php', 
+                        method: 'POST', 
+                        data: formData, 
+                        //processData: true, 
+                        //contentType: false, 
+                        success: function (response) {                       
+                            //alert('Your form has been sent successfully.'); 
+                            console.log(response);
+                            $("#results_dd").html(response).fadeIn("slow");
+                        }, 
+                        error: function (jqXHR, textStatus, errorThrown) {                        
+                            alert('Your form was not sent successfully.'); 
+                            console.error(errorThrown); 
+                        } 
+                    }); 
+                }); 
+            }); 
+        </script>
+
+
+
+
+
 
       <?php 
   } else {  echo '<li class="mt-1"><b> Data disattivazione (esclusa*) </b>'.$r["data_disattivazione_testata"]. ' ';
@@ -502,7 +609,8 @@ if($check_versione_successiva==0){
 
 <hr>
 
-<form id="vis" name="vis" method="post" autocomplete="off" action="./backoffice/nuova_visualizzazione.php">
+<!--form id="vis" name="vis" method="post" autocomplete="off" action="./backoffice/nuova_visualizzazione.php"-->
+<form id="vis" name="vis" autocomplete="off" >
 
 <input type="hidden" id="id_percorso" name="id_percorso" value="<?php echo $cod_percorso;?>">
 <input type="hidden" id="desc" name="desc" value="<?php echo $desc;?>">
@@ -561,6 +669,39 @@ where cod_percorso = $1 and data_disattivazione  =$2)
 
 
 </form>
+<!-- lancio il form e scrivo il risultato -->
+<p><div id="results_vis"></div></p>
+            <script> 
+            $(document).ready(function () {                 
+                $('#form_dd').submit(function (event) { 
+                    console.log('Bottone nuova visualizzazione cliccato e finito qua');
+                    event.preventDefault();                  
+                    var formData = $(this).serialize();
+                    console.log(formData);
+                    $.ajax({ 
+                        url: 'backoffice/nuova_visualizzazione.php', 
+                        method: 'POST', 
+                        data: formData, 
+                        //processData: true, 
+                        //contentType: false, 
+                        success: function (response) {                       
+                            //alert('Your form has been sent successfully.'); 
+                            console.log(response);
+                            $("#results_vis").html(response).fadeIn("slow");
+                        }, 
+                        error: function (jqXHR, textStatus, errorThrown) {                        
+                            alert('Your form was not sent successfully.'); 
+                            console.error(errorThrown); 
+                        } 
+                    }); 
+                }); 
+            }); 
+        </script>
+
+
+
+
+
 
 <?php } else {
     echo '<i class="fa-solid fa-ghost"></i> Non è ultima versione del percorso.. non posso fare modifiche.';
@@ -585,23 +726,37 @@ where cod_percorso = $1 and data_disattivazione  =$2)
 
 <script>
 
-$('#js-date1').datepicker({
-    format: 'dd/mm/yyyy',
-    todayBtn: "true",
-    startDate: '+1d', 
-    language:'it' 
+// imposto la data di disattivazione a domani
+$('#btnTomorrow').click(function() {     
+  $('#js-date2').datepicker('setDate', "+1d");
 });
 
-
-$('#js-date2').datepicker({
-    format: 'dd/mm/yyyy',
-    todayBtn: "true",
-    startDate: '+1d', 
-    language:'it' 
+$('#btnInf').click(function() {     
+  $('#js-date2').datepicker('setDate', "31/12/2099");
 });
 
 $(document).ready(function(){
-    console.log('Arrivo qua')
+  console.log('Ci passo?');
+  $('#js-date1').datepicker({
+      format: 'dd/mm/yyyy',
+      todayBtn: "linked", // in conflitto con startDate
+      startDate: '+1d', 
+      language:'it' 
+  });
+
+
+  $('#js-date2').datepicker({
+      format: 'dd/mm/yyyy',
+      todayBtn: 'linked',
+      startDate: '+1d', 
+      assumeNearbyYear: "true",
+      startView: 0 ,
+      language:'it' 
+  });
+}); 
+
+$(document).ready(function(){
+    console.log('Arrivo qua');
     //$('#ut').removeAttr('disabled');
     $('#ut').selectpicker("show");
     //$('#ut').selectpicker("refresh");
