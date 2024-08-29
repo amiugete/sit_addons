@@ -50,12 +50,6 @@ require_once('./check_utente.php');
 
 
 
-
-
-
-
-
-
 <!-- BOOTSTRAP DATEPICKER -->
 <link rel="stylesheet" href="./vendor/eternicode/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css"/>
 

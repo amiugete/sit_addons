@@ -1,5 +1,6 @@
 <?php
 $id=pg_escape_string($_GET['cod']);
+$vers=pg_escape_string($_GET['vers']);
 ?>
 <?php 
 //require_once('./req.php');
@@ -9,15 +10,21 @@ $id=pg_escape_string($_GET['cod']);
 <?php
 $output=null;
 $retval=null;
-$comando='/usr/bin/python3 /home/procedure/script_sit_amiu/report_settimanali_percorsi.py '.$id.'';
+if ($vers=='c') {
+  $comando='/usr/bin/python3 /home/procedure/script_sit_amiu/report_settimanali_percorsi.py '.$id.'';
+} else if ($vers=='s'){
+  $comando='/usr/bin/python3 /home/procedure/script_sit_amiu/report_settimanali_percorsi.py '.$id.' sempl';
+}
 //echo $comando;
 //echo '<br><br>';
 exec($comando, $output, $retval);
 if ($retval == 0) {
   // define file $mime type here
-
-  $file_name = '/tmp/report/report_'.$id.'.xlsx';
-  
+  if ($vers=='c') {
+    $file_name = '/tmp/report/report_'.$id.'.xlsx';
+  } else if ($vers=='s'){
+    $file_name = '/tmp/report/report_'.$id.'_operatore.xlsx';
+  }
   // first, get MIME information from the file
   $finfo = finfo_open(FILEINFO_MIME_TYPE); 
   $mime =  finfo_file($finfo, $file_name);
@@ -25,7 +32,11 @@ if ($retval == 0) {
 
   // send header information to browser
   header('Content-Type: '.$mime);
-  header('Content-Disposition: attachment;  filename="report_'.$id.'.xlsx"');
+  if ($vers=='c') {
+    header('Content-Disposition: attachment;  filename="report_'.$id.'.xlsx"');
+  } else if ($vers=='s'){
+    header('Content-Disposition: attachment;  filename="report_'.$id.'_operatore.xlsx"');
+  }
   header('Content-Length: ' . filesize($file_name));
   header('Expires: 0');
   header('Cache-Control: must-revalidate, post-check=0, pre-check=0');

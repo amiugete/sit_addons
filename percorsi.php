@@ -295,9 +295,13 @@ window.dpEvents = {
 
     function nameFormatterReport(value, row) {
       if (row.flg_disattivo == 'Attivo' && !row.tipo.includes('SOLO TESTATA')) {
-        return '<a class="btn btn-info" href="./download_report_percorso.php?cod='+row.cod_percorso+'"><i class="fa-solid fa-list-check"></i></a>';
+        return [
+          '<div class="btn-group btn-group-sm" role="group" aria-label="...">',
+          '<a class="btn btn-success btn-sm" href="./download_report_percorso.php?cod='+row.cod_percorso+'&vers=s"><i title="Versione per operatore" class="fa-solid fa-clipboard-list"></i></a>',
+          '<a class="btn btn-primary btn-sm" href="./download_report_percorso.php?cod='+row.cod_percorso+'&vers=c"><i title="Versione completa" class="fa-solid fa-list-check"></i></a>',
+          '</div>'  
+        ].join('');
       }  
-     
     };
 
 
