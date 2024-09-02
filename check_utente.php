@@ -24,6 +24,8 @@ if ($_GET['jwt']){
 
   // unset cookies che ricreo
   if (isset($_SERVER['HTTP_COOKIE'])) {
+    //echo 'sono qua';
+    //exit();
     $cookies = explode(';', $_SERVER['HTTP_COOKIE']);
     foreach($cookies as $cookie) {
         $parts = explode('=', $cookie);
@@ -31,7 +33,7 @@ if ($_GET['jwt']){
         setcookie($name, '', time()-1000);
         setcookie($name, '', time()-1000, '/');
     }
-}
+  } 
   //echo "Caso 1 Cookie named un is not set!<br>";
   // se non ho il nome provo con il token
   $token0=$_GET['jwt'];
@@ -50,44 +52,42 @@ if ($_GET['jwt']){
 
   //echo $secret_pwd ."ok 0<br><br>";
     if (!$_SESSION['username']){
-    if ($token){
-      $decoded1=json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',explode('.', $token)[1]))));
-      foreach($decoded1 as $key => $value)
-      {
-        //echo $key." is ". $value . "<br>";
-        if ($key=='userId') {
-              $userId = (int)$value;
-        }
-        if ($key=='name') {
-          //echo "sono qua<br>";
-          $_SESSION['username'] = $value;
-          setcookie($name, '', time()-1000);
-          setcookie("un", $value, time() + (86400 * 7)); // 86400 = 1 day
-          //$_COOKIE["un"]=$_SESSION['username'];
-          $_SESSION['start'] = time(); // Taking now logged in time.
-          // Ending a session in 8 hours from the starting time.
-          $_SESSION['expire'] = $_SESSION['start'] + (8* 60 * 60);
-        }
-        if ($key=='userId') {
-          $userId = (int)$value;
-        }
-        if ($key=='exp' AND  basename($_SERVER['PHP_SELF'])!='login.php') {
-              $exp = (int)$value;
-              if (time()>$exp){
-                  die ('Token di autorizzazione SIT scaduto <br><br><a href="./login.php" class="btn btn-info"> Vai al login </a>');
-              }
+
+      if ($token){
+        $decoded1=json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',explode('.', $token)[1]))));
+        foreach($decoded1 as $key => $value)
+        {
+          //echo $key." is ". $value . "<br>";
+          if ($key=='userId') {
+                $userId = (int)$value;
+          }
+          if ($key=='name') {
+            //echo "sono qua<br>";
+            $_SESSION['username'] = $value;
+            setcookie("un", $value, time() + (86400 * 7)); // 86400 = 1 day
+            //$_COOKIE["un"]=$_SESSION['username'];
+            $_SESSION['start'] = time(); // Taking now logged in time.
+            // Ending a session in 8 hours from the starting time.
+            $_SESSION['expire'] = $_SESSION['start'] + (8* 60 * 60);
+          }
+
+          if ($key=='exp' AND  basename($_SERVER['PHP_SELF'])!='login.php') {
+                $exp = (int)$value;
+                if (time()>$exp){
+                    die ('Token di autorizzazione SIT scaduto <br><br><a href="./login.php" class="btn btn-info"> Vai al login </a>');
+                }
+          }
         }
       }
+    } else {
+      // se c'è lo username setto i cookies
+      setcookie("un", $_SESSION['username'], time() + (86400 * 7)); // 86400 = 1 day
     }
-  } else {
-    // se c'è lo username setto i cookies
-    setcookie("un", $_SESSION['username'], time() + (86400 * 7)); // 86400 = 1 day
-  }
 
   //echo 'Now: '. time()."<br><br>";
   //echo 'Exp: '.$exp ."<br><br>";
   //echo 'userId: '.$userId ."<br><br>";
-} else if ( $_SESSION['username']){
+} else if ( $_SESSION['username']) {
   // sessione aperta
   //echo "Caso 2<br>";
   $_SESSION['username']=$_SESSION['username'];
@@ -131,4 +131,6 @@ if ($_GET['jwt']){
 }*/
 
 //echo $_SESSION['expire'] ."<br>";
+//echo "il problema non è qua";
+//exit();
 ?>

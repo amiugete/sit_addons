@@ -138,7 +138,7 @@ if ((int)$id_role_SIT = 0) {
         data-group-by-field='["cod_percorso", "descrizione", "famiglia", "tipo"]'
         data-show-search-clear-button="true"   
         data-show-export="true" 
-        data-export-type=['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'doc', 'pdf'] 
+        data-export-type="['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'doc', 'pdf']"
 				data-search="true" data-click-to-select="true" data-show-print="false"  
 				data-pagination="true" data-page-size=75 data-page-list=[10,25,50,75,100,200,500]
         data-show-pagination-switch="true"
