@@ -34,6 +34,7 @@ if(!$conn) {
     case 
     when ep.data_fine_validita <= now()::date then 'Disattivo'
     when ep.data_inizio_validita > now()::date and ep.data_fine_validita > now()::date then 'In attivazione'
+    when ep.data_inizio_validita < now()::date and ep.data_fine_validita <= (current_date + 7)::date then 'In disattivazione'
     else 'Attivo'
     end flg_disattivo
     from anagrafe_percorsi.elenco_percorsi ep 
