@@ -146,6 +146,8 @@ if ((int)$id_role_SIT = 0) {
         data-search-on-enter-key="true"  
         data-remember-order="true"
         data-search-highlight = "true" 
+        data-auto-refresh="true"
+        data-auto-refresh-interval = 15
         data-show-refresh="true" data-show-toggle="true"
         data-show-columns="true"
 				data-filter-control="true"
