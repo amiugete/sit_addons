@@ -11,9 +11,9 @@ $vers=pg_escape_string($_GET['vers']);
 $output=null;
 $retval=null;
 if ($vers=='c') {
-  $comando='/usr/bin/python3 /home/procedure/script_sit_amiu/report_settimanali_percorsi.py '.$id.'';
+  $comando='/usr/bin/python3 /home/procedure/script_sit_amiu/report_settimanali_percorsi_ok.py '.$id.' compl no';
 } else if ($vers=='s'){
-  $comando='/usr/bin/python3 /home/procedure/script_sit_amiu/report_settimanali_percorsi.py '.$id.' sempl';
+  $comando='/usr/bin/python3 /home/procedure/script_sit_amiu/report_settimanali_percorsi_ok.py '.$id.' sempl no';
 }
 //echo $comando;
 //echo '<br><br>';
