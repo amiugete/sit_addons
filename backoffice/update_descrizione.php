@@ -74,10 +74,16 @@ if (!pg_last_error($conn)){
 //echo "<br><br>Update elem.percorsi<br>";
 
 $descrizione_storico='Nuova descrizione percorso: '.$desc;
-$insert_sit0="INSERT INTO util.sys_history (\"type\", \"action\", description, datetime,  id_percorso, id_user)
+/*$insert_sit0="INSERT INTO util.sys_history (\"type\", \"action\", description, datetime,  id_percorso, id_user)
  VALUES( 'PERCORSO', 'UPDATE', $1 , CURRENT_TIMESTAMP, (select id_percorso from elem.percorsi 
  WHERE cod_percorso LIKE $2 and (data_dismissione is null or data_dismissione> now())), 
  (select id_user from util.sys_users su where \"name\" ilike $3));";
+*/
+$insert_sit0="INSERT INTO util.sys_history (\"type\", \"action\", description, datetime,  id_percorso, id_user)
+(select 'PERCORSO', 'UPDATE', $1 , CURRENT_TIMESTAMP, 
+ id_percorso, (select id_user from util.sys_users su where \"name\" ilike $2)
+ from elem.percorsi 
+ WHERE cod_percorso LIKE $3 and (data_dismissione is null or data_dismissione> now())) ;";
 
 $result_isit0 = pg_prepare($conn, "insert_sit0", $insert_sit0);
 if (!pg_last_error($conn)){
@@ -86,15 +92,18 @@ if (!pg_last_error($conn)){
     pg_last_error($conn);
     $res_ok= $res_ok+1;
 }
-$result_isit0 = pg_execute($conn, "insert_sit0", array($descrizione_storico, $cod_percorso, $_SESSION['username'])); 
+$result_isit0 = pg_execute($conn, "insert_sit0", array($descrizione_storico,  $_SESSION['username'], $cod_percorso)); 
 if (!pg_last_error($conn)){
     #$res_ok=0;
 } else {
-    pg_last_error($conn);
+    //echo pg_last_error($conn);
+    echo $descrizione_storico;
+    echo $cod_percorso;
+    echo $_SESSION['username'];
+    echo "<br><br>Insert util.sys_history<br>". pg_last_error($conn);
     $res_ok= $res_ok+1;
 }
 
-//echo "<br><br>Insert util.sys_history<br>";
 
 
 
@@ -106,7 +115,7 @@ $result_usit1 = pg_prepare($conn, "update_sit1", $update_sit1);
 if (!pg_last_error($conn)){
     #$res_ok=0;
 } else {
-    pg_last_error($conn);
+    echo "<br><br>Update anagrafe_percorsi.elenco_percorsi<br>". pg_last_error($conn);
     $res_ok= $res_ok+1;
 }
 $result_usit1 = pg_execute($conn, "update_sit1", array($desc, $cod_percorso)); 
@@ -114,10 +123,14 @@ $result_usit1 = pg_execute($conn, "update_sit1", array($desc, $cod_percorso));
 if (!pg_last_error($conn)){
     #$res_ok=0;
 } else {
-    pg_last_error($conn);
+    echo "<br><br>Update anagrafe_percorsi.elenco_percorsi<br>". pg_last_error($conn);
     $res_ok= $res_ok+1;
 }
-//echo "<br><br>Update anagrafe_percorsi.elenco_percorsi<br>";
+
+
+
+
+
 
 
 $update_sit2="UPDATE anagrafe_percorsi.elenco_percorsi_old epo
@@ -129,17 +142,20 @@ $result_usit2 = pg_prepare($conn, "update_sit2", $update_sit2);
 if (!pg_last_error($conn)){
     #$res_ok=0;
 } else {
-    pg_last_error($conn);
+    echo "<br><br>Update anagrafe_percorsi.elenco_percorsi_old<br>". pg_last_error($conn);
     $res_ok= $res_ok+1;
 }
+
+
+
 $result_usit2 = pg_execute($conn, "update_sit2", array($desc, $cod_percorso)); 
 if (!pg_last_error($conn)){
     #$res_ok=0;
 } else {
-    pg_last_error($conn);
+    echo "<br><br>Update anagrafe_percorsi.elenco_percorsi_old<br>". pg_last_error($conn);
     $res_ok= $res_ok+1;
 }
-//echo "<br><br>Update anagrafe_percorsi.elenco_percorsi_old<br>";
+
 
 
 /*$update_sit3="UPDATE anagrafe_percorsi.percorsi_ut epo
@@ -172,7 +188,7 @@ echo "<br><br>Update anagrafe_percorsi.percorsi_ut<br>";*/
 if ($res_ok==0){
     echo '<font color="green"> Nuova descrizione salvata correttamente!</font>';
 } else {
-    echo '<font color="red"> ERRORE - contatta assterritorio@amiu.genova.it</font>';
+    echo $res_ok.'<font color="red"> ERRORE - contatta assterritorio@amiu.genova.it</font>';
 }
 
 ?>
