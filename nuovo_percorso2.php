@@ -239,7 +239,7 @@ if ($id_servizio_sit){
 
   //Tengo anche le rimesse (poi faccio un controllo dopo)
 
-  $query1="select id_ut, descrizione from topo.ut  u
+  $query1="select distinct id_ut, descrizione from topo.ut  u
   join anagrafe_percorsi.cons_mapping_uo cmu on cmu.id_uo_sit = u.id_ut
   where (u.data_disattivazione is null or u.data_disattivazione> now())
   order by descrizione ;";

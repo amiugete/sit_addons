@@ -99,7 +99,10 @@
 }
 
 
-
+/*.dropdown-menu.show {
+  min-width: 100%;
+  width: max-content;
+}*/
 
 
 .disabled-link {

@@ -1,10 +1,17 @@
 <?php
+session_start();
 //require_once('./check_utente.php');
 
 // Faccio il controllo su SIT
 
-$query_role='SELECT  su.id_user, sr.id_role, sr."name" as "role" FROM util.sys_users su
+$query_role='SELECT  su.id_user, sr.id_role, sr."name" as "role",
+case 
+	when suse.id_user is not null then 1
+	else 0
+end servizi_esternalizzati
+FROM util.sys_users su
 join util.sys_roles sr on sr.id_role = su.id_role  
+left join etl.sys_users_servizi_esternalizzati suse on suse.id_user = su.id_user 
 where su."name" ilike $1;';
 $result_n = pg_prepare($conn, "my_query_navbar1", $query_role);
 $result_n = pg_execute($conn, "my_query_navbar1", array($_SESSION['username']));
@@ -15,6 +22,7 @@ while($r = pg_fetch_assoc($result_n)) {
   $id_role_SIT=(int)$r['id_role'];
   //$id_user_SIT=$r['id_user'];
   $_SESSION['id_user']=$r['id_user'];
+  $check_esternalizzati=$r['servizi_esternalizzati'];
   $check_SIT=1;
 }
 //echo "<script type='text/javascript'>alert('$check_SIT');</script>";
@@ -55,8 +63,6 @@ if ($check_modal!=1){
        echo "(ambiente di TEST)";
     }
     ?>
-
-
     </span> 
   </a> 
 </h3>
@@ -127,12 +133,32 @@ if ($check_modal!=1){
             <?php if ($check_superedit == 1) { ?>
               <a class="dropdown-item" href="./consuntivazione_ekovision.php">Report consuntivazione Ekovision</a>
             <?php } ?>
+            <?php if ($check_superedit == 1 OR $check_esternalizzati==1) { ?>
+              <a class="dropdown-item" href="./targhe_ditte_terze.php">Targhe ditte terze</a>
+            <?php } ?>
             <a class="dropdown-item" href="./report_contenitori_bilaterali.php">Report contenitori bilaterali</a>
             <!--a class="dropdown-item" href="http://amiupostgres/SIT/downloadTemplateImport()">Template per import</a-->
           </div>
         </li>
-
-
+        <?php } ?>
+        <?php if ($check_edit > 0) { ?>
+        <!--li id="link_pc2" class="nav-item">
+          <a class="nav-link" href="./report_contenitori.php"> Report contenitori bilaterali</a>
+        </li-->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#"  role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="navbarDropdown5">
+          Sovrariempimenti
+          </a>
+          <div class="dropdown-menu" id="navbarDropdown5" aria-labelledby="navbarDropdown5">
+          
+            <?php if ($check_edit == 1) { ?>
+              <!--span class="disable-links"><a class="dropdown-item" href="#">Import dati per verifiche</a></span-->
+              <a class="dropdown-item" href="./piazzola_sovr.php">Compilazione dati</a>
+            <?php } ?>
+            <a class="dropdown-item" href="./export_sovr.php">Export report sovrariempimenti</a>
+          </div>
+        </li>
+        <?php } ?>
 
         <script type="text/javascript">
           function closeWindow() {
@@ -161,7 +187,7 @@ if ($check_modal!=1){
         <li class="nav-item">
           <a class="nav-link" href="./chiusura.php">Chiusura interventi</a>
         </li-->
-        <?php } ?>
+        
         
       </ul>
       
@@ -233,9 +259,19 @@ if ($check_modal!=1){
 </nav>
 <?php 
 if ($_SESSION['test']==1) {
+?> <div> <?php
+  if (count(explode("_", basename($_SERVER['PHP_SELF'])))> 1) { 
+    if (explode("_", basename($_SERVER['PHP_SELF']))[1] == 'sovr.php'){ 
+      ?>
+      <h4><i class="fa-solid fa-triangle-exclamation"></i> Ambiente di TEST!</h4>
+      <?php
+    }
+  } else {
+
 ?>
-<div> <h4><i class="fa-solid fa-triangle-exclamation"></i> Ambiente di TEST ma dati in esercizio!</h4>
-<?php 
+ <h4><i class="fa-solid fa-triangle-exclamation"></i> Ambiente di TEST ma dati in esercizio!</h4>
+<?php
+  } 
 // TEST e DEBUG COOKIES
 /*
 foreach ($_COOKIE as $key=>$val)
