@@ -145,6 +145,7 @@ if ($check_modal!=1){
         <!--li id="link_pc2" class="nav-item">
           <a class="nav-link" href="./report_contenitori.php"> Report contenitori bilaterali</a>
         </li-->
+        <?php if ($check_superedit == 1 OR $_SESSION['username']=='Longo' ) { ?>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#"  role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="navbarDropdown5">
           Sovrariempimenti
@@ -159,7 +160,7 @@ if ($check_modal!=1){
           </div>
         </li>
         <?php } ?>
-
+        <?php } ?>
         <script type="text/javascript">
           function closeWindow() {
 
