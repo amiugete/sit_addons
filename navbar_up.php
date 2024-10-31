@@ -55,7 +55,7 @@ if ($check_modal!=1){
 ?>
 <div class="navbar-header">
 <div id="intestazione" class="banner"> <div id="banner-image">
-<h3>  <a class="navbar-brand link-light" href="#">
+<h3>  <a class="navbar-brand link-light" href="./index.php">
     <img class="pull-left" src="img\amiu_small_white.png" alt="SIT" width="85px">
     <span>Sistema Informativo Territoriale - Funzionalità avanzate 
     <?php 
@@ -131,14 +131,25 @@ if ($check_modal!=1){
           </a>
           <div class="dropdown-menu" id="navbarDropdown3" aria-labelledby="navbarDropdown3">
             <a class="dropdown-item" href="./consuntivazione_ekovision.php">Report consuntivazione Ekovision</a>
-            <?php if ($check_superedit == 1 OR $check_esternalizzati==1) { ?>
-              <a class="dropdown-item" href="./targhe_ditte_terze.php">Targhe ditte terze</a>
-            <?php } ?>
+
             <a class="dropdown-item" href="./report_contenitori_bilaterali.php">Report contenitori bilaterali</a>
             <!--a class="dropdown-item" href="http://amiupostgres/SIT/downloadTemplateImport()">Template per import</a-->
           </div>
         </li>
         <?php } ?>
+        <?php if ($check_superedit == 1 OR $check_esternalizzati==1) { ?>
+          <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#"  role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="navbarDropdown6">
+          Ditte terze
+          </a>
+            <div class="dropdown-menu" id="navbarDropdown6" aria-labelledby="navbarDropdown6">
+
+              <a class="dropdown-item" href="./targhe_ditte_terze.php">Targhe ditte terze</a>
+              <a class="dropdown-item" href="./report_fascia_oraria_esecuzione.php">Report fascia oraria consuntivazione</a>
+            </div>
+          </li>
+
+          <?php } ?>
         <?php if ($check_edit > 0) { ?>
         <!--li id="link_pc2" class="nav-item">
           <a class="nav-link" href="./report_contenitori.php"> Report contenitori bilaterali</a>
