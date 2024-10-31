@@ -1,7 +1,17 @@
 <?php
-session_start();
+
 // setcookie funziona solo se non ci sono degli output prima per cui l'ho spostato qua;
 require_once('./check_utente.php');
+
+
+session_start();
+
+// parametri iniziali 
+$partenza_ditte_terze="21/10/2024";
+
+$partenza_ekovision= "20/11/2023";
+
+
 ?>
 
 

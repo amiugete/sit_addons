@@ -47,51 +47,39 @@ if ((int)$id_role_SIT = 0) {
 
 <div class="container">
 <div class="row justify-content-start">
-<div class="col-6">
+<div class="col-4">
 <?php 
 
-
-
-$query_max1="SELECT TO_CHAR(max(DATA_ORA_INSER),'DD/MM/YYYY HH24:MI') as MAX_DATA_AGG_JSON 
-            FROM EKOVISION_LETTURA_CONSUNT elc";
-
-$result_max1 = oci_parse($oraconn, $query_max1);
-//oci_bind_by_name($result0, ':s1', $scheda);
-oci_execute($result_max1);
-
-
-while($rmax1 = oci_fetch_assoc($result_max1)) {
-  echo '<i class="fa-solid fa-stopwatch"></i> ';
-  /*if($rmax1['max_data_agg_api'] ){
-
-  }*/
-  echo "<b>Ultimo aggiornamento da EKOVISION</b>: ".$rmax1['MAX_DATA_AGG_JSON'] ."  ";
-}
-
-
-oci_free_statement($result_max1);
-oci_close($oraconn);
+require_once("./last_update_ekovision.php");
 
 ?>
   </div>
-  <div class="col-6">
+  <div class="col-4">
   <!--FILTRO PER UT sulla base delle UT del mio profilo SIT-->
 <div class="rfix">
-  <script>
+
+<script>
   function utScelta(val) {
     document.getElementById('open_ut').submit();
   }
 </script>
+
+
+
+
 <form class="row" name="open_ut" method="post" id="open_ut" autocomplete="off" action="consuntivazione_ekovision.php" >
 
 <?php //echo $username;?>
 
-<div class="form-group col-lg-4">
+<div class="form-group">
+
+<label for="ut" >Seleziona una UT</label>
   <select class="selectpicker show-tick form-control" 
   data-live-search="true" name="ut" id="ut" onchange="utScelta(this.value);" required="">
   
+  
   <?php 
-  if ($_POST['ut']) {
+  if (intval($_POST['ut'])>=0) {
     $query0='select id_ut, descrizione
     from topo.ut u
     join anagrafe_percorsi.cons_mapping_uo cmu on cmu.id_uo_sit = u.id_ut 
@@ -105,47 +93,28 @@ oci_close($oraconn);
           <option name="ut" value="<?php echo $_POST['ut'];?>" ><?php echo $r0['descrizione']?></option>
   <?php }
   pg_free_result($result0); 
+  ?>
+  <option name="ut" value="0">Nessuna UT</option>
+  <?php 
   } else {
   ?>
-    <option name="ut" value="NO">Seleziona una UT</option>
+    <option name="ut" value="0">Nessuna UT</option>
   
   
   <?php            
   }
 
-  
-  $query1=" select u.id_ut, cmu.id_uo, descrizione
-  from topo.ut u 
-  join anagrafe_percorsi.cons_mapping_uo cmu on cmu.id_uo_sit = u.id_ut 
-  where id_ut in  
-  (select 
-    id_ut
-    from util.sys_users_ut suu where id_user in (
-        select id_user from util.sys_users su where \"name\" ILIKE $1
-  )   
-  and id_ut > 0
-  and coalesce(u.data_disattivazione, (now()+ interval '1' year)) > now()
-  union 
-  select 
-  u.id_ut 
-    from util.sys_users_ut suu, topo.ut u
-    where suu.id_user in (
-        select id_user from util.sys_users su where \"name\" ILIKE $1
-  )   
-  and suu.id_ut = -1
-  ) and id_ut in (select id_uo_sit from anagrafe_percorsi.cons_mapping_uo)
-  and coalesce(u.data_disattivazione, (now()+ interval '1' year)) > now()
-  order by 2";
+  require_once('query_ut.php');
 
-  //echo "<br>". $query;
+  //echo "<br>". $query1;
 
 
-  $result1 = pg_prepare($conn, "my_query1", $query1);
+  $result1 = pg_prepare($conn, "my_query1", $query_ut);
   $result1 = pg_execute($conn, "my_query1", array($_SESSION['username']));
 
   while($r1 = pg_fetch_assoc($result1)) { 
 ?>    
-        <option name="ut" value="<?php echo $r1['id_uo'];?>" ><?php echo $r1['descrizione']?></option>
+        <option name="ut0" value="<?php echo $r1['id_ut'];?>" ><?php echo $r1['descrizione']?></option>
 <?php 
   }
   pg_free_result($result1); 
@@ -154,9 +123,6 @@ oci_close($oraconn);
   </select>  
        
 </div>
-<div class="form-group col-lg-4">
-<a class="btn btn-primary" href="./consuntivazione_ekovision.php">Tutte le UT (da rivedere)</a>
-</div>
   </form>
 
   </div>
@@ -164,8 +130,7 @@ oci_close($oraconn);
 <!--FINE FILTRO PER UT sulla base delle UT del mio profilo SIT -->
 
   </div>
-</div>
-<div class="row justify-content-start">
+
 <?php 
 $dt= new DateTime();
 $today = new DateTime();
@@ -173,10 +138,10 @@ $last_month = $dt->modify("-1 month");
 ?>
 
 
-<div class="form-group col-lg-6">
+<div class="form-group col-lg-4">
 <label for="data_inizio" >Da  (GG/MM/AAAA) - A (GG/MM/AAAA)</label><font color="red">*</font>
     <input type="text" class="form-control" name="daterange" value="<?php echo $last_month->format('d/m/Y');?> - <?php echo $today->format('d/m/Y');?>"/>
-    <small>Massimo 31 giorni <font color="red">Ancora in test. Non funziona la query</font></small>
+    <small>Massimo 31 giorni </small>
 </div>
 
 
@@ -188,7 +153,7 @@ $(function() {
         days: 31
     },
     showISOWeekNumbers: true,
-    minDate: "20/11/2023" 
+    minDate: "<?php echo $partenza_ekovision;?>"
 
     
   }, function(start, end, label) {
@@ -196,6 +161,12 @@ $(function() {
     var data_fine= end.format('YYYY-MM-DD');
     console.log("A new date selection was made: " + data_inizio + ' to ' + data_fine);
     
+  
+
+    // Faccio refres della data-url
+    $table.bootstrapTable('refresh', {
+      url: "./tables/report_consuntivazione_ekovision.php?ut=<?php echo $_POST['ut']?>&data_inizio="+data_inizio+"&data_fine="+data_fine+""
+    });
   });
 });
 </script>
@@ -228,20 +199,21 @@ $(function() {
         data-group-by="false"
         data-group-by-field='["indirizzo", "frazione"]'
         data-show-search-clear-button="true"   
-        data-show-export="false" 
+        data-show-export="true" 
         data-export-type=['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'doc', 'pdf'] 
 				data-search="true" data-click-to-select="true" data-show-print="false"  
         data-virtual-scroll="false"
         data-show-pagination-switch="false"
 				data-pagination="true" data-page-size=75 data-page-list=[10,25,50,75,100,200,500]
-				data-side-pagination="false" 
+				data-side-pagination="server" 
         data-show-refresh="true" data-show-toggle="true"
         data-show-columns="true"
 				data-filter-control="true"
         data-sort-select-options = "true"
         data-filter-control-multiple-search="false"
+        data-export-data-type="all"
         data-query-params="queryParams"
-        data-url="./tables/report_consuntivazione_ekovision.php?ut=<?php echo $_POST['ut']?>&data_inizio="+data_inizio+"&data_fine="+data_fine 
+        data-url="./tables/report_consuntivazione_ekovision.php?ut=<?php echo $_POST['ut']?>&data_inizio=<?php echo $last_month->format("Y-m-d");?>&data_fine=<?php echo $today->format("Y-m-d");?>" 
         data-toolbar="#toolbar" 
         data-show-footer="false"
         >

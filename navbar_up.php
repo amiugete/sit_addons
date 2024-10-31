@@ -12,7 +12,7 @@ end servizi_esternalizzati
 FROM util.sys_users su
 join util.sys_roles sr on sr.id_role = su.id_role  
 left join etl.sys_users_servizi_esternalizzati suse on suse.id_user = su.id_user 
-where su."name" ilike $1;';
+where su."name" ilike $1 and su.id_user>0;';
 $result_n = pg_prepare($conn, "my_query_navbar1", $query_role);
 $result_n = pg_execute($conn, "my_query_navbar1", array($_SESSION['username']));
 
@@ -30,7 +30,7 @@ while($r = pg_fetch_assoc($result_n)) {
 if ($check_SIT==0){
   if ($check_modal!=1){
   redirect('login.php');
-  //exit;
+  exit(0);
   } else {
     echo 'Problema autenticazione';
   }
@@ -130,9 +130,7 @@ if ($check_modal!=1){
           Reportistica avanzata
           </a>
           <div class="dropdown-menu" id="navbarDropdown3" aria-labelledby="navbarDropdown3">
-            <?php if ($check_superedit == 1) { ?>
-              <a class="dropdown-item" href="./consuntivazione_ekovision.php">Report consuntivazione Ekovision</a>
-            <?php } ?>
+            <a class="dropdown-item" href="./consuntivazione_ekovision.php">Report consuntivazione Ekovision</a>
             <?php if ($check_superedit == 1 OR $check_esternalizzati==1) { ?>
               <a class="dropdown-item" href="./targhe_ditte_terze.php">Targhe ditte terze</a>
             <?php } ?>
@@ -219,12 +217,17 @@ if ($check_modal!=1){
           case
             when min(suu.id_ut) = -1 then 'Tutte le UT/Rimesse'
             else string_agg(u.descrizione, ', ') 
-          end uts
+          end uts, 
+          case
+            when min(suu.id_ut) = -1 then NULL
+            else string_agg(cmu.id_uo::text, ', ') 
+          end id_uos
           from util.sys_users su 
           join util.sys_roles sr on sr.id_role = su.id_role 
           left join util.sys_users_ut suu on suu.id_user = su.id_user 
           left join topo.ut u on u.id_ut = suu.id_ut 
-          where su.\"name\" ilike $1
+          left join anagrafe_percorsi.cons_mapping_uo cmu on cmu.id_uo_sit = u.id_ut
+          where su.\"name\" ilike $1 and su.id_user > 0
           group by su.\"name\", su.email, sr.name, sr.description";
 
           
@@ -236,7 +239,8 @@ if ($check_modal!=1){
             $profilo=$r1['ruolo'];
             
             $uts=$r1['uts'];
-            
+
+            $_SESSION['id_uos']=$r1['id_uos'];
 
           }
 

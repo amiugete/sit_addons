@@ -83,7 +83,7 @@ if ((int)$id_role_SIT = 0) {
   pg_free_result($result0); 
   } else{
   ?>
-    <option name="ut0" value="NO">Seleziona una UT</option>
+    <option name="ut0" value="0">Seleziona una UT</option>
   
   
   <?php            

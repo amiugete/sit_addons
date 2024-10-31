@@ -27,23 +27,33 @@ require_once ('./query_consuntivazione_ekovision.php');
 
 // ultimo mese
 if($_GET['data_inizio']) {
-    $query= $query0 ." WHERE vrpe.DATA_PIANIFICATA between to_date(:d1 ,'YYYY-MM-DD') AND to_date(:d2 ,'YYYY-MM-DD')". $query1; ;  
+    $query_temp= $query0 ." WHERE vrpe.DATA_PIANIFICATA between to_date(:d1 ,'YYYY-MM-DD') AND to_date(:d2 ,'YYYY-MM-DD')". $query1; ;  
 } else {
-    $query = $query0 ." WHERE vrpe.DATA_PIANIFICATA >= (to_date(CURRENT_DATE) - INTERVAL '1' month) ". $query1;
+    $query_temp = $query0 ." WHERE vrpe.DATA_PIANIFICATA >= (to_date(CURRENT_DATE) - INTERVAL '1' month) ". $query1;
 }
 
 //echo $query;
 //echo "<br>";
 
-if($_GET['ut']) {
-    $query= "select * from (".$query.") a where :u1 = any(ID_UTS) " ;  
+if($_GET['ut']>0) {
+    $query= "select * from (".$query_temp.") a where :u1 = any(ID_UTS) " ;  
+} else if (is_null($_SESSION["id_uos"])){
+    $query= "select * from (".$query_temp.") a  ";
 } else {
-    $query=$query;
-    //$query = $query0 ." WHERE vrpe.DATA_PIANIFICATA >= to_date('20240428', 'YYYYMMDD' ) and au.ID_UO in (2,4)". $query1;
+    //require_once("../query_ut.php");
+    $uos=explode(",", $_SESSION["id_uos"]);
+    $query= "select * from (".$query_temp.") a  where ID_UTS = '".$uos[0]."' OR ID_UTS LIKE '".$uos[0].",%' OR ID_UTS LIKE '%, ".$uos[0]."' OR ID_UTS LIKE '%, ".$uos[0].",%'";
+    if (count($uos)>1) {
+        $uu=1;
+        if ($uu <= count($uos)) {
+            $query= $query . " OR ID_UTS = '".trim($uos[$uu])."' OR ID_UTS LIKE '".trim($uos[$uu]).",%' OR ID_UTS LIKE '%, ".trim($uos[$uu])."' OR ID_UTS LIKE '%, ".trim($uos[$uu]).",%'";
+            $uu=$uu+1;
+        }
+    }
 }
 
 //echo $query;
-//echo "<br>";
+//echo "<br><br>";
 
 
 
@@ -70,6 +80,10 @@ oci_free_statement($result);
 oci_close($oraconn);
 //pg_close($conn);
 #echo $rows ;
+
+require_once("./json_paginazione.php");
+
+exit();
 if (empty($rows)==FALSE){
     //print $rows;
     $json = json_encode(array_values($rows));

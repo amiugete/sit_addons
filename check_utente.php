@@ -133,4 +133,11 @@ if ($_GET['jwt']){
 //echo $_SESSION['expire'] ."<br>";
 //echo "il problema non è qua";
 //exit();
+if (is_null($_SESSION['username']) AND basename($_SERVER['PHP_SELF'])!='login.php'){
+  die ('Utente non riconosciuto <br><br><a href="./login.php" class="btn btn-info"> Vai al login </a>');
+  
+  
+  
+
+}
 ?>
