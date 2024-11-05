@@ -12,6 +12,13 @@ if(intval($_GET['offset'])>=0){
     $page_n=0;
 }
 
+//echo $_GET['filter'];
+//echo json_decode($_GET['filter'], true);
+//echo 'Sono qua';
+//$result=array_intersect_key($rows, json_decode($_GET['filter'],true));
+//print_r($result);
+//echo 'ci arrivo';
+
 if (count($rows)>0) {
     $columnsNames = array_keys($rows[0]);
 
@@ -19,7 +26,6 @@ if (count($rows)>0) {
     //exit();
     //echo '{ "meta": {"page_index":'.$page_n.', "page_max_size":'.$page_size.', ';
     echo '{"total":'.count($rows).', ';
-    
     echo '"rows": '.json_encode(array_values(array_splice($rows, $page_n, $page_size))) ; //JSON_FORCE_OBJECT rimuove le quadre
     echo '}';
     echo '';

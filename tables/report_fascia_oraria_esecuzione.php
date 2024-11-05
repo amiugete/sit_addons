@@ -27,9 +27,21 @@ if ($_GET['s']){
 if ($_GET['e']){
     $d2=$_GET['e'];
 } else {
-    $d1=$today->format('Y-m-d');
+    $d2=$today->format('Y-m-d');
 }
 
+$filter=" WHERE FAMIGLIA LIKE '%%' ";
+
+if ($_GET['filter']){
+    foreach(json_decode($_GET['filter']) as $key => $val) {
+        $filter = $filter." AND UPPER(".$key. ") LIKE UPPER('%".$val."%')";
+    }
+} 
+
+#echo $filter;
+#echo '<br>';
+
+#exit();
 
 //echo $d1 ."<br" .$d2;
 //exit();
@@ -37,8 +49,10 @@ if ($_GET['e']){
 if(!$oraconn) {
     die('Connessione fallita !<br />');
 } else {
+ 
     
 $query0="/* ora_esecuzione */
+        SELECT * from (
             SELECT as2.ID_SERVIZIO_STAMPA, ss.DESCRIZIONE AS famiglia, as2.DESC_SERVIZIO, au.DESC_UO, 
             see.ID_SCHEDA, see.CODICE_SERV_PRED, aspu.DESCRIZIONE, see.DATA_PIANIF_INIZIALE,
             to_char(min(TO_TIMESTAMP(SUBSTR(see.NOMEFILE, 20, 11), 'YYYYMMDD_HH24')), 'DD/MM/YYYY - HH24') AS FASCIA_ORA_esecuzione,
@@ -54,6 +68,7 @@ $query0="/* ora_esecuzione */
             GROUP BY as2.ID_SERVIZIO_STAMPA, as2.DESC_SERVIZIO, au.DESC_UO, 
             see.ID_SCHEDA, see.CODICE_SERV_PRED, see.DATA_PIANIF_INIZIALE, aspu.DESCRIZIONE, ss.DESCRIZIONE  
             order by see.DATA_PIANIF_INIZIALE, au.DESC_UO, as2.ID_SERVIZIO_STAMPA, as2.DESC_SERVIZIO
+        ) ".$filter. " order by DATA_PIANIF_INIZIALE, DESC_UO, ID_SERVIZIO_STAMPA, DESC_SERVIZIO
             ";
 
 
@@ -67,7 +82,9 @@ $query0="/* ora_esecuzione */
 #echo $page_n;
 #echo "<br>";
 #echo $page_size;
-#exit;
+#echo $query0;
+#exit();
+
 $result = oci_parse($oraconn, $query0);
 
 

@@ -116,7 +116,6 @@ $(function() {
          href="./export_consuntivazione_ekovision.php"><i class="fa-solid fa-file-excel"></i> Esporta xlsx completo</a-->
       </div>
 				<table  id="fascia_ora" class="table-hover" 
-        data-cache="true"
         idfield="ID_SCHEDA" 
         data-show-columns="true"
         data-group-by="false"
@@ -124,7 +123,7 @@ $(function() {
         data-show-search-clear-button="true"   
         data-show-export="true" 
         data-export-type=['json', 'xml', 'csv', 'txt', 'sql', 'pdf', 'excel',  'doc'] 
-				data-search="true" data-click-to-select="true" data-show-print="false"  
+				data-search="false" data-click-to-select="true" data-show-print="false"  
         data-virtual-scroll="false"
         data-show-pagination-switch="false"
 				data-pagination="true" data-page-size=75 data-page-list=[10,25,50,75,100,200,500]
@@ -133,9 +132,8 @@ $(function() {
         data-show-columns="true"
 				data-filter-control="true"
         data-sort-select-options = "true"
-        data-filter-control-multiple-search="false"
+        data-filter-control-multiple-search="false" 
         data-export-data-type="all"
-        data-query-params="queryParams"
         data-url="./tables/report_fascia_oraria_esecuzione.php?s=<?php echo $last_month->format('Y-m-d');?>&e=<?php echo $today->format('Y-m-d');?>" 
         data-toolbar="#toolbar" 
         data-show-footer="false"

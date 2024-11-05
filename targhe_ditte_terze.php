@@ -101,7 +101,7 @@ if ((int)$id_role_SIT = 0) {
         <th data-field="id_uo" data-sortable="true" data-visible="false"  data-filter-control="select">Id UO</th>
         <th data-field="targa" data-sortable="true" data-visible="true" data-filter-control="input">Targa</th> 
         <th data-field="quintali" data-sortable="true" data-visible="true" data-filter-control="select">Quintali</th>
-        <th data-field="in_uso" data-sortable="true" data-visible="true" data-filter-control="select">In uso</th>
+        <th data-field="in_uso" data-sortable="true" data-visible="true" data-formatter="inUso" data-filter-control="select">In uso</th>
         <th data-field="data_inserimento" data-sortable="true" data-visible="true" data-filter-control="input">Data Inserimento</th>
 
           <!--th data-field="quartiere" data-sortable="true" data-visible="true" data-filter-control="select">Quartiere<br>/Comune</th>
@@ -154,9 +154,52 @@ if ((int)$id_role_SIT = 0) {
   };
 
 
+  $(document).ready(function () {                 
+                $('#targhe #disattiva_targa').submit(function (event) { 
+                    console.log('Bottone dis cliccato e finito qua');
+                    event.preventDefault(); 
+                    // devo mettere qua #disattiva_targa                 
+                    var formData = $(this).serialize();
+                    console.log(formData);
+                    $.ajax({ 
+                        url: 'backoffice/disattiva_targa.php', 
+                        method: 'POST', 
+                        data: formData, 
+                        //processData: true, 
+                        //contentType: false, 
+                        success: function (response) {                       
+                            //alert('Your form has been sent successfully.'); 
+                            console.log(response);
+                            $table.bootstrapTable('refresh');
+                            //$("#results_desc").html(response).fadeIn("slow");
+                        }, 
+                        error: function (jqXHR, textStatus, errorThrown) {                        
+                            alert('Your form was not sent successfully.'); 
+                            console.error(errorThrown); 
+                        } 
+                    }); 
+                }); 
+            });
 
 
- 
+
+  function inUso(value, row, index) {
+    if (value =='t'){
+        return ['<span style="font-size: 1em; color: green;"> <i title="In uso" class="fa-solid fa-play"></i></span>',
+        '<form id="disattiva_targa" name="disattiva_targa" autocomplete="off">',
+        '<input type="hidden" id="id_uo" name="id_uo" value="'+row.id_uo+'">',
+        '<input type="hidden" id="targa" name="targa" value="'+row.targa+'">',
+        '<button type="submit" class="btn btn-danger btn-sm"> <i title="Disattiva targa" class="fa-solid fa-stop"></i></button>',
+        '</form>'
+        ].join('');
+      } else if (value =='f') {
+        return '<span style="font-size: 1em; color: Tomato;"> <i title="Disattivata" class="fa-solid fa-stop"></i></span>';
+      }
+  }
+
+   
+
+
 
 
     var opzioni = ['Attivo', 'In attivazione', 'In disattivazione', 'Disattivo'] ;
