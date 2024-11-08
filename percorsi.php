@@ -48,76 +48,9 @@ if ((int)$id_role_SIT = 0) {
 <div class="container">
 
 
-
-
-<script>
-  function utScelta(val) {
-    document.getElementById('open_ut').submit();
-  }
-
-
-</script>
-
-<div class="rfix">
-
-<form class="row" name="open_ut" method="post" id="open_ut" autocomplete="off" action="percorsi.php" >
-
-<?php //echo $username;?>
-
-<div class="form-group col-lg-4">
-  <select class="selectpicker show-tick form-control" 
-  data-live-search="true" name="ut0" id="ut0" onchange="utScelta(this.value);" required="">
-  
-  <?php 
-  if ($_POST['ut0']) {
-    $query0='select id_ut, descrizione
-    from topo.ut where id_ut = $1';
-
-    $result0 = pg_prepare($conn, "my_query0", $query0);
-    $result0 = pg_execute($conn, "my_query0", array($_POST['ut0']));
-    
-    while($r0 = pg_fetch_assoc($result0)) { 
-  ?>    
-          <option name="ut0" value="<?php echo $_POST['ut0'];?>" ><?php echo $r0['descrizione']?></option>
-  <?php }
-  pg_free_result($result0); 
-  } else{
-  ?>
-    <option name="ut0" value="0">Seleziona una UT</option>
-  
-  
-  <?php            
-  }
-
-  
-  require_once('query_ut.php');
-
-  //echo "<br>". $query1;
-
-
-  $result1 = pg_prepare($conn, "my_query1", $query_ut);
-  $result1 = pg_execute($conn, "my_query1", array($_SESSION['username']));
-
-  while($r1 = pg_fetch_assoc($result1)) { 
-?>    
-        <option name="ut0" value="<?php echo $r1['id_ut'];?>" ><?php echo $r1['descrizione']?></option>
-<?php 
-  }
-  pg_free_result($result1); 
+<?php
+require_once("select_ut.php");
 ?>
-
-  </select>  
-  <!--small>L'elenco delle piazzole..  </small-->        
-</div>
-<div class="form-group col-lg-4">
-<a class="btn btn-primary" href="./percorsi.php">Tutte le mie UT</a>
-</div>
-  </form>
-
-  </div>
-  
-  <hr>
-
 
 <div id="tabella">
             

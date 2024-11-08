@@ -51,7 +51,7 @@ if ((int)$id_role_SIT = 0) {
 
 <div class="container">
 
-<h3>Buongiorno, sei connesso come <?php echo $_SESSION['username'];?><?php echo "" ?>(
+<h5>Buongiorno, sei connesso come <?php echo $_SESSION['username'];?><?php echo "" ?>(
             <?php 
               echo $role_SIT;
             if ($check_edit==0){
@@ -64,17 +64,17 @@ if ((int)$id_role_SIT = 0) {
             }
 
             ?>). <br>
-    </h3>
+    </h5>
     <hr>
     <!--h4>
     Sfoglia il menù in alto per accedere alle funzioni avanzate di SIT. 
     </h4-->
     <div class="row">
-
+    <h3> Anagrafiche</h3>
     <div class="col-sm-4">
     <div class="card" >
       <div class="card-header">
-        <h3>Anagrafica percorsi</h3>
+        <h3> <i class="fa-solid fa-table-list"></i> Anagrafica percorsi</h3>
       </div>
       <ul class="list-group list-group-flush">
         <a class="list-group-item" href="./percorsi.php">Elenco servizi UO/SIT</a>
@@ -85,23 +85,15 @@ if ((int)$id_role_SIT = 0) {
     </div>
     </div>
     
-    <div class="col-sm-4">
-    <div class="card">
-      <div class="card-header">
-        <h3>Reportistica avanzata</h3>
-      </div>
-      <ul class="list-group list-group-flush">
-        <a class="list-group-item" href="./consuntivazione_ekovision.php">Report consuntivazione Ekovision</a>
-        <a class="list-group-item" href="./report_contenitori_bilaterali.php">Report contenitori bilaterali</a>
-      </ul>
-    </div>
-    </div>
+    
+    
+
 
     <?php if ($check_superedit == 1 OR $check_esternalizzati==1) { ?>
     <div class="col-sm-4">
     <div class="card" >
       <div class="card-header">
-        <h3>Ditte terze</h3>
+        <h3><i class="fa-solid fa-users-viewfinder"></i> Ditte terze</h3>
       </div>
       <ul class="list-group list-group-flush">
         <a class="list-group-item" href="./targhe_ditte_terze.php">Targhe ditte terze</a>
@@ -111,7 +103,8 @@ if ((int)$id_role_SIT = 0) {
     </div>
     <?php } ?>
 
-    </div>
+
+    
     <!--img src="./img/graph-6249046_1280.png" class="img-fluid" alt="Responsive image"-->
     <!--div class="text-center">
 
@@ -120,11 +113,42 @@ if ((int)$id_role_SIT = 0) {
     </div-->
 
 </div>
+<hr>
+<div class="row">
+<h3>Report</h3>
 
+<div class="col-sm-4">
+    <div class="card">
+      <div class="card-header">
+        <h3><i class="fa-solid fa-chart-line"></i> Reportistica avanzata</h3>
+      </div>
+      <ul class="list-group list-group-flush">
+        <a class="list-group-item" href="./consuntivazione_ekovision.php">Report consuntivazione Ekovision</a>
+        <a class="list-group-item" href="./report_contenitori_bilaterali.php">Report contenitori bilaterali</a>
+      </ul>
+    </div>
+    </div>
+
+<div class="col-sm-4">
+    <div class="card" >
+      <div class="card-header">
+        <h4><i class="fa-solid fa-tablet-screen-button"></i> Dati consuntivazione da totem</h4>
+        <i class="fa-solid fa-clock-rotate-left"></i> Ultima settimana
+      </div>
+      <ul class="list-group list-group-flush">
+        <a class="list-group-item" href="./report_totem_piazzola.php">Report consuntivazione piazzole per UT (dati in tempo reale da totem)</a>
+        <!--a class="list-group-item" href="./report_fascia_oraria_esecuzione.php">Report fascia oraria consuntivazione</a-->
+      </ul>
+    </div>
+    </div>
+    </div>
+
+    </div>
 <?php
 require_once('req_bottom.php');
 require('./footer.php');
 ?>
+
 
 
 

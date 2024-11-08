@@ -133,6 +133,9 @@ if ($check_modal!=1){
             <a class="dropdown-item" href="./consuntivazione_ekovision.php">Report consuntivazione Ekovision</a>
 
             <a class="dropdown-item" href="./report_contenitori_bilaterali.php">Report contenitori bilaterali</a>
+
+            <a class="dropdown-item" href="./report_totem_piazzola.php">Report consuntivazione piazzole per UT (dati in tempo reale da totem)</a>
+
             <!--a class="dropdown-item" href="http://amiupostgres/SIT/downloadTemplateImport()">Template per import</a-->
           </div>
         </li>
@@ -223,6 +226,14 @@ if ($check_modal!=1){
             ?>)
           </a>
           <?php
+
+          if (isset($filter_totem)){
+            $filter_totem_ok= " join topo.ut u1 on u1.id_ut = cmu1.id_uo_sit where u1.utilizza_totem = true ";
+          } else{
+            $filter_totem_ok= " "; 
+          }
+
+
           $query_utente="select su.\"name\", su.email, 
           concat(sr.name, ' - ', sr.description) as ruolo, 
           case
@@ -230,7 +241,7 @@ if ($check_modal!=1){
             else string_agg(u.descrizione, ', ') 
           end uts, 
           case
-            when min(suu.id_ut) = -1 then NULL
+            when min(suu.id_ut) = -1 then (select string_agg(distinct id_uo::text, ', ') from anagrafe_percorsi.cons_mapping_uo cmu1 ".$filter_totem_ok.")
             else string_agg(cmu.id_uo::text, ', ') 
           end id_uos
           from util.sys_users su 
@@ -238,19 +249,20 @@ if ($check_modal!=1){
           left join util.sys_users_ut suu on suu.id_user = su.id_user 
           left join topo.ut u on u.id_ut = suu.id_ut 
           left join anagrafe_percorsi.cons_mapping_uo cmu on cmu.id_uo_sit = u.id_ut
-          where su.\"name\" ilike $1 and su.id_user > 0
+          where  su.\"name\" ilike $1 and su.id_user > 0
           group by su.\"name\", su.email, sr.name, sr.description";
 
-          
+          //echo $query_utente;
           $result1 = pg_prepare($conn, "my_queryUser", $query_utente);
           $result1 = pg_execute($conn, "my_queryUser", array($_SESSION['username']));
+
 
           while($r1 = pg_fetch_assoc($result1)) {
             $mail_user=$r1['email'];
             $profilo=$r1['ruolo'];
             
             $uts=$r1['uts'];
-
+            $uos=$r1['id_uos'];
             $_SESSION['id_uos']=$r1['id_uos'];
 
           }

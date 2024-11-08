@@ -1,8 +1,14 @@
 <?php
 
+if (isset($filter_totem)){
+  $filter_totem_ok= " utilizza_totem=true and ";
+} else{
+  $filter_totem_ok= " "; 
+}
+
 $query_ut="select id_ut, descrizione
   from topo.ut u 
-  where id_ut in   
+  where ".$filter_totem_ok." id_ut in   
   (select 
     id_ut
     from util.sys_users_ut suu where id_user in (

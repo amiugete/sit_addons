@@ -146,8 +146,8 @@ while($r = pg_fetch_assoc($result)) {
             <script> 
             $(document).ready(function () {                 
                 $('#form_desc').submit(function (event) { 
-                    console.log('Bottone form dd cliccato e finito qua');
                     event.preventDefault();                  
+                    console.log('Bottone form dd cliccato e finito qua');
                     var formData = $(this).serialize();
                     console.log(formData);
                     $.ajax({ 
