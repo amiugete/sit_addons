@@ -339,7 +339,7 @@ function dateFormat2(value, row, index) {
 // se non ho selezionato la UT
 
 } else {
-  echo 'Sono qua';
+  //echo 'Sono qua';
   require_once('./query_ut.php');
 
 //echo "<br>". $query_ut;
