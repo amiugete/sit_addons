@@ -43,27 +43,37 @@ if(!$conn_hub) {
 } else {
  
     
-$query0="select concat(id_piazzola, ' - ',
-		nome_via, ' ',
-		civico, utente_posizione) as piazzola, ordine_rifiuto, tipo_rifiuto, id_percorso, descr_percorso, descr_orario,
-string_agg(desc_uo, ', ') as uo_esec, 
-case
-	when descr_causale = 'COMPLETATO' then 'OK'
-	when descr_causale is null then 'NON CONSUNTIVATO'
-	when descr_causale != 'COMPLETATO' then 'ANOMALIA'
-end stato_consuntivazione,
-descr_causale, 
-check_previsto, 
-datalav
+$query0="select ordine_rifiuto, rifiuto, descr_orario,
+descr_servizio, id_percorso, descr_percorso,
+uo, 
+uo_esec,
+causali, 
+causali_text,
+case 
+	when check_previsto > 0 then 'PREVISTO'
+	else 'NON PREVISTO'
+end in_previsione, 
+case 
+	when causali='100' then 'COMPLETATO'
+	when causali like '%100%' then 'NON COMPLETATO' 
+	when causali is not null and causali not like '%100%' then 'NON EFFETTUATO' 
+	when causali is null then 'NON CONSUNTIVATO'
+end stato_consuntivazione, datalav
 from (
-	select 
-		tr.ordinamento as ordine_rifiuto, cpra.tipo_rifiuto, cpra.id_percorso, cpra.descr_percorso, 
+	select min(ordine_rifiuto) as ordine_rifiuto, string_agg(distinct tipo_rifiuto,', ') as rifiuto, descr_orario,
+	descr_servizio, id_percorso, descr_percorso, 
+	string_agg(distinct desc_uo, ',') as uo_esec,
+	array_agg(distinct id_uo) as uo,
+	sum(
+		check_previsto
+	) as check_previsto,
+	string_agg(distinct causale, ',') as causali, 
+	string_agg(distinct descr_causale, ',') as causali_text, datalav
+	from (
+		select tr.ordinamento as ordine_rifiuto, cpra.tipo_rifiuto, at2.descr_orario,
+		cpra.descr_servizio, cpra.id_percorso, cpra.descr_percorso, 
 		cpra.desc_uo,
 		pu.id_uo,
-		cpra.id_piazzola, 
-		cpra.nome_via, 
-		cpra.civico,
-		cpra.utente_posizione,
 		case 
 			when (ea.fatto=ea.num_elementi and trim(replace(ea.causale, ' - (no in questa giornata)', '')) = '') then 'COMPLETATO'
 			else trim(replace(ea.causale, ' - (no in questa giornata)', '')) 
@@ -82,23 +92,20 @@ from (
 			when extract(dow from to_date($1, 'DD/MM/YYYY'))=6 then cpra.sab
 			when extract(dow from to_date($1, 'DD/MM/YYYY'))=7 then cpra.dom
 		end as check_previsto, 
-		ea.datalav, at2.descr_orario
-		from raccolta.cons_percorsi_raccolta_amiu cpra 
-		left join raccolta.tipi_rifiuto tr on tr.nome= cpra.tipo_rifiuto
+		ea.datalav
+		from raccolta.cons_percorsi_raccolta_amiu cpra
 		left join raccolta.anagr_turni at2 on at2.id_turno = cpra.id_turno
+		left join raccolta.tipi_rifiuto tr on tr.nome= cpra.tipo_rifiuto 
 		left join raccolta.piazzole_ut pu on pu.id_piazzola=cpra.id_piazzola
 		left join raccolta.effettuati_amiu ea on ea.id_tappa::bigint = cpra.id_tappa::bigint 
 											and ea.datalav = to_date($1, 'DD/MM/YYYY')
 		left join raccolta.causali_testi ct on trim(ct.descrizione) = trim(ea.causale)
 		where (to_date($1, 'DD/MM/YYYY') between cpra.data_inizio and (cpra.data_fine - interval '1' day))
-		and pu.id_uo = ANY(string_to_array($2, ',')::int[])
-) as step0
-where (check_previsto = 1 or causale is not null) ".$filter_bis."
-group by  id_piazzola, nome_via, civico, utente_posizione, tipo_rifiuto, id_percorso, descr_percorso, descr_causale, 
-causale, 
-check_previsto, 
-datalav, ordine_rifiuto, descr_orario
-order by descr_orario, stato_consuntivazione, ordine_rifiuto, nome_via, civico 
+		) as step0
+	group by descr_servizio, id_percorso, descr_percorso, descr_orario,datalav
+) as step1
+where (causali is not null or check_previsto > 0) and $2 = any(uo) 
+order by descr_orario, ordine_rifiuto, descr_servizio, descr_percorso
             ";
 
 
