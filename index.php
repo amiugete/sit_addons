@@ -133,10 +133,12 @@ if ((int)$id_role_SIT = 0) {
     <div class="card" >
       <div class="card-header">
         <h4><i class="fa-solid fa-tablet-screen-button"></i> Dati consuntivazione da totem</h4>
-        <i class="fa-solid fa-clock-rotate-left"></i> Ultima settimana
+        <i class="fa-solid fa-hourglass-half"></i> Dati aggiornati ogni 5' da totem / backoffice consuntivazione
+        <br><i class="fa-solid fa-clock-rotate-left"></i> Dati ultima settimana 
       </div>
       <ul class="list-group list-group-flush">
-        <a class="list-group-item" href="./report_totem_piazzola.php">Report consuntivazione piazzole per UT (dati in tempo reale da totem)</a>
+        <a class="list-group-item" href="./report_totem_percorsi.php">Report consuntivazione percorsi per UT </a>
+        <a class="list-group-item" href="./report_totem_piazzola.php">Report consuntivazione piazzole per UT </a>
         <!--a class="list-group-item" href="./report_fascia_oraria_esecuzione.php">Report fascia oraria consuntivazione</a-->
       </ul>
     </div>

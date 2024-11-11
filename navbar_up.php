@@ -129,16 +129,23 @@ if ($check_modal!=1){
           <a class="nav-link dropdown-toggle" href="#"  role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="navbarDropdown3">
           Reportistica avanzata
           </a>
-          <div class="dropdown-menu" id="navbarDropdown3" aria-labelledby="navbarDropdown3">
-            <a class="dropdown-item" href="./consuntivazione_ekovision.php">Report consuntivazione Ekovision</a>
+          <ul class="dropdown-menu" id="navbarDropdown3" aria-labelledby="navbarDropdown3">
+            <li><a class="dropdown-item" href="./consuntivazione_ekovision.php">Report consuntivazione Ekovision</a></li>
 
-            <a class="dropdown-item" href="./report_contenitori_bilaterali.php">Report contenitori bilaterali</a>
-
-            <a class="dropdown-item" href="./report_totem_piazzola.php">Report consuntivazione piazzole per UT (dati in tempo reale da totem)</a>
-
+            <li><a class="dropdown-item" href="./report_contenitori_bilaterali.php">Report contenitori bilaterali</a></li>
+            
+              <li><a class="dropdown-item" href="#">Report dati in tempo reale da totem &raquo; </a>
+              <ul class="submenu dropdown-menu">
+                <li><a class="dropdown-item" href="./report_totem_percorsi.php"> Dettaglio per percorso </a></li>
+                <li><a class="dropdown-item" href="./report_totem_piazzola.php"> Dettaglio per piazzole </a></li>
+          
+        
+              </ul>
+          
+            </li>
             <!--a class="dropdown-item" href="http://amiupostgres/SIT/downloadTemplateImport()">Template per import</a-->
-          </div>
-        </li>
+            </ul>
+            
         <?php } ?>
         <?php if ($check_superedit == 1 OR $check_esternalizzati==1) { ?>
           <li class="nav-item dropdown">
@@ -315,3 +322,40 @@ echo 'time = ' .time()."<br>";*/
 <hr>
 <?php } // check_modal 
  } ?>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function(){
+// make it as accordion for smaller screens
+if (window.innerWidth < 992) {
+
+  // close all inner dropdowns when parent is closed
+  document.querySelectorAll('.navbar .dropdown').forEach(function(everydropdown){
+    everydropdown.addEventListener('hidden.bs.dropdown', function () {
+      // after dropdown is hidden, then find all submenus
+        this.querySelectorAll('.submenu').forEach(function(everysubmenu){
+          // hide every submenu as well
+          everysubmenu.style.display = 'none';
+        });
+    })
+  });
+
+  document.querySelectorAll('.dropdown-menu a').forEach(function(element){
+    element.addEventListener('click', function (e) {
+        let nextEl = this.nextElementSibling;
+        if(nextEl && nextEl.classList.contains('submenu')) {	
+          // prevent opening link if link needs to open dropdown
+          e.preventDefault();
+          if(nextEl.style.display == 'block'){
+            nextEl.style.display = 'none';
+          } else {
+            nextEl.style.display = 'block';
+          }
+
+        }
+    });
+  })
+}
+// end if innerWidth
+}); 
+// 
+</script>

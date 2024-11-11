@@ -188,7 +188,7 @@ $(document).ready(function () {
 
 <div id="tabella">
             
-        <h4>Report consuntivazione da totem - Piazzole</h4>
+        <h4>Report consuntivazione da totem - Piazzole di <?php echo $uos_descrizione;?></h4>
 
 
 
