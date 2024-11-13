@@ -243,7 +243,8 @@ $(document).ready(function () {
         <th data-field="descr_orario"  data-sortable="true" data-visible="true" data-filter-control="select">Turno</th>
         <th data-field="stato_consuntivazione" data-sortable="true" data-visible="true" data-formatter="nameFormatterStato" 
         data-filter-strict-search="true" data-search-formatter="false" data-filter-data="var:opzioni" data-filter-control="select">Stato</th>
-        <th data-field="check_previsto" data-sortable="true" data-visible="true" data-filter-control="select">Previsto</th>
+        <th data-field="check_previsto" data-sortable="true" data-visible="true" data-filter-control="select" 
+        data-formatter="nameFormatterPrevisto" data-filter-data="var:opzioni1" data-filter-strict-search="true" data-search-formatter="false">Previsto</th>
         <th data-field="datalav" data-sortable="true"  data-formatter="dateFormat" data-visible="true" data-filter-control="input">data</th>
     </tr>
 </thead>
@@ -266,8 +267,7 @@ $(function() {
 
 
 
-
-  var opzioni = ['OK', 'NON CONSUNTIVATO', 'ANOMALIA'] ;
+var opzioni = ['OK', 'NON CONSUNTIVATO', 'ANOMALIA'] ;
 
 function nameFormatterStato(value, row, index) {
   if (value =='OK'){
@@ -279,6 +279,16 @@ function nameFormatterStato(value, row, index) {
   } 
 };
 
+
+var opzioni1 = ['PREVISTO', 'NON PREVISTO'];
+
+function nameFormatterPrevisto(value, row, index) {
+  if (value =='PREVISTO'){
+    return '<span style="font-size: 1em; color: green;"> <i title="'+value+'" class="fa-regular fa-calendar-check"></i></span>';
+  } else if (value =='NON PREVISTO') {
+    return ' ';
+  }
+};
 
 
 

@@ -53,7 +53,10 @@ case
 	when descr_causale != 'COMPLETATO' then 'ANOMALIA'
 end stato_consuntivazione,
 descr_causale, 
-check_previsto, 
+case 
+	when check_previsto > 0 then 'PREVISTO'
+	else 'NON PREVISTO'
+end check_previsto, 
 datalav
 from (
 	select 
