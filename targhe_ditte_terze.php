@@ -48,7 +48,13 @@ if ((int)$id_role_SIT = 0) {
 <div class="container">
 
 
+<div id="success_alert" class="alert alert-success" style="display:none;" role="alert">
+  <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+  <div>
 
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+</div>
 
 
 <div id="tabella">
@@ -101,7 +107,7 @@ if ((int)$id_role_SIT = 0) {
         <th data-field="id_uo" data-sortable="true" data-visible="false"  data-filter-control="select">Id UO</th>
         <th data-field="targa" data-sortable="true" data-visible="true" data-filter-control="input">Targa</th> 
         <th data-field="quintali" data-sortable="true" data-visible="true" data-filter-control="select">Quintali</th>
-        <th data-field="in_uso" data-sortable="true" data-visible="true" data-formatter="inUso" data-filter-control="select">In uso</th>
+        <th data-field="in_uso" data-sortable="true" data-visible="true" data-formatter="inUso" data-events="operateEvents" data-filter-control="select">In uso</th>
         <th data-field="data_inserimento" data-sortable="true" data-visible="true" data-filter-control="input">Data Inserimento</th>
 
           <!--th data-field="quartiere" data-sortable="true" data-visible="true" data-filter-control="select">Quartiere<br>/Comune</th>
@@ -154,7 +160,7 @@ if ((int)$id_role_SIT = 0) {
   };
 
 
-  $(document).ready(function () {                 
+  /*$(document).ready(function () {                 
                 $('#targhe #disattiva_targa').submit(function (event) { 
                     console.log('Bottone dis cliccato e finito qua');
                     event.preventDefault(); 
@@ -179,21 +185,79 @@ if ((int)$id_role_SIT = 0) {
                         } 
                     }); 
                 }); 
+                return false;
             });
+*/
+
+
+
+  window.operateEvents = {
+    'click .info': function (e, value, row, index) {
+        console.log('Sono qua');
+        console.log(value);
+        console.log(row.id_uo);
+        console.log(row.targa);
+        var id_uo = row.id_uo;
+        var targa = row.targa;
+        if (value=='t') {
+          $.ajax({   
+              type: "post",
+              url: "backoffice/disattiva_targa.php",
+              data: 'id_uo=' + id_uo + '&targa='+targa,
+              dataType: "text",                  
+              success: function(response){ 
+                $table.bootstrapTable('refresh');
+                $("#success_alert").html(response);
+                $('#success_alert').fadeIn(1000);
+                setTimeout(function() { 
+                    $('#success_alert').fadeOut(1000); 
+                }, 5000);
+              }
+          });
+        } else {
+          $.ajax({   
+              type: "post",
+              url: "backoffice/attiva_targa.php",
+              data: 'id_uo=' + id_uo + '&targa='+targa,
+              dataType: "text",                  
+              success: function(response){ 
+                $table.bootstrapTable('refresh');
+                $("#success_alert").html(response);
+                $('#success_alert').fadeIn(1000);
+                setTimeout(function() { 
+                    $('#success_alert').fadeOut(1000); 
+                }, 5000);
+              }
+          });
+        }
+        
+        //return false;
+        
+    }
+};
 
 
 
   function inUso(value, row, index) {
     if (value =='t'){
-        return ['<span style="font-size: 1em; color: green;"> <i title="In uso" class="fa-solid fa-play"></i></span>',
+        /*return ['<span style="font-size: 1em; color: green;"> <i title="In uso" class="fa-solid fa-play"></i></span>',
         '<form id="disattiva_targa" name="disattiva_targa" autocomplete="off">',
         '<input type="hidden" id="id_uo" name="id_uo" value="'+row.id_uo+'">',
         '<input type="hidden" id="targa" name="targa" value="'+row.targa+'">',
         '<button type="submit" class="btn btn-danger btn-sm"> <i title="Disattiva targa" class="fa-solid fa-stop"></i></button>',
         '</form>'
-        ].join('');
+        ].join('');*/
+        return ['<span style="font-size: 1em; color: green;"> <i title="In uso" class="fa-solid fa-play"></i> - ',
+        '<a class="info btn btn-danger btn-sm">',
+        '<i title="Disattiva targa" class="fa-solid fa-stop"></i>',
+        '</a></span>'
+          ].join('');
       } else if (value =='f') {
-        return '<span style="font-size: 1em; color: Tomato;"> <i title="Disattivata" class="fa-solid fa-stop"></i></span>';
+        return ['<span style="font-size: 1em; color: tomato;"> <i title="In uso" class="fa-solid fa-stop"></i> - ',
+        '<a class="info btn btn-success btn-sm">',
+        '<i title="Attiva targa" class="fa-solid fa-play"></i>',
+        '</a></span>'
+          ].join('');
       }
   }
 
@@ -382,6 +446,11 @@ require_once('./footer.php');
 
 
   </div>
+
+  <script type="text/javascript">
+
+$('#success_alert').hide();
+</script>
 
 </body>
 

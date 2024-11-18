@@ -28,7 +28,7 @@ $targa = $_POST['targa'];;
 
 // aggiungi elemento
 $update_targa="UPDATE etl.mezzi_ditte_terze 
-SET in_uso='f', data_aggiornamento=now()
+SET in_uso='t', data_aggiornamento=now()
 WHERE id_uo=$1 AND targa=$2 ";
 
 $result_add = pg_prepare($conn, "update_targa", $update_targa);

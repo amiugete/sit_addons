@@ -300,6 +300,10 @@ if ($_SESSION['test']==1) {
       ?>
       <h4><i class="fa-solid fa-triangle-exclamation"></i> Ambiente di TEST!</h4>
       <?php
+    } else {
+      ?>
+      <h4><i class="fa-solid fa-triangle-exclamation"></i> Ambiente di TEST ma dati in esercizio!</h4>
+      <?php
     }
   } else {
 
