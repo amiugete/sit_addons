@@ -1,10 +1,17 @@
 <?php
+session_start();
 
+if ($_SESSION['test']==1) {
+    require_once('./conn_test.php');
+  } else {
+    require_once('./conn.php');
+  }
+echo $_SESSION['test']."<br>";
 $id_piazzola=$_POST['piazzola'];
 echo $id_piazzola."<br>";
 
 $check=0;
-
+$res_ok=0;
 // Get reference to uploaded image
 $image_file = $_FILES["fileToUpload"];
 
@@ -47,7 +54,34 @@ if(is_uploaded_file($_FILES['fileToUpload']['tmp_name'])) {
             echo $messaggio."<br>";
         } else {
             $messaggio.="File caricato con successo";
-            header('Location: piazzola.php?piazzola='.$id_piazzola.'');
+            echo $messaggio."<br>";
+            $update_foto="UPDATE elem.piazzole SET foto = 1 WHERE id_piazzola = $1 and foto = 0;";
+            echo $update_foto;
+            $result_p = pg_prepare($conn, "update_foto", $update_foto);
+            echo "<br>".$res_ok;
+            if (!pg_last_error($conn)){
+                #$res_ok=0;
+            } else {
+                echo pg_last_error($conn);
+                $res_ok= $res_ok+1;
+            }
+            $result_p = pg_execute($conn, "update_foto", array($id_piazzola));
+            echo "<br>".$res_ok;
+            if (!pg_last_error($conn)){
+                #$res_ok=0;
+            } else {
+                echo pg_last_error($conn);
+                $res_ok= $res_ok+1;
+            }
+            $statusp= pg_result_status($result_p);
+            echo "<br>".$res_ok;
+            if ($res_ok == 0) {
+                header('Location: piazzola.php?piazzola='.$id_piazzola.'');
+            } else {
+                $messaggio.="Errore imprevisto nell'aggiornamento del SIT";
+                $check=1;
+                echo $messaggio."<br>";
+            }
         }
         
         echo $messaggio;
