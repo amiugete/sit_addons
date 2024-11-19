@@ -43,10 +43,18 @@ if(!$conn_hub) {
 } else {
  
     
-$query0="select concat(id_piazzola, ' - ',
+$query0="select piazzola, ordine_rifiuto, tipo_rifiuto, id_percorso, descr_percorso, descr_orario,
+uo_esec, id_uo_esec, id_uo, stato_consuntivazione,
+descr_causale, check_previsto, 
+datalav
+from (
+select concat(id_piazzola, ' - ',
 		nome_via, ' ',
-		civico, utente_posizione) as piazzola, ordine_rifiuto, tipo_rifiuto, id_percorso, descr_percorso, descr_orario,
+		civico, utente_posizione) as piazzola, 
+		nome_via, civico, ordine_rifiuto, tipo_rifiuto, id_percorso, descr_percorso, descr_orario,
 string_agg(desc_uo, ', ') as uo_esec, 
+array_agg(id_uo_esec) as id_uo_esec,
+id_uo,
 case
 	when descr_causale = 'COMPLETATO' then 'OK'
 	when descr_causale is null then 'NON CONSUNTIVATO'
@@ -62,6 +70,7 @@ from (
 	select 
 		tr.ordinamento as ordine_rifiuto, cpra.tipo_rifiuto, cpra.id_percorso, cpra.descr_percorso, 
 		cpra.desc_uo,
+		cpra.id_uo as id_uo_esec,
 		pu.id_uo,
 		cpra.id_piazzola, 
 		cpra.nome_via, 
@@ -94,13 +103,15 @@ from (
 											and ea.datalav = to_date($1, 'DD/MM/YYYY')
 		left join raccolta.causali_testi ct on trim(ct.descrizione) = trim(ea.causale)
 		where (to_date($1, 'DD/MM/YYYY') between cpra.data_inizio and (cpra.data_fine - interval '1' day))
-		and pu.id_uo = ANY(string_to_array($2, ',')::int[])
+		/*and (pu.id_uo = ANY(string_to_array($2, ',')::int[]) OR $2 = any(id_uo_esec))*/
 ) as step0
 where (check_previsto = 1 or causale is not null) ".$filter_bis."
 group by  id_piazzola, nome_via, civico, utente_posizione, tipo_rifiuto, id_percorso, descr_percorso, descr_causale, 
 causale, 
 check_previsto, 
-datalav, ordine_rifiuto, descr_orario
+datalav, ordine_rifiuto, descr_orario, id_uo
+) as step1
+where id_uo=$2 or $2=any(id_uo_esec)
 order by descr_orario, stato_consuntivazione, ordine_rifiuto, nome_via, civico 
             ";
 

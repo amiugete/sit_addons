@@ -63,6 +63,7 @@ from (
 	select min(ordine_rifiuto) as ordine_rifiuto, string_agg(distinct tipo_rifiuto,', ') as rifiuto, descr_orario,
 	descr_servizio, id_percorso, descr_percorso, 
 	string_agg(distinct desc_uo, ',') as uo_esec,
+	array_agg(distinct id_uo_esec) as id_uo_esec,
 	array_agg(distinct id_uo) as uo,
 	sum(
 		check_previsto
@@ -72,7 +73,7 @@ from (
 	from (
 		select tr.ordinamento as ordine_rifiuto, cpra.tipo_rifiuto, at2.descr_orario,
 		cpra.descr_servizio, cpra.id_percorso, cpra.descr_percorso, 
-		cpra.desc_uo,
+		cpra.desc_uo, cpra.id_uo as id_uo_esec,
 		pu.id_uo,
 		case 
 			when (ea.fatto=ea.num_elementi and trim(replace(ea.causale, ' - (no in questa giornata)', '')) = '') then 'COMPLETATO'
@@ -104,7 +105,7 @@ from (
 		) as step0
 	group by descr_servizio, id_percorso, descr_percorso, descr_orario,datalav
 ) as step1
-where (causali is not null or check_previsto > 0) and $2 = any(uo) 
+where (causali is not null or check_previsto > 0) and ($2 = any(uo)  or $2 = any(id_uo_esec))
 order by descr_orario, ordine_rifiuto, descr_servizio, descr_percorso
             ";
 
