@@ -123,9 +123,9 @@ var date_filtro = {
         <!--th data-field="ANNOMESE" data-sortable="true" data-visible="true" data-formatter="dateFormat" data-filter-control="input" >Mese anno</th-->  
         <th data-field="SERVIZI_PIANIFICATI" data-sortable="true" data-visible="true" data-filter-control="input">Servizi pianificati</th>
         <th data-field="SERVIZI_NON_EFFETTUATI" data-sortable="true" data-visible="true" data-filter-control="input">Servizi non effettuati</th>
-        <th data-field="CAUSA_FORZA_MAGGIORE" data-sortable="true" data-visible="true" data-filter-control="input">Forza maggiore</th>
-        <th data-field="IMPUTABILI_UTENTE" data-sortable="true" data-visible="true" data-filter-control="input">Utente</th>
-        <th data-field="IMPUTABILI_GESTORE" data-sortable="true" data-visible="true" data-filter-control="input">Gestore</th>
+        <th data-field="CAUSA_FORZA_MAGGIORE" data-sortable="true" data-visible="true" data-filter-control="input">Causa di<br>forza maggiore</th>
+        <th data-field="IMPUTABILI_UTENTE" data-sortable="true" data-visible="true" data-filter-control="input">Cause<br>imputabili<br>all'utente</th>
+        <th data-field="IMPUTABILI_GESTORE" data-sortable="true" data-visible="true" data-filter-control="input">Cause<br>imputabili<br>al gestore</th>
         <th data-field="ALTRO" data-sortable="true" data-visible="false" data-filter-control="input">Altro</th>
         <th data-field="PERC_SERV_EFFETTUATI" data-sortable="true" data-visible="true" data-filter-control="input">Indicatore<br>puntualità</th>
         <th data-field="PERC_SERV_NON_EFFETTUATI" data-sortable="true" data-visible="false" data-filter-control="input">Perc non<br>effettuati</th>
@@ -256,9 +256,9 @@ function dateFormat(value, row, index) {
         <!--th data-field="ANNOMESE" data-sortable="true" data-visible="true" data-formatter="dateFormat" data-filter-control="input" >Mese anno</th-->  
         <th data-field="SERVIZI_PIANIFICATI" data-sortable="true" data-visible="true" data-filter-control="input">Servizi pianificati</th>
         <th data-field="SERVIZI_NON_EFFETTUATI" data-sortable="true" data-visible="true" data-filter-control="input">Servizi non effettuati</th>
-        <th data-field="CAUSA_FORZA_MAGGIORE" data-sortable="true" data-visible="true" data-filter-control="input">Forza maggiore</th>
-        <th data-field="IMPUTABILI_UTENTE" data-sortable="true" data-visible="true" data-filter-control="input">Utente</th>
-        <th data-field="IMPUTABILI_GESTORE" data-sortable="true" data-visible="true" data-filter-control="input">Gestore</th>
+        <th data-field="CAUSA_FORZA_MAGGIORE" data-sortable="true" data-visible="true" data-filter-control="input">Causa di<br>forza maggiore</th>
+        <th data-field="IMPUTABILI_UTENTE" data-sortable="true" data-visible="true" data-filter-control="input">Cause<br>imputabili<br>all'utente</th>
+        <th data-field="IMPUTABILI_GESTORE" data-sortable="true" data-visible="true" data-filter-control="input">Cause<br>imputabili<br>al gestore</th>
         <th data-field="ALTRO" data-sortable="true" data-visible="false" data-filter-control="input">Altro</th>
         <th data-field="PERC_SERV_EFFETTUATI" data-sortable="true" data-visible="true" data-filter-control="input">Indicatore<br>puntualità</th>
         <th data-field="PERC_SERV_NON_EFFETTUATI" data-sortable="true" data-visible="false" data-filter-control="input">Perc non<br>effettuati</th>
