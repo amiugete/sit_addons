@@ -4,15 +4,13 @@ session_start();
 
 // Faccio il controllo su SIT
 
-$query_role='SELECT  su.id_user, sr.id_role, sr."name" as "role",
-case 
-	when suse.id_user is not null then 1
-	else 0
-end servizi_esternalizzati
+$query_role="SELECT  su.id_user, sr.id_role, sr.\"name\" as \"role\",
+coalesce(suse.esternalizzati, 'f') as esternalizzati, 
+coalesce(suse.sovrariempimenti, 'f') as sovrariempimenti
 FROM util.sys_users su
 join util.sys_roles sr on sr.id_role = su.id_role  
-left join etl.sys_users_servizi_esternalizzati suse on suse.id_user = su.id_user 
-where su."name" ilike $1 and su.id_user>0;';
+left join etl.sys_users_addons suse on suse.id_user = su.id_user 
+where su.\"name\" ilike $1 and su.id_user>0;";
 $result_n = pg_prepare($conn, "my_query_navbar1", $query_role);
 $result_n = pg_execute($conn, "my_query_navbar1", array($_SESSION['username']));
 
@@ -22,10 +20,12 @@ while($r = pg_fetch_assoc($result_n)) {
   $id_role_SIT=(int)$r['id_role'];
   //$id_user_SIT=$r['id_user'];
   $_SESSION['id_user']=$r['id_user'];
-  $check_esternalizzati=$r['servizi_esternalizzati'];
+  $check_esternalizzati=$r['esternalizzati'];
+  $check_sovr=$r['sovrariempimenti'];
   $check_SIT=1;
 }
 //echo "<script type='text/javascript'>alert('$check_SIT');</script>";
+
 
 if ($check_SIT==0){
   if ($check_modal!=1){
@@ -147,7 +147,7 @@ if ($check_modal!=1){
             </ul>
             
         <?php } ?>
-        <?php if ($check_superedit == 1 OR $check_esternalizzati==1) { ?>
+        <?php if ($check_esternalizzati=='t') { ?>
           <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#"  role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="navbarDropdown6">
           Ditte terze
@@ -164,7 +164,7 @@ if ($check_modal!=1){
         <!--li id="link_pc2" class="nav-item">
           <a class="nav-link" href="./report_contenitori.php"> Report contenitori bilaterali</a>
         </li-->
-        <?php if ($check_superedit == 1 OR $_SESSION['username']=='Longo' ) { ?>
+        <?php if ($check_sovr == 't') { ?>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#"  role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="navbarDropdown5">
           Sovrariempimenti

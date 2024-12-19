@@ -253,16 +253,21 @@ $check_foto=0;
 
 
 $select_elementi="
-    select e.id_elemento, matricola, tag,  sum(fo.num_giorni)::int as num_svuotamenti_settimanali
+   select e.id_elemento, e.matricola, e.tag,  sum(fo.num_giorni)::int as num_svuotamenti_settimanali, 
+string_agg(distinct concat(vi.tipo, ' - ', vi.descrizione), ',') as desc_intervento,
+string_agg(distinct vi.stato_descrizione, ',') as stato_intervento, 
+max(vi.stato) as id_stato_intervento,
+max(vi.odl) as odl
 from elem.elementi e 
+left join gestione_oggetti.v_intervento vi on e.id_elemento = vi.elemento_id and vi.stato in (1,5)
 left join elem.elementi_aste_percorso eap on e.id_elemento = eap.id_elemento 
 left join elem.aste_percorso ap on ap.id_asta_percorso = eap.id_asta_percorso 
 left join elem.percorsi p on p.id_percorso = ap.id_percorso 
 left join etl.frequenze_ok fo on fo.cod_frequenza = eap.frequenza::int 
 where coalesce(p.id_categoria_uso, 3) in (3)
 and id_piazzola = $1
-and tipo_elemento = $2
-group by e.id_elemento, matricola, tag ";
+and e.tipo_elemento = $2
+group by e.id_elemento, e.matricola, e.tag ";
 $result_ee = pg_prepare($conn_sovr, "my_query_ee", $select_elementi);
 
 
@@ -501,7 +506,8 @@ tr.colore,
 te2.descrizione as tipo_raccolta,
 te.tipo_elemento,
 te.descrizione as tipo_elem, 
-concat (ep.descrizione, ' - ', ep.nome_attivita) as cliente, 
+concat (ep.descrizione, ' - ', ep.nome_attivita) as cliente,
+string_agg(distinct concat(vi.tipo, ' - ', vi.descrizione), ',') as desc_intervento,
 string_agg(distinct vi.stato_descrizione, ',') as stato_intervento, 
 max(vi.stato) as id_stato_intervento,
 max(vi.odl) as odl,
@@ -600,14 +606,11 @@ while($r = pg_fetch_assoc($result_e)) {
     if (trim($r['cliente']) !='-'){
       echo ' - '. $r['cliente'];
     }
-    /*if ($r['stato_intervento']!=''){
-      echo '<b style="color:red"> Intervento '.$r["stato_intervento"].' ';
-      if ($r["id_stato_intervento"]==5){
-        $check_stato_intervento=1;
-        echo '(Ordine di lavoro = '.$r["odl"].')';
+    if ($r['stato_intervento']!=''){
+      echo '<i class="fa-solid fa-wrench"></i> ';
       }
       echo '</b>';
-    }*/
+  
     echo '</font>';
 
     ?>
@@ -684,6 +687,22 @@ while($r = pg_fetch_assoc($result_e)) {
     while($re = pg_fetch_assoc($result_ee)) {
       
     ?>
+
+  <div class="row row-cols-lg-auto g-3 align-items-center">
+    <div class="col-12">
+    <?php
+      if ($re['stato_intervento']!=''){
+      echo '<i class="fa-solid fa-wrench"></i>  '.$re["desc_intervento"].' ';
+        $check_stato_intervento=1;
+        if ($r["id_stato_intervento"]==5){
+          echo '(Intervento preso in carico con OdL '.$r["odl"].')';
+        } else {
+          echo '(Intervento aperto)';
+        }
+      }
+      ?>
+      </div>
+    </div>
     <div class="row row-cols-lg-auto g-3 align-items-center">
       <!--div class="col-12">
         <div class="input-group">
@@ -704,7 +723,7 @@ while($r = pg_fetch_assoc($result_e)) {
 
 
       
-
+      
       <div class="col-12">
       <div class="form-check">
         <input type="checkbox" class="btn-check btn-sm" id="<?php echo $re['id_elemento'];?>" name="<?php echo $re['id_elemento'];?>" 
@@ -808,7 +827,7 @@ while($r = pg_fetch_assoc($result_e)) {
         <div title="Dettagli elemento" class="btn-sm">Matr: <?php echo $re['matricola'] ;?> - Tag: <?php echo $re['tag'] ;?>
         </div>
       </div>
-
+      
 
       <button type="button" class="info btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#edit_elemento" data-bs-whatever="<?php echo $re['id_elemento'];?>">
       <i class="fa-solid fa-pencil"></i>
@@ -822,8 +841,6 @@ while($r = pg_fetch_assoc($result_e)) {
       </form-->
       
       
-      
-
     </div>
 
 
