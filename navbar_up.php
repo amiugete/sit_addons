@@ -131,7 +131,7 @@ if ($check_modal!=1){
           </a>
           <ul class="dropdown-menu" id="navbarDropdown3" aria-labelledby="navbarDropdown3">
             <li><a class="dropdown-item" href="./consuntivazione_ekovision.php">Report consuntivazione Ekovision</a></li>
-
+            <li><a class="dropdown-item" href="./report_indicatori_arera.php">Report indicatori ARERA (uso interno)</a></li>
             <li><a class="dropdown-item" href="./report_contenitori_bilaterali.php">Report contenitori bilaterali</a></li>
             
               <li><a class="dropdown-item" href="#">Report dati in tempo reale da totem &raquo; </a>
