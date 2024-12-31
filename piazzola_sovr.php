@@ -172,7 +172,8 @@ function clickButton2() {
 <hr>
 <form name="openpiazzola" method="post" id="openpiazzola" autocomplete="off" action="piazzola_sovr.php" >
 <div class="row">
-
+<?php $anno =  date("Y") ?>
+<h4>Anno corrente : <?php echo $anno;?> </h4>
 <div class="form-group col-lg-6">
   <!--label for="via">Piazzola:</label> <font color="red">*</font-->
 				
@@ -181,17 +182,21 @@ function clickButton2() {
   data-live-search="true" name="piazzola" id="piazzola" placeholder="Seleziona una piazzola" onchange="piazzolaScelta(this.value);" required="">
 
   <!--option name="piazzola" value="NO">Seleziona una piazzola</option-->
-  <?php            
-  $query2="SELECT vpd.id_piazzola, concat(via, ',',civ, ' - ',riferimento)  as rif
-  FROM elem.v_piazzole_dwh vpd
-  join sovrariempimenti.programmazione_ispezioni pi on pi.id_piazzola = vpd.id_piazzola;";
+  <?php 
+  
+  require_once("./tables/query_piazzole_sovr.php");
+
+
+  $query2="SELECT id_piazzola, rif, comune FROM (".$query_ps. ") ip where anno = ". intval($anno) .";";
+  
+  echo $query2;    
+
   $result2 = pg_query($conn_sovr, $query2);
-  //echo $query1;    
   while($r2 = pg_fetch_assoc($result2)) { 
-      $valore=  $r2['id_via']. ";".$r2['nome'];            
-  ?>
+
+?>
               
-          <option name="piazzola" value="<?php echo $r2['id_piazzola'];?>" ><?php echo $r2['id_piazzola'] .' - ' .$r2['rif'];?></option>
+          <option name="piazzola" value="<?php echo $r2['id_piazzola'];?>" ><?php echo $r2['id_piazzola'] .' - ' .$r2['rif'] .' ('.$r2['comune'].')';?></option>
   <?php } ?>
 
   </select>  

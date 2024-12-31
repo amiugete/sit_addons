@@ -30,11 +30,16 @@ if ($_GET['e']){
     $d2=$today->format('Y-m-d');
 }
 
-$filter=" ";
+$filter="WHERE 1=1 ";
 
 if ($_GET['filter']){
     foreach(json_decode($_GET['filter']) as $key => $val) {
-        $filter = $filter."WHERE UPPER(".$key. ") LIKE UPPER('%".$val."%') ";
+        if (is_numeric($val)){
+            $filter = $filter. " AND ".$key." = ".$val." ";
+        } else {
+            $filter = $filter. " AND ".$key." LIKE '%".$val."%' ";
+        } 
+         
     }
 } 
 

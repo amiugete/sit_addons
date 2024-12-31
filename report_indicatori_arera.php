@@ -46,23 +46,80 @@ if ((int)$id_role_SIT = 0) {
 
 
 
+<?php 
+// filtro date
+$query_date="SELECT DISTINCT ANNOMESE, 
+to_char(to_date(ANNOMESE, 'YYYYMM'), 'YYYY/MM') AS ANNOMESE2 
+FROM UNIOPE.INDICATORI_ARERA_RACCOLTA viar 
+ORDER BY ANNOMESE
+";
 
+$result = oci_parse($oraconn, $query_date);
+
+oci_execute($result);
+?>
 <script>
-var date_filtro = {
-  "202401": "2024/01",
-  "202402": "2024/02",
-  "202403": "2024/03",
-  "202404": "2024/04",
-  "202405": "2024/05",
-  "202406": "2024/06",
-  "202407": "2024/07",
-  "202408": "2024/08",
-  "202409": "2024/09",
-  "202410": "2024/10",
-  "202411": "2024/11",
-  "202412": "2024/12",
-};
+  var date_filtro = {
+
+<?php
+while($r = oci_fetch_assoc($result)) {
+    echo '"'.$r["ANNOMESE"].'":"'.$r["ANNOMESE2"].'",';
+}
+oci_free_statement($result);
+?> 
+}
 </script>
+
+
+
+<?php 
+// filtro ambito
+$query_ambito="SELECT DISTINCT AMBITO 
+FROM UNIOPE.INDICATORI_ARERA_RACCOLTA viar 
+ORDER BY AMBITO
+";
+
+$result = oci_parse($oraconn, $query_ambito);
+
+oci_execute($result);
+?>
+<script>
+  var ambito_filtro = {
+
+<?php
+while($r = oci_fetch_assoc($result)) {
+    echo '"'.$r["AMBITO"].'":"'.$r["AMBITO"].'",';
+}
+oci_free_statement($result);
+?> 
+}
+</script>
+
+
+
+<?php 
+// filtro comune
+$query_comune="SELECT DISTINCT COMUNE 
+FROM UNIOPE.INDICATORI_ARERA_RACCOLTA viar 
+ORDER BY COMUNE
+";
+
+$result = oci_parse($oraconn, $query_comune);
+
+oci_execute($result);
+?>
+<script>
+  var comune_filtro = {
+
+<?php
+while($r = oci_fetch_assoc($result)) {
+    echo '"'.$r["COMUNE"].'":"'.$r["COMUNE"].'",';
+}
+oci_free_statement($result);
+?> 
+}
+</script>
+
 
 <div class="container">
 
@@ -116,8 +173,10 @@ var date_filtro = {
  	<tr>
         <!--th data-checkbox="true" data-field="id"></th-->  
         <!--th data-field="state" data-checkbox="true" ></th-->  
-        <th data-field="AMBITO" data-sortable="true" data-visible="true" data-filter-control="select">Ambito</th>
-        <th data-field="COMUNE" data-sortable="true" data-visible="true"  data-filter-control="select">Comune</th>
+        <th data-field="AMBITO" data-sortable="true" data-visible="true" 
+        data-filter-control="select" data-filter-data="var:ambito_filtro">Ambito</th>
+        <th data-field="COMUNE" data-sortable="true" data-visible="true"  
+        data-filter-control="select" data-filter-data="var:comune_filtro">Comune</th>
         <th data-field="ANNOMESE" data-sortable="true" data-visible="true" data-formatter="dateFormat" 
         data-filter-control="select" data-filter-data="var:date_filtro" >Mese anno</th>
         <!--th data-field="ANNOMESE" data-sortable="true" data-visible="true" data-formatter="dateFormat" data-filter-control="input" >Mese anno</th-->  
@@ -218,8 +277,64 @@ function realFormat_pc(value, row, index) {
 
 
 
+
+
+
+
 <div id="tabella_spazzamento">
             
+
+
+<?php 
+// filtro ambito
+$query_ambito="SELECT DISTINCT AMBITO 
+FROM UNIOPE.INDICATORI_ARERA_SPAZZAMENTO viar 
+ORDER BY AMBITO
+";
+
+$result = oci_parse($oraconn, $query_ambito);
+
+oci_execute($result);
+?>
+<script>
+  var ambito_filtro = {
+
+<?php
+while($r = oci_fetch_assoc($result)) {
+    echo '"'.$r["AMBITO"].'":"'.$r["AMBITO"].'",';
+}
+oci_free_statement($result);
+?> 
+}
+</script>
+
+
+
+<?php 
+// filtro comune
+$query_comune="SELECT DISTINCT COMUNE 
+FROM UNIOPE.INDICATORI_ARERA_SPAZZAMENTO viar 
+ORDER BY COMUNE
+";
+
+$result = oci_parse($oraconn, $query_comune);
+
+oci_execute($result);
+?>
+<script>
+  var comune_filtro = {
+
+<?php
+while($r = oci_fetch_assoc($result)) {
+    echo '"'.$r["COMUNE"].'":"'.$r["COMUNE"].'",';
+}
+oci_free_statement($result);
+?> 
+}
+</script>
+
+
+
         <h4>Indicatori spazzamento
         <a href="#tabella_raccolta" class="btn btn-sm btn-info"> Vai alla raccolta </a>
         </h4>
@@ -263,8 +378,10 @@ function realFormat_pc(value, row, index) {
  	<tr>
         <!--th data-checkbox="true" data-field="id"></th-->  
         <!--th data-field="state" data-checkbox="true" ></th-->  
-        <th data-field="AMBITO" data-sortable="true" data-visible="true" data-filter-control="select">Ambito</th>
-        <th data-field="COMUNE" data-sortable="true" data-visible="true"  data-filter-control="select">Comune</th>
+        <th data-field="AMBITO" data-sortable="true" data-visible="true" 
+        data-filter-control="select" data-filter-data="var:ambito_filtro">Ambito</th>
+        <th data-field="COMUNE" data-sortable="true" data-visible="true"  
+        data-filter-control="select" data-filter-data="var:comune_filtro">Comune</th>
         <th data-field="ANNOMESE" data-sortable="true" data-visible="true" data-formatter="dateFormat" 
         data-filter-control="select" data-filter-data="var:date_filtro" >Mese anno</th>
         <!--th data-field="ANNOMESE" data-sortable="true" data-visible="true" data-formatter="dateFormat" data-filter-control="input" >Mese anno</th-->  

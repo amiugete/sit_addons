@@ -174,6 +174,7 @@ if ($check_modal!=1){
             <?php if ($check_edit == 1) { ?>
               <!--span class="disable-links"><a class="dropdown-item" href="#">Import dati per verifiche</a></span-->
               <a class="dropdown-item" href="./piazzola_sovr.php">Compilazione dati</a>
+              <a class="dropdown-item" href="./report_piazzole_sovr.php">Report piazzole da ispezionare</a>
             <?php } ?>
             <a class="dropdown-item" href="./export_sovr.php">Export report sovrariempimenti</a>
           </div>
@@ -295,8 +296,11 @@ if ($check_modal!=1){
 <?php 
 if ($_SESSION['test']==1) {
 ?> <div> <?php
-  if (count(explode("_", basename($_SERVER['PHP_SELF'])))> 1) { 
-    if (explode("_", basename($_SERVER['PHP_SELF']))[1] == 'sovr.php'){ 
+
+$conto_underscore=count(explode("_", basename($_SERVER['PHP_SELF'])));
+
+  //if (count(explode("_", basename($_SERVER['PHP_SELF'])))> 1) { 
+    if (explode("_", basename($_SERVER['PHP_SELF']))[$conto_underscore-1] == 'sovr.php'){ 
       ?>
       <h4><i class="fa-solid fa-triangle-exclamation"></i> Ambiente di TEST!</h4>
       <?php
@@ -305,12 +309,14 @@ if ($_SESSION['test']==1) {
       <h4><i class="fa-solid fa-triangle-exclamation"></i> Ambiente di TEST ma dati in esercizio!</h4>
       <?php
     }
-  } else {
+  /*} else {
 
 ?>
  <h4><i class="fa-solid fa-triangle-exclamation"></i> Ambiente di TEST ma dati in esercizio!</h4>
 <?php
-  } 
+  } */
+
+  
 // TEST e DEBUG COOKIES
 /*
 foreach ($_COOKIE as $key=>$val)

@@ -144,7 +144,25 @@ if ((int)$id_role_SIT = 0) {
     </div>
     </div>
     </div>
+    <hr>
+<div class="row">
+<h3>Altre funzionalità</h3>
+<?php if ($check_superedit == 1 OR $check_sovrariempimenti==1) { ?>
+<div class="col-sm-4">
+    <div class="card">
+      <div class="card-header">
+        <h3><i class="fa-solid fa-user-secret"></i>Ispezioni sovrariempimenti</h3>
+      </div>
+      <ul class="list-group list-group-flush">
+        <a class="list-group-item" href="./piazzola_sovr.php">Compilazione dati anno in corso</a>
+        <a class="list-group-item" href="./report_piazzole_sovr.php">Report piazzole da ispezionare</a>
+        <a class="list-group-item" href="./export_sovr.php">Export report sovrariempimenti</a>
+      </ul>
+    </div>
+    </div>
+    <?php } ?>
 
+    </div>
     </div>
 <?php
 require_once('req_bottom.php');
