@@ -15,8 +15,8 @@ from
 ( 
 	select c.descr_comune, concat(p.id_piazzola, ' - ', v.nome, ', ', p.numero_civico, ' - Rif. ', p.riferimento) as piazzola,
 	za.cod_zona as zona, u.descrizione as ut, q.nome as quartiere,
-	pe.id_segnalazione,
-	to_char(pe.data_ora_segnalazione,  'DD/MM/YYYY HH24.MI') as data_ora_segnalazione,
+	string_agg(pe.id_segnalazione::text, ' - ') as id_segnalazione,
+	string_agg(to_char(pe.data_ora_segnalazione,  'DD/MM/YYYY HH24.MI'), ' - ') as data_ora_segnalazione,
 	count(distinct e.id_elemento) as contenitori_presenti_su_sit,
 	i.id as id_ispezione,
 	to_char(i.data_ora , 'DD/MM/YYYY HH24.MI') as data_ora_verifica, 
@@ -28,13 +28,13 @@ from
 	 from sovrariempimenti.programmazione_ispezioni pe 
 	 join sovrariempimenti.ispezioni i on i.id_piazzola = pe.id_piazzola
 	 inner join sovrariempimenti.ispezione_elementi ie on ie.id_ispezione = i.id 
-	 join (select id_elemento, tipo_elemento from elem.elementi
+	 join (select id_elemento, id_asta, tipo_elemento from elem.elementi
    		union 
-		select id_elemento, tipo_elemento from history.elementi) e on ie.id_elemento = e.id_elemento
+		select id_elemento, id_asta, tipo_elemento from history.elementi) e on ie.id_elemento = e.id_elemento
 	 join elem.tipi_elemento te on te.tipo_elemento = e.tipo_elemento  
-	 join elem.piazzole p on p.id_piazzola = i.id_piazzola 
+	 left join elem.piazzole p on p.id_piazzola = i.id_piazzola 
 	 --join elem.elementi e on e.id_piazzola = p.id_piazzola 
-	 join elem.aste a on a.id_asta = p.id_asta 
+	 join elem.aste a on a.id_asta = coalesce(p.id_asta, e.id_asta) 
 	 join topo.vie v on v.id_via = a.id_via 
 	 join topo.ut u on u.id_ut=a.id_ut 
 	 join topo.quartieri q on q.id_quartiere = a.id_quartiere
@@ -43,9 +43,10 @@ from
 	 group by 
 	 c.descr_comune, concat(p.id_piazzola, ' - ', v.nome, ', ', p.numero_civico, ' - Rif. ', p.riferimento) ,
 	 za.cod_zona , u.descrizione , q.nome ,
-	 pe.id_segnalazione, pe.data_ora_segnalazione, i.data_ora,
+	 /*pe.id_segnalazione, pe.data_ora_segnalazione,*/ i.data_ora,
 	 i.ispettore, i.id 
- ) a";
+	 )a
+order by id_ispezione";
     
 
     //questa parte per ora non serve

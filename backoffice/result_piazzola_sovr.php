@@ -22,9 +22,39 @@ $ispettore = $_POST['ispettore'];
 //echo $ispettore;
 //exit();
 
- // PREPARAZIONE QUERY DETTAGLI; 
- // query_dettagli 
- $insert_dettagli="INSERT INTO sovrariempimenti.ispezione_elementi 
+
+if ($id_piazzola> 0){
+    // PREPARAZIONE QUERY DETTAGLI; 
+    // query_dettagli 
+    $insert_dettagli="INSERT INTO sovrariempimenti.ispezione_elementi 
+    (id_ispezione, id_elemento, sovrariempito, 
+    num_svuotamenti_settimana, 
+    dettagli_svuotamenti) 
+    VALUES
+    ($1, $2 , $3, 
+    (select sum(fo.num_giorni)::int
+    from elem.elementi e 
+    left join elem.elementi_aste_percorso eap on e.id_elemento = eap.id_elemento 
+    left join elem.aste_percorso ap on ap.id_asta_percorso = eap.id_asta_percorso 
+    left join elem.percorsi p on p.id_percorso = ap.id_percorso 
+    left join etl.frequenze_ok fo on fo.cod_frequenza = eap.frequenza::int 
+    left join elem.turni t on t.id_turno = p.id_turno 
+    where p.id_categoria_uso in (3) 
+    and e.id_elemento = $4),
+    (select string_agg( 
+        concat(p.cod_percorso,' - ', p.descrizione, ' - ', fo.descrizione_long, ' - ', t.cod_turno),';'
+    )
+    from elem.elementi e 
+    left join elem.elementi_aste_percorso eap on e.id_elemento = eap.id_elemento 
+    left join elem.aste_percorso ap on ap.id_asta_percorso = eap.id_asta_percorso 
+    left join elem.percorsi p on p.id_percorso = ap.id_percorso 
+    left join etl.frequenze_ok fo on fo.cod_frequenza = eap.frequenza::int 
+    left join elem.turni t on t.id_turno = p.id_turno 
+    where p.id_categoria_uso in (3) 
+    and e.id_elemento = $5)
+    )";
+} else {
+    $insert_dettagli="INSERT INTO sovrariempimenti.ispezione_elementi 
  (id_ispezione, id_elemento, sovrariempito, 
  num_svuotamenti_settimana, 
  dettagli_svuotamenti) 
@@ -32,25 +62,28 @@ $ispettore = $_POST['ispettore'];
  ($1, $2 , $3, 
  (select sum(fo.num_giorni)::int
  from elem.elementi e 
- left join elem.elementi_aste_percorso eap on e.id_elemento = eap.id_elemento 
- left join elem.aste_percorso ap on ap.id_asta_percorso = eap.id_asta_percorso 
+ join elem.aste a on e.id_asta = a.id_asta
+ left join elem.aste_percorso ap on ap.id_asta = a.id_asta
  left join elem.percorsi p on p.id_percorso = ap.id_percorso 
- left join etl.frequenze_ok fo on fo.cod_frequenza = eap.frequenza::int 
+ left join etl.frequenze_ok fo on fo.cod_frequenza = ap.frequenza::int 
  left join elem.turni t on t.id_turno = p.id_turno 
- where p.id_categoria_uso in (3) 
+ where p.id_categoria_uso =3 and ap.lung_trattamento > 0
  and e.id_elemento = $4),
  (select string_agg( 
      concat(p.cod_percorso,' - ', p.descrizione, ' - ', fo.descrizione_long, ' - ', t.cod_turno),';'
  )
- from elem.elementi e 
- left join elem.elementi_aste_percorso eap on e.id_elemento = eap.id_elemento 
- left join elem.aste_percorso ap on ap.id_asta_percorso = eap.id_asta_percorso 
+ from elem.elementi e
+ join elem.aste a on e.id_asta = a.id_asta
+ left join elem.aste_percorso ap on ap.id_asta = a.id_asta
  left join elem.percorsi p on p.id_percorso = ap.id_percorso 
- left join etl.frequenze_ok fo on fo.cod_frequenza = eap.frequenza::int 
+ left join etl.frequenze_ok fo on fo.cod_frequenza = ap.frequenza::int 
  left join elem.turni t on t.id_turno = p.id_turno 
- where p.id_categoria_uso in (3) 
+ where p.id_categoria_uso =3 and ap.lung_trattamento > 0 
  and e.id_elemento = $5)
  )";
+
+}
+
 
 $result_elem = pg_prepare($conn_sovr, "insert_dettagli", $insert_dettagli);
 //echo  pg_last_error($conn_sovr);

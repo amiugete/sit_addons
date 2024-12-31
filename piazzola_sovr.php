@@ -172,7 +172,7 @@ function clickButton2() {
 <hr>
 <form name="openpiazzola" method="post" id="openpiazzola" autocomplete="off" action="piazzola_sovr.php" >
 <div class="row">
-<?php $anno =  date("Y") ?>
+<?php $anno =  date("Y")+1 ?>
 <h4>Anno corrente : <?php echo $anno;?> </h4>
 <div class="form-group col-lg-6">
   <!--label for="via">Piazzola:</label> <font color="red">*</font-->
@@ -187,7 +187,13 @@ function clickButton2() {
   require_once("./tables/query_piazzole_sovr.php");
 
 
-  $query2="SELECT id_piazzola, rif, comune FROM (".$query_ps. ") ip where anno = ". intval($anno) .";";
+  $query2="SELECT 
+  case 
+    when id_piazzola > 0 then id_piazzola::text
+    else concat('C', id_elemento::text)
+  end as id_piazzola,
+    rif, comune 
+    FROM (".$query_ps. ") ip where anno = ". intval($anno) .";";
   
   echo $query2;    
 
@@ -231,7 +237,7 @@ if (!$id_piazzola){
 }
 $check_stato_intervento=0;
 
-if ($id_piazzola){
+if (is_numeric($id_piazzola)){
 ?> 
 <h4> Dettagli piazzola <?php echo $id_piazzola?> da SIT </h4>
 <div id="refreshDataContainer">
@@ -709,79 +715,11 @@ while($r = pg_fetch_assoc($result_e)) {
       </div>
     </div>
     <div class="row row-cols-lg-auto g-3 align-items-center">
-      <!--div class="col-12">
-        <div class="input-group">
-          <div class="input-group-text">id</div>
-          <input type="text" readonly="" class="form-control" name="<?php echo $re['id_elemento'];?>" value="<?php echo $re['id_elemento'];?>" required>
-        </div>
-      </div-->
-
-
-      <!--div class="col-12">
-      <div class="form-check">
-        <input class="form-check-input" type="checkbox" id="<?php echo $re['id_elemento'];?>" checked>
-        <label class="form-check-label" for="inlineFormCheck">
-          Verificato
-        </label>
-      </div>
-      </div-->
-
-
+           
       
-      
-      <div class="col-12">
-      <div class="form-check">
-        <input type="checkbox" class="btn-check btn-sm" id="<?php echo $re['id_elemento'];?>" name="<?php echo $re['id_elemento'];?>" 
-         checked autocomplete="off">
-        <label class="btn btn-outline-primary  btn-sm" id="<?php echo $re['id_elemento'];?>_ver"  for="<?php echo $re['id_elemento'];?>">Verificato</label>
-  
-        <input type="checkbox" class="btn-check btn-sm" name="<?php echo $re['id_elemento'];?>_sovr" id="<?php echo $re['id_elemento'];?>_sovr" autocomplete="off">
-        <label class="btn btn-outline-danger btn-sm" id="<?php echo $re['id_elemento'];?>_lsovr" for="<?php echo $re['id_elemento'];?>_sovr">Non sovrariempito</label>
-
-      </div>
-      </div>
-      
-      
-      <script type="text/javascript">
-
-      // JavaScript
-          const someCheckbox_<?php echo $re['id_elemento'];?> = document.getElementById('<?php echo $re['id_elemento'];?>');
-
-          someCheckbox_<?php echo $re['id_elemento'];?>.addEventListener('change', e => {
-            if(e.target.checked === true) {
-              console.log("Checkbox is checked - boolean value: ", e.target.checked);
-              document.getElementById("<?php echo $re['id_elemento'];?>_ver").innerHTML = 'Verificato';
-              $('#<?php echo $re['id_elemento'];?>_sovr').removeAttr('disabled');
-              return true;
-            }
-          if(e.target.checked === false) {
-              console.log("Checkbox is not checked - boolean value: ", e.target.checked);
-              $('#<?php echo $re['id_elemento'];?>_ver').innerHTML = 'Non presente';
-              document.getElementById("<?php echo $re['id_elemento'];?>_ver").innerHTML = 'Non presente';
-              document.getElementById("<?php echo $re['id_elemento'];?>_lsovr").innerHTML = 'Non sovrariempito';
-              $('#<?php echo $re['id_elemento'];?>_sovr').attr('disabled',true);
-              $('#<?php echo $re['id_elemento'];?>_sovr').prop('checked', false);
-              return true;
-            }
-          });
-
-
-          const someCheckbox_sovr_<?php echo $re['id_elemento'];?> = document.getElementById('<?php echo $re['id_elemento'];?>_sovr');
-
-          someCheckbox_sovr_<?php echo $re['id_elemento'];?>.addEventListener('change', e1 => {
-            if(e1.target.checked === true) {
-              document.getElementById("<?php echo $re['id_elemento'];?>_lsovr").innerHTML = 'Sovrariempito';
-              return true;
-            }
-            if(e1.target.checked === false) {
-              document.getElementById("<?php echo $re['id_elemento'];?>_lsovr").innerHTML = 'Non sovrariempito';
-              return true;
-            }
-          });
-
-
-
-        </script>
+      <?php
+        require('tasti_verifica_sovr.php');
+      ?>
 
     
 
@@ -828,54 +766,18 @@ while($r = pg_fetch_assoc($result_e)) {
 
       </div>
       
-      <div class="col-12">
-        <div title="Dettagli elemento" class="btn-sm">Matr: <?php echo $re['matricola'] ;?> - Tag: <?php echo $re['tag'] ;?>
-        </div>
-      </div>
-      
-
-      <button type="button" class="info btn btn-warning btn-sm" title="Aggiungi informazioni su matricola / tag elemento <?php echo $re['id_elemento'];?>"
-      data-bs-toggle="modal" data-bs-target="#edit_elemento" data-bs-whatever="<?php echo $re['id_elemento'];?>">
-      <i class="fa-solid fa-pencil"></i>
-      </button>
-     
-      <!--form id="delete_<?php echo $id_elemento;?>">
-      <input type="hidden" id="id_elemento" name="id_elemento" value="<?php echo $id_elemento;?>">
-      <button type="submit" class="btn btn-danger btn-sm">
-        <i class="fa-solid fa-trash"></i>
-      </button>
-      </form-->
-      
-      
+    <?php
+    require('matr_tag_sovr.php');
+    ?>
+  
     </div>
-
-
-
-    <div class="modal fade" id="edit_elemento" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"> 
-    <div class="modal-dialog modal-dialog-scrollable modal-xl" >
-      <div class="modal-content">
-        <div class="modal-header">
-          <!--h5 class="modal-title" id="exampleModalLabel">Titolo</h5-->
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-      <div class="modal-body" id="body_dettaglio">
-
-      
-
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div> 
     <?php
     }
     ?>
     
     <?php 
     } else {
-      echo '<br>Chiedere a Longo cosa fare..';
+      echo '<br> no_cestino=1 (casistica non gestita.. chiedere a Longo cosa fare)';
     }
     //echo '<small>Tipo raccolta: '.$r['tipo_raccolta'].') </small><hr>';
     //echo '<hr>';
@@ -1098,7 +1000,225 @@ data-live-search="true" name="tipo_elemento_ae" id="tipo_elemento_ae" placeholde
 </div>
 
 <?php
-} #piazzola
+// cestino getta carta
+} else if (str_replace('C', '', $id_piazzola)) {
+
+  $id_elemento=str_replace('C', '', $id_piazzola);
+  // cestino
+  
+
+
+  $query_elemento="select 
+  -1 as id_piazzola, 
+  e.id_elemento, 
+  te.tipo_rifiuto,
+tr.nome as rifiuto,
+te.tipologia_elemento,
+tr.colore,
+te2.descrizione as tipo_raccolta,
+te.tipo_elemento,
+te.descrizione as tipo_elem, 
+concat (ep.descrizione, ' - ', ep.nome_attivita) as cliente, 
+v.nome as via, 
+e.numero_civico, 
+e.colore_civico,
+e.lettera_civico,
+e.riferimento,
+c.descr_comune as comune
+from elem.elementi e
+join elem.aste a on a.id_asta = e.id_asta
+join topo.vie v on v.id_via = a.id_via 
+join topo.comuni c on c.id_comune = v.id_comune 
+join elem.tipi_elemento te on te.tipo_elemento = e.tipo_elemento 
+join elem.tipi_rifiuto tr on tr.tipo_rifiuto = te.tipo_rifiuto
+join elem.tipologie_elemento te2 on te2.tipologia_elemento = te.tipologia_elemento
+left join elem.elementi_privati ep on ep.id_elemento = e.id_elemento 
+where e.id_elemento = $1 ";
+
+  $result_e = pg_prepare($conn_sovr, "my_query_e", $query_elemento);
+  $result_e = pg_execute($conn_sovr, "my_query_e", array($id_elemento));
+  $status1= pg_result_status($result_e);
+
+  while($re = pg_fetch_assoc($result_e)) {
+    echo '<h4>Dati verifica sovrariempimenti '.$re['tipo_elem'].' '.$id_elemento.' sito in via '.$re['via'].' (' .$re['comune'].')</h4>';
+    
+?>
+
+  <form class="row g-3" id="ispezione2">
+
+<!--div class="row g-3" id="ispezione"-->
+<input type="hidden" id="id_piazzola" name="id_piazzola" value="<?php echo $re['id_piazzola'];?>">
+
+
+
+<?php 
+# imposto l'orario del server
+$today = new DateTime('now');
+$timezone = new DateTimeZone('Europe/Rome');
+$today->setTimezone($timezone);
+?>
+
+<div class="form-group col-md-2">
+    <label for="id" class="form-label">Id</label>
+    <input type="number" min=1 class="form-control" id="id" name="id" readonly>
+</div>
+
+
+<div class="form-group col-md-3">
+    <label for="data_isp" class="form-label">Data verifica</label>
+    <input type="text" class="form-control" id="js-date1" name="data_isp" value="<?php echo $today->format('d/m/Y');?>" required>
+</div>
+
+<script type="text/javascript">
+
+</script>
+
+<div class="form-group col-md-3">
+  <label class="form-label active" for="ora">Ora verifica </label>
+  <input class="form-control" id="ora" name="ora" type="time" value="<?php echo $today->format('H:i');?>" required>
+</div>
+
+<div class="form-group col-md-4">
+    <label for="ispettore" class="form-label">Verificatore</label>
+    <input type="text" class="form-control" name="ispettore" id="ispettore" value="<?php echo $_SESSION['username'];?>" required>
+</div>
+<hr>
+
+<div class="row row-cols-lg-auto g-3 align-items-center">
+<?php 
+// tasti verifica
+require('tasti_verifica_sovr.php');
+
+
+// frequenza svuotamento
+
+$query_svuotamenti='select e.id_elemento, p.cod_percorso, p.descrizione, t.cod_turno,
+fo.descrizione_long, p.id_categoria_uso, sum(fo.num_giorni)::int as num_svuotamenti_settimanali
+from elem.elementi e 
+join elem.aste a on e.id_asta = a.id_asta
+left join elem.aste_percorso ap on ap.id_asta = a.id_asta
+left join elem.percorsi p on p.id_percorso = ap.id_percorso 
+left join etl.frequenze_ok fo on fo.cod_frequenza = ap.frequenza::int 
+left join elem.turni t on t.id_turno = p.id_turno 
+where p.id_categoria_uso = 3 and ap.lung_trattamento > 0
+and id_elemento = $1
+group by e.id_elemento, p.cod_percorso, p.id_categoria_uso, t.cod_turno, fo.descrizione_long, p.descrizione ';
+
+
+$query_svuot= 'select id_elemento, sum(num_svuotamenti_settimanali) as num_svuotamenti_settimanali 
+from ('. $query_svuotamenti.') as s group by id_elemento';
+
+//echo $query_svuot;
+
+$result_p = pg_prepare($conn_sovr, "query_svuot", $query_svuot);
+$result_p = pg_execute($conn_sovr, "query_svuot", array($id_elemento));
+$statusp= pg_result_status($result_p);
+while($rp = pg_fetch_assoc($result_p)) {
+?>
+
+
+<div class="col-12">
+
+
+  
+        <div class="form-check">
+
+        
+        <button type="button" class="btn btn-info dropdown-toggle btn-sm" 
+        data-bs-target="#freq_<?php echo $re['id_elemento'];?>" 
+        aria-controls="freq_<?php echo $re['id_elemento'];?>" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Freq <?php echo $rp['num_svuotamenti_settimanali'];?>
+        <span class="navbar-toggler-icon"></span> <!--svg class="icon-expand icon icon-sm icon-light"><use href="/bootstrap-italia/dist/svg/sprites.svg#it-expand"></use></svg-->
+        </button>
+
+        <div id="freq_<?php echo $re['id_elemento'];?>" class="dropdown-menu" >
+          <div class="link-list-wrapper">
+            <ul class="link-list col-12">
+              <?php
+              $result_pp = pg_prepare($conn_sovr, "query_svuotamenti", $query_svuotamenti);
+              $result_pp = pg_execute($conn_sovr, "query_svuotamenti", array($id_elemento));
+              $status= pg_result_status($result_pp);
+              ?>
+              
+              <?php
+              while($rpp = pg_fetch_assoc($result_pp)) {
+              ?>
+
+              <li><?php echo $rpp['cod_percorso'] .' - '.$rpp['descrizione']. ' - ' .$rpp['descrizione_long']. ' - ' .$rpp['cod_turno']. '<span> </span> ' ;?> </li>
+              <hr>
+
+              <?php 
+              }
+              ?>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      </div>
+
+<?php
+}
+// matricola / tag
+
+require('matr_tag_sovr.php');
+  
+    
+}?>
+</div>
+<div class="col-12">
+  <button type="submit" class="btn btn-info">
+  <i class="fa-solid fa-arrow-up-from-bracket"></i> Salva
+  </button>
+  </div> 
+</form>
+
+<!-- lancio il form e scrivo il risultato -->
+<p><div id="results_verifica2"></div></p>
+
+            <script> 
+            $(document).ready(function () {                 
+                $('#ispezione2').submit(function (event) { 
+                    console.log('Bottone form verifica 2 cliccato e finito qua');
+                    event.preventDefault();                  
+                    //var formData = $(this).serialize();
+                    var formData = $('#ispezione2 input').not( "#add_elemento input" ).serialize();
+                    console.log(formData);
+                    $.ajax({ 
+                        url: 'backoffice/result_piazzola_sovr.php', 
+                        method: 'POST', 
+                        data: formData, 
+                        //processData: true, 
+                        //contentType: false, 
+                        success: function (response) {                       
+                            //alert('Your form has been sent successfully.'); 
+                            console.log(response);
+                            console.log(response.split('$$').length);
+                            if (response.split('$$').length > 1) {
+                              document.getElementById("id").value = response.split('$$')[0];
+                              $("#results_verifica2").html(response.split('$$')[1]).fadeIn("slow");
+                            } else {
+                              $("#results_verifica2").html(response).fadeIn("slow");
+                            }
+                            
+                        }, 
+                        error: function (jqXHR, textStatus, errorThrown) {                        
+                            alert('Your form was not sent successfully.'); 
+                            console.error(errorThrown); 
+                        } 
+                    }); 
+                }); 
+            }); 
+        </script>
+
+
+
+<?php
+} // fine if id_elemento
+
+
+
+
 require_once('req_bottom.php');
 require('./footer.php');
 ?>
