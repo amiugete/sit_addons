@@ -172,7 +172,7 @@ function clickButton2() {
 <hr>
 <form name="openpiazzola" method="post" id="openpiazzola" autocomplete="off" action="piazzola_sovr.php" >
 <div class="row">
-<?php $anno =  date("Y")+1 ?>
+<?php $anno =  date("Y") ?>
 <h4>Anno corrente : <?php echo $anno;?> </h4>
 <div class="form-group col-lg-6">
   <!--label for="via">Piazzola:</label> <font color="red">*</font-->
