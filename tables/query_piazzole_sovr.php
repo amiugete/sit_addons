@@ -2,7 +2,7 @@
 
 // query usata da più parti per estrarre i dati su cui fare le ispezioni di sovrariempimento
 
-$query_ps= "SELECT pi.id_piazzola, null as id_elemento, concat(v.nome, ',',p.numero_civico, ' - ',riferimento)  as rif, 
+/*$query_ps= "SELECT pi.id_piazzola, null as id_elemento, concat(v.nome, ',',p.numero_civico, ' - ',riferimento)  as rif, 
 pi.anno, c.descr_comune as comune, mac.nome_municipio as municipio,
 case 
 	when p.data_eliminazione <= current_date then 1
@@ -50,6 +50,12 @@ pi.anno, c.descr_comune, mac.nome_municipio,
 case 
 	when e.data_eliminazione <= current_date then 1
 	else 0
-end"
+end";*/
+
+
+$query_ps = "SELECT p.id_piazzola, p.id_elemento, rif, anno, comune, municipio, elementi, percorsi, eliminata, n_ispezioni_anno
+FROM sovrariempimenti.mv_report_piazzole_da_analizzare p";
+
+
 
 ?>

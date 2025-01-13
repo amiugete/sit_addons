@@ -53,7 +53,39 @@ require_once('./tables/query_piazzole_sovr.php');
 
 <div class="container">
 
+
 <?php 
+// filtro comuni
+$query_lr="select to_char(last_refresh, 'DD/MM/YYYY HH24:MI') as time_update
+from sovrariempimenti.mv_report_piazzole_da_analizzare limit 1";
+
+
+$result = pg_prepare($conn_sovr, "query_lr", $query_lr);
+
+if (!pg_last_error($conn_sovr)){
+    #$res_ok=0;
+} else {
+    pg_last_error($conn_sovr);
+    $res_ok= $res_ok+1;
+}
+//echo "Sono qua 2";
+$result = pg_execute($conn_sovr, "query_lr", array());  
+if (!pg_last_error($conn_sovr)){
+    #$res_ok=0;
+} else {
+    pg_last_error($conn_sovr);
+    $res_ok= $res_ok+1;
+}
+//echo "Sono qua 3";
+
+
+while($r = pg_fetch_assoc($result)) {
+    $time_update= $r['time_update'];
+}
+
+
+
+
 // filtro comuni
 $query_comuni="select distinct comune from 
 ( ".$query_ps.") e
@@ -189,6 +221,43 @@ var comuni_filtro = {
             
         <h4>Elenco piazzola da ispezionare</h4>
 
+        <a class="btn btn-info btn-sm" href="./export_piazzole_sovr.php"> <i class="fa-solid fa-download"></i> Download </a>
+        
+      <?php echo ' - Ultimo aggiornamento: '.$time_update;?>  
+      <a id="btn_fefresh" class="btn btn-info btn-sm"> <i class="fa-solid fa-arrows-rotate"></i> Aggiorna dati </a>
+      <div id="result_refresh"></div>
+
+
+<!-- lancio il form e scrivo il risultato -->
+<script> 
+            $(document).ready(function () {                 
+                $('#btn_fefresh').click(function (event) { 
+                    console.log('Bottone refresh elemento cliccato e finito qua');
+                    event.preventDefault();                  
+                    $.ajax({ 
+                        url: 'backoffice/refresh_mv_sovr.php', 
+                        method: 'POST', 
+                        //data: {}, 
+                        //processData: true, 
+                        //contentType: false, 
+                        success: function (response) {                       
+                            //alert('Your form has been sent successfully.'); 
+                            console.log(response);
+                              $("#result_refresh").html(response).fadeIn("slow");
+                              setTimeout(function(){// wait for 5 secs(2)
+                                location.reload(); // then reload the page.(3)
+                            }, 1000);
+                                      
+                        }, 
+                        error: function (jqXHR, textStatus, errorThrown) {                        
+                            alert('Your form was not sent successfully.'); 
+                            console.error(errorThrown); 
+                        } 
+                    }); 
+                });
+              }); 
+
+        </script>
             <div class="row">
 
                   
@@ -231,6 +300,8 @@ var comuni_filtro = {
         <th data-field="municipio"  data-sortable="true" data-visible="true" data-filter-control="select" data-filter-data="var:municipi_filtro">Municipio</th>
         <th data-field="comune"   data-sortable="true" data-visible="true" data-filter-control="select" data-filter-data="var:comuni_filtro" >Comune</th>
         <th data-field="eliminata"   data-sortable="true" data-visible="true" data-filter-control="select">Eliminata</th>
+        <th data-field="elementi"   data-sortable="true" data-visible="true" data-filter-control="select">Elementi<br>(al 31/12)</th>
+        <th data-field="percorsi"   data-sortable="true" data-visible="true" data-filter-control="select">Percorsi<br>(al 31/12)</th>
         <th data-field="anno"   data-sortable="true" data-visible="true" data-filter-control="select" data-filter-data="var:anni_filtro">Anno</th>
         <th data-field="n_ispezioni_anno"   data-sortable="true" data-visible="true" data-filter-control="input">Numero<br>ispezioni<br>anno</th>
     </tr>
