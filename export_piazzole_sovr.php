@@ -95,7 +95,7 @@ foreach (range('A', $activeSheet->getHighestColumn()) as $col) {
  $firstrow=1;
  $lastrow=$i-1;
 // set autofilter
-$activeSheet->setAutoFilter("A".$firstrow.":Q".$lastrow);
+$activeSheet->setAutoFilter("A".$firstrow.":J".$lastrow);
 
 
 
