@@ -47,6 +47,24 @@ if ((int)$id_role_SIT = 0) {
 
 
 <?php 
+
+// time_update
+$query_lr="select to_char(AGGIORNAMENTO, 'DD/MM/YYYY HH24:MI') as TIME_UPDATE
+from INDICATORI_ARERA_RACCOLTA WHERE ROWNUM = 1";
+
+$result = oci_parse($oraconn, $query_lr);
+
+oci_execute($result);
+
+
+while($r = oci_fetch_assoc($result)) {
+    $time_update_r= $r['TIME_UPDATE'];
+}
+
+oci_free_statement($result);
+
+
+
 // filtro date
 $query_date="SELECT DISTINCT ANNOMESE, 
 to_char(to_date(ANNOMESE, 'YYYYMM'), 'YYYY/MM') AS ANNOMESE2 
@@ -133,6 +151,7 @@ oci_free_statement($result);
             
         <h4>Indicatori raccolta
         <a href="#tabella_spazzamento" class="btn btn-sm btn-info"> Vai allo spazzamento </a></h4>
+        AGGIORNAMENTO DATI: <?php echo $time_update_r;?><br> 
         NOTE: (i) per servizi si intende il numero di elementi per cui è pianificato lo svuotamento, (ii) sono considerati come effettuati tutti i servizi effettuati regolarmente o con un recupero entro le 24 h
 
 
@@ -280,7 +299,7 @@ function realFormat_pc(value, row, index) {
 
 
 
-
+<hr>
 <div id="tabella_spazzamento">
             
 
@@ -311,6 +330,21 @@ oci_free_statement($result);
 
 
 <?php 
+$query_lr="select to_char(AGGIORNAMENTO, 'DD/MM/YYYY HH24:MI') as TIME_UPDATE
+from INDICATORI_ARERA_SPAZZAMENTO WHERE ROWNUM = 1";
+
+$result = oci_parse($oraconn, $query_lr);
+
+oci_execute($result);
+
+
+while($r = oci_fetch_assoc($result)) {
+    $time_update_s= $r['TIME_UPDATE'];
+}
+
+oci_free_statement($result);
+
+
 // filtro comune
 $query_comune="SELECT DISTINCT COMUNE 
 FROM UNIOPE.INDICATORI_ARERA_SPAZZAMENTO viar 
@@ -338,6 +372,7 @@ oci_free_statement($result);
         <h4>Indicatori spazzamento
         <a href="#tabella_raccolta" class="btn btn-sm btn-info"> Vai alla raccolta </a>
         </h4>
+        AGGIORNAMENTO DATI: <?php echo $time_update_s;?><br>
         NOTE: (i) per servizi si intende il valore in km lineari da spazzare / lavare (art 46.3 TQRIF) (ii) sono considerati come effettuati tutti i servizi effettuati regolarmente o con un recupero entro le 24 h
 
 

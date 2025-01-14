@@ -55,7 +55,7 @@ require_once('./tables/query_piazzole_sovr.php');
 
 
 <?php 
-// filtro comuni
+// time_update
 $query_lr="select to_char(last_refresh, 'DD/MM/YYYY HH24:MI') as time_update
 from sovrariempimenti.mv_report_piazzole_da_analizzare limit 1";
 
