@@ -16,22 +16,25 @@ require_once('query_piazzole_sovr.php');
 
 
 $filter="WHERE 1=1 ";
+//exit();
 
 if ($_GET['filter']){
     foreach(json_decode($_GET['filter']) as $key => $val) {
-        if (is_numeric($val)){
+        /*if (is_numeric($val)){
             $filter = $filter. " AND ".$key." = ".$val." ";
-        } else {
-            $filter = $filter. " AND ".$key." LIKE '%".$val."%' ";
-        } 
+        } else {*/
+        if ($key != 'undefined'){
+            $filter = $filter. " AND upper(".$key.") LIKE upper('%".$val."%')";
+        }
+            /* }*/ 
          
     }
 } 
 
-#echo $filter;
+//echo $filter;
 #echo '<br>';
 
-#exit();
+//exit();
 
 //echo $d1 ."<br" .$d2;
 //exit();
