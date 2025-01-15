@@ -188,10 +188,11 @@ function clickButton2() {
 
 
   $query2="SELECT 
-  case 
+  /*case 
     when id_piazzola > 0 then id_piazzola::text
     else concat('C', id_elemento::text)
-  end as id_piazzola,
+  end as id_piazzola,*/
+    id_piazzola,
     rif, comune 
     FROM (".$query_ps. ") ip where anno = ". intval($anno) .";";
   
