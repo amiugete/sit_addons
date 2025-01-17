@@ -53,7 +53,7 @@ case
 end";*/
 
 
-$query_ps = "SELECT p.id_piazzola, p.id_elemento, rif, anno, comune, municipio, elementi, percorsi, eliminata, n_ispezioni_anno
+$query_ps = "SELECT p.id_piazzola, p.id_elemento, rif, anno, comune, municipio, segnalazioni, elementi, percorsi, eliminata, n_ispezioni_anno
 FROM sovrariempimenti.mv_report_piazzole_da_analizzare p";
 
 

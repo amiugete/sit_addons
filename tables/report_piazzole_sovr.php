@@ -46,7 +46,7 @@ if(!$oraconn) {
     
 $query0="/* report piazzole sovr */
         select id_piazzola, id_elemento, rif, anno, comune,
-        municipio, eliminata, n_ispezioni_anno, elementi, percorsi
+        municipio, eliminata, n_ispezioni_anno, segnalazioni, elementi, percorsi
         from (".$query_ps.") ip ".$filter. " 
         ORDER BY anno, comune, id_piazzola  ";
 

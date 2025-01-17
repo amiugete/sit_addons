@@ -39,9 +39,10 @@ $activeSheet->setCellValue('D1', 'Municipio');
 $activeSheet->setCellValue('E1', 'Comune');
 $activeSheet->setCellValue('F1', 'Eliminata');
 $activeSheet->setCellValue('G1', 'Anno');
-$activeSheet->setCellValue('H1', 'Elementi al 31/12 anno preeedente');
-$activeSheet->setCellValue('I1', 'Percorsi al 31/12 anno preeedente');
-$activeSheet->setCellValue('J1', 'Numero ispezioni');
+$activeSheet->setCellValue('H1', 'Segnalazioni');
+$activeSheet->setCellValue('I1', 'Elementi al 31/12 anno precedente');
+$activeSheet->setCellValue('J1', 'Percorsi al 31/12 anno precedente');
+$activeSheet->setCellValue('K1', 'Numero ispezioni');
 
 
 
@@ -74,10 +75,12 @@ while($r = pg_fetch_assoc($result)) {
     $activeSheet->setCellValue('E'.$i , $r['comune']);
     $activeSheet->setCellValue('F'.$i , $r['eliminata']);
     $activeSheet->setCellValue('G'.$i , $r['anno']);
-    $activeSheet->setCellValue('H'.$i , $r['elementi']);
+    $activeSheet->setCellValue('H'.$i , $r['segnalazioni']);
     $activeSheet->getStyle('H'.$i)->getAlignment()->setWrapText(true);
-    $activeSheet->setCellValue('I'.$i , $r['percorsi']);
+    $activeSheet->setCellValue('I'.$i , $r['elementi']);
     $activeSheet->getStyle('I'.$i)->getAlignment()->setWrapText(true);
+    $activeSheet->setCellValue('J'.$i , $r['percorsi']);
+    $activeSheet->getStyle('J'.$i)->getAlignment()->setWrapText(true);
     $activeSheet->setCellValue('J'.$i , $r['n_ispezioni_anno']);
     $i++;
 }
@@ -95,7 +98,7 @@ foreach (range('A', $activeSheet->getHighestColumn()) as $col) {
  $firstrow=1;
  $lastrow=$i-1;
 // set autofilter
-$activeSheet->setAutoFilter("A".$firstrow.":J".$lastrow);
+$activeSheet->setAutoFilter("A".$firstrow.":K".$lastrow);
 
 
 

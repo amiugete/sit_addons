@@ -300,6 +300,7 @@ var comuni_filtro = {
         <th data-field="municipio"  data-sortable="true" data-visible="true" data-filter-control="select" data-filter-data="var:municipi_filtro">Municipio</th>
         <th data-field="comune"   data-sortable="true" data-visible="true" data-filter-control="select" data-filter-data="var:comuni_filtro" >Comune</th>
         <th data-field="eliminata"   data-sortable="true" data-visible="true" data-filter-control="select">Eliminata</th>
+        <th data-field="segnalazioni"   data-sortable="true" data-visible="true" data-filter-control="select">Segnalazioni</th>
         <th data-field="elementi"   data-sortable="true" data-visible="true" data-filter-control="select">Elementi<br>(al 31/12)</th>
         <th data-field="percorsi"   data-sortable="true" data-visible="true" data-filter-control="select">Percorsi<br>(al 31/12)</th>
         <th data-field="anno"   data-sortable="true" data-visible="true" data-filter-control="select" data-filter-data="var:anni_filtro">Anno</th>
