@@ -90,6 +90,54 @@ oci_free_statement($result);
 
 
 
+<?php
+// filtro anno
+$query_anno="SELECT DISTINCT substr(ANNOMESE,1,4) as ANNO 
+FROM UNIOPE.INDICATORI_ARERA_RACCOLTA viar 
+ORDER BY ANNO
+";
+
+$result = oci_parse($oraconn, $query_anno);
+
+oci_execute($result);
+?>
+<script>
+  var anno_filtro = {
+
+<?php
+while($r = oci_fetch_assoc($result)) {
+    echo '"'.$r["ANNO"].'":"'.$r["ANNO"].'",';
+}
+oci_free_statement($result);
+?> 
+}
+</script>
+
+
+
+<?php
+// filtro mese
+$query_mese="SELECT DISTINCT substr(ANNOMESE,5,2) as MESE 
+FROM UNIOPE.INDICATORI_ARERA_RACCOLTA viar 
+ORDER BY MESE
+";
+
+$result = oci_parse($oraconn, $query_mese);
+
+oci_execute($result);
+?>
+<script>
+  var mese_filtro = {
+
+<?php
+while($r = oci_fetch_assoc($result)) {
+    echo '"'.$r["MESE"].'":"'.$r["MESE"].'",';
+}
+oci_free_statement($result);
+?> 
+}
+</script>
+
 <?php 
 // filtro ambito
 $query_ambito="SELECT DISTINCT AMBITO 
@@ -196,8 +244,12 @@ oci_free_statement($result);
         data-filter-control="select" data-filter-data="var:ambito_filtro">Ambito</th>
         <th data-field="COMUNE" data-sortable="true" data-visible="true"  
         data-filter-control="select" data-filter-data="var:comune_filtro">Comune</th>
-        <th data-field="ANNOMESE" data-sortable="true" data-visible="true" data-formatter="dateFormat" 
-        data-filter-control="select" data-filter-data="var:date_filtro" >Mese anno</th>
+        <!--th data-field="ANNOMESE" data-sortable="true" data-visible="true" data-formatter="dateFormat" 
+        data-filter-control="select" data-filter-data="var:date_filtro" >Mese anno</th-->
+        <th data-field="ANNO" data-sortable="true" data-visible="true" 
+        data-filter-control="select" data-filter-data="var:anno_filtro" >Anno</th>
+        <th data-field="MESE" data-sortable="true" data-visible="true" data-formatter="dateFormat2" 
+        data-filter-control="select" data-filter-data="var:mese_filtro" >Mese</th>
         <!--th data-field="ANNOMESE" data-sortable="true" data-visible="true" data-formatter="dateFormat" data-filter-control="input" >Mese anno</th-->  
         <th data-field="SERVIZI_PIANIFICATI"  data-sortable="true" data-visible="true" data-filter-control="input">Servizi pianificati</th>
         <th data-field="SERVIZI_NON_EFFETTUATI"  data-sortable="true" data-visible="true" data-filter-control="input">Servizi non effettuati</th>
@@ -270,6 +322,13 @@ function dateFormat(value, row, index) {
    }
 };
 
+function dateFormat2(value, row, index) {
+   if (value){ 
+    return moment(value).format('MMM');
+   } else {
+    return '-';
+   }
+};
 
 
 function realFormat(value, row, index) {
@@ -345,6 +404,79 @@ while($r = oci_fetch_assoc($result)) {
 oci_free_statement($result);
 
 
+
+
+// filtro anno
+$query_anno="SELECT DISTINCT substr(ANNOMESE,1,4) as ANNO 
+FROM UNIOPE.INDICATORI_ARERA_RACCOLTA viar 
+ORDER BY ANNO
+";
+
+$result = oci_parse($oraconn, $query_anno);
+
+oci_execute($result);
+?>
+<script>
+  var anno_filtro = {
+
+<?php
+while($r = oci_fetch_assoc($result)) {
+    echo '"'.$r["ANNO"].'":"'.$r["ANNO"].'",';
+}
+oci_free_statement($result);
+?> 
+}
+</script>
+
+
+
+<?php
+// filtro mese
+$query_mese="SELECT DISTINCT substr(ANNOMESE,5,2) as MESE 
+FROM UNIOPE.INDICATORI_ARERA_RACCOLTA viar 
+ORDER BY MESE
+";
+
+$result = oci_parse($oraconn, $query_mese);
+
+oci_execute($result);
+?>
+<script>
+  var mese_filtro = {
+
+<?php
+while($r = oci_fetch_assoc($result)) {
+    echo '"'.$r["MESE"].'":"'.$r["MESE"].'",';
+}
+oci_free_statement($result);
+?> 
+}
+</script>
+
+<?php 
+// filtro ambito
+$query_ambito="SELECT DISTINCT AMBITO 
+FROM UNIOPE.INDICATORI_ARERA_RACCOLTA viar 
+ORDER BY AMBITO
+";
+
+$result = oci_parse($oraconn, $query_ambito);
+
+oci_execute($result);
+?>
+<script>
+  var ambito_filtro = {
+
+<?php
+while($r = oci_fetch_assoc($result)) {
+    echo '"'.$r["AMBITO"].'":"'.$r["AMBITO"].'",';
+}
+oci_free_statement($result);
+?> 
+}
+</script>
+
+<?php
 // filtro comune
 $query_comune="SELECT DISTINCT COMUNE 
 FROM UNIOPE.INDICATORI_ARERA_SPAZZAMENTO viar 
@@ -417,8 +549,12 @@ oci_free_statement($result);
         data-filter-control="select" data-filter-data="var:ambito_filtro">Ambito</th>
         <th data-field="COMUNE" data-sortable="true" data-visible="true"  
         data-filter-control="select" data-filter-data="var:comune_filtro">Comune</th>
-        <th data-field="ANNOMESE" data-sortable="true" data-visible="true" data-formatter="dateFormat" 
-        data-filter-control="select" data-filter-data="var:date_filtro" >Mese anno</th>
+        <!--th data-field="ANNOMESE" data-sortable="true" data-visible="true" data-formatter="dateFormat" 
+        data-filter-control="select" data-filter-data="var:date_filtro" >Mese anno</th-->
+        <th data-field="ANNO" data-sortable="true" data-visible="true" 
+        data-filter-control="select" data-filter-data="var:anno_filtro" >Anno</th>
+        <th data-field="MESE" data-sortable="true" data-visible="true" data-formatter="dateFormat2" 
+        data-filter-control="select" data-filter-data="var:mese_filtro" >Mese</th>
         <!--th data-field="ANNOMESE" data-sortable="true" data-visible="true" data-formatter="dateFormat" data-filter-control="input" >Mese anno</th-->  
         <th data-field="SERVIZI_PIANIFICATI" data-formatter="realFormat" data-sortable="true" data-visible="true" data-filter-control="input">Servizi pianificati</th>
         <th data-field="SERVIZI_NON_EFFETTUATI" data-formatter="realFormat" data-sortable="true" data-visible="true" data-filter-control="input">Servizi non effettuati</th>

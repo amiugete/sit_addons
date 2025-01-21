@@ -34,11 +34,11 @@ $filter="WHERE 1=1 ";
 
 if ($_GET['filter']){
     foreach(json_decode($_GET['filter']) as $key => $val) {
-        if (is_numeric($val)){
+        /*if (is_numeric($val)){
             $filter = $filter. " AND ".$key." = ".$val." ";
-        } else {
+        } else {*/
             $filter = $filter. " AND ".$key." LIKE '%".$val."%' ";
-        } 
+        //} 
          
     }
 } 
@@ -57,15 +57,15 @@ if(!$oraconn) {
  
     
 $query0="/* report indicatori raccolta */
-        SELECT AMBITO, COMUNE, to_date(ANNOMESE, 'YYYYMM') AS ANNOMESE, round(SERVIZI_PIANIFICATI,3) as SERVIZI_PIANIFICATI,
+        SELECT * FROM (SELECT AMBITO, COMUNE, substr(ANNOMESE, 1,4) AS ANNO, substr(ANNOMESE, 5,2) AS MESE, round(SERVIZI_PIANIFICATI,3) as SERVIZI_PIANIFICATI,
         round(SERVIZI_NON_EFFETTUATI,3) as SERVIZI_NON_EFFETTUATI,
         round(CAUSA_FORZA_MAGGIORE,3) as CAUSA_FORZA_MAGGIORE,
         round(IMPUTABILI_UTENTE,3) as IMPUTABILI_UTENTE,
         round(IMPUTABILI_GESTORE,3) as IMPUTABILI_GESTORE, 
         round(ALTRO, 3) as ALTRO,
          PERC_SERV_EFFETTUATI, PERC_SERV_NON_EFFETTUATI 
-         FROM UNIOPE.INDICATORI_ARERA_SPAZZAMENTO vias ".$filter. " 
-        ORDER BY ANNOMESE, AMBITO, COMUNE  ";
+         FROM UNIOPE.INDICATORI_ARERA_SPAZZAMENTO vias) vias ".$filter. " 
+        ORDER BY ANNO,MESE, AMBITO, COMUNE  ";
 
 
 
