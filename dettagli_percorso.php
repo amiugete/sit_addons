@@ -65,7 +65,7 @@ $check_in_attivazione=0;
 <div class="container">
 <?php
 $query_testata = "select ep.cod_percorso, 
-ep.descrizione, t.cod_turno, t.id_turno, ep.durata, fo.descrizione_long, 
+ep.descrizione, t.cod_turno, t.id_turno, ep.durata, fo.descrizione_long, ep.freq_settimane,
 ep.freq_testata, fo.freq_binaria, ep.id_tipo,
 at2.id_servizio_uo, at2.id_servizio_sit, 
 to_char(ep.data_inizio_validita, 'DD/MM/YYYY') as data_inizio_print,
@@ -127,7 +127,18 @@ while($r = pg_fetch_assoc($result)) {
   echo '</li>'; 
   echo '<li class="mt-1"><b> Turno </b>'.$r["cod_turno"].'</li>';
   echo '<li class="mt-1"><b> Durata </b>'.$r["durata"].'</li>';
-  echo '<li class="mt-1"><b> Frequenza </b>'.$r["descrizione_long"].'</li>';
+  echo '<li class="mt-1"><b> Frequenza </b>'.$r["descrizione_long"];
+  
+  
+ if ($r['freq_settimane']=='T'){
+  echo '';
+ } else if ($r['freq_settimane']=='P') {
+  echo ' - Solo settimane Pari';
+ } else if ($r['freq_settimane']=='D') {
+ echo ' - Solo settimane Dispari';
+}
+  echo '</li>';
+
   echo '<li class="mt-1"><b> Data attivazione testata (inclusa) </b>'.$r["data_inizio_print"].'';
   if ($check_versione_successiva==0 and $check_superedit==1 and $check_in_attivazione==1 and $r["flg_disattivo"]==0){
       echo '- <button type="button" class="btn btn-sm btn-info" title="Modifica data attivazione" 

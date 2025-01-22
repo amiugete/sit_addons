@@ -47,7 +47,7 @@ $cod_percorso = $_POST['id_percorso'];
 
 $freq_uo = $_POST['freq_uo'];
 $freq_sit = floor($_POST['freq_sit']);
-
+$freq_sett = $_POST['freq_sett'];
 //echo $freq_uo."<br>";
 //echo $freq_sit."<br>";
 
@@ -126,7 +126,8 @@ $insert_uo = "INSERT INTO UNIOPE.ANAGR_SER_PER_UO
     ID_SERVIZIO, 
     ID_SQUADRA, 
     FROM_SIT, 
-    FREQUENZA_NEW)
+    FREQUENZA_NEW, 
+    FREQ_SETTIMANE)
     VALUES(
     (SELECT max(id_ser_per_uo)+1 FROM  UNIOPE.ANAGR_SER_PER_UO),
     :p1, :p2,
@@ -137,7 +138,8 @@ $insert_uo = "INSERT INTO UNIOPE.ANAGR_SER_PER_UO
     :p8, 
     :p9,
     1,
-    :p10)";
+    :p10, 
+    :p11)";
 
 
 
@@ -183,7 +185,7 @@ oci_bind_by_name($result_uo2, ':p7', $desc);
 oci_bind_by_name($result_uo2, ':p8', $id_servizio_uo);
 oci_bind_by_name($result_uo2, ':p9', $sq_ut);
 oci_bind_by_name($result_uo2, ':p10', $freq_uo);
-
+oci_bind_by_name($result_uo2, ':p11', $freq_sett);
 
 
 # commit

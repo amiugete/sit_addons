@@ -22,13 +22,18 @@ if(!$conn) {
 } else {
 
 
-    $query0= "select ep.cod_percorso as cp_edit, ep.cod_percorso, ep.cod_percorso as cp_report, p.id_percorso as id_percorso_sit, 
+    $query0= "select ep.cod_percorso as cp_edit, ep.cod_percorso,
+     ep.cod_percorso as cp_report, p.id_percorso as id_percorso_sit, 
     ep.descrizione, af.descrizione as famiglia,
     at2.descrizione as tipo,
     array_agg(u.id_ut) as id_uts,
     string_agg(distinct u.descrizione, ',') as ut,
     count(distinct pu.id_turno) as count_distinct_turni,
-    fo.descrizione_long as freq,
+    case
+    when ep.freq_settimane = 'T' then fo.descrizione_long 
+    when ep.freq_settimane = 'P' then concat(fo.descrizione_long, ' (Sett. PARI)')
+    when ep.freq_settimane = 'D' then concat(fo.descrizione_long, ' (Sett. DISPARI)')
+    end as freq,
     string_agg(distinct t.descrizione, ',') as turno, 
     ep.versione_testata as versione, 
     case 
@@ -52,7 +57,7 @@ if(!$conn) {
     left join etl.frequenze_ok fo on fo.cod_frequenza::int = ep.freq_testata 
     group by ep.cod_percorso, p.id_percorso, 
     ep.descrizione, af.descrizione, at2.descrizione, fo.descrizione_long, ep.versione_testata,  
-    ep.data_inizio_validita, ep.data_fine_validita
+    ep.data_inizio_validita, ep.data_fine_validita, ep.freq_settimane
     order by 1,9";
     
     if($_GET['ut']) {

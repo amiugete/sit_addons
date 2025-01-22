@@ -123,6 +123,8 @@ while($r4 = pg_fetch_assoc($result4)) {
   $descrizione_long = $r4['descrizione_long'];
 }
 
+$freq_sett= $_POST['freq_sett'];
+
 
 $codice_percorso=$cod_start.''.$id_percorso_parte2.''.$id_percorso_turno;
 ?>
@@ -131,7 +133,15 @@ $codice_percorso=$cod_start.''.$id_percorso_parte2.''.$id_percorso_turno;
 //echo '<li><b>Nuovo codice</b>: '.$codice_percorso.'</li>';
 echo '<li><b>Id percorso</b>: '.$id_percorso_parte2.'</li>';
 echo '<li><b>Descrizione</b>: '.$desc.'</li>';
-echo '<li><b>Frequenza</b>: '.$descrizione_long.'</li>';
+echo '<li><b>Frequenza</b>: '.$descrizione_long;
+if ($freq_sett=='T'){
+  echo '';
+ } else if ($freq_sett=='P') {
+  echo ' - Solo settimane <b>Pari</b>';
+ } else if ($freq_sett=='D') {
+ echo ' - Solo settimane <b>Dispari</b>';
+}
+echo '</li>';
 echo '<li><b>Durata</b>: '.$durata.'</li>';
 ?></ul><?php
 
@@ -148,6 +158,7 @@ echo '<li><b>Durata</b>: '.$durata.'</li>';
 <input type="hidden" id="desc" name="desc" value="<?php echo $desc;?>">
 <input type="hidden" id="freq_uo" name="freq_uo" value="<?php echo $freq_uo;?>">
 <input type="hidden" id="freq_sit" name="freq_sit" value="<?php echo $freq_sit;?>">
+<input type="hidden" id="$freq_sett" name="$freq_sett" value="<?php echo $$freq_sett;?>">
 <input type="hidden" id="id_servizio_uo" name="id_servizio_uo" value="<?php echo $id_servizio_uo;?>">
 <input type="hidden" id="id_servizio_sit" name="id_servizio_sit" value="<?php echo $id_servizio_sit;?>">
 <input type="hidden" id="durata" name="durata" value="<?php echo $durata;?>">

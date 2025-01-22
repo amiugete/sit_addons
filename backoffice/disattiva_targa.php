@@ -34,13 +34,13 @@ WHERE id_uo=$1 AND targa=$2 ";
 $result_add = pg_prepare($conn, "update_targa", $update_targa);
 //echo  pg_last_error($conn_sovr);
 if (pg_last_error($conn)){
-    echo pg_last_error($conn_sovr);
+    echo pg_last_error($conn).'<br>';
     $res_ok=$res_ok+1;
 }
 
 $result_add = pg_execute($conn, "update_targa", array($id_uo, $targa));
 if (pg_last_error($conn)){
-    echo pg_last_error($conn_sovr);
+    echo pg_last_error($conn).'<br>';
     $res_ok=$res_ok+1;
 }
 

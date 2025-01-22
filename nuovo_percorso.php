@@ -158,6 +158,12 @@ while($r3 = pg_fetch_assoc($result3)) {
 <?php } ?>
 
 </select>            
+
+<?php 
+$freq_sett='T';
+require('freq_sett_component.php');
+?>
+
 </div>
 
 </div>

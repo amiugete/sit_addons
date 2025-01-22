@@ -54,7 +54,7 @@ $check_in_attivazione=0;
 <?php
 $query_testata = "select ep.cod_percorso, 
 ep.descrizione, t.cod_turno, t.id_turno, ep.durata, fo.descrizione_long, 
-ep.freq_testata, fo.freq_binaria, ep.id_tipo,
+ep.freq_testata, ep.freq_testata::bit(12) as fbin, fo.freq_binaria, ep.id_tipo, ep.freq_settimane,
 at2.id_servizio_uo, at2.id_servizio_sit, 
 to_char(ep.data_inizio_validita, 'DD/MM/YYYY') as data_inizio_print,
 ep.data_inizio_validita, to_char(ep.data_fine_validita, 'DD/MM/YYYY') as data_disattivazione_testata,
@@ -179,7 +179,16 @@ while($r = pg_fetch_assoc($result)) {
   <?php
   echo '<li class="mt-1"><b> Turno </b>'.$r["cod_turno"].'</li>';
   echo '<li class="mt-1"><b> Durata </b>'.$r["durata"].'</li>';
-  echo '<li class="mt-1"><b> Frequenza </b>'.$r["descrizione_long"].'</li>';
+  echo '<li class="mt-1"><b> Frequenza </b>'.$r["descrizione_long"];
+  
+ if ($r['freq_settimane']=='T'){
+  echo '';
+ } else if ($r['freq_settimane']=='P') {
+  echo ' - Solo settimane Pari';
+ } else if ($r['freq_settimane']=='D') {
+ echo ' - Solo settimane Dispari';
+}
+  echo '</li>';
 
 
 
@@ -360,6 +369,8 @@ while($r = pg_fetch_assoc($result)) {
   echo '</li>';
   echo '<li>Ultima modifica il '.$r['data_ultima_modifica'].'</li>';
   $freq_sit=$r["freq_testata"];
+  $fbin=$r["fbin"];
+  $freq_sett=$r["freq_settimane"];
   $freq_uo=$r["freq_binaria"];
   $id_servizio_uo=$r['id_servizio_uo'];
   $id_servizio_sit= $r['id_servizio_sit'];
@@ -583,6 +594,8 @@ if($check_versione_successiva==0){
 <input type="hidden" id="desc" name="desc" value="<?php echo $desc;?>">
 <input type="hidden" id="freq_uo" name="freq_uo" value="<?php echo $freq_uo;?>">
 <input type="hidden" id="freq_sit" name="freq_sit" value="<?php echo $freq_sit;?>">
+<input type="hidden" id="fbin" name="fbin" value="<?php echo $fbin;?>">
+<input type="hidden" id="freq_sett" name="freq_sett" value="<?php echo $freq_sett;?>">
 <input type="hidden" id="id_servizio_uo" name="id_servizio_uo" value="<?php echo $id_servizio_uo;?>">
 <input type="hidden" id="id_servizio_sit" name="id_servizio_sit" value="<?php echo $id_servizio_sit;?>">
 <input type="hidden" id="durata" name="durata" value="<?php echo $durata;?>">
@@ -616,6 +629,7 @@ if($check_versione_successiva==0){
 <input type="hidden" id="desc" name="desc" value="<?php echo $desc;?>">
 <input type="hidden" id="freq_uo" name="freq_uo" value="<?php echo $freq_uo;?>">
 <input type="hidden" id="freq_sit" name="freq_sit" value="<?php echo $freq_sit;?>">
+<input type="hidden" id="freq_sett" name="freq_sett" value="<?php echo $freq_sett;?>">
 <input type="hidden" id="id_servizio_uo" name="id_servizio_uo" value="<?php echo $id_servizio_uo;?>">
 <input type="hidden" id="id_servizio_sit" name="id_servizio_sit" value="<?php echo $id_servizio_sit;?>">
 <input type="hidden" id="durata" name="durata" value="<?php echo $durata;?>">

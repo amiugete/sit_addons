@@ -210,6 +210,7 @@ oci_free_statement($result);
   <!--div id="toolbar"> Per esportare i dati completi rimuovere la paginazione (primo tasto dopo la ricerca)
 </div-->
       <table  id="raccolta" class="table-hover" 
+        data-locale="it-IT"
         data-show-columns="true"
         data-show-search-clear-button="true"   
         data-show-export="true" 
@@ -333,7 +334,7 @@ function dateFormat2(value, row, index) {
 
 function realFormat(value, row, index) {
    if (value){ 
-    return parseFloat(value);
+    return parseFloat(value).toLocaleString("it-IT");
    } else {
     return '-';
    }
@@ -341,7 +342,7 @@ function realFormat(value, row, index) {
  
 function realFormat_pc(value, row, index) {
    if (value){ 
-    return parseFloat(value)+'%';
+    return parseFloat(value).toLocaleString("it-IT")+'%';
    } else {
     return '-';
    }
@@ -515,6 +516,7 @@ oci_free_statement($result);
   <!--div id="toolbar"> Per esportare i dati completi rimuovere la paginazione (primo tasto dopo la ricerca)
 </div-->
       <table  id="spazzamento" class="table-hover" 
+        data-locale="it-IT"
         data-show-columns="true"
         data-show-search-clear-button="true"   
         data-show-export="true" 
@@ -587,8 +589,12 @@ oci_free_statement($result);
 
   var $tables = $('#spazzamento');
   
+
+  
+
   $(function() {
-    $tables.bootstrapTable()
+    $tables.bootstrapTable();
+    /*$tables.bootstrapTable('changeLocale', 'it_IT');*/
   });
   
 
@@ -613,7 +619,7 @@ function dateFormat(value, row, index) {
 
 function realFormat(value, row, index) {
    if (value){ 
-    return parseFloat(value);
+    return parseFloat(value).toLocaleString("it-IT");
    } else {
     return '-';
    }
@@ -621,7 +627,7 @@ function realFormat(value, row, index) {
  
 function realFormat_pc(value, row, index) {
    if (value){ 
-    return parseFloat(value)+'%';
+    return parseFloat(value).toLocaleString("it-IT")+'%';
    } else {
     return '-';
    }

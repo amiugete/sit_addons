@@ -30,6 +30,8 @@ $freq_sit = floor($_POST['freq_sit']);
 echo $freq_uo."<br>";
 echo $freq_sit."<br>";
 
+$freq_sett = $_POST['freq_sett'];
+
 $id_servizio_uo = intval($_POST['id_servizio_uo']);
 $id_servizio_sit = intval($_POST['id_servizio_sit']);
 $tipo = $_POST['tipo'];
@@ -88,7 +90,8 @@ $insert_uo = "INSERT INTO UNIOPE.ANAGR_SER_PER_UO
     ID_SERVIZIO, 
     ID_SQUADRA, 
     FROM_SIT, 
-    FREQUENZA_NEW)
+    FREQUENZA_NEW, 
+    FREQ_SETTIMANE)
     VALUES(
     (SELECT max(id_ser_per_uo)+1 FROM  UNIOPE.ANAGR_SER_PER_UO),
     :p1, :p2,
@@ -99,7 +102,8 @@ $insert_uo = "INSERT INTO UNIOPE.ANAGR_SER_PER_UO
     :p9, 
     :p10,
     1,
-    :p11)";
+    :p11,
+    :p12)";
 
 
 
@@ -134,6 +138,8 @@ if($_POST['rim']){
     oci_bind_by_name($result_uo1, ':p9', $id_servizio_uo);
     oci_bind_by_name($result_uo1, ':p10', $sq_rim);
     oci_bind_by_name($result_uo1, ':p11', $freq_uo);
+    oci_bind_by_name($result_uo1, ':p12', $freq_sett);
+
 
     oci_execute($result_uo1);
 
@@ -184,7 +190,7 @@ oci_bind_by_name($result_uo2, ':p8', $desc);
 oci_bind_by_name($result_uo2, ':p9', $id_servizio_uo);
 oci_bind_by_name($result_uo2, ':p10', $sq_ut);
 oci_bind_by_name($result_uo2, ':p11', $freq_uo);
-
+oci_bind_by_name($result_uo2, ':p12', $freq_sett);
 
 
 # commit
@@ -223,7 +229,8 @@ if ($id_servizio_sit!=0 and $check_SIT==1){
   id_squadra, 
   ddmm_switch_on, 
   ddmm_switch_off, 
-  id_servizio) 
+  id_servizio, 
+  freq_settimane) 
   VALUES
   (nextval('elem.sq_percorsi'::regclass),
   $1,
@@ -237,9 +244,10 @@ if ($id_servizio_sit!=0 and $check_SIT==1){
   $8, 
   NULL,
   NULL,
-  $9)";
+  $9, 
+  $10)";
   $result_sit = pg_prepare($conn, "insert_sit", $insert_sit);
-  $result_sit = pg_execute($conn, "insert_sit", array($cod_percorso,$desc, $cdaog3, $turno, $_SESSION['username'], $data_att, $freq_sit, $sq_ut, $id_servizio_sit)); 
+  $result_sit = pg_execute($conn, "insert_sit", array($cod_percorso,$desc, $cdaog3, $turno, $_SESSION['username'], $data_att, $freq_sit, $sq_ut, $id_servizio_sit, $freq_sett)); 
 }
 
 echo  pg_last_error($conn);
@@ -251,7 +259,8 @@ $insert_elenco_percorsi= "INSERT INTO anagrafe_percorsi.elenco_percorsi (
   id_tipo, freq_testata,
   id_turno, durata, codice_cer,
   versione_testata, 
-  data_inizio_validita, data_fine_validita, data_ultima_modifica) 
+  data_inizio_validita, data_fine_validita, data_ultima_modifica, 
+  freq_settimane) 
   VALUES
   (
     $1, $2,
@@ -259,6 +268,7 @@ $insert_elenco_percorsi= "INSERT INTO anagrafe_percorsi.elenco_percorsi (
     $5, $6, NULL, 
     1,
     to_timestamp($7,'DD/MM/YYYY'), to_timestamp($8,'DD/MM/YYYY'), now()
+    , $9
   )";
 
 
@@ -269,7 +279,7 @@ $result_elenco = pg_prepare($conn, "insert2", $insert_elenco_percorsi);
 echo "<br><br> ERRORI 1: <br>";
 echo  pg_last_error($conn);
 
-$result_elenco = pg_execute($conn, "insert2", array($cod_percorso, $desc, $tipo, $freq_sit, $turno, $durata, $data_att, $data_disatt)); 
+$result_elenco = pg_execute($conn, "insert2", array($cod_percorso, $desc, $tipo, $freq_sit, $turno, $durata, $data_att, $data_disatt, $freq_sett)); 
 echo "<br><br> ERRORI 2: <br>";
 echo  pg_last_error($conn);
 

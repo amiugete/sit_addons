@@ -62,6 +62,8 @@ $codice_percorso=$_POST['id_percorso'];
 $desc= $_POST['desc'];
 $turno= $_POST['turno'];
 $freq_sit = $_POST['freq_sit'];
+$fbin = $_POST['fbin'];
+$freq_sett = $_POST['freq_sett'];
 $freq_uo = $_POST['freq_uo'];
 $new_vers= $_POST['old_vers']+1;
 
@@ -101,21 +103,13 @@ echo '<li><b>Codice</b>: '.$codice_percorso.'</li>';
 <div class="form-group col-md-6">
     <label for="id_percorso"> Codice percorso </label> <font color="red">*</font>
     <input type="text" name="id_percorso" id="id_percorso" class="form-control" value="<?php echo $codice_percorso?>" readonly="" required="">
-</div>
 
-
-<div class="form-group col-md-6">
+    <hr>
     <label for="desc"> Descrizione </label> <font color="red">*</font>
     <input type="text" name="desc" id="desc" class="form-control" value="<?php echo $desc?>" required="">
-</div>
-
-</div>
 
 
-<div class="row g-3 align-items-center">
-
-
-<div class="form-group  col-md-6">
+    <hr>
   <label for="tipo">Turno:</label> <font color="red">*</font>
                 <select name="turno" id="turno" class="selectpicker show-tick form-control" data-live-search="true"  required="">
               
@@ -156,11 +150,27 @@ oci_execute($result2bis);
 
   <?php
   // FREQUENZA 
+
+
+  $query3a="select cod_frequenza, descrizione_long 
+  from etl.frequenze_ok fo where cod_frequenza = $1;";
+  $result3a = pg_prepare($conn, "query3a", $query3a);
+  $result3a = pg_execute($conn, "query3a", array($freq_sit));
+  while($r3a = pg_fetch_assoc($result3a)) { 
+    $freq_long = $r3a['descrizione_long'];
+  }
+
   ?>
 <div class="form-group  col-md-6">
-  <label for="freq">Frequenza:</label> 
-  <?php if ($id_servizio_sit){ echo  '<font color="red">Per cambi frequenza usare SIT*</font>';}?>
-                <select name="freq" id="freq" class="selectpicker show-tick form-control" data-live-search="true" 
+  <label for="freq">Frequenza (attuale :   <?php echo $freq_long;?> )</label> 
+  <br>
+  <br>
+  
+  
+  
+  
+  <?php if ($id_servizio_sit){ echo  '<!--font color="red">Per cambi frequenza usare SIT*</font-->';}?>
+                <!--select name="freq" id="freq" class="selectpicker show-tick form-control" data-live-search="true" 
                 <?php if ($id_servizio_sit){ echo ' disabled="true" ';}?> 
                 required="">
 
@@ -182,7 +192,12 @@ while($r3bis = pg_fetch_assoc($result3bis)) {
       ><?php echo $r3bis['descrizione_long'];?></option>
 <?php } ?>
 
-</select>            
+</select-->
+
+
+
+<?php require('freq_sett_component.php');?>
+            
 </div>
 
 </div>
