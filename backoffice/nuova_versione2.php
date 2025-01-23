@@ -566,6 +566,50 @@ if ($id_servizio_sit!=0 AND $cambio_frequenza_sit ==1 ){
   $new_id=intval($arr[0]);
 
 
+  // tappe sul nuovo percorso
+  // 'F' applico la frequenza a tutte le tappe del nuovo percorso
+  // 'I' ANCORA DA IMPLEMENTARE !!!!!!!!!
+  $clona_tappe_nuova_freq="SELECT elem.clona_percorso_new_freq($1,$2,$3,'F')";
+
+
+  $result_sit2 = pg_prepare($conn, "clona_tappe_nuova_freq", $clona_tappe_nuova_freq);
+  if (pg_last_error($conn)){
+    echo pg_last_error($conn).'<br>';
+    $res_ok=$res_ok+1;
+  }
+
+  $result_sit2 = pg_execute($conn, "clona_tappe_nuova_freq", array($id_percorso_old, $new_id, $freq_sit)); 
+  if (pg_last_error($conn)){
+    echo pg_last_error($conn).'<br>';
+    $res_ok=$res_ok+1;
+  }
+
+
+  $description_log='Nuova versione percorso. Cambiata frequenza da '.$freq_sit_old. ' a '. $freq_sit; 
+  // salvo il log
+  $insert_history="INSERT INTO util.sys_history 
+  (\"type\", \"action\", 
+  description, 
+  datetime,  id_user, 
+  id_percorso) 
+   VALUES(
+   'PERCORSO', 'UPDATE',
+   $1, 
+   CURRENT_TIMESTAMP, 
+   (select id_user from util.sys_users su where \"name\" ilike $2), 
+   $3);";
+
+$result_sit3 = pg_prepare($conn, "insert_history", $insert_history);
+if (pg_last_error($conn)){
+  echo pg_last_error($conn).'<br>';
+  $res_ok=$res_ok+1;
+}
+
+$result_sit3 = pg_execute($conn, "insert_history", array($description_log, $_SESSION['username'], $new_id)); 
+if (pg_last_error($conn)){
+  echo pg_last_error($conn).'<br>';
+  $res_ok=$res_ok+1;
+}
 
   // aggiorno contestualmente la tabella anagrafe_percorsi.date_percorsi_sit_uo
 

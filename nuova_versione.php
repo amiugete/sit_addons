@@ -197,7 +197,9 @@ while($r3bis = pg_fetch_assoc($result3bis)) {
 
 
 <?php require('freq_sett_component.php');?>
-            
+<hr><i class="fa-solid fa-triangle-exclamation"></i>
+Attenzione in questo momento si applica la nuova frequenza scelta a tutte le aste o piazzole 
+<br> <i class="fa-solid fa-person-digging"></i> Modifica in corso            
 </div>
 
 </div>
