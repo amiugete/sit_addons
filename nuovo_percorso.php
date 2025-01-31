@@ -142,22 +142,23 @@ oci_execute($result2);
   // FREQUENZA
   ?>
 <div class="form-group  col-md-6">
-  <label for="freq">Frequenza:</label> <font color="red">*</font>
-                <select name="freq" id="freq" class="selectpicker show-tick form-control" data-live-search="true" required="">
-                <option name="freq" value="">Seleziona la frequenza</option>
-  <?php            
-  $query3="select cod_frequenza, descrizione_long 
-from etl.frequenze_ok fo";
-$result3 = pg_query($conn, $query3);
-//echo $query1;    
-while($r3 = pg_fetch_assoc($result3)) { 
-    //$valore=  $r2['id_via']. ";".$r2['desvia'];            
-?>
-          
-      <option name="freq" value="<?php echo $r3['cod_frequenza']?>" ><?php echo $r3['descrizione_long'];?></option>
-<?php } ?>
+  <!--label for="freq">Frequenza:</label> <font color="red">*</font>
+  <select name="freq" id="freq" class="selectpicker show-tick form-control" data-live-search="true" required="">
+    <option name="freq" value="">Seleziona la frequenza</option>
+    <?php            
+    /*$query3="select cod_frequenza, descrizione_long 
+    from etl.frequenze_ok fo";
+    $result3 = pg_query($conn, $query3);
+    //echo $query1;    
+    while($r3 = pg_fetch_assoc($result3)) { 
+      //$valore=  $r2['id_via']. ";".$r2['desvia'];            
+    */
+      ?>
+        
+    <option name="freq" value="<?php echo $r3['cod_frequenza']?>" ><?php echo $r3['descrizione_long'];?></option>
+<?php /*}*/ ?>
 
-</select>            
+  </select-->            
 
 <?php 
 $freq_sett='T';

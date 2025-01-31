@@ -30,7 +30,11 @@ $freq_sit = floor($_POST['freq_sit']);
 echo $freq_uo."<br>";
 echo $freq_sit."<br>";
 
-$freq_sett = $_POST['freq_sett'];
+if ($_POST['freq_sett']){
+  $freq_sett = $_POST['freq_sett'];
+} else {
+  $freq_sett='T';
+}
 
 $id_servizio_uo = intval($_POST['id_servizio_uo']);
 $id_servizio_sit = intval($_POST['id_servizio_sit']);
@@ -48,6 +52,14 @@ if ($_POST['check_SIT']){
 }
 echo "check_SIT:".$check_SIT."<br>";
 
+
+
+if ($_POST['check_EKO']){
+  $check_EKO = intval($_POST['check_EKO']);
+} else {
+  $check_EKO = 'f';
+}
+echo "check_EKO:".$check_EKO."<br>";
 #exit();
 
 
@@ -260,7 +272,7 @@ $insert_elenco_percorsi= "INSERT INTO anagrafe_percorsi.elenco_percorsi (
   id_turno, durata, codice_cer,
   versione_testata, 
   data_inizio_validita, data_fine_validita, data_ultima_modifica, 
-  freq_settimane) 
+  freq_settimane, ekovision) 
   VALUES
   (
     $1, $2,
@@ -268,7 +280,7 @@ $insert_elenco_percorsi= "INSERT INTO anagrafe_percorsi.elenco_percorsi (
     $5, $6, NULL, 
     1,
     to_timestamp($7,'DD/MM/YYYY'), to_timestamp($8,'DD/MM/YYYY'), now()
-    , $9
+    , $9, $10
   )";
 
 
@@ -279,7 +291,7 @@ $result_elenco = pg_prepare($conn, "insert2", $insert_elenco_percorsi);
 echo "<br><br> ERRORI 1: <br>";
 echo  pg_last_error($conn);
 
-$result_elenco = pg_execute($conn, "insert2", array($cod_percorso, $desc, $tipo, $freq_sit, $turno, $durata, $data_att, $data_disatt, $freq_sett)); 
+$result_elenco = pg_execute($conn, "insert2", array($cod_percorso, $desc, $tipo, $freq_sit, $turno, $durata, $data_att, $data_disatt, $freq_sett, $check_EKO)); 
 echo "<br><br> ERRORI 2: <br>";
 echo  pg_last_error($conn);
 

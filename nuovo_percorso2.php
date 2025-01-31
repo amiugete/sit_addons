@@ -107,7 +107,36 @@ while($r3 = oci_fetch_assoc($result3)) {
 }
 oci_free_statement($result3);
 // FREQUENZA
-$freq = $_POST['freq'];
+
+
+require('backoffice/decodifica_frequenza.php');
+
+
+$query4="select cod_frequenza as freq_sit,
+  freq_binaria as freq_uo,
+  descrizione_long 
+  from etl.frequenze_ok fo 
+  where cod_frequenza=$1::bit(12)::int;";
+  $result4 = pg_prepare($conn, "query4", $query4);
+  if (pg_last_error($conn)){
+    echo pg_last_error($conn).'<br>';
+    $res_ok=$res_ok+1;
+  }
+  $result4 = pg_execute($conn, "query4", array($frequenza_binaria));  
+  if (pg_last_error($conn)){
+    echo pg_last_error($conn).'<br>';
+    $res_ok=$res_ok+1;
+  }
+  //echo $query1;    
+  while($r4 = pg_fetch_assoc($result4)) { 
+    $freq_sit=$r4['freq_sit'];
+    $freq_uo=$r4['freq_uo'];
+    $descrizione_long = $r4['descrizione_long'];
+  }
+
+
+// VECCHIA MODALITA
+/*$freq = $_POST['freq'];
 
 $query4="select cod_frequenza as freq_sit,
 freq_binaria as freq_uo,
@@ -122,6 +151,9 @@ while($r4 = pg_fetch_assoc($result4)) {
   $freq_uo=$r4['freq_uo'];
   $descrizione_long = $r4['descrizione_long'];
 }
+*/
+
+
 
 $freq_sett= $_POST['freq_sett'];
 
@@ -158,7 +190,7 @@ echo '<li><b>Durata</b>: '.$durata.'</li>';
 <input type="hidden" id="desc" name="desc" value="<?php echo $desc;?>">
 <input type="hidden" id="freq_uo" name="freq_uo" value="<?php echo $freq_uo;?>">
 <input type="hidden" id="freq_sit" name="freq_sit" value="<?php echo $freq_sit;?>">
-<input type="hidden" id="$freq_sett" name="$freq_sett" value="<?php echo $$freq_sett;?>">
+<input type="hidden" id="$freq_sett" name="$freq_sett" value="<?php echo $freq_sett;?>">
 <input type="hidden" id="id_servizio_uo" name="id_servizio_uo" value="<?php echo $id_servizio_uo;?>">
 <input type="hidden" id="id_servizio_sit" name="id_servizio_sit" value="<?php echo $id_servizio_sit;?>">
 <input type="hidden" id="durata" name="durata" value="<?php echo $durata;?>">
@@ -172,13 +204,22 @@ if ($id_servizio_sit){
 <div class="form-check">
   <input class="form-check-input" type="checkbox" value="1" id="check_SIT" name="check_SIT" checked>
   <label class="form-check-label" for="check_SIT">
-    Creo il percorso anche su SIT (disabilitare nel caso in cui si voglia clonare il percorso su SIT ad esempio per un cambio servizio)
+    Creo il percorso anche su SIT <i class="fa-solid fa-map-location-dot"></i> (disabilitare nel caso in cui si voglia clonare il percorso su SIT ad esempio per un cambio servizio)
   </label>
 </div>
-<hr>
 <?php
 }
 ?>
+
+<div class="form-check">
+  <input class="form-check-input" type="checkbox" value="t" id="check_EKO" name="check_EKO" <?php if ($check_superedit == 0) {echo 'disabled';} ?> checked>
+  <label class="form-check-label" for="check_EKO">
+    Il percorso verrà automaticamente trasferito anche a Ekovision <i class="fa-solid fa-circle-nodes"></i> (per disabilitare scrivere a </i>assterritorio</i>)
+  </label>
+</div>
+
+<hr>
+
 <h4>Sede Operativa (rimessa) se presente</h4>
 
 <div class="row g-3 align-items-center">
