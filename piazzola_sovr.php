@@ -409,7 +409,7 @@ $result_pp = pg_prepare($conn_sovr, "my_query_pp", $query_percorsi);
   }
   ?>
   </label>
-  <input type="file" class="form-control form-control-sm" name="fileToUpload" id="fileToUpload" required="">
+  <input type="file" class="form-control form-control-sm" name="fileToUpload" id="fileToUpload" accept="image/*" required="">
   </div>
   <div class="mb-3">
   <input type="submit" value="Carica foto" form="edit_foto_piazzola" class="btn btn-primary mb-3">
