@@ -35,6 +35,13 @@ oci_free_statement($result3);
 
 echo $durata."<br>";;
 
+if ($_POST['check_EKO']){
+  $check_EKO = $_POST['check_EKO'];
+} else {
+  $check_EKO = 'f';
+}
+echo "check_EKO:".$check_EKO."<br>";
+
 
 
 $desc = $_POST['desc'];
@@ -654,7 +661,7 @@ $insert_elenco_percorsi= "INSERT INTO anagrafe_percorsi.elenco_percorsi (
   id_tipo, freq_testata, 
   id_turno, durata, codice_cer,
   versione_testata, 
-  data_inizio_validita, data_fine_validita, data_ultima_modifica, freq_settimane ) 
+  data_inizio_validita, data_fine_validita, data_ultima_modifica, freq_settimane, ekovision ) 
   VALUES
   (
     $1, $2,
@@ -675,7 +682,7 @@ if (pg_last_error($conn)){
   $res_ok=$res_ok+1;
 }
 
-$result_elenco = pg_execute($conn, "insert2", array($cod_percorso, $desc, $tipo, $freq_sit, $turno, $durata, $new_vers, $data_att, $data_disatt, $freq_sett)); 
+$result_elenco = pg_execute($conn, "insert2", array($cod_percorso, $desc, $tipo, $freq_sit, $turno, $durata, $new_vers, $data_att, $data_disatt, $freq_sett, $check_EKO)); 
 if (pg_last_error($conn)){
   echo pg_last_error($conn).'<br>';
   $res_ok=$res_ok+1;

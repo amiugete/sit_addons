@@ -55,7 +55,7 @@ echo "check_SIT:".$check_SIT."<br>";
 
 
 if ($_POST['check_EKO']){
-  $check_EKO = intval($_POST['check_EKO']);
+  $check_EKO = $_POST['check_EKO'];
 } else {
   $check_EKO = 'f';
 }

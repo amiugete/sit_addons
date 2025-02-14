@@ -67,6 +67,9 @@ $freq_sett = $_POST['freq_sett'];
 $freq_uo = $_POST['freq_uo'];
 $new_vers= $_POST['old_vers']+1;
 
+$eko = $_POST['eko'];
+//echo $eko."<br>";
+
 $id_servizio_uo = intval($_POST['id_servizio_uo']);
 if($_POST['id_servizio_sit']){
 $id_servizio_sit = intval($_POST['id_servizio_sit']);
@@ -140,7 +143,20 @@ oci_execute($result2bis);
   ?>
  
   </select>            
-  </div>
+  
+
+  <div class="form-check">
+  <input class="form-check-input" type="checkbox" value="t" <?php 
+  if ($eko =="t"){
+    echo ' checked ';
+  }
+  ?> id="check_EKO" name="check_EKO" <?php if ($check_superedit == 0) {echo 'disabled';} ?>>
+  <label class="form-check-label" for="check_EKO">
+    Il percorso verrà automaticamente trasferito anche a Ekovision <i class="fa-solid fa-circle-nodes"></i> (per disabilitare scrivere a </i>assterritorio</i>)
+  </label>
+</div>
+  
+</div>
 
 
 

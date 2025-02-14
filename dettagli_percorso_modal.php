@@ -66,7 +66,8 @@ case
 when ep.data_inizio_validita > now()::date then 1
 else 0
 end flg_in_attivazione,
-to_char(ep.data_ultima_modifica, 'DD/MM/YYYY HH24:MI') as data_ultima_modifica
+to_char(ep.data_ultima_modifica, 'DD/MM/YYYY HH24:MI') as data_ultima_modifica, 
+ep.ekovision
 from anagrafe_percorsi.elenco_percorsi ep
 join elem.turni t on t.id_turno = ep.id_turno
 join etl.frequenze_ok fo on fo.cod_frequenza = ep.freq_testata
@@ -367,6 +368,12 @@ while($r = pg_fetch_assoc($result)) {
     echo ' - <b><font color=red>Percorso disattivo</font></b>';
   }
   echo '</li>';
+  $eko=$r["ekovision"];
+  if ($eko=='t'){
+    echo '<li><i class="fa-solid fa-link"></i> Percorso trasmesso a ekovision</li>';
+  } else {
+    echo '<li><i class="fa-solid fa-link-slash"></i> Percorso non trasmesso a ekovision</li>';
+  }
   echo '<li>Ultima modifica il '.$r['data_ultima_modifica'].'</li>';
   $freq_sit=$r["freq_testata"];
   $fbin=$r["fbin"];
@@ -607,6 +614,7 @@ if($check_versione_successiva==0){
 <input type="hidden" id="gc" name="gc" value="<?php echo $gc;?>">
 <input type="hidden" id="sq_gc" name="sq_gc" value="<?php echo $sq_gc;?>">
 <input type="hidden" id="mezzo" name="mezzo" value="<?php echo $mezzo;?>">
+<input type="hidden" id="eko" name="eko" value="<?php echo $eko;?>">
 
 <?php if ($check_superedit==1 and $check_in_attivazione==0){?>
 <div class="row g-3 align-items-center">
