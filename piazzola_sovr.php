@@ -229,8 +229,14 @@ Recupera dettagli piazzola
 
 <br>
 <hr>
+<div id="refreshDataContainer">
+<div id="dettagli_piazzola" class="row">
 
 
+<div class="card">
+
+  <div class="card-header">
+   
 <?php
 $id_piazzola=$_POST['piazzola'];
 if (!$id_piazzola){
@@ -241,8 +247,9 @@ $check_stato_intervento=0;
 if (is_numeric($id_piazzola)){
 ?> 
 <h4> Dettagli piazzola <?php echo $id_piazzola?> da SIT </h4>
-<div id="refreshDataContainer">
-<div id="dettagli_piazzola" class="row">
+
+</div>
+
 <?php
 $query_piazzola="SELECT v.nome as via, p.numero_civico, p.foto, p.riferimento, p.note,
 p.suolo_privato,
@@ -304,72 +311,118 @@ $result_pp = pg_prepare($conn_sovr, "my_query_pp", $query_percorsi);
 ?>
 
 
-<form autocomplete="off" id="edit_piazzola" action="" onsubmit="return clickButton2();">
-<input type="hidden" id="id_piazzola" name="id_piazzola" value=<?php echo $id_piazzola?>>
-<div class="row g-3 align-items-center">
-<?php
-while($r_p = pg_fetch_assoc($result_p)) {
-  $check_foto=$r_p['foto'];
-  ?>
-  <div class="form-group col-md-4">
-      <label for="via"> Via </label>
-      <input disabled="" type="text" name="via" id="via" class="form-control" value="<?php echo $r_p['via'];?>">
-    </div>
-    <div class="form-group col-md-1">
-      <label for="via"> Num civ </label>
-      <input type="number" name="civ" id="civ" class="form-control" value="<?php echo $r_p['numero_civico'];?>">
-    </div>
-    <div class="form-group col-md-1">
-      <label for="via"> Lettera </label>
-      <input type="text" maxlength="1" name="lciv" id="lciv" class="form-control" value="<?php echo $r_p['lettera_civico'];?>">
-    </div>
-    <div class="form-group col-md-1">
-      <label for="via"> Colore </label>
-      <input type="text" maxlength="1" name="cciv" id="cciv" class="form-control" value="<?php echo $r_p['colore_civico'];?>">
-    </div>
-    <div class="form-group  col-md-4">
-      <label for="rif"> Riferimento </label> <font color="red">*</font>
-      <input type="text" name="rif" id="rif" class="form-control" value="<?php echo $r_p['riferimento'];?>" required="">
-    </div>
 
-    <div class="form-group  col-md-6">
-      <label for="note"> Note </label>
-      <input type="text" name="note" id="note" value="<?php echo $r_p['note'];?>" class="form-control" >
-    </div>
+  <div class="card-body">
 
-    <div class="form-group col-md-2">
-      <input class="form-check-input" type="checkbox" value="privato" name="privato" id="privato"
-      <?php
-      if ($r_p['suolo_privato']==1){
-        echo ' checked=';
-      }
-      ?>
+  <form autocomplete="off" id="edit_piazzola" action="" onsubmit="return clickButton2();">
+  <input type="hidden" id="id_piazzola" name="id_piazzola" value=<?php echo $id_piazzola?>>
+  <div class="row g-3 align-items-center">
+  <div class="col-md-8"> 
+  <div class="row g-3 align-items-center">
+  <?php
+  while($r_p = pg_fetch_assoc($result_p)) {
+    $check_foto=$r_p['foto'];
+    ?>
+    <div class="form-group col-md-4">
+        <label for="via"> Via </label>
+        <input disabled="" type="text" name="via" id="via" class="form-control" value="<?php echo $r_p['via'];?>">
+      </div>
+      <div class="form-group col-md-1">
+        <label for="via"> Num civ </label>
+        <input type="number" name="civ" id="civ" class="form-control" value="<?php echo $r_p['numero_civico'];?>">
+      </div>
+      <div class="form-group col-md-1">
+        <label for="via"> Lettera </label>
+        <input type="text" maxlength="1" name="lciv" id="lciv" class="form-control" value="<?php echo $r_p['lettera_civico'];?>">
+      </div>
+      <div class="form-group col-md-1">
+        <label for="via"> Colore </label>
+        <input type="text" maxlength="1" name="cciv" id="cciv" class="form-control" value="<?php echo $r_p['colore_civico'];?>">
+      </div>
+      <div class="form-group  col-md-4">
+        <label for="rif"> Riferimento </label> <font color="red">*</font>
+        <input type="text" name="rif" id="rif" class="form-control" value="<?php echo $r_p['riferimento'];?>" required="">
+      </div>
+
+      <div class="form-group  col-md-6">
+        <label for="note"> Note </label>
+        <input type="text" name="note" id="note" value="<?php echo $r_p['note'];?>" class="form-control" >
+      </div>
+
+      <div class="form-group col-md-2">
+        <input class="form-check-input" type="checkbox" value="privato" name="privato" id="privato"
+        <?php
+        if ($r_p['suolo_privato']==1){
+          echo ' checked=';
+        }
+        ?>
+        >
+        <label class="form-check-label" for="privato">
+          Suolo privato
+        </label>
+      </div>   
+      <div class="form-group  col-md-2">
+        <button type="submit" class="btn btn-primary btn-sm"
+      <?php if ($check_edit==0){echo 'disabled=""';}?>
       >
-      <label class="form-check-label" for="privato">
-        Suolo privato
-      </label>
-    </div>   
-    <div class="form-group  col-md-2">
-      <button type="submit" class="btn btn-info btn-sm"
-    <?php if ($check_edit==0){echo 'disabled=""';}?>
-    >
-      <i class="fa-solid fa-pen-to-square"></i>Aggiorna piazzola
-      </button>
-    </div>
-    <div class="form-group  col-md-2">
-      <a id="sit_btn1" class="btn btn-info pc btn-sm" href="<?php echo $url_sit?>/#!/home/edit-piazzola/<?php echo $id_piazzola?>/" target="_new">
-    <i class="fa-solid fa-arrow-up-right-from-square"></i> Visualizza su SIT
-    </a>
-    </div>
-    <div class="form-group  col-md-12">
-    <label for="note"> Modificato da <?php echo $r_p['modificata_da'];?> il <?php echo $r_p['data_ultima_modifica'];?> </label>
-    </div>
-<?php
-}
-?>
-</form>
-<hr>
+        <i class="fa-solid fa-pen-to-square"></i>Aggiorna piazzola
+        </button>
+      </div>
+      <div class="form-group  col-md-2">
+        <a id="sit_btn1" class="btn btn-info pc btn-sm" href="<?php echo $url_sit?>/#!/home/edit-piazzola/<?php echo $id_piazzola?>/" target="_new">
+      <i class="fa-solid fa-arrow-up-right-from-square"></i> Visualizza su SIT
+      </a>
+      </div>
+      <div class="form-group  col-md-12">
+      <label for="note"> Modificato da <?php echo $r_p['modificata_da'];?> il <?php echo $r_p['data_ultima_modifica'];?> </label>
+      </div>
+  <?php
+  }
+  ?>
 
+</div>
+</div>
+<div class="col-md-4"> 
+<?php if ($check_foto == 1) {
+//$timemod=filemtime('/foto_SIT/sit/'.$id_piazzola.'.jpg');
+//echo 'FIle modificato il '.$timemod;
+?>
+
+<img src="../foto/sit/<?php echo $id_piazzola?>.jpg?hash=<?php echo filemtime('/foto_SIT/sit/'.$id_piazzola.'.jpg')?>" class="rounded img-fluid" alt="Immagine piazzola <?php echo $id_piazzola?> non presente">
+<hr>
+<?php }
+?>
+<?php if ($check_edit==1){?>
+<form  action="upload_foto.php" method="post" enctype="multipart/form-data">
+<!--form  action="" onsubmit="return clickButton2();" method="post" enctype="multipart/form-data"-->
+<!--form id="form_foto" method="post" enctype="multipart/form-data"-->
+<input type="hidden" id="piazzola" name="piazzola" value="<?php echo $id_piazzola?>">
+<div class="mb-3">
+  <label for="formFile" class="form-label">
+  <?php if ($check_foto == 1) {
+    echo 'Modifica immagine';
+  } else {
+    echo 'Aggiungi immagine:';
+  }
+  ?>
+  </label>
+  <input type="file" class="form-control form-control-sm" name="fileToUpload" id="fileToUpload" accept="image/*" required="">
+  </div>
+  <div class="mb-3">
+  <input type="submit" value="Carica foto" name="submit" class="btn btn-primary mb-3" >
+  </div>
+</form>
+<?php }?>
+</div>
+</div>
+
+</form>
+
+</div>
+</div>
+
+
+<div class="row g-3 align-items-center">
 <!--form autocomplete="off" id="messaggio" action="invio_mail_assterritorio.php" method="post">
 <input type="hidden" id="id_piazzola" name="id_piazzola" value=<?php echo $id_piazzola?>>
 <div class="row g-3 align-items-center">
@@ -455,15 +508,16 @@ if ($num_isp>0){
 
 <?php 
 } else {
-  echo "Non ci sono precedenti verifiche di quest'anno";
+  echo "<h5>Non ci sono precedenti verifiche di quest'anno</h5>";
 }
 
 ?>
 </div>
 <hr>
-<div class="row">
 
-<div class="col-md-8"> 
+<div class="row g-3 align-items-center">
+
+
 
 <?php 
 // controllo se la piazzola esiste o se è stata eliminata
@@ -559,8 +613,11 @@ $status1= pg_result_status($result_e);
 
 
 
-<form class="row g-3" id="ispezione">
+<form id="ispezione">
 
+
+
+<div class="row g-3 align-items-center">
 <!--div class="row g-3" id="ispezione"-->
 <input type="hidden" id="id_piazzola" name="id_piazzola" value="<?php echo $id_piazzola;?>">
 
@@ -597,7 +654,16 @@ $today->setTimezone($timezone);
     <label for="ispettore" class="form-label">Verificatore</label>
     <input type="text" class="form-control" name="ispettore" id="ispettore" value="<?php echo $_SESSION['username'];?>" required>
 </div>
+
+
+</div>
+
 <hr>
+
+<div class="row g-3 align-items-center">
+
+
+<div class="col-md-8"> 
 <?php 
 echo "<ul>";
 while($r = pg_fetch_assoc($result_e)) {
@@ -631,12 +697,11 @@ while($r = pg_fetch_assoc($result_e)) {
 
 
 
-
     <!--form id="add_elemento"-->
     <div id="add_elemento_<?php echo $r['tipo_elemento'];?>">
       <!--input type="hidden" id="tipo_elemento" name="tipo_elemento" value="<?php echo $r['tipo_elemento'];?>"-->
       <input type="hidden" id="id_piazzola_<?php echo $r['tipo_elemento'];?>" name="id_piazzola_<?php echo $r['tipo_elemento'];?>" value="<?php echo $id_piazzola.'_'.$r['tipo_elemento'];?>">
-      <button type="submit" class="btn btn-success btn-sm">
+      <button type="submit" class="btn btn-warning btn-sm">
       <i class="fa-solid fa-plus"></i>
       </button> 
       <!--/form-->
@@ -700,7 +765,7 @@ while($r = pg_fetch_assoc($result_e)) {
       
     ?>
 
-  <div class="row row-cols-lg-auto g-3 align-items-center">
+  <div class="row  g-3 align-items-center">
     <div class="col-12">
     <?php
       if ($re['stato_intervento']!=''){
@@ -798,7 +863,7 @@ echo "</ul>";
 
 
     <div class="col-12">
-    <button type="submit" class="btn btn-info">
+    <button type="submit" class="btn btn-primary">
     <i class="fa-solid fa-arrow-up-from-bracket"></i> Salva
     </button>
     </div> 
@@ -851,9 +916,9 @@ echo "</ul>";
 
 
 
-    
+</div>    
 
-
+<div class="col-md-4"> 
 
 <div class="accordion" id="accordionFlushExample">
 <div class="accordion-item">
@@ -948,7 +1013,7 @@ data-live-search="true" name="tipo_elemento_ae" id="tipo_elemento_ae" placeholde
 
 
 </div>
-</div>
+
 
 </div>
 
@@ -958,38 +1023,7 @@ data-live-search="true" name="tipo_elemento_ae" id="tipo_elemento_ae" placeholde
 
 
 
-<div class="col-md-4"> 
-<?php if ($check_foto == 1) {
-//$timemod=filemtime('/foto_SIT/sit/'.$id_piazzola.'.jpg');
-//echo 'FIle modificato il '.$timemod;
-?>
 
-<img src="../foto/sit/<?php echo $id_piazzola?>.jpg?hash=<?php echo filemtime('/foto_SIT/sit/'.$id_piazzola.'.jpg')?>" class="rounded img-fluid" alt="Immagine piazzola <?php echo $id_piazzola?> non presente">
-<hr>
-<?php }
-?>
-<?php if ($check_edit==1){?>
-<form  action="upload_foto.php" method="post" enctype="multipart/form-data">
-<!--form  action="" onsubmit="return clickButton2();" method="post" enctype="multipart/form-data"-->
-<!--form id="form_foto" method="post" enctype="multipart/form-data"-->
-<input type="hidden" id="piazzola" name="piazzola" value="<?php echo $id_piazzola?>">
-<div class="mb-3">
-  <label for="formFile" class="form-label">
-  <?php if ($check_foto == 1) {
-    echo 'Modifica immagine';
-  } else {
-    echo 'Aggiungi immagine:';
-  }
-  ?>
-  </label>
-  <input type="file" class="form-control form-control-sm" name="fileToUpload" id="fileToUpload" required="">
-  </div>
-  <div class="mb-3">
-  <input type="submit" value="Carica foto" name="submit" class="btn btn-primary mb-3" >
-  </div>
-</form>
-<?php }?>
-</div>
 
 </div>
 
@@ -999,6 +1033,11 @@ data-live-search="true" name="tipo_elemento_ae" id="tipo_elemento_ae" placeholde
 
 
 </div>
+
+
+
+
+
 
 <?php
 // cestino getta carta

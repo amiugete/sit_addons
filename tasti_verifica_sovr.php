@@ -6,7 +6,7 @@
       <div class="form-check">
         <input type="checkbox" class="btn-check btn-sm" id="<?php echo $re['id_elemento'];?>" name="<?php echo $re['id_elemento'];?>" 
          checked autocomplete="off">
-        <label class="btn btn-outline-primary  btn-sm" id="<?php echo $re['id_elemento'];?>_ver"  for="<?php echo $re['id_elemento'];?>">Verificato</label>
+        <label class="btn btn-outline-success  btn-sm" id="<?php echo $re['id_elemento'];?>_ver"  for="<?php echo $re['id_elemento'];?>">Verificato</label>
   
         <input type="checkbox" class="btn-check btn-sm" name="<?php echo $re['id_elemento'];?>_sovr" id="<?php echo $re['id_elemento'];?>_sovr" autocomplete="off">
         <label class="btn btn-outline-danger btn-sm" id="<?php echo $re['id_elemento'];?>_lsovr" for="<?php echo $re['id_elemento'];?>_sovr">Non sovrariempito</label>

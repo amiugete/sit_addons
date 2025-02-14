@@ -25,9 +25,9 @@ if (!isset($image_file)) {
 if(is_uploaded_file($_FILES['fileToUpload']['tmp_name'])) {
 
     //controllo che il file non superi i 100 KB (1 kilobyte = 1024 byte)
-    /*if($_FILES['fileToUpload']['size']>102400)
-        $messaggio.="Il file ha dimensioni che superano i 100 KB<br />";*/
-
+    /*if($_FILES['fileToUpload']['size']>102400) {
+        $messaggio.="Il file ha dimensioni che superano i 100 KB<br />";
+    }*/
     //recupero le informazioni sull'immagine
     list($width, $height, $type, $attr)=getimagesize($_FILES['fileToUpload']['tmp_name']);
 
@@ -55,9 +55,10 @@ if(is_uploaded_file($_FILES['fileToUpload']['tmp_name'])) {
         } else {
             $messaggio.="File caricato con successo";
             echo $messaggio."<br>";
-            $update_foto="UPDATE elem.piazzole SET foto = 1 WHERE id_piazzola = $1 and foto = 0;";
+            $update_foto="UPDATE elem.piazzole SET foto = 1 WHERE id_piazzola = $1;";
             echo $update_foto;
             $result_p = pg_prepare($conn, "update_foto", $update_foto);
+            $result_p1 = pg_prepare($conn_sovr, "update_foto1", $update_foto);
             echo "<br>".$res_ok;
             if (!pg_last_error($conn)){
                 #$res_ok=0;
@@ -66,6 +67,7 @@ if(is_uploaded_file($_FILES['fileToUpload']['tmp_name'])) {
                 $res_ok= $res_ok+1;
             }
             $result_p = pg_execute($conn, "update_foto", array($id_piazzola));
+            $result_p1= pg_execute($conn_sovr, "update_foto1", array($id_piazzola));
             echo "<br>".$res_ok;
             if (!pg_last_error($conn)){
                 #$res_ok=0;
@@ -76,7 +78,7 @@ if(is_uploaded_file($_FILES['fileToUpload']['tmp_name'])) {
             $statusp= pg_result_status($result_p);
             echo "<br>".$res_ok;
             if ($res_ok == 0) {
-                header('Location: piazzola.php?piazzola='.$id_piazzola.'');
+                header('Location: piazzola_sovr.php?piazzola='.$id_piazzola.'');
             } else {
                 $messaggio.="Errore imprevisto nell'aggiornamento del SIT";
                 $check=1;
@@ -91,7 +93,12 @@ if(is_uploaded_file($_FILES['fileToUpload']['tmp_name'])) {
         echo $messaggio;
     }
 } else {
-    echo "Sono qua e non va bene <br>";
+    echo "Problema con il file upload: <br>";
+    foreach($_FILES["fileToUpload"] as $key => $value) {
+        echo "<br>".$key." is  ".$value;
+      }
+    echo '<br>[fileToUpload]'.$_FILES["fileToUpload"];
+    echo "<br>['userfile']['tmp_name'] '". $_FILES['userfile']['tmp_name'] . "'.";
     $check=1;
 }
 
