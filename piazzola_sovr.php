@@ -314,11 +314,11 @@ $result_pp = pg_prepare($conn_sovr, "my_query_pp", $query_percorsi);
 
   <div class="card-body">
 
-  <form autocomplete="off" id="edit_piazzola" action="" onsubmit="return clickButton2();">
   <input type="hidden" id="id_piazzola" name="id_piazzola" value=<?php echo $id_piazzola?>>
   <div class="row g-3 align-items-center">
+  
   <div class="col-md-8"> 
-  <div class="row g-3 align-items-center">
+  <form autocomplete="off" class="row g-3 align-items-center" id="edit_piazzola" action="" onsubmit="return clickButton2();">
   <?php
   while($r_p = pg_fetch_assoc($result_p)) {
     $check_foto=$r_p['foto'];
@@ -362,7 +362,7 @@ $result_pp = pg_prepare($conn_sovr, "my_query_pp", $query_percorsi);
         </label>
       </div>   
       <div class="form-group  col-md-2">
-        <button type="submit" class="btn btn-primary btn-sm"
+        <button type="submit" class="btn btn-primary btn-sm" form="edit_piazzola"
       <?php if ($check_edit==0){echo 'disabled=""';}?>
       >
         <i class="fa-solid fa-pen-to-square"></i>Aggiorna piazzola
@@ -379,9 +379,12 @@ $result_pp = pg_prepare($conn_sovr, "my_query_pp", $query_percorsi);
   <?php
   }
   ?>
+</form>
 
 </div>
-</div>
+
+
+
 <div class="col-md-4"> 
 <?php if ($check_foto == 1) {
 //$timemod=filemtime('/foto_SIT/sit/'.$id_piazzola.'.jpg');
@@ -393,7 +396,7 @@ $result_pp = pg_prepare($conn_sovr, "my_query_pp", $query_percorsi);
 <?php }
 ?>
 <?php if ($check_edit==1){?>
-<form  action="upload_foto.php" method="post" enctype="multipart/form-data">
+<form  id="edit_foto_piazzola" action="upload_foto.php" method="post" enctype="multipart/form-data">
 <!--form  action="" onsubmit="return clickButton2();" method="post" enctype="multipart/form-data"-->
 <!--form id="form_foto" method="post" enctype="multipart/form-data"-->
 <input type="hidden" id="piazzola" name="piazzola" value="<?php echo $id_piazzola?>">
@@ -406,17 +409,16 @@ $result_pp = pg_prepare($conn_sovr, "my_query_pp", $query_percorsi);
   }
   ?>
   </label>
-  <input type="file" class="form-control form-control-sm" name="fileToUpload" id="fileToUpload" accept="image/*" required="">
+  <input type="file" class="form-control form-control-sm" name="fileToUpload" id="fileToUpload" required="">
   </div>
   <div class="mb-3">
-  <input type="submit" value="Carica foto" name="submit" class="btn btn-primary mb-3" >
+  <input type="submit" value="Carica foto" form="edit_foto_piazzola" class="btn btn-primary mb-3">
   </div>
 </form>
 <?php }?>
 </div>
 </div>
 
-</form>
 
 </div>
 </div>

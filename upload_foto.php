@@ -20,6 +20,7 @@ if (!isset($image_file)) {
     die('No file uploaded.');
 }
 
+//exit();
 
 
 if(is_uploaded_file($_FILES['fileToUpload']['tmp_name'])) {
@@ -57,6 +58,7 @@ if(is_uploaded_file($_FILES['fileToUpload']['tmp_name'])) {
             echo $messaggio."<br>";
             $update_foto="UPDATE elem.piazzole SET foto = 1 WHERE id_piazzola = $1;";
             echo $update_foto;
+            
             $result_p = pg_prepare($conn, "update_foto", $update_foto);
             $result_p1 = pg_prepare($conn_sovr, "update_foto1", $update_foto);
             echo "<br>".$res_ok;
@@ -77,6 +79,7 @@ if(is_uploaded_file($_FILES['fileToUpload']['tmp_name'])) {
             }
             $statusp= pg_result_status($result_p);
             echo "<br>".$res_ok;
+            
             if ($res_ok == 0) {
                 header('Location: piazzola_sovr.php?piazzola='.$id_piazzola.'');
             } else {
