@@ -736,7 +736,9 @@ $today->setTimezone($timezone);
 
 <div class="form-group col-md-2">
     <label for="id" class="form-label">Id</label>
-    <input type="number" min=1 class="form-control" id="id" name="id" readonly>
+    <input type="number" min=1 class="form-control" id="id" name="id" 
+    <?php if ($check_superedit==0){ echo 'readonly'; }?>
+    >
 </div>
 
 
