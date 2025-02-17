@@ -556,7 +556,107 @@ if ($check_eliminata==1)
 
 
 
+<hr>
+Prima di salvare i dati dell'ispezione verifica che su SIT ci siano tutti i contenitori e nel caso affiungi elementi:
+<div class="col-md-12"> 
 
+<div class="accordion" id="accordionFlushExample">
+<div class="accordion-item">
+<h2 class="accordion-header">
+  <button class="accordion-button collapsed btn-info" type="button" data-bs-toggle="collapse" 
+  data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+  <i class="fa-solid fa-plus"></i> Aggiunta contenitori altro tipo
+  </button>
+</h2>
+<div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+  <div class="accordion-body">
+  <!--form id="add_elemento_form"--> 
+  <div id="add_elemento">
+  <!--input type="hidden" id="tipo_elemento" name="tipo_elemento" value="<?php echo $r['tipo_elemento'];?>"-->
+  <input type="hidden" id="id_piazzola_ae" name="id_piazzola_ae" value="<?php echo $id_piazzola;?>">
+  
+  
+  <select class="selectpicker show-tick form-control" 
+data-live-search="true" name="tipo_elemento_ae" id="tipo_elemento_ae" placeholder="Seleziona tipo elemento da aggiungere" required="">
+
+    <!--option name="piazzola" value="NO">Seleziona una piazzola</option-->
+    <?php            
+    $query_tipo="SELECT tipo_elemento, 
+      concat(tr.nome_stampa, ' - ',te.nome_stampa, ' (', te.volume,' l)'/*, ' - ', te.nome*/) as nome_ok/*,
+      tr.nome, 
+      te.descrizione, te.nome, te.nome_stampa, 
+      tr.ordinamento, te.tipologia_elemento*/ 
+      FROM elem.tipi_elemento te 
+      join elem.tipi_rifiuto tr on tr.tipo_rifiuto = te.tipo_rifiuto 
+      where te.tipo_rifiuto is not null 
+      and in_piazzola = 1 and tipologia_elemento not in ('T', 'I', 'N')
+      order by tr.ordinamento, te.volume";
+    $result_t = pg_query($conn_sovr, $query_tipo);
+    //echo $query1;    
+    while($rt = pg_fetch_assoc($result_t)) {             
+    ?>
+                
+            <option name="tipo_elemento" value="<?php echo $rt['tipo_elemento'];?>" ><?php echo $rt['nome_ok'] .' - ' .$r2['rif'];?></option>
+    <?php } ?>
+
+  </select>
+  <button type="submit" id="add_elemento_submit" class="btn btn-success btn-sm">
+  <i class="fa-solid fa-plus"></i>
+  </button> 
+  <!--/form-->
+
+  </div>
+
+
+
+  <div id=result_add>  </div>
+
+<!-- lancio il form e scrivo il risultato -->
+<script> 
+        $(document).ready(function () {                 
+            $('#add_elemento_submit').click(function (event) { 
+                console.log('Bottone add elemento  generico cliccato e finito qua');
+                event.preventDefault();                  
+                id_piazzola=document.getElementById("id_piazzola_ae").value+'_'+document.getElementById("tipo_elemento_ae").value;
+                console.log(id_piazzola);
+                var formData = $(this).serialize();
+                //var formData = $('#add_elemento_<?php echo $r['tipo_elemento'];?> input').not( "#ispezione input" ).serialize();
+                console.log(formData);
+                $.ajax({ 
+                    url: 'backoffice/add_elemento.php', 
+                    method: 'POST', 
+                    data: {'id_piazzola':id_piazzola}, 
+                    //processData: true, 
+                    //contentType: false, 
+                    success: function (response) {                       
+                        //alert('Your form has been sent successfully.'); 
+                        console.log(response);
+                          $("#result_add").html(response).fadeIn("slow");
+                          setTimeout(function(){// wait for 5 secs(2)
+                            location.reload(); // then reload the page.(3)
+                        }, 1000);
+                                  
+                    }, 
+                    error: function (jqXHR, textStatus, errorThrown) {                        
+                        alert('Your form was not sent successfully.'); 
+                        console.error(errorThrown); 
+                    } 
+                }); 
+            });
+          }); 
+
+    </script>
+  
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+
+</div>
+<hr>
 
 
 
@@ -865,10 +965,11 @@ echo "</ul>";
 
 
     <div class="col-12">
-    <button type="submit" class="btn btn-primary">
+    <button type="submit" form="ispezione" class="btn btn-primary">
     <i class="fa-solid fa-arrow-up-from-bracket"></i> Salva
     </button>
     </div> 
+  </div>
   </form>
   <!--/div-->
 
@@ -920,104 +1021,7 @@ echo "</ul>";
 
 </div>    
 
-<div class="col-md-4"> 
 
-<div class="accordion" id="accordionFlushExample">
-<div class="accordion-item">
-<h2 class="accordion-header">
-  <button class="accordion-button collapsed btn-info" type="button" data-bs-toggle="collapse" 
-  data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-  <i class="fa-solid fa-plus"></i> Aggiunta contenitori altro tipo
-  </button>
-</h2>
-<div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-  <div class="accordion-body">
-  <!--form id="add_elemento_form"--> 
-  <div id="add_elemento">
-  <!--input type="hidden" id="tipo_elemento" name="tipo_elemento" value="<?php echo $r['tipo_elemento'];?>"-->
-  <input type="hidden" id="id_piazzola_ae" name="id_piazzola_ae" value="<?php echo $id_piazzola;?>">
-  
-  
-  <select class="selectpicker show-tick form-control" 
-data-live-search="true" name="tipo_elemento_ae" id="tipo_elemento_ae" placeholder="Seleziona tipo elemento da aggiungere" required="">
-
-    <!--option name="piazzola" value="NO">Seleziona una piazzola</option-->
-    <?php            
-    $query_tipo="SELECT tipo_elemento, 
-      concat(tr.nome_stampa, ' - ',te.nome_stampa, ' (', te.volume,' l)'/*, ' - ', te.nome*/) as nome_ok/*,
-      tr.nome, 
-      te.descrizione, te.nome, te.nome_stampa, 
-      tr.ordinamento, te.tipologia_elemento*/ 
-      FROM elem.tipi_elemento te 
-      join elem.tipi_rifiuto tr on tr.tipo_rifiuto = te.tipo_rifiuto 
-      where te.tipo_rifiuto is not null 
-      and in_piazzola = 1 and tipologia_elemento not in ('T', 'I', 'N')
-      order by tr.ordinamento, te.volume";
-    $result_t = pg_query($conn_sovr, $query_tipo);
-    //echo $query1;    
-    while($rt = pg_fetch_assoc($result_t)) {             
-    ?>
-                
-            <option name="tipo_elemento" value="<?php echo $rt['tipo_elemento'];?>" ><?php echo $rt['nome_ok'] .' - ' .$r2['rif'];?></option>
-    <?php } ?>
-
-  </select>
-  <button type="submit" id="add_elemento_submit" class="btn btn-success btn-sm">
-  <i class="fa-solid fa-plus"></i>
-  </button> 
-  <!--/form-->
-
-  </div>
-
-
-
-  <div id=result_add>  </div>
-
-<!-- lancio il form e scrivo il risultato -->
-<script> 
-        $(document).ready(function () {                 
-            $('#add_elemento_submit').click(function (event) { 
-                console.log('Bottone add elemento  generico cliccato e finito qua');
-                event.preventDefault();                  
-                id_piazzola=document.getElementById("id_piazzola_ae").value+'_'+document.getElementById("tipo_elemento_ae").value;
-                console.log(id_piazzola);
-                var formData = $(this).serialize();
-                //var formData = $('#add_elemento_<?php echo $r['tipo_elemento'];?> input').not( "#ispezione input" ).serialize();
-                console.log(formData);
-                $.ajax({ 
-                    url: 'backoffice/add_elemento.php', 
-                    method: 'POST', 
-                    data: {'id_piazzola':id_piazzola}, 
-                    //processData: true, 
-                    //contentType: false, 
-                    success: function (response) {                       
-                        //alert('Your form has been sent successfully.'); 
-                        console.log(response);
-                          $("#result_add").html(response).fadeIn("slow");
-                          setTimeout(function(){// wait for 5 secs(2)
-                            location.reload(); // then reload the page.(3)
-                        }, 1000);
-                                  
-                    }, 
-                    error: function (jqXHR, textStatus, errorThrown) {                        
-                        alert('Your form was not sent successfully.'); 
-                        console.error(errorThrown); 
-                    } 
-                }); 
-            });
-          }); 
-
-    </script>
-  
-      </div>
-    </div>
-  </div>
-
-
-</div>
-
-
-</div>
 
 <!--hr-->
 
@@ -1086,7 +1090,12 @@ where e.id_elemento = $1 ";
     
 ?>
 
-  <form class="row g-3" id="ispezione2">
+
+
+
+
+
+<form class="row g-3" id="ispezione2">
 
 <!--div class="row g-3" id="ispezione"-->
 <input type="hidden" id="id_piazzola" name="id_piazzola" value="<?php echo $re['id_piazzola'];?>">
@@ -1209,7 +1218,7 @@ require('matr_tag_sovr.php');
 }?>
 </div>
 <div class="col-12">
-  <button type="submit" class="btn btn-info">
+  <button type="submit"  form="ispezione2" class="btn btn-info">
   <i class="fa-solid fa-arrow-up-from-bracket"></i> Salva
   </button>
   </div> 
