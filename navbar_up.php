@@ -36,10 +36,20 @@ if ($check_SIT==0){
   }
 }
 
-$check_edit=0;
-$check_superedit=0;
+$check_edit_piazzola=0;
+
+$check_edit=0; # edit dei percorsi 
+
+$check_superedit=0; # permessi privilegiati
+
+
+$ruoli_edit_piazzola=array('USER', 'UT', 'IT', 'ADMIN', 'SUPERUSER');
 $ruoli_edit=array('UT', 'IT', 'ADMIN', 'SUPERUSER');
 $ruoli_superedit=array('IT','ADMIN', 'SUPERUSER');
+
+if (in_array($role_SIT, $ruoli_edit_piazzola)) {
+  $check_edit_piazzola=1;
+}
 
 if (in_array($role_SIT, $ruoli_edit)) {
   $check_edit=1;
@@ -160,7 +170,7 @@ if ($check_modal!=1){
           </li>
 
           <?php } ?>
-        <?php if ($check_edit > 0) { ?>
+        <?php if ($check_edit_piazzola > 0) { ?>
         <!--li id="link_pc2" class="nav-item">
           <a class="nav-link" href="./report_contenitori.php"> Report contenitori bilaterali</a>
         </li-->
@@ -281,6 +291,7 @@ if ($check_modal!=1){
             <li><b>Mail: </b><?php echo $mail_user?></li>
             <li><b>Profilo: </b><?php echo $profilo?></li>
             <li><b>UT/Rimesse: </b><?php echo $uts?></li>
+            <li><b>Sovrariempimenti: </b><?php echo $check_sovr?></li>
           </ul>
         <hr>
           In caso di modifiche fare scrivere dal proprio responsabile a assterritorio@amiu.genova.it    

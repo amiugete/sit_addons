@@ -44,9 +44,11 @@ if ($_SESSION['test']==1) {
 $name=dirname(__FILE__);
 //echo $id_role_SIT;
 //exit;
-if ((int)$id_role_SIT == 0) {
-  redirect('no_permessi.php');
-  //exit;
+
+
+if (trim($check_sovr) != 't') { 
+  require('assenza_permessi.php');
+  exit;
 }
 
 ?>
@@ -363,7 +365,7 @@ $result_pp = pg_prepare($conn_sovr, "my_query_pp", $query_percorsi);
       </div>   
       <div class="form-group  col-md-2">
         <button type="submit" class="btn btn-primary btn-sm" form="edit_piazzola"
-      <?php if ($check_edit==0){echo 'disabled=""';}?>
+      <?php if ($check_edit_piazzola==0){echo 'disabled=""';}?>
       >
         <i class="fa-solid fa-pen-to-square"></i>Aggiorna piazzola
         </button>
@@ -395,7 +397,7 @@ $result_pp = pg_prepare($conn_sovr, "my_query_pp", $query_percorsi);
 <hr>
 <?php }
 ?>
-<?php if ($check_edit==1){?>
+<?php if ($check_edit_piazzola==1){?>
 <form  id="edit_foto_piazzola" action="upload_foto.php" method="post" enctype="multipart/form-data">
 <!--form  action="" onsubmit="return clickButton2();" method="post" enctype="multipart/form-data"-->
 <!--form id="form_foto" method="post" enctype="multipart/form-data"-->

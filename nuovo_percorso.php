@@ -39,9 +39,9 @@ if ($_SESSION['test']==1) {
 <?php 
 require_once('./navbar_up.php');
 $name=dirname(__FILE__);
-if ((int)$id_role_SIT = 0) {
-  redirect('no_permessi.php');
-  //exit;
+if ($check_superedit==0) { 
+  require('assenza_permessi.php');
+  exit;
 }
 
 $cod_percorso= $_GET['cp'];
