@@ -669,7 +669,7 @@ $insert_elenco_percorsi= "INSERT INTO anagrafe_percorsi.elenco_percorsi (
     $5, $6, NULL, 
     $7,
     to_timestamp($8,'DD/MM/YYYY'), to_timestamp($9,'DD/MM/YYYY'), now()
-    ,$10
+    ,$10, $11
   )";
 
 
