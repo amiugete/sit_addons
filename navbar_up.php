@@ -187,6 +187,10 @@ if ($check_modal!=1){
               <a class="dropdown-item" href="./report_piazzole_sovr.php">Report piazzole da ispezionare</a>
             <?php } ?>
             <a class="dropdown-item" href="./export_sovr.php">Export report sovrariempimenti</a>
+            <?php if ($check_superedit == 1) { ?>
+            <a class="dropdown-item" href="./delete_ispezioni_sovr.php">Rimozione sovrariempimenti (solo superuser)</a>
+            <?php } ?>
+
           </div>
         </li>
         <?php } ?>
