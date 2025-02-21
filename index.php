@@ -157,6 +157,9 @@ if ((int)$id_role_SIT = 0) {
         <a class="list-group-item" href="./piazzola_sovr.php">Compilazione dati anno in corso</a>
         <a class="list-group-item" href="./report_piazzole_sovr.php">Report piazzole da ispezionare</a>
         <a class="list-group-item" href="./export_sovr.php">Export report sovrariempimenti</a>
+        <?php if ($check_superedit == 1) { ?>
+          <a class="list-group-item" href="./delete_ispezioni_sovr.php">Rimozione sovrariempimenti (solo superuser)</a>
+        <?php } ?>
       </ul>
     </div>
     </div>

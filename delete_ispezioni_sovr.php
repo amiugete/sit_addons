@@ -66,7 +66,7 @@ Da questa pagina è possibile forzare la rimozione di un'ispezione
 
 <hr>
 <!--form id="update_elem" method="post" autocomplete="off" action="" onsubmit="return clickButton();"-->
-<form id="dlete_isp">
+<form id="delete_isp">
 <div class="row g-3 align-items-center">
   <div class="form-group col-md-6">
     <label for="id_isp"> Id ispezione </label> <font color="red">*</font>
@@ -95,13 +95,13 @@ Da questa pagina è possibile forzare la rimozione di un'ispezione
 <p><div id="results"></div></p>
 <script> 
         $(document).ready(function () {                 
-            $('#dlete_isp').submit(function (event) { 
+            $('#delete_isp').submit(function (event) { 
                 console.log('Bottone cliccato e finito qua');
                 event.preventDefault();     
                 var id_isp=document.getElementById('id_isp').value;
-            
-         
                 console.log(id_isp);
+                var motivazione=document.getElementById('motivazione').value;
+                console.log(motivazione);
                 //var form = document.getElementById('update_elem'); 
                 //var formData = new FormData(form); 
                 var formData = $(this).serialize();
