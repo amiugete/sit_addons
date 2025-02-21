@@ -99,7 +99,7 @@ WHERE id_ispezione = $1";
 #  cancello solo se non ci sono stati errori sopra
 if ($res_ok ==0){
     $query_delete2="DELETE FROM sovrariempimenti.ispezioni 
-where id = $1";
+where id = $1 RETURNING id";
 
     $result_delete2 = pg_prepare($conn_sovr, "query_delete2", $query_delete2);
     //echo  pg_last_error($conn_sovr);
@@ -125,10 +125,10 @@ where id = $1";
 
 
 if ($res_ok==0){
-    if ($num_eliminate==0){
-        echo '<font color="red"> Non ci sono ispezioni con id '.$id_isp.' da eliminare!</font>';
+    if ($num_eliminate > 0){
+        echo '<font color="green"> '.$num_eliminate.' Ispezione eliminata correttamente!</font>';
     } else {
-        echo '<font color="green"> '.$num_eliminate.' Ispezione elimiata correttamente!</font>';
+        echo '<font color="red"> Non ci sono ispezioni con id '.$id_isp.' da eliminare!</font>';
     }
 } else {
     echo '<font color="red"> ERRORE - contatta assterritorio@amiu.genova.it</font>';
