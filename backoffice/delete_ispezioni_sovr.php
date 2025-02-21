@@ -76,7 +76,7 @@ if (pg_last_error($conn_sovr)){
 
 
 #  cancello solo se non ci sono stati errori sopra
-if ($res_ok ==0){
+if ($res_ok ==0 ){
     $query_delete1="DELETE FROM sovrariempimenti.ispezione_elementi 
 WHERE id_ispezione = $1";
 
@@ -87,7 +87,7 @@ WHERE id_ispezione = $1";
         $res_ok=$res_ok+1;
     }
 
-    $result_delete1 = pg_execute($conn_sovr, "query_insert1", array($id_isp));
+    $result_delete1 = pg_execute($conn_sovr, "query_delete1", array($id_isp));
     if (pg_last_error($conn_sovr)){
         echo pg_last_error($conn_sovr);
         $res_ok=$res_ok+1;
@@ -108,7 +108,7 @@ where id = $1";
         $res_ok=$res_ok+1;
     }
 
-    $result_delete2 = pg_execute($conn_sovr, "query_insert1", array($id_isp));
+    $result_delete2 = pg_execute($conn_sovr, "query_delete2", array($id_isp));
     if (pg_last_error($conn_sovr)){
         echo pg_last_error($conn_sovr);
         $res_ok=$res_ok+1;
