@@ -45,7 +45,7 @@ $name=dirname(__FILE__);
 
 
 #per ora solo superedit
-if ($check_superedit==0) { 
+if ($check_sovr_admin==0) { 
   require('assenza_permessi.php');
   exit;
 }

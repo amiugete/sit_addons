@@ -6,7 +6,8 @@ session_start();
 
 $query_role="SELECT  su.id_user, sr.id_role, sr.\"name\" as \"role\",
 coalesce(suse.esternalizzati, 'f') as esternalizzati, 
-coalesce(suse.sovrariempimenti, 'f') as sovrariempimenti
+coalesce(suse.sovrariempimenti, 'f') as sovrariempimenti, 
+coalesce(suse.sovrariempimenti_admin, 'f') as sovrariempimenti_admin
 FROM util.sys_users su
 join util.sys_roles sr on sr.id_role = su.id_role  
 left join etl.sys_users_addons suse on suse.id_user = su.id_user 
@@ -22,6 +23,7 @@ while($r = pg_fetch_assoc($result_n)) {
   $_SESSION['id_user']=$r['id_user'];
   $check_esternalizzati=$r['esternalizzati'];
   $check_sovr=$r['sovrariempimenti'];
+  $check_sovr_admin=$r['sovrariempimenti_admin'];
   $check_SIT=1;
 }
 //echo "<script type='text/javascript'>alert('$check_SIT');</script>";
@@ -187,7 +189,7 @@ if ($check_modal!=1){
               <a class="dropdown-item" href="./report_piazzole_sovr.php">Report piazzole da ispezionare</a>
             <?php } ?>
             <a class="dropdown-item" href="./export_sovr.php">Export report sovrariempimenti</a>
-            <?php if ($check_superedit == 1) { ?>
+            <?php if ($check_sovr_admin == 't') { ?>
             <a class="dropdown-item" href="./delete_ispezioni_sovr.php">Rimozione sovrariempimenti (solo superuser)</a>
             <?php } ?>
 
