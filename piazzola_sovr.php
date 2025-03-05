@@ -559,7 +559,7 @@ if ($check_eliminata==1)
 
 
 <hr>
-Prima di salvare i dati dell'ispezione verifica che su SIT ci siano tutti i contenitori e nel caso affiungi elementi:
+Prima di salvare i dati dell'ispezione verifica che su SIT ci siano tutti i contenitori e nel caso aggiungi elementi:
 <div class="col-md-12"> 
 
 <div class="accordion" id="accordionFlushExample">
@@ -618,6 +618,9 @@ data-live-search="true" name="tipo_elemento_ae" id="tipo_elemento_ae" placeholde
         $(document).ready(function () {                 
             $('#add_elemento_submit').click(function (event) { 
                 console.log('Bottone add elemento  generico cliccato e finito qua');
+                $('#add_elemento_submit').attr("disabled", true);
+                $('#add_elemento_submit').hide();
+                
                 event.preventDefault();                  
                 id_piazzola=document.getElementById("id_piazzola_ae").value+'_'+document.getElementById("tipo_elemento_ae").value;
                 console.log(id_piazzola);
@@ -644,6 +647,7 @@ data-live-search="true" name="tipo_elemento_ae" id="tipo_elemento_ae" placeholde
                         console.error(errorThrown); 
                     } 
                 }); 
+                
             });
           }); 
 
@@ -692,7 +696,7 @@ join elem.tipi_rifiuto tr on tr.tipo_rifiuto = te.tipo_rifiuto
 join elem.tipologie_elemento te2 on te2.tipologia_elemento = te.tipologia_elemento
 left join elem.elementi_privati ep on ep.id_elemento = e.id_elemento 
 left join gestione_oggetti.v_intervento vi on e.id_elemento = vi.elemento_id and vi.stato in (1,5)
-where id_piazzola = $1 and  te.tipo_elemento not in (101 /* punto di lavaggio*/, 180 /*riordino piazzola*/) 
+where id_piazzola = $1 and  te.tipo_elemento not in (198, 101 /* punto di lavaggio*/, 180 /*riordino piazzola*/) 
 group by 
 /*e.id_elemento, */
 tr.ordinamento,
