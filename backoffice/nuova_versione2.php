@@ -730,7 +730,7 @@ if (pg_last_error($conn)){
   (id_percorso_sit,
   cod_percorso, versioni_uo, data_inizio_validita, data_fine_validita) 
   VALUES(
-    (select max(id_percorso) from elem.percorsi where cod_percorso = $1),
+    (select max(id_percorso) from elem.percorsi where cod_percorso = $1 and id_categoria_uso in (3,6)),
     $1, 1,
     to_timestamp($2,'DD/MM/YYYY'), to_timestamp($3,'DD/MM/YYYY')
     )";
