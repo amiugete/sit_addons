@@ -112,6 +112,8 @@ oci_free_statement($result3);
 require('backoffice/decodifica_frequenza.php');
 
 
+$freq_sit='';
+
 $query4="select cod_frequenza as freq_sit,
   freq_binaria as freq_uo,
   descrizione_long 
@@ -132,6 +134,26 @@ $query4="select cod_frequenza as freq_sit,
     $freq_sit=$r4['freq_sit'];
     $freq_uo=$r4['freq_uo'];
     $descrizione_long = $r4['descrizione_long'];
+  }
+
+  if ($freq_sit==''){
+    echo $frequenza_binaria;
+    echo '<br>Bisogna aggiungere una nuova frequenza su SIT';
+    echo '<br> IStruzioni:';
+    ?>
+
+    <ul>
+      <li>andare sui percorsi del SIT (no funzionalità avanzate)</li>
+      <li>nella colonna categoria filtrare fra quelli in progetto</li>
+      <li>selezionare il percorso con codice = <i>test_freq</i> e descrizione <i>TEST x frequenza</i>
+      impostare la frequenza che si vuole creare e salvare</li>
+      <li>a quel punto entro 5 minuti dovrebbe arrivare una mail generata dallo script frequenze.py con le istruzioni per aggiornare Ekovision e la UO 
+        e qua sulle funzionalità avanzate dovrebbe esssere possibile creare tranquillamente il percorso</li>
+    </ul>
+
+  Poi con calma sarebbe da sistemare qua sopra e creare la frequenza in automatico replicando quanto fatto dallo script frequenze.py .. 
+    <?php
+    exit();
   }
 
 
