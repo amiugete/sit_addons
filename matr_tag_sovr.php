@@ -9,7 +9,7 @@
       
 
       <button type="button" class="info btn btn-warning btn-sm" title="Aggiungi informazioni su matricola / tag elemento <?php echo $re['id_elemento'];?>"
-      data-bs-toggle="modal" data-bs-target="#edit_elemento" data-bs-whatever="<?php echo $re['id_elemento'];?>">
+      data-bs-toggle="modal" data-bs-target="#edit_elemento" data-bs-whatever="<?php echo $re['id_elemento'];?>" data-freq="<?php echo $re['num_svuotamenti_settimanali'];?>">
       <i class="fa-solid fa-pencil"></i>
       </button>
 

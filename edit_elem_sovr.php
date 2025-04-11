@@ -30,10 +30,11 @@ if ((int)$id_role_SIT = 0) {
 
 
 $id_elemento= $_GET['id'];
-
+$num_freq= $_GET['num_freq'];
 
 $select_elementi="
     select 
+te.tipo_elemento,
 te.descrizione as tipologia_elemento, 
 e.matricola, 
 e.tag
@@ -50,41 +51,112 @@ where e.id_elemento = $1
     while($re = pg_fetch_assoc($result_ee)) {
 
 ?>
-<form name="edit_elemento" id="form_edit_elemento" class="row row-cols-lg-auto g-3 align-items-center" autocomplete="off">
+<form name="edit_elemento" id="form_edit_elemento"  autocomplete="off">
 
 
 <input type="hidden" id="id_elemento" name="id_elemento" value="<?php echo $id_elemento;?>">
 
-<div class="col-12">
-<div title="Tipo" class="input-group-text"><?php echo $id_elemento;?></div>
+
+
+
+
+<?php 
+if ($num_freq > 0){
+?>
+<div class="mb-3">
+<div title="perc" class="input-group-text">Elemento associato a percorso</div>
+</div>
+<?php
+$query_tipologie="select es.tipo_elemento, 
+  te.nome
+  FROM elem.tipi_elemento te 
+  join elem.tipi_rifiuto tr on tr.tipo_rifiuto = te.tipo_rifiuto 
+  join (select distinct es.tipo_elemento 
+		from elem.elementi_aste_percorso eap 
+		join elem.aste_percorso ap on ap.id_asta_percorso = eap.id_asta_percorso 
+		join elem.percorsi p on p.id_percorso = ap.id_percorso
+		left join elem.elementi_servizio es on es.id_servizio = p.id_servizio
+		where eap.id_elemento = $1
+		and p.id_categoria_uso in (3,6)
+		) es  on es.tipo_elemento = te.tipo_elemento
+  where te.tipo_rifiuto is not null 
+  --and tipo_elemento = 1
+  and in_piazzola = 1 
+  and tipologia_elemento not in ('T', 'I', 'N')
+  order by  te.volume";
+} else {
+?>
+<div class="mb-3">
+<div title="perc" class="input-group-text">Elemento privo di associazione a percorsi</div>
+</div>
+<?php
+  $query_tipologie=" select te.tipo_elemento, 
+  te.nome
+  from  elem.tipi_elemento te 
+  where te.tipo_rifiuto in (select tr.tipo_rifiuto
+   FROM elem.tipi_elemento te 
+  join elem.tipi_rifiuto tr on tr.tipo_rifiuto = te.tipo_rifiuto
+  join elem.elementi e on e.tipo_elemento = te.tipo_elemento
+  where e.id_elemento = $1 )
+  and tipologia_elemento not in ('T', 'I', 'N')
+  order by te.volume";
+}
+
+  $result_tt = pg_prepare($conn_sovr, "my_query_tipologie", $query_tipologie);
+  $result_tt = pg_execute($conn_sovr, "my_query_tipologie", array($id_elemento));
+  $status1= pg_result_status($result_tt);
+  ?>
+  
+ 
+
+  <div class="mb-3">
+  <label for="tipo_elemento_tt" class="form-label">Tipo <?php //echo $re['tipologia_elemento'];?></label>
+
+    <select class="selectpicker input-group-btn show-tick form-control open" 
+    data-live-search="true" name="tipo_elemento_tt" id="tipo_elemento_tt"  required="">
+    <?php
+      while($rtt = pg_fetch_assoc($result_tt)) {
+    ?>
+      
+        <option name="tipo_elemento_tt" value="<?php echo $rtt['tipo_elemento'];?>" 
+        <?php 
+        if ($rtt['tipo_elemento']== $re['tipo_elemento']) {
+            echo 'selected="" ';
+          }
+        ?>  
+        >
+          <?php echo $rtt['nome']; ?>
+        </option>
+    <?php
+      }
+    ?>
+  </select>
+<small>E' possibile cambiare tipologia elemento sulla base di quelle compatibili con il tipo servizio</small>
 </div>
 
 
-<div class="col-12">
-<div title="Tipo" class="input-group-text"><?php echo $re['tipologia_elemento'];?></div>
+
+
+<div class="mb-3">
+<div title="Id_elemento" class="input-group-text"><?php echo 'Id elemento SIT:'.$id_elemento;?></div>
 </div>
 
 
-
-
-<div class="col-12">
-  <div class="input-group">
-    <div title="Dato opzionale" class="input-group-text">Matr</div>
+<div class="mb-3">
+  <label for="matr" class="form-label">Matr</label>
     <input type="text"  class="form-control" id="matr" name="matr" value="<?php echo $re['matricola'];?>">
-  </div>
+  </>
 </div>
 
 
 
-<div class="col-12">
-  <div class="input-group">
-    <div title="Dato opzionale" class="input-group-text">Tag</div>
+<div class="mb-3">
+<label for="tag" class="form-label">Tag</label>
     <input type="text"  class="form-control" id="tag" name="tag" value="<?php echo $re['tag'];?>">
-  </div>
 </div>
 
-<div class="col-12">
-    
+<hr>
+<div class="mb-3">   
     <button type="submit" class="btn btn-info">
     <i class="fa-solid fa-arrow-up-from-bracket"></i> Salva
     </button>
@@ -108,6 +180,9 @@ where e.id_elemento = $1
                             //alert('Your form has been sent successfully.'); 
                             console.log(response);
                             $("#results_edit_elemento").html(response).fadeIn("slow");
+                            if (response.startsWith("9999")){
+                              location.reload();
+                            }
                         }, 
                         error: function (jqXHR, textStatus, errorThrown) {                        
                             alert('Your form was not sent successfully.'); 
@@ -119,6 +194,12 @@ where e.id_elemento = $1
         </script>
 
 
+<script type="text/javascript">
+
+$(function () {
+	$('select').selectpicker();
+});
+</script>
 
 
 <?php

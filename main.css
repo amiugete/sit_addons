@@ -252,4 +252,6 @@
   }
 }	
 
-
+#modal-content {
+  max-height: none;
+}

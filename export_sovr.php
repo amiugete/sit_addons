@@ -31,17 +31,16 @@ $activeSheet = $spreadsheet->getActiveSheet();
 
 
 
-
-$activeSheet->setCellValue('A1', 'Comune');
-$activeSheet->setCellValue('B1', 'Piazzola');
-$activeSheet->setCellValue('C1', 'Zona');
-$activeSheet->setCellValue('D1', 'Ut');
-$activeSheet->setCellValue('E1', 'Quartiere');
-$activeSheet->setCellValue('F1', 'Id segnalazione');
-$activeSheet->setCellValue('G1', 'Data ora segnalazione');
-$activeSheet->setCellValue('H1', 'Contenitori presenti su SIT');
-$activeSheet->setCellValue('I1', 'Id ispezione');
-$activeSheet->setCellValue('J1', 'Data ora verifica');
+$activeSheet->setCellValue('A1', 'Id ispezione');
+$activeSheet->setCellValue('B1', 'Data ora verifica');
+$activeSheet->setCellValue('C1', 'Comune');
+$activeSheet->setCellValue('D1', 'Piazzola');
+$activeSheet->setCellValue('E1', 'Zona');
+$activeSheet->setCellValue('F1', 'Ut');
+$activeSheet->setCellValue('G1', 'Quartiere');
+$activeSheet->setCellValue('H1', 'Id segnalazione');
+$activeSheet->setCellValue('I1', 'Data ora segnalazione');
+$activeSheet->setCellValue('J1', 'Contenitori presenti su SIT');
 $activeSheet->setCellValue('K1', 'Ispezione eseguita da');
 $activeSheet->setCellValue('L1', 'Contenitori ispezionati');
 $activeSheet->setCellValue('M1', 'Contenitori sovrariempiti');
@@ -75,16 +74,16 @@ if($_GET['ut']) {
 $i = 2;
 while($r = pg_fetch_assoc($result)) {
     //echo $r['id_piazzola'];
-    $activeSheet->setCellValue('A'.$i , $r['descr_comune']);
-    $activeSheet->setCellValue('B'.$i , $r['piazzola']);
-    $activeSheet->setCellValue('C'.$i , $r['zona']);
-    $activeSheet->setCellValue('D'.$i , $r['ut']);
-    $activeSheet->setCellValue('E'.$i , $r['quartiere']);
-    $activeSheet->setCellValue('F'.$i , $r['id_segnalazione']);
-    $activeSheet->setCellValue('G'.$i , $r['data_ora_segnalazione']);
-    $activeSheet->setCellValue('H'.$i , $r['contenitori_presenti_su_sit']);
-    $activeSheet->setCellValue('I'.$i , $r['id_ispezione']);
-    $activeSheet->setCellValue('J'.$i , $r['data_ora_verifica']);
+    $activeSheet->setCellValue('A'.$i , $r['id_ispezione']);
+    $activeSheet->setCellValue('B'.$i , $r['data_ora_verifica']);
+    $activeSheet->setCellValue('C'.$i , $r['descr_comune']);
+    $activeSheet->setCellValue('D'.$i , $r['piazzola']);
+    $activeSheet->setCellValue('E'.$i , $r['zona']);
+    $activeSheet->setCellValue('F'.$i , $r['ut']);
+    $activeSheet->setCellValue('G'.$i , $r['quartiere']);
+    $activeSheet->setCellValue('H'.$i , $r['id_segnalazione']);
+    $activeSheet->setCellValue('I'.$i , $r['data_ora_segnalazione']);
+    $activeSheet->setCellValue('J'.$i , $r['contenitori_presenti_su_sit']);
     $activeSheet->setCellValue('K'.$i , $r['ispezione_eseguita_da']);
     $activeSheet->setCellValue('L'.$i , $r['contenitori_ispezionati']);
     $activeSheet->setCellValue('M'.$i , $r['contenitori_sovrariempiti']);

@@ -275,12 +275,20 @@ $check_foto=0;
 
 $select_elementi="
    select e.id_elemento, e.matricola, e.tag,  sum(fo.num_giorni)::int as num_svuotamenti_settimanali, 
-string_agg(distinct concat(vi.tipo, ' - ', vi.descrizione), ',') as desc_intervento,
+/*string_agg(distinct concat(vi.tipo, ' - ', vi.descrizione), ',') as desc_intervento,
 string_agg(distinct vi.stato_descrizione, ',') as stato_intervento, 
 max(vi.stato) as id_stato_intervento,
-max(vi.odl) as odl
+max(vi.odl) as odl*/
+concat(tipo_intervento, ' - ', desc_intervento) as desc_intervento, stato_intervento, id_stato_intervento, odl
 from elem.elementi e 
-left join gestione_oggetti.v_intervento vi on e.id_elemento = vi.elemento_id and vi.stato in (1,5)
+left join (select id, elemento_id, 
+	string_agg(distinct vi.tipo, ', ') as tipo_intervento,
+	string_agg(distinct vi.descrizione, ',') as desc_intervento,
+	string_agg(distinct vi.stato_descrizione, ',') as stato_intervento, 
+	max(vi.stato) as id_stato_intervento,
+	max(vi.odl) as odl  
+	from gestione_oggetti.v_intervento vi 
+	group by id, elemento_id) vi on e.id_elemento = vi.elemento_id and vi.id_stato_intervento in (1,5)
 left join elem.elementi_aste_percorso eap on e.id_elemento = eap.id_elemento 
 left join elem.aste_percorso ap on ap.id_asta_percorso = eap.id_asta_percorso 
 left join elem.percorsi p on p.id_percorso = ap.id_percorso 
@@ -288,7 +296,7 @@ left join etl.frequenze_ok fo on fo.cod_frequenza = eap.frequenza::int
 where coalesce(p.id_categoria_uso, 3) in (3)
 and id_piazzola = $1
 and e.tipo_elemento = $2
-group by e.id_elemento, e.matricola, e.tag ";
+group by e.id_elemento, e.matricola, e.tag, desc_intervento, stato_intervento, id_stato_intervento, odl, tipo_intervento ";
 $result_ee = pg_prepare($conn_sovr, "my_query_ee", $select_elementi);
 
 
@@ -583,11 +591,10 @@ data-live-search="true" name="tipo_elemento_ae" id="tipo_elemento_ae" placeholde
 
     <!--option name="piazzola" value="NO">Seleziona una piazzola</option-->
     <?php            
-    $query_tipo="SELECT tipo_elemento, 
-      concat(tr.nome_stampa, ' - ',te.nome_stampa, ' (', te.volume,' l)'/*, ' - ', te.nome*/) as nome_ok/*,
-      tr.nome, 
-      te.descrizione, te.nome, te.nome_stampa, 
-      tr.ordinamento, te.tipologia_elemento*/ 
+    $query_tipo="SELECT distinct tipo_elemento, 
+      /*concat(tr.nome_stampa, ' - ',te.nome_stampa, ' (', te.volume,' l)') as nome_ok*/
+      concat(tr.nome, ' - ',te.nome) as nome_ok, 
+      tr.ordinamento, te.volume
       FROM elem.tipi_elemento te 
       join elem.tipi_rifiuto tr on tr.tipo_rifiuto = te.tipo_rifiuto 
       where te.tipo_rifiuto is not null 
@@ -598,7 +605,7 @@ data-live-search="true" name="tipo_elemento_ae" id="tipo_elemento_ae" placeholde
     while($rt = pg_fetch_assoc($result_t)) {             
     ?>
                 
-            <option name="tipo_elemento" value="<?php echo $rt['tipo_elemento'];?>" ><?php echo $rt['nome_ok'] .' - ' .$r2['rif'];?></option>
+            <option name="tipo_elemento" value="<?php echo $rt['tipo_elemento'];?>" ><?php echo $rt['nome_ok'];?></option>
     <?php } ?>
 
   </select>
@@ -671,7 +678,7 @@ data-live-search="true" name="tipo_elemento_ae" id="tipo_elemento_ae" placeholde
 <?php 
 
 $query_elementi= "select 
-count(e.id_elemento) as num, 
+count(distinct e.id_elemento) as num, 
 te.tipo_rifiuto,
 tr.ordinamento,
 tr.nome as rifiuto,
@@ -1310,11 +1317,13 @@ if (!edit_elemento){
         var button = event.relatedTarget
         // Extract info from data-bs-* attributes
         var recipient = button.getAttribute('data-bs-whatever')
-        console.log('recipient'+recipient);
+        console.log('id_elemento '+recipient);
+        var num_freq = button.getAttribute('data-freq')
+        console.log('num_freq '+num_freq);
         $.ajax({   
             type: "get",
             url: "edit_elem_sovr.php",
-            data: {'id': recipient},
+            data: {'id': recipient, 'num_freq': num_freq},
             dataType: "text",                  
             success: function(response){                    
                 $("#body_dettaglio").html(response);

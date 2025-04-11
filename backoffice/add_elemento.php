@@ -68,15 +68,15 @@ privato, peso_reale, peso_stimato ,
 riferimento, id_utenza, nome_attivita,
 percent_riempimento, 
 freq_stimata)
-(select distinct $1::int as tipo_elemento, id_piazzola, id_asta,  
-privato, peso_reale, peso_stimato ,  
-riferimento, id_utenza, nome_attivita,
+(select distinct $1::int as tipo_elemento, id_piazzola, (select id_asta from elem.piazzole where id_piazzola = $2) ,  
+0, 0, 0 ,  
+NULL, -1, NULL,
 (select percent_riempimento
-from elem.tipi_elemento te where tipo_elemento = $2),
+from elem.tipi_elemento te where tipo_elemento = $3),
 (select freq_stimata
-from elem.tipi_elemento te where tipo_elemento = $3)
+from elem.tipi_elemento te where tipo_elemento = $4)
 from elem.elementi e
-where e.id_piazzola = $4
+where e.id_piazzola = $5
 ) returning id_elemento";
 
 
@@ -87,7 +87,11 @@ where e.id_piazzola = $4
         $res_ok=$res_ok+1;
     }
 
-    $result_add2 = pg_execute($conn_sovr, "add_elemento2", array($tipo_elemento, $tipo_elemento, $tipo_elemento, $id_piazzola));
+    $result_add2 = pg_execute($conn_sovr, "add_elemento2", array($tipo_elemento, 
+                                                                $id_piazzola, 
+                                                                $tipo_elemento, 
+                                                                $tipo_elemento, 
+                                                                $id_piazzola));
     if (pg_last_error($conn_sovr)){
         echo pg_last_error($conn_sovr);
         $res_ok=$res_ok+1;
