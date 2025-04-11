@@ -15,6 +15,7 @@ $res_ok=0;
 
 $id_elemento = intval($_POST['id_elemento']);
 
+$num_freq = intval($_POST['num_freq']);
 
 # controllo se è cambiata la tipologia elemento
 $query_tipo_elemento_es="select tipo_elemento from elem.elementi 
@@ -61,6 +62,8 @@ if ($tipo_elemento_es != $_POST['tipo_elemento_tt']){
         $res_ok=$res_ok+1;
     }
     
+
+    if ($num_freq>0){
     # update anche dei log per vedere la modifica nelle variazioni del giorno dopo
     //echo "<br>Hist<br>";
     $update_history_tipo="INSERT INTO util.sys_history 
@@ -100,7 +103,7 @@ if ($tipo_elemento_es != $_POST['tipo_elemento_tt']){
             echo pg_last_error($conn_sovr);
             $res_ok=$res_ok+1;
         }
-
+    }
     //echo '<br>ok';
 } else {
     //echo '<br>Non ho fatto niente';

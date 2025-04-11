@@ -57,7 +57,7 @@ where e.id_elemento = $1
 <input type="hidden" id="id_elemento" name="id_elemento" value="<?php echo $id_elemento;?>">
 
 
-
+<input type="hidden" id="num_freq" name="num_freq" value="<?php echo $num_freq;?>">
 
 
 <?php 
