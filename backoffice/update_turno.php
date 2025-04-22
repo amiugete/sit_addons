@@ -12,12 +12,12 @@ if ($_SESSION['test']==1) {
 
 $res_ok=0;
 
-//echo "Per ora il pulsante salva non fa nulla se non mostrare il turno selezionato e il percorso<br>"; //da commentare
+//echo "Per ora il pulsante salva non fa nulla se non mostrare il turno selezionato e il percorso<br>"; 
 
 
 // TURNO
 $turno = intval($_POST['turno']);
-//echo "turno selezionato: ".$turno."<br>"; //da commentare
+//echo "turno selezionato: ".$turno."<br>"; 
 
 $query3="SELECT aft.CODICE_TURNO, at2.DURATA
 FROM ANAGR_TURNI at2
@@ -39,7 +39,7 @@ oci_free_statement($result3);
 //echo "durata: ".$durata."<br>";;
 
 $cod_percorso = $_POST['id_percorso'];
-//echo "percorso: ".$cod_percorso."<br>"; //da commentare
+//echo "percorso: ".$cod_percorso."<br>"; 
 
 $vers = intval($_POST['old_vers']);
 //echo "versione: ".$vers."<br>";
