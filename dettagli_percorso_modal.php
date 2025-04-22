@@ -174,11 +174,96 @@ while($r = pg_fetch_assoc($result)) {
   } else {
     echo '<li class="mt-1"><b> Descrizione </b>'.$r["descrizione"].' ';
   }
-  ?>
- 
 
-  <?php
-  echo '<li class="mt-1"><b> Turno </b>'.$r["cod_turno"].'</li>';
+  if ($check_versione_successiva==0 and $check_superedit==1 and $check_in_attivazione==1 and $r["flg_disattivo"]==0){
+    ?>
+    <li><b>Turno</b>
+    <!--form class="row row-cols-lg-auto g-3 align-items-center" name="form_dd" method="post" autocomplete="off" action="./backoffice/update_data_attivazione.php"-->
+    <form class="row row-cols-lg-auto g-3 align-items-center" name="form_turno" id="form_turno" autocomplete="off" >
+    <input type="hidden" id="id_percorso" name="id_percorso" value="<?php echo $cod_percorso;?>">
+    <input type="hidden" id="old_vers" name="old_vers" value="<?php echo $versione;?>">
+
+    
+    <div class="col-12">
+    <!--div class="input-group"-->
+    <!--input type="text" name="turno" id="turno" maxlength="60" class="form-control" value="<?php echo $r["cod_turno"];?>" required=""-->
+      <select name="turno" id="turno" class="form-select" data-live-search="true"  required="">
+              
+              <?php            
+              $query2bis="SELECT ID_TURNO, 
+              concat(concat(codice_turno, ' --> '), DESCR_ORARIO) AS DESCR
+              FROM ANAGR_TURNI at2 
+              WHERE DTA_DISATTIVAZIONE > SYSDATE 
+              ORDER BY inizio_ora, inizio_minuti, fine_ora,fine_minuti";
+            
+              
+            
+            $result2bis = oci_parse($oraconn, $query2bis);
+            oci_execute($result2bis);
+            
+              while($r2bis = oci_fetch_assoc($result2bis)) { 
+                  //$valore=  $r2['id_via']. ";".$r2['desvia'];            
+              ?>
+                        
+                    <option name="turno" 
+                    <?php
+                    if ($r2bis['ID_TURNO']==$r["id_turno"]) {
+                    echo 'selected ';
+                  }?>
+                    value="<?php echo $r2bis['ID_TURNO']?>" ><?php echo $r2bis['DESCR'];?></option>
+              <?php } 
+               oci_free_statement($result2bis);
+              ?>
+             
+      </select> 
+
+    
+    <!--/div-->
+    </div>
+
+
+    <br>
+    
+    <div class="col-12">
+    
+    <button type="submit" class="btn btn-info">
+    <i class="fa-solid fa-arrow-up-from-bracket"></i> Salva
+    </button>
+    </div> 
+  </form>
+  <p><div id="results_turno"></div></p>
+            <script> 
+            $(document).ready(function () {                 
+                $('#form_turno').submit(function (event) { 
+                    console.log('Bottone form dd cliccato e finito qua');
+                    event.preventDefault();                  
+                    var formData = $(this).serialize();
+                    console.log(formData);
+                    $.ajax({ 
+                        url: 'backoffice/update_turno.php', 
+                        method: 'POST', 
+                        data: formData, 
+                        //processData: true, 
+                        //contentType: false, 
+                        success: function (response) {                       
+                            //alert('Your form has been sent successfully.'); 
+                            console.log(response);
+                            $("#results_turno").html(response).fadeIn("slow");
+                        }, 
+                        error: function (jqXHR, textStatus, errorThrown) {                        
+                            alert('Your form was not sent successfully.'); 
+                            console.error(errorThrown); 
+                        } 
+                    }); 
+                }); 
+            }); 
+        </script>
+
+    <?php
+  }else{
+    echo '<li class="mt-1"><b> Turno </b>'.$r["cod_turno"].'</li>';
+  }
+  
   echo '<li class="mt-1"><b> Durata </b>'.$r["durata"].'</li>';
   echo '<li class="mt-1"><b> Frequenza </b>'.$r["descrizione_long"];
   
