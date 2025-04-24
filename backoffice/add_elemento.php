@@ -176,6 +176,8 @@ where e.id_piazzola = $5
             //echo pg_last_error($conn_sovr);
             $res_ok=$res_ok+1;
         }
+
+
     
         
     
@@ -185,7 +187,7 @@ where e.id_piazzola = $5
             $result_h = pg_execute($conn_sovr, "sql_history", array($desc_hist, 
                                                     $_SESSION['username'],
                                                     $id_piazzola, 
-                                                    $rr['id_percorso'],
+                                                    $rp['id_percorso'],
                                                     $new_id));
             if (pg_last_error($conn_sovr)){
                 //echo pg_last_error($conn_sovr);
