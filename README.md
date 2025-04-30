@@ -69,3 +69,20 @@ composer require moment/moment
 Per installare l'applicazione è sufficiente lanciare un `composer install` nella cartella principale dlel'applicazione dove è contenuto il file `composer.json`.
 
 Per fare update di versione è sufficiente un `composer update`
+
+
+
+## Permessi
+
+Ci sono alcune pagine che sono visibili solo a determinati utenti del SIT. 
+
+Il tutto è controllato dalla tabella etl.sys_users_addons dove per ora (aprile 2025) ci sono 4 gruppi:
+
+- esternalizzati
+- sovrariempimenti
+- sovrariempimenti_admin
+- coge: controllo gestione
+
+
+
+

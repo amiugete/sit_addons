@@ -7,7 +7,8 @@ session_start();
 $query_role="SELECT  su.id_user, sr.id_role, sr.\"name\" as \"role\",
 coalesce(suse.esternalizzati, 'f') as esternalizzati, 
 coalesce(suse.sovrariempimenti, 'f') as sovrariempimenti, 
-coalesce(suse.sovrariempimenti_admin, 'f') as sovrariempimenti_admin
+coalesce(suse.sovrariempimenti_admin, 'f') as sovrariempimenti_admin, 
+coalesce(suse.coge, 'f') as coge
 FROM util.sys_users su
 join util.sys_roles sr on sr.id_role = su.id_role  
 left join etl.sys_users_addons suse on suse.id_user = su.id_user 
@@ -24,6 +25,7 @@ while($r = pg_fetch_assoc($result_n)) {
   $check_esternalizzati=$r['esternalizzati'];
   $check_sovr=$r['sovrariempimenti'];
   $check_sovr_admin=$r['sovrariempimenti_admin'];
+  $check_coge=$r['coge'];
   $check_SIT=1;
 }
 //echo "<script type='text/javascript'>alert('$check_SIT');</script>";
@@ -144,6 +146,9 @@ if ($check_modal!=1){
           <ul class="dropdown-menu" id="navbarDropdown3" aria-labelledby="navbarDropdown3">
             <li><a class="dropdown-item" href="./consuntivazione_ekovision.php">Report consuntivazione Ekovision</a></li>
             <li><a class="dropdown-item" href="./report_indicatori_arera.php">Report indicatori ARERA (uso interno)</a></li>
+            <?php if ($check_coge == 't') { ?>
+              <a class="dropdown-item" href="./esportazione_driver_ekovision.php">Report driver ekovision (esportazione)</a>
+            <?php } ?>
             <li><a class="dropdown-item" href="./report_contenitori_bilaterali.php">Report contenitori bilaterali</a></li>
             
               <li><a class="dropdown-item" href="#">Report dati in tempo reale da totem &raquo; </a>
@@ -297,7 +302,34 @@ if ($check_modal!=1){
             <li><b>Mail: </b><?php echo $mail_user?></li>
             <li><b>Profilo: </b><?php echo $profilo?></li>
             <li><b>UT/Rimesse: </b><?php echo $uts?></li>
-            <li><b>Sovrariempimenti: </b><?php echo $check_sovr?></li>
+            <hr>
+            <li><b>Funzionalità ad accesso profilato: </b>
+            <ul>
+              <li><b>Servizi esternalizzati: </b>
+              <?php if ($check_esternalizzati=='t'){?>
+                <i class="fa-solid fa-check" style="color: #00c217;"></i>
+              <?php } else {?>
+                <i class="fa-solid fa-xmark" style="color: #ff0000;"></i>
+              <?php } ?>
+            </li>
+              <li><b>Sovrariempimenti: </b>
+              <?php if ($check_sovr=='t'){?>
+                <i class="fa-solid fa-check" style="color: #00c217;"></i>
+              <?php } else {?>
+                <i class="fa-solid fa-xmark" style="color: #ff0000;"></i>
+              <?php } ?>
+              <?php if ($check_sovr_admin=='t'){?>
+                <i class="fa-solid fa-user-tie" style="color: #00c217;"></i>
+              <?php } ?>
+            </li>
+              <li><b>Controllo gestione: </b>
+              <?php if ($check_coge=='t'){?>
+                <i class="fa-solid fa-check" style="color: #00c217;"></i>
+              <?php } else {?>
+                <i class="fa-solid fa-xmark" style="color: #ff0000;"></i>
+              <?php } ?>
+            </li>
+            </ul>
           </ul>
         <hr>
           In caso di modifiche fare scrivere dal proprio responsabile a assterritorio@amiu.genova.it    

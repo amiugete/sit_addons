@@ -1,0 +1,1 @@
+Cartella per log script python 

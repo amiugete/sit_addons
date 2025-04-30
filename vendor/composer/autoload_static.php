@@ -23,8 +23,10 @@ class ComposerStaticInita241ea074bd78bf1eff14ea6fd160183
         'P' => 
         array (
             'Psr\\SimpleCache\\' => 16,
+            'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Http\\Client\\' => 16,
+            'Psr\\Cache\\' => 10,
             'Picqer\\Barcode\\' => 15,
             'PhpOffice\\PhpSpreadsheet\\' => 25,
         ),
@@ -42,8 +44,13 @@ class ComposerStaticInita241ea074bd78bf1eff14ea6fd160183
         ),
         'C' => 
         array (
+            'Composer\\Pcre\\' => 14,
             'Composer\\Installers\\' => 20,
             'Complex\\' => 8,
+            'Cache\\TagInterop\\' => 17,
+            'Cache\\Bridge\\SimpleCache\\' => 25,
+            'Cache\\Adapter\\Common\\' => 21,
+            'Cache\\Adapter\\Apcu\\' => 19,
         ),
     );
 
@@ -60,6 +67,10 @@ class ComposerStaticInita241ea074bd78bf1eff14ea6fd160183
         array (
             0 => __DIR__ . '/..' . '/psr/simple-cache/src',
         ),
+        'Psr\\Log\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/log/src',
+        ),
         'Psr\\Http\\Message\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/http-factory/src',
@@ -68,6 +79,10 @@ class ComposerStaticInita241ea074bd78bf1eff14ea6fd160183
         'Psr\\Http\\Client\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/http-client/src',
+        ),
+        'Psr\\Cache\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/cache/src',
         ),
         'Picqer\\Barcode\\' => 
         array (
@@ -89,6 +104,10 @@ class ComposerStaticInita241ea074bd78bf1eff14ea6fd160183
         array (
             0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
         ),
+        'Composer\\Pcre\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/composer/pcre/src',
+        ),
         'Composer\\Installers\\' => 
         array (
             0 => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers',
@@ -96,6 +115,22 @@ class ComposerStaticInita241ea074bd78bf1eff14ea6fd160183
         'Complex\\' => 
         array (
             0 => __DIR__ . '/..' . '/markbaker/complex/classes/src',
+        ),
+        'Cache\\TagInterop\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/cache/tag-interop',
+        ),
+        'Cache\\Bridge\\SimpleCache\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/cache/simple-cache-bridge',
+        ),
+        'Cache\\Adapter\\Common\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/cache/adapter-common',
+        ),
+        'Cache\\Adapter\\Apcu\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/cache/apcu-adapter',
         ),
     );
 

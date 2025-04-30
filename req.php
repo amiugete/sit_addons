@@ -81,8 +81,8 @@ $partenza_ekovision= "20/11/2023";
 var onResize = function() {
     var new_height= 10+$(".banner").height()+$(".navbar-sticky-top").height()
     console.log(new_height);
-  // apply dynamic padding at the top of the body according to the fixed navbar height
-  $("body").css("margin-top", new_height);
+    // apply dynamic padding at the top of the body according to the fixed navbar height
+    $("body").css("margin-top", new_height);
 
 
     var new_width=$(".banner").width()

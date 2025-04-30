@@ -129,6 +129,23 @@ if ((int)$id_role_SIT = 0) {
     </div>
     </div>
 
+
+
+    <?php if ($check_coge == 't') { ?>
+      <div class="col-sm-4">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-magnifying-glass-dollar"></i> Reportistica COGE</h3>
+          </div>
+          <ul class="list-group list-group-flush">
+            <a class="list-group-item" href="./esportazione_driver_ekovision.php">Report driver ekovision (esportazione)</a>
+          </ul>
+        </div>
+    </div>
+    
+  <?php } ?>
+
+
 <div class="col-sm-4">
     <div class="card" >
       <div class="card-header">

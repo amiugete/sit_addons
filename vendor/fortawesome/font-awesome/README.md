@@ -7,7 +7,7 @@ designers, developers, and content creators.
 
 ## Documentation
 
-Learn how to get started with Font Awesome and then dive deeper into other and advanced topics:
+Learn how to get started with Font Awesome and then dive deeper into other advanced topics:
 
 [Docs for version 6](https://fontawesome.com/docs)
 

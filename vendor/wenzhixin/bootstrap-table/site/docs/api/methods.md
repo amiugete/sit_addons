@@ -183,6 +183,16 @@ The calling method syntax: `$('#table').bootstrapTable('method', parameter)`.
 
 - **Example:** [Get Data](https://examples.bootstrap-table.com/#methods/get-data.html)
 
+## getFooterData
+
+- **Parameter:** `undefined`
+
+- **Detail:**
+
+  Get the loaded data of the footer at the moment that this method is called
+
+- **Example:** [Get Footer Data](https://examples.bootstrap-table.com/#methods/get-footer-data.html)
+
 ## getHiddenColumns
 
 - **Parameter:** `undefined`
@@ -522,6 +532,15 @@ The calling method syntax: `$('#table').bootstrapTable('method', parameter)`.
 
 - **Example:** [Sort By](https://examples.bootstrap-table.com/#methods/sort-by.html)
 
+## sortReset
+
+- **Parameter:** `undefined`
+
+- **Detail:**
+
+  Resets sort state of the table regardless of whether caused by the user or programmatically.
+
+- **Example:** [Sort reset](https://examples.bootstrap-table.com/#methods/sort-reset.html)
 
 ## toggleDetailView
 
