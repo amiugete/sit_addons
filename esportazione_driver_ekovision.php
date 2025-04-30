@@ -38,10 +38,15 @@ if ($_SESSION['test']==1) {
 
 <?php require_once('./navbar_up.php');
 $name=dirname(__FILE__);
-if ((int)$id_role_SIT = 0) {
-  redirect('no_permessi.php');
-  //exit;
+
+//************************************************************************************ */
+// Controllo permessi
+if (trim($check_coge) != 't') { 
+  require('assenza_permessi.php');
+  exit;
 }
+//************************************************************************************ */
+
 ?>
 
 
