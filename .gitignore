@@ -8,3 +8,9 @@ copia_file_base.sh
 login_lizmap.php
 
 uploads/*
+
+py_scripts/credenziali.py
+
+py_scripts/log/*.log
+
+py_scripts/driver_eko/*.xlsx

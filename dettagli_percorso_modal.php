@@ -780,7 +780,7 @@ where cod_percorso = $1 and data_disattivazione  =$2)
 <p><div id="results_vis"></div></p>
             <script> 
             $(document).ready(function () {                 
-                $('#form_dd').submit(function (event) { 
+                $('#vis').submit(function (event) { 
                     console.log('Bottone nuova visualizzazione cliccato e finito qua');
                     event.preventDefault();                  
                     var formData = $(this).serialize();
