@@ -204,7 +204,7 @@ if (!$ris) {
   echo  "\n</pre>\n";
 } 
 
-echo "<br> sono arrivato qua";
+//echo "<br> sono arrivato qua";
 oci_free_statement($result_uo2);
 
 
@@ -222,7 +222,7 @@ oci_free_statement($result_uo2);
 #######################################################################
 
 
-echo "<br><br>Insert in elenco percorsi UT<br>";
+//echo "<br><br>Insert in elenco percorsi UT<br>";
 
 if ($sq_ut==15){
   $vis='S';
