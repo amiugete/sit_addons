@@ -26,18 +26,24 @@ $tipo_elemento = intval(explode('_',$_POST['id_piazzola'])[1]);
 //echo $tipo_elemento.'<br>';
 
 
+
+
 // aggiungi elemento
 $add_elemento='INSERT INTO elem.elementi
 (tipo_elemento, id_piazzola, id_asta, posizione, 
 privato, peso_reale, peso_stimato , x_numero_civico_old, 
 riferimento, id_utenza, nome_attivita, percent_riempimento, freq_stimata, numero_civico, 
 lettera_civico, colore_civico, note, serratura, id_materiale)
-(select distinct tipo_elemento, id_piazzola, id_asta, posizione, 
+(select distinct tipo_elemento, id_piazzola, (select id_asta from elem.piazzole where id_piazzola = $1), posizione, 
 privato, peso_reale, peso_stimato , x_numero_civico_old, 
-riferimento, id_utenza, nome_attivita, percent_riempimento, freq_stimata, numero_civico, 
-lettera_civico, colore_civico, note, serratura, id_materiale
+riferimento, id_utenza, nome_attivita, max(percent_riempimento), max(freq_stimata), numero_civico, 
+lettera_civico, colore_civico, note, coalesce(serratura,0), coalesce(id_materiale,1)
 from elem.elementi e
-where e.id_piazzola = $1 and e.tipo_elemento = $2
+where e.id_piazzola = $2 and e.tipo_elemento = $3
+group by tipo_elemento, id_piazzola, posizione,
+privato, peso_reale, peso_stimato , x_numero_civico_old, 
+riferimento, id_utenza, nome_attivita, numero_civico, 
+lettera_civico, colore_civico, note, coalesce(serratura,0), coalesce(id_materiale,1)
 ) returning id_elemento';
 
 $result_add = pg_prepare($conn_sovr, "add_elemento", $add_elemento);
@@ -47,7 +53,7 @@ if (pg_last_error($conn_sovr)){
     $res_ok=$res_ok+1;
 }
 
-$result_add = pg_execute($conn_sovr, "add_elemento", array($id_piazzola, $tipo_elemento));
+$result_add = pg_execute($conn_sovr, "add_elemento", array($id_piazzola, $id_piazzola, $tipo_elemento));
 if (pg_last_error($conn_sovr)){
     //echo pg_last_error($conn_sovr);
     $res_ok=$res_ok+1;
