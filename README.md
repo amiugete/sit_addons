@@ -64,6 +64,7 @@ composer require wenzhixin/bootstrap-table
 composer require picqer/php-barcode-generator
 composer require firebase/php-jwt
 composer require moment/moment
+composer require hhurz/tableexport.jquery.plugin
 ```
 
 Per installare l'applicazione è sufficiente lanciare un `composer install` nella cartella principale dlel'applicazione dove è contenuto il file `composer.json`.

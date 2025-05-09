@@ -79,7 +79,7 @@ require_once("select_ut.php");
         data-search-on-enter-key="true"  
         data-remember-order="true"
         data-search-highlight = "true" 
-        data-auto-refresh="true"
+        data-auto-refresh="false"
         data-auto-refresh-interval = 15
         data-show-refresh="true" data-show-toggle="true"
         data-show-columns="true"
@@ -257,6 +257,28 @@ window.dpEvents = {
 
 
 </div>
+
+
+<!-- Script  REFRESH -->
+<script type="text/javascript">
+  const myModalEl = document.getElementById('viewMemberModal');
+
+  myModalEl.addEventListener('hidden.bs.modal', function () {
+    // Funzione da eseguire alla chiusura del modal
+    //console.log("Modal chiuso");
+    // Qui puoi chiamare qualsiasi altra funzione
+    var data_percorsi=$('#js-date3').val();
+    //console.log(data_percorsi);
+    //console.log($table);
+    $table.bootstrapTable('refresh', {
+    url: "./tables/percorsi_raggruppati.php?ut=<?php echo $_POST['ut0'];?>"
+});   
+    console.log('refresh fatto');
+});
+
+  
+</script>
+
 
 <?php
 require_once('req_bottom.php');
