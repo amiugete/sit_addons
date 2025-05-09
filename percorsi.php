@@ -79,8 +79,8 @@ require_once("select_ut.php");
         data-search-on-enter-key="true"  
         data-remember-order="true"
         data-search-highlight = "true" 
-        data-auto-refresh="false"
-        data-auto-refresh-interval = 15
+        data-auto-refresh="true"
+        data-auto-refresh-interval = 120
         data-show-refresh="true" data-show-toggle="true"
         data-show-columns="true"
 				data-filter-control="true"
