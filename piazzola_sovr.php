@@ -192,7 +192,7 @@ function clickButton2() {
   require_once("./tables/query_piazzole_sovr.php");
 
 
-  $query2="SELECT 
+  $query2="SELECT distinct 
   /*case 
     when id_piazzola > 0 then id_piazzola::text
     else concat('C', id_elemento::text)
