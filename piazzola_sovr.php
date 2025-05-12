@@ -294,10 +294,9 @@ left join (select id, elemento_id,
 	group by id, elemento_id) vi on e.id_elemento = vi.elemento_id and vi.id_stato_intervento in (1,5)
 left join elem.elementi_aste_percorso eap on e.id_elemento = eap.id_elemento 
 left join elem.aste_percorso ap on ap.id_asta_percorso = eap.id_asta_percorso 
-left join elem.percorsi p on p.id_percorso = ap.id_percorso 
-left join etl.frequenze_ok fo on fo.cod_frequenza = eap.frequenza::int 
-where coalesce(p.id_categoria_uso, 3) in (3)
-and id_piazzola = $1
+left join elem.percorsi p on p.id_percorso = ap.id_percorso  and coalesce(p.id_categoria_uso, 3) in (3)
+left join etl.frequenze_ok fo on fo.cod_frequenza = eap.frequenza::int and p.frequenza is not null
+where id_piazzola = $1
 and e.tipo_elemento = $2
 group by e.id_elemento, e.matricola, e.tag, desc_intervento, stato_intervento, id_stato_intervento, odl, tipo_intervento ";
 $result_ee = pg_prepare($conn_sovr, "my_query_ee", $select_elementi);
