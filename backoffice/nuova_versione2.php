@@ -844,6 +844,12 @@ if($_POST['rim']){
 
 if ($res_ok ==0){
   #exit();
-  header("location: ../dettagli_percorso.php?cp=".$cod_percorso."&v=".$new_vers."");
+  # richiamo il python per cancellare le schede
+  $comando='/usr/bin/python3 ../py_scripts/rimozione_schede_eko.py '.$cod_percorso.' '.$data_att.'';
+
+  exec($comando, $output, $retval);
+  if ($retval == 0) {
+    header("location: ../dettagli_percorso.php?cp=".$cod_percorso."&v=".$new_vers."");
+  }
 }
 ?>

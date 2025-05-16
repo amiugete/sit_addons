@@ -695,7 +695,7 @@ string_agg(distinct vi.stato_descrizione, ',') as stato_intervento,
 max(vi.stato) as id_stato_intervento,
 max(vi.odl) as odl,
 case 
-  when te.tipologia_elemento in ('T', 'A') 
+  when te.tipologia_elemento in ('T') or (te.tipologia_elemento = 'A' and is_grande=0)
   then 1
   else 0
 end no_cestino
@@ -961,8 +961,8 @@ while($r = pg_fetch_assoc($result_e)) {
     ?>
     
     <?php 
-    } else {
-      echo '<br> no_cestino=1 (casistica non gestita.. chiedere a Longo cosa fare)';
+    } else {    
+      echo 'Raccolta a terra o elemento non soggetto a controlli.<br>In caso di problemi contatta assterritorio@amiu.genova.it';
     }
     //echo '<small>Tipo raccolta: '.$r['tipo_raccolta'].') </small><hr>';
     //echo '<hr>';
