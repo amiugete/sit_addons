@@ -842,12 +842,14 @@ if($_POST['rim']){
   echo  pg_result_error($result_percorsi_rim);
 }
 
+echo "res_ok == ". $res_ok."<br>";
 if ($res_ok ==0){
   #exit();
   # richiamo il python per cancellare le schede
   $comando='/usr/bin/python3 ../py_scripts/rimozione_schede_eko.py '.$cod_percorso.' '.$data_att.'';
-
+  echo $comando. "<br>";
   exec($comando, $output, $retval);
+  echo "retval = ". $retval ."<br>";
   if ($retval == 0) {
     header("location: ../dettagli_percorso.php?cp=".$cod_percorso."&v=".$new_vers."");
   }

@@ -51,8 +51,23 @@ path=os.path.dirname(sys.argv[0])
 path1 = os.path.dirname(os.path.dirname(os.path.abspath(filename)))
 nome=os.path.basename(__file__).replace('.py','')
 #tmpfolder=tempfile.gettempdir() # get the current temporary directory
-logfile='{0}/log/{1}.log'.format(path,nome)
-errorfile='{0}/log/error_{1}.log'.format(path,nome)
+
+giorno_file=datetime.today().strftime('%Y%m%d_%H%M%S')
+
+if (os.getuid()==33): # wwww-data
+        if not os.path.exists('/tmp/driver_eko'):
+            os.makedirs("/tmp/driver_eko")
+        if not os.path.exists('/tmp/driver_eko/log'):
+            os.makedirs("/tmp/driver_eko/log")
+        logfile='/tmp/driver_eko/log/{2}_{1}.log'.format(path,nome, giorno_file)
+        errorfile='/tmp/driver_eko/log/{2}_error_{1}.log'.format(path,nome, giorno_file)
+else:
+    # inizializzo i nomi dei file di log (per capire cosa stia succedendo)
+    logfile='{0}/log/{2}_{1}.log'.format(path,nome, giorno_file)
+    errorfile='{0}/log/{2}_error_{1}.log'.format(path,nome, giorno_file)
+
+
+
 #if os.path.exists(logfile):
 #    os.remove(logfile)
 
@@ -167,7 +182,7 @@ def main(arg1, arg2):
     logger.debug(oggi)
     #logger.debug(vv[1])
     
-    gg_indietro=oggi-datetime.strptime(data_dis, '%Y%m%d')
+    gg_indietro=oggi-datetime.strptime(data_dis, '%d/%m/%Y')
     
     logger.debug(gg_indietro.days)
     #exit()
