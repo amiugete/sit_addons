@@ -483,7 +483,7 @@ if ($id_servizio_sit!=0 AND $cambio_frequenza_sit ==1 ){
   // recupero id percorso da distattivare e se in esercizio o stagionale
 
   $select_sit="SELECT id_categoria_uso, id_percorso FROM elem.percorsi  
-  WHERE cod_percorso=$1 and id_categoria_uso in (3,6)";
+  WHERE cod_percorso=$1 and versione = (select max(versione) from elem.percorsi where cod_percorso=$1)";
   $result_sit0 = pg_prepare($conn, "select_sit", $select_sit);
   if (pg_last_error($conn)){
     echo pg_last_error($conn).'<br>';
@@ -840,6 +840,53 @@ if($_POST['rim']){
     $res_ok=$res_ok+1;
   }
   echo  pg_result_error($result_percorsi_rim);
+}
+
+### verifico lo stato del percorso su SIT e se disattivo lo riattivo
+$stato_sit="SELECT id_categoria_uso, id_percorso FROM elem.percorsi  
+  WHERE cod_percorso=$1 and versione = (select max(versione) from elem.percorsi where cod_percorso=$1)";
+$result_stato_sit = pg_prepare($conn, "stato_sit", $stato_sit);
+if (pg_last_error($conn)){
+  echo pg_last_error($conn).'<br>';
+  $res_ok=$res_ok+1;
+}
+
+$result_stato_sit = pg_execute($conn, "stato_sit", array($cod_percorso));
+if (pg_last_error($conn)){
+  echo pg_last_error($conn).'<br>';
+  $res_ok=$res_ok+1;
+}
+
+while($rss = pg_fetch_assoc($result_stato_sit)) { 
+  $id_categoria_uso=intval($rss['id_categoria_uso']);
+  $id_percorso_old=intval($rss['id_percorso']);
+  $stagionalita=$rss['stagionalita'];
+}
+
+if ($id_categoria_uso==4){
+  $update_stato_sit = "UPDATE elem.percorsi set id_categoria_uso= 3,
+  data_attivazione= to_date($1, 'DD/MM/YYYY'), 
+  data_disattivazione = to_date($2, 'DD/MM/YYYY')";
+
+  if (!is_null($stagionalita)){
+    $update_stato_sit .= ",
+    ddmm_switch_on = concat(TO_CHAR(data_attivazione, 'DD'), TO_CHAR(data_attivazione, 'mm')),
+    ddmm_switch_off = concat(TO_CHAR(data_disattivazione, 'DD'), TO_CHAR(data_disattivazione, 'mm'))
+    ";
+  }
+
+  $update_stato_sit .= " WHERE id_percorso = $3";
+
+  $result_u_stato_sit = pg_prepare($conn, "update_stato_sit", $update_stato_sit);
+  if (pg_last_error($conn)){
+    echo pg_last_error($conn).'<br>';
+    $res_ok=$res_ok+1;
+  }
+  $result_u_stato_sit = pg_execute($conn, "update_stato_sit", array($data_att, $data_disatt, $id_percorso_old));
+  if (pg_last_error($conn)){
+    echo pg_last_error($conn).'<br>';
+    $res_ok=$res_ok+1;
+  }
 }
 
 echo "res_ok == ". $res_ok."<br>";
