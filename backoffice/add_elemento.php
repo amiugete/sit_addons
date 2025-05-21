@@ -41,7 +41,7 @@ lettera_civico, colore_civico, note, coalesce(serratura,0), coalesce(id_material
 from elem.elementi e
 where e.id_piazzola = $2 and e.tipo_elemento = $3
 group by tipo_elemento, id_piazzola, posizione,
-privato, peso_reale, peso_stimato , x_numero_civico_old, 
+privato, peso_reale, peso_stimato , 
 riferimento, id_utenza, nome_attivita, numero_civico, 
 lettera_civico, colore_civico, note, coalesce(serratura,0), coalesce(id_materiale,1)
 ) returning id_elemento';
