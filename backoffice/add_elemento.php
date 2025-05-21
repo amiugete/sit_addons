@@ -31,11 +31,11 @@ $tipo_elemento = intval(explode('_',$_POST['id_piazzola'])[1]);
 // aggiungi elemento
 $add_elemento='INSERT INTO elem.elementi
 (tipo_elemento, id_piazzola, id_asta, posizione, 
-privato, peso_reale, peso_stimato , x_numero_civico_old, 
+privato, peso_reale, peso_stimato , 
 riferimento, id_utenza, nome_attivita, percent_riempimento, freq_stimata, numero_civico, 
 lettera_civico, colore_civico, note, serratura, id_materiale)
 (select distinct tipo_elemento, id_piazzola, (select id_asta from elem.piazzole where id_piazzola = $1), posizione, 
-privato, peso_reale, peso_stimato , x_numero_civico_old, 
+privato, peso_reale, peso_stimato ,  
 riferimento, id_utenza, nome_attivita, max(percent_riempimento), max(freq_stimata), numero_civico, 
 lettera_civico, colore_civico, note, coalesce(serratura,0), coalesce(id_materiale,1)
 from elem.elementi e
