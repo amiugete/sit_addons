@@ -282,7 +282,8 @@ $select_elementi="
 string_agg(distinct vi.stato_descrizione, ',') as stato_intervento, 
 max(vi.stato) as id_stato_intervento,
 max(vi.odl) as odl*/
-concat(tipo_intervento, ' - ', desc_intervento) as desc_intervento, stato_intervento, id_stato_intervento, odl
+concat(tipo_intervento, ' - ', desc_intervento) as desc_intervento, stato_intervento, id_stato_intervento, odl,
+coalesce(ep.id_utenzapap, -1) as id_utenzapap
 from elem.elementi e 
 left join (select id, elemento_id, 
 	string_agg(distinct vi.tipo, ', ') as tipo_intervento,
@@ -296,9 +297,12 @@ left join elem.elementi_aste_percorso eap on e.id_elemento = eap.id_elemento
 left join elem.aste_percorso ap on ap.id_asta_percorso = eap.id_asta_percorso 
 left join elem.percorsi p on p.id_percorso = ap.id_percorso  and coalesce(p.id_categoria_uso, 3) in (3)
 left join etl.frequenze_ok fo on fo.cod_frequenza = eap.frequenza::int and p.frequenza is not null
+left join elem.elementi_privati ep on ep.id_elemento = e.id_elemento
 where id_piazzola = $1
 and e.tipo_elemento = $2
-group by e.id_elemento, e.matricola, e.tag, desc_intervento, stato_intervento, id_stato_intervento, odl, tipo_intervento ";
+and coalesce(ep.id_utenzapap, -1) = $3
+group by e.id_elemento, e.matricola, e.tag, desc_intervento, stato_intervento, id_stato_intervento, odl, tipo_intervento, 
+coalesce(ep.id_utenzapap, -1) ";
 $result_ee = pg_prepare($conn_sovr, "my_query_ee", $select_elementi);
 
 
@@ -689,6 +693,7 @@ tr.colore,
 te2.descrizione as tipo_raccolta,
 te.tipo_elemento,
 te.descrizione as tipo_elem, 
+coalesce(ep.id_utenzapap,-1) as id_utenzapap,
 concat (ep.descrizione, ' - ', ep.nome_attivita) as cliente,
 string_agg(distinct concat(vi.tipo, ' - ', vi.descrizione), ',') as desc_intervento,
 string_agg(distinct vi.stato_descrizione, ',') as stato_intervento, 
@@ -716,6 +721,7 @@ tr.colore,
 te2.descrizione ,
 te.tipo_elemento,
 te.descrizione , 
+coalesce(ep.id_utenzapap,-1),
 ep.descrizione, ep.nome_attivita
 order by 3, tr.nome, te.descrizione";
 
@@ -817,47 +823,53 @@ while($r = pg_fetch_assoc($result_e)) {
 
 
     <!--form id="add_elemento"-->
-    <div id="add_elemento_<?php echo $r['tipo_elemento'];?>">
+    <div id="add_elemento_<?php echo $r['tipo_elemento'];?>_<?php echo $r['id_utenzapap'];?>">
       <!--input type="hidden" id="tipo_elemento" name="tipo_elemento" value="<?php echo $r['tipo_elemento'];?>"-->
       <input type="hidden" id="id_piazzola_<?php echo $r['tipo_elemento'];?>" name="id_piazzola_<?php echo $r['tipo_elemento'];?>" value="<?php echo $id_piazzola.'_'.$r['tipo_elemento'];?>">
+      <input type="hidden" id="id_utenzapap" name="id_utenzapap" value="<?php echo $r['id_utenzapap'];?>">
       <button type="submit" class="btn btn-warning btn-sm">
       <i class="fa-solid fa-plus"></i>
       </button> 
       <!--/form-->
   </div>
 
-<div id=result_add_<?php echo $r['tipo_elemento'];?>></div>
+<div id=result_add_<?php echo $r['tipo_elemento'];?>_<?php echo $r['id_utenzapap'];?>></div>
 
 
 <!-- lancio il form e scrivo il risultato -->
 <script> 
             $(document).ready(function () {                 
-                $('#add_elemento_<?php echo $r['tipo_elemento'];?>').click(function (event) { 
+                $('#add_elemento_<?php echo $r['tipo_elemento'];?>_<?php echo $r['id_utenzapap'];?>').click(function (event) { 
                     console.log('Bottone add elemento cliccato e finito qua');
                     event.preventDefault();                  
                     id_piazzola=document.getElementById("id_piazzola_<?php echo $r['tipo_elemento'];?>").value;
                     console.log(id_piazzola);
+                    id_utenzapap = document.getElementById("id_utenzapap").value;
+                    console.log(id_utenzapap);
                     var formData = $(this).serialize();
                     //var formData = $('#add_elemento_<?php echo $r['tipo_elemento'];?> input').not( "#ispezione input" ).serialize();
                     //console.log(formData);
                     $.ajax({ 
                         url: 'backoffice/add_elemento.php', 
                         method: 'POST', 
-                        data: {'id_piazzola':id_piazzola}, 
+                        data: {'id_piazzola':id_piazzola, 'id_utenzapap': id_utenzapap},
                         //processData: true, 
                         //contentType: false, 
                         success: function (response) {                       
                             //alert('Your form has been sent successfully.'); 
                             console.log(response);
-                              $("#result_add_<?php echo $r['tipo_elemento'];?>").html(response).fadeIn("slow");
-                              setTimeout(function(){// wait for 5 secs(2)
+                              $("#result_add_<?php echo $r['tipo_elemento'];?>_<?php echo $r['id_utenzapap'];?>").html(response).fadeIn("slow");
+                              setTimeout(function(){// wait for XX secs (vedi valore sotto)
                                 location.reload(); // then reload the page.(3)
                             }, 1000);
                                       
                         }, 
                         error: function (jqXHR, textStatus, errorThrown) {                        
-                            alert('Your form was not sent successfully.'); 
+                            alert('Problema aggiunta elementi.'); 
                             console.error(errorThrown); 
+                            setTimeout(function(){
+                                location.reload(); //  reload the page.
+                            }, 500);
                         } 
                     }); 
                 });
@@ -877,7 +889,7 @@ while($r = pg_fetch_assoc($result_e)) {
     <?php 
     if ($r['no_cestino']==0){
     
-    $result_ee = pg_execute($conn_sovr, "my_query_ee", array($id_piazzola, $r['tipo_elemento']));
+    $result_ee = pg_execute($conn_sovr, "my_query_ee", array($id_piazzola, $r['tipo_elemento'], $r['id_utenzapap']));
     $status1= pg_result_status($result_ee);
    
     while($re = pg_fetch_assoc($result_ee)) {

@@ -21,11 +21,15 @@ $id_piazzola = intval(explode('_',$_POST['id_piazzola'])[0]);
 
 $tipo_elemento = intval(explode('_',$_POST['id_piazzola'])[1]);
 
+$id_utenzapap = intval($_POST['id_utenzapap']);
 
-//echo $id_piazzola.'<br>';
-//echo $tipo_elemento.'<br>';
-
-
+#echo $id_piazzola.'<br>';
+#echo $tipo_elemento.'<br>';
+#echo $id_utenzapap.'<br>';
+/*if ($id_utenzapap > intval(-1)) {
+    echo "OK";
+}
+exit();*/
 
 
 // aggiungi elemento
@@ -34,15 +38,15 @@ $add_elemento='INSERT INTO elem.elementi
 privato, peso_reale, peso_stimato , 
 riferimento, id_utenza, nome_attivita, percent_riempimento, freq_stimata, numero_civico, 
 lettera_civico, colore_civico, note, serratura, id_materiale)
-(select distinct tipo_elemento, id_piazzola, (select id_asta from elem.piazzole where id_piazzola = $1), posizione, 
-privato, peso_reale, peso_stimato ,  
-riferimento, id_utenza, nome_attivita, max(percent_riempimento), max(freq_stimata), numero_civico, 
+(select distinct tipo_elemento, id_piazzola, (select id_asta from elem.piazzole where id_piazzola = $1), 
+max(posizione), 
+max(privato), max(peso_reale), max(peso_stimato),  
+(select riferimento from elem.piazzole p where p.id_piazzola = e.id_piazzola), id_utenza, nome_attivita, max(percent_riempimento), max(freq_stimata), numero_civico, 
 lettera_civico, colore_civico, note, coalesce(serratura,0), coalesce(id_materiale,1)
 from elem.elementi e
 where e.id_piazzola = $2 and e.tipo_elemento = $3
-group by tipo_elemento, id_piazzola, posizione,
-privato, peso_reale, peso_stimato , 
-riferimento, id_utenza, nome_attivita, numero_civico, 
+group by tipo_elemento, id_piazzola,
+id_utenza, nome_attivita, numero_civico, 
 lettera_civico, colore_civico, note, coalesce(serratura,0), coalesce(id_materiale,1)
 ) returning id_elemento';
 
@@ -60,11 +64,19 @@ if (pg_last_error($conn_sovr)){
 }
 
 
+
+
+
+
 // aggiungi elemento a percorsi della stessa tipologia
 $new_id=0;
 $arr = pg_fetch_array($result_add, 0, PGSQL_NUM);
 $new_id=intval($arr[0]);
 //$new_id_text=$arr[0];
+
+
+
+
 
 if ($new_id==0) {
     // aggiunta elemento altro tipo (non lo aggiungo a percorso )
@@ -109,6 +121,53 @@ where e.id_piazzola = $5
 
 } else {
 
+
+    // se pap aggiungo elemento anche agli elementi privati 
+    if ($id_utenzapap > intval(-1)) {
+        $query_insert_pap= "INSERT INTO elem.elementi_privati (
+            id_elemento, 
+            id_macro_categoria, 
+            id_cliente,
+            id_utenzatia,
+            id_progetto_utenze_dettaglio,
+            descrizione,
+            nota,
+            nome_attivita,
+            pog,
+            id_utenzapap, 
+            id_tipo_ubicazione
+            ) (
+            SELECT distinct $1::int,  id_macro_categoria, 
+            id_cliente, 
+            id_utenzatia, 
+            id_progetto_utenze_dettaglio, 
+            descrizione, nota,
+            nome_attivita, pog, 
+            id_utenzapap, 
+            id_tipo_ubicazione
+            FROM elem.elementi_privati where id_elemento in (
+                select id_elemento from elem.elementi e where id_piazzola = $2
+                and tipo_elemento = $3
+            ) and id_utenzapap = $4
+            )";
+
+        $result_add_pap = pg_prepare($conn_sovr, "add_elemento_pap", $query_insert_pap);
+        //echo  pg_last_error($conn_sovr);
+        if (pg_last_error($conn_sovr)){
+            echo pg_last_error($conn_sovr);
+            $res_ok=$res_ok+1;
+        }
+
+        $result_add_pap = pg_execute($conn_sovr, "add_elemento_pap", array(intval($new_id),  $id_piazzola, $tipo_elemento, $id_utenzapap));
+        if (pg_last_error($conn_sovr)){
+            echo pg_last_error($conn_sovr);
+            $res_ok=$res_ok+1;
+        }
+
+
+    }
+
+    // aggiunta aste percorso
     $add_eap = 'INSERT INTO elem.elementi_aste_percorso
     (id_elemento, id_asta_percorso, frequenza, ripasso)
     (
@@ -214,15 +273,15 @@ where e.id_piazzola = $5
 
 
 if ($res_ok==0) {
-    echo '<font color="green">Elemento '.$new_id .'inserito correttamente. 
+    echo '<font color="green">Elemento '.$new_id.' inserito correttamente. 
     <!--a class="btn btn-success btn-sm" onclick="return RefreshWindow();" 
     title="Clicca per ricaricare la pagina">
     <i class="fa-solid fa-rotate-right"></i>
     </a-->
     </font>';
 } else {
-    http_response_code(400);
     echo '<br>ERRORE<br>';
+    http_response_code(400);
 }
 
 ?>
