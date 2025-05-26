@@ -840,7 +840,7 @@ while($r = pg_fetch_assoc($result_e)) {
 <script> 
             $(document).ready(function () {                 
                 $('#add_elemento_<?php echo $r['tipo_elemento'];?>_<?php echo $r['id_utenzapap'];?>').click(function (event) { 
-                    console.log('Bottone add elemento cliccato e finito qua');
+                    console.log('Bottone add elemento con tipo elemento cliccato e finito qua');
                     event.preventDefault();                  
                     id_piazzola=document.getElementById("id_piazzola_<?php echo $r['tipo_elemento'];?>").value;
                     console.log(id_piazzola);

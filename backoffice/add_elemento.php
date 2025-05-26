@@ -38,32 +38,47 @@ $add_elemento='INSERT INTO elem.elementi
 privato, peso_reale, peso_stimato , 
 riferimento, id_utenza, nome_attivita, percent_riempimento, freq_stimata, numero_civico, 
 lettera_civico, colore_civico, note, serratura, id_materiale)
-(select distinct tipo_elemento, id_piazzola, (select id_asta from elem.piazzole where id_piazzola = $1), 
-max(posizione), 
-max(privato), max(peso_reale), max(peso_stimato),  
-(select riferimento from elem.piazzole p where p.id_piazzola = e.id_piazzola), id_utenza, nome_attivita, max(percent_riempimento), max(freq_stimata), numero_civico, 
-lettera_civico, colore_civico, note, coalesce(serratura,0), coalesce(id_materiale,1)
+(select distinct tipo_elemento, id_piazzola, 
+(select id_asta from elem.piazzole where id_piazzola = e.id_piazzola), 
+max(coalesce(posizione,1))as posizione, 
+max(coalesce(privato,0)) as privato,
+max(coalesce(peso_reale,0)) as peso_reale, 
+max(coalesce(peso_stimato, 0)) as peso_stimato,  
+(select riferimento from elem.piazzole p where p.id_piazzola = e.id_piazzola), 
+id_utenza, 
+nome_attivita, 
+max(percent_riempimento), 
+max(freq_stimata), 
+/*numero_civico, */
+(select numero_civico from elem.piazzole p where p.id_piazzola = e.id_piazzola) as numero_civico,
+/*lettera_civico,*/
+(select lettera_civico from elem.piazzole p where p.id_piazzola = e.id_piazzola) as lettera_civico,
+/*colore_civico,*/ 
+(select colore_civico from elem.piazzole p where p.id_piazzola = e.id_piazzola) as colore_civico,
+/*note,*/
+(select note from elem.piazzole p where p.id_piazzola = e.id_piazzola) as note,
+min(coalesce(serratura,0)) as serratura,
+min(coalesce(id_materiale,1)) as materiale
 from elem.elementi e
-where e.id_piazzola = $2 and e.tipo_elemento = $3
+where e.id_piazzola = $1 and e.tipo_elemento = $2
 group by tipo_elemento, id_piazzola,
-id_utenza, nome_attivita, numero_civico, 
-lettera_civico, colore_civico, note, coalesce(serratura,0), coalesce(id_materiale,1)
+id_utenza, nome_attivita
 ) returning id_elemento';
 
 $result_add = pg_prepare($conn_sovr, "add_elemento", $add_elemento);
 //echo  pg_last_error($conn_sovr);
 if (pg_last_error($conn_sovr)){
-    //echo pg_last_error($conn_sovr);
+    echo pg_last_error($conn_sovr);
     $res_ok=$res_ok+1;
 }
 
-$result_add = pg_execute($conn_sovr, "add_elemento", array($id_piazzola, $id_piazzola, $tipo_elemento));
+$result_add = pg_execute($conn_sovr, "add_elemento", array($id_piazzola, $tipo_elemento));
 if (pg_last_error($conn_sovr)){
-    //echo pg_last_error($conn_sovr);
+    echo pg_last_error($conn_sovr);
     $res_ok=$res_ok+1;
 }
 
-
+//exit();
 
 
 
