@@ -15,8 +15,8 @@ from
 ( 
 	select c.descr_comune, concat(p.id_piazzola, ' - ', v.nome, ', ', p.numero_civico, ' - Rif. ', p.riferimento) as piazzola,
 	za.cod_zona as zona, u.descrizione as ut, q.nome as quartiere,
-	string_agg(pe.id_segnalazione::text, ' - ') as id_segnalazione,
-	string_agg(to_char(pe.data_ora_segnalazione,  'DD/MM/YYYY HH24.MI'), ' - ') as data_ora_segnalazione,
+	string_agg(distinct pe.id_segnalazione::text, ' - ') as id_segnalazione,
+	string_agg(distinct to_char(pe.data_ora_segnalazione,  'DD/MM/YYYY HH24.MI'), ' - ') as data_ora_segnalazione,
 	count(distinct e.id_elemento) as contenitori_presenti_su_sit,
 	i.id as id_ispezione,
 	to_char(i.data_ora , 'DD/MM/YYYY HH24.MI') as data_ora_verifica, 
