@@ -115,7 +115,7 @@ if ((int)$id_role_SIT = 0) {
 </div>
 <hr>
 <div class="row">
-<h3>Report</h3>
+<h3>Reportistica</h3>
 
 <div class="col-sm-4">
     <div class="card">
@@ -125,6 +125,7 @@ if ((int)$id_role_SIT = 0) {
       <ul class="list-group list-group-flush">
         <a class="list-group-item" href="./consuntivazione_ekovision.php">Report consuntivazione Ekovision</a>
         <a class="list-group-item" href="./report_contenitori_bilaterali.php">Report contenitori bilaterali</a>
+        <a class="list-group-item" href="./report_indicatori_arera.php">Report indicatori ARERA (uso interno)</a>
       </ul>
     </div>
     </div>
@@ -149,7 +150,7 @@ if ((int)$id_role_SIT = 0) {
 <div class="col-sm-4">
     <div class="card" >
       <div class="card-header">
-        <h4><i class="fa-solid fa-tablet-screen-button"></i> Dati consuntivazione da totem</h4>
+        <h4><i class="fa-solid fa-tablet-screen-button"></i> Report dati in tempo reale da totem (Raccolta)</h4>
         <i class="fa-solid fa-hourglass-half"></i> Dati aggiornati ogni 5' da totem / backoffice consuntivazione
         <br><i class="fa-solid fa-clock-rotate-left"></i> Dati ultima settimana 
       </div>

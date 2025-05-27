@@ -141,17 +141,22 @@ if ($check_modal!=1){
         </li-->
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#"  role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="navbarDropdown3">
-          Reportistica avanzata
+          Reportistica
           </a>
           <ul class="dropdown-menu" id="navbarDropdown3" aria-labelledby="navbarDropdown3">
-            <li><a class="dropdown-item" href="./consuntivazione_ekovision.php">Report consuntivazione Ekovision</a></li>
-            <li><a class="dropdown-item" href="./report_indicatori_arera.php">Report indicatori ARERA (uso interno)</a></li>
+            <li><a class="dropdown-item" href="#">Reportistica avanzata &raquo; </a>
+            <ul class="submenu dropdown-menu">
+              <li><a class="dropdown-item" href="./consuntivazione_ekovision.php">Report consuntivazione Ekovision</a></li>
+              <li><a class="dropdown-item" href="./report_indicatori_arera.php">Report indicatori ARERA (uso interno)</a></li>
+              <li><a class="dropdown-item" href="./report_contenitori_bilaterali.php">Report contenitori bilaterali</a></li>
+            </ul>
             <?php if ($check_coge == 't') { ?>
+            <li><a class="dropdown-item" href="#">Reportistica COGE &raquo; </a>
+            <ul class="submenu dropdown-menu">
               <a class="dropdown-item" href="./esportazione_driver_ekovision.php">Report driver ekovision (esportazione)</a>
+            </ul>
             <?php } ?>
-            <li><a class="dropdown-item" href="./report_contenitori_bilaterali.php">Report contenitori bilaterali</a></li>
-            
-              <li><a class="dropdown-item" href="#">Report dati in tempo reale da totem &raquo; </a>
+              <li><a class="dropdown-item" href="#">Report dati in tempo reale da totem (Raccolta)&raquo; </a>
               <ul class="submenu dropdown-menu">
                 <li><a class="dropdown-item" href="./report_totem_percorsi.php"> Dettaglio per percorso </a></li>
                 <li><a class="dropdown-item" href="./report_totem_piazzola.php"> Dettaglio per piazzole </a></li>
