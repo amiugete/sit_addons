@@ -367,6 +367,7 @@ def main(arg1, arg2, arg3, arg4):
             query_personale='''
             SELECT 
             ID_SERVIZIO, DESC_SERVIZIO,
+            ID_SERVIZIO_COGE, DESCR_SERVIZIO_COGE,
             mese,
             id_comune,  
             comune,
@@ -430,6 +431,7 @@ def main(arg1, arg2, arg3, arg4):
             WHERE durata > 0
             GROUP BY 
             ID_SERVIZIO, DESC_SERVIZIO,
+            ID_SERVIZIO_COGE, DESCR_SERVIZIO_COGE,
             mese,
             id_comune,  
             comune,
@@ -444,6 +446,7 @@ def main(arg1, arg2, arg3, arg4):
             query_mezzi='''SELECT 
                 ID_SERVIZIO,
                 DESC_SERVIZIO,
+                ID_SERVIZIO_COGE, DESCR_SERVIZIO_COGE,
                 giorno,
                 id_comune,  
                 comune,
@@ -524,6 +527,7 @@ def main(arg1, arg2, arg3, arg4):
                 GROUP BY
                 ID_SERVIZIO,
                 DESC_SERVIZIO,
+                ID_SERVIZIO_COGE, DESCR_SERVIZIO_COGE,
                 giorno,
                 id_comune,  
                 comune,
@@ -575,7 +579,7 @@ def main(arg1, arg2, arg3, arg4):
         exit()
    
     logger.info('Fine query personale')
-    cur.close
+    cur.close()
     
 
 
@@ -594,7 +598,7 @@ def main(arg1, arg2, arg3, arg4):
         error_log_mail(errorfile, 'roberto.marzocchi@amiu.genova.it', os.path.basename(__file__), logger )
         exit()
     logger.info('Fine query mezzi')
-    cur.close
+    cur.close()
 
     
     #nome_file="driver_ekovision_{0}".format(giorno_file)
@@ -708,20 +712,33 @@ def main(arg1, arg2, arg3, arg4):
     if arg3 == '1':
         w.write('A1', 'ID servizio COGE', cell_format_title) 
         w.write('B1', 'Desc servizio COGE', cell_format_title)
+        w.write('C1', 'Mese', cell_format_title)
+        w.write('D1', 'ID Comune', cell_format_title)
+        w.write('E1', 'Comune', cell_format_title)
+        w.write('F1', 'ID Municipio', cell_format_title)
+        w.write('G1', 'Municipio', cell_format_title)
+        w.write('H1', 'ID UO ', cell_format_title)    
+        w.write('I1', 'Desc UO', cell_format_title)
+        w.write('J1', 'ID UO Lavoro', cell_format_title)
+        w.write('K1', 'Desc UO Lavoro', cell_format_title)   
+        w.write('L1', 'Mansione', cell_format_title)   
+        w.write('M1', 'Ore', cell_format_title)
     elif arg3 == '2':
         w.write('A1', 'ID servizio', cell_format_title) 
         w.write('B1', 'Desc servizio', cell_format_title)
-    w.write('C1', 'Mese', cell_format_title)
-    w.write('D1', 'ID Comune', cell_format_title)
-    w.write('E1', 'Comune', cell_format_title)
-    w.write('F1', 'ID Municipio', cell_format_title)
-    w.write('G1', 'Municipio', cell_format_title)
-    w.write('H1', 'ID UO ', cell_format_title)    
-    w.write('I1', 'Desc UO', cell_format_title)
-    w.write('J1', 'ID UO Lavoro', cell_format_title)
-    w.write('K1', 'Desc UO Lavoro', cell_format_title)   
-    w.write('L1', 'Mansione', cell_format_title)   
-    w.write('M1', 'Ore', cell_format_title)   
+        w.write('C1', 'ID servizio COGE', cell_format_title) 
+        w.write('D1', 'Desc servizio COGE', cell_format_title)
+        w.write('E1', 'Mese', cell_format_title)
+        w.write('F1', 'ID Comune', cell_format_title)
+        w.write('G1', 'Comune', cell_format_title)
+        w.write('H1', 'ID Municipio', cell_format_title)
+        w.write('I1', 'Municipio', cell_format_title)
+        w.write('J1', 'ID UO ', cell_format_title)    
+        w.write('K1', 'Desc UO', cell_format_title)
+        w.write('L1', 'ID UO Lavoro', cell_format_title)
+        w.write('M1', 'Desc UO Lavoro', cell_format_title)   
+        w.write('N1', 'Mansione', cell_format_title)   
+        w.write('O1', 'Ore', cell_format_title)   
     
     
     r=1       
@@ -785,19 +802,31 @@ def main(arg1, arg2, arg3, arg4):
     if arg3 == '1':
         w.write('A1', 'ID servizio COGE', cell_format_title) 
         w.write('B1', 'Desc servizio COGE', cell_format_title)
+        w.write('C1', 'Giorno', cell_format_title)
+        w.write('D1', 'ID Comune', cell_format_title)
+        w.write('E1', 'Comune', cell_format_title)
+        w.write('F1', 'ID Municipio', cell_format_title)
+        w.write('G1', 'Municipio', cell_format_title)
+        w.write('H1', 'ID UO ', cell_format_title)    
+        w.write('I1', 'Desc UO', cell_format_title)
+        w.write('J1', 'Tipo mezzo', cell_format_title)
+        w.write('K1', 'Sportello', cell_format_title)   
+        w.write('L1', 'Ore', cell_format_title)
     elif arg3 =='2':
         w.write('A1', 'ID servizio', cell_format_title) 
         w.write('B1', 'Desc servizio', cell_format_title)
-    w.write('C1', 'Giorno', cell_format_title)
-    w.write('D1', 'ID Comune', cell_format_title)
-    w.write('E1', 'Comune', cell_format_title)
-    w.write('F1', 'ID Municipio', cell_format_title)
-    w.write('G1', 'Municipio', cell_format_title)
-    w.write('H1', 'ID UO ', cell_format_title)    
-    w.write('I1', 'Desc UO', cell_format_title)
-    w.write('J1', 'Tipo mezzo', cell_format_title)
-    w.write('K1', 'Sportello', cell_format_title)   
-    w.write('L1', 'Ore', cell_format_title)   
+        w.write('C1', 'ID servizio COGE', cell_format_title) 
+        w.write('D1', 'Desc servizio COGE', cell_format_title)
+        w.write('E1', 'Giorno', cell_format_title)
+        w.write('F1', 'ID Comune', cell_format_title)
+        w.write('G1', 'Comune', cell_format_title)
+        w.write('H1', 'ID Municipio', cell_format_title)
+        w.write('I1', 'Municipio', cell_format_title)
+        w.write('J1', 'ID UO ', cell_format_title)    
+        w.write('K1', 'Desc UO', cell_format_title)
+        w.write('L1', 'Tipo mezzo', cell_format_title)
+        w.write('M1', 'Sportello', cell_format_title)   
+        w.write('N1', 'Ore', cell_format_title)   
 
     
     

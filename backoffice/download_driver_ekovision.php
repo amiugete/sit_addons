@@ -31,16 +31,20 @@ if ($retval == 0) {
   $mime =  finfo_file($finfo, $file_name);
   finfo_close($finfo);
 
+  ob_clean();
   // send header information to browser
-  header('Content-Type: '.$mime);
-  header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-  header("Content-Description: File Transfer");
-  header("Access-Control-Allow-Origin: *");
+  //header('Content-Type: '.$mime);
+  //header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+  //header("Content-Description: File Transfer");
+  //header("Access-Control-Allow-Origin: *");
   header('Content-Disposition: attachment;  filename="driver_ekovision_'.date('YmdHis').'.xlsx"');
-  header("Content-Transfer-Encoding: binary");
+  header('Content-type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   header('Content-Length: ' . filesize($file_name));
-  header('Expires: 0');
-  header("Pragma: public"); // required
+  header("Content-Transfer-Encoding: binary");
+  header('Cache-Control: must-revalidate');
+  header('Pragma: public');
+  //header('Expires: 0');
+  //header("Pragma: public"); // required
 
 
   //stream file
