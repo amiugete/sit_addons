@@ -17,6 +17,10 @@ $res_ok=0;
 $data_disatt = $_POST['data_disatt'];
 //echo $data_disatt."<br>";
 
+
+//echo $dis_stag."<br>";
+//echo $stag_null."<br>";
+
 $cod_percorso = $_POST['id_percorso'];
 //echo $cod_percorso."<br>";
 
@@ -49,10 +53,19 @@ oci_execute($result_uo0);
 oci_free_statement($result_uo0);
 
 
-
-$update_sit0="UPDATE elem.percorsi epo
-SET data_dismissione=To_DATE($1, 'DD/MM/YYYY')
-where cod_percorso LIKE $2 and (data_dismissione > now() or data_dismissione is null)";
+// controllo se in caso di percorso stagionale si vuole proprio dismettere il percorso (id_categoria_uso = 4), 
+// // se true allora faccio update di stagionalita = null in modo che venga intercettato dallo spoon che disattiva i percorsi
+if ($_POST['dis_stag']){
+    $dis_stag = $_POST['dis_stag'];
+    $update_sit0="UPDATE elem.percorsi epo
+    SET data_dismissione=To_DATE($1, 'DD/MM/YYYY'), stagionalita = null
+    where cod_percorso LIKE $2 and (data_dismissione > now() or data_dismissione is null)";
+} else {
+    $dis_stag = 'f';
+    $update_sit0="UPDATE elem.percorsi epo
+    SET data_dismissione=To_DATE($1, 'DD/MM/YYYY')
+    where cod_percorso LIKE $2 and (data_dismissione > now() or data_dismissione is null)";
+}
 
 $result_usit0 = pg_prepare($conn, "update_sit0", $update_sit0);
 
@@ -62,7 +75,6 @@ if (!pg_last_error($conn)){
     pg_last_error($conn);
     $res_ok= $res_ok+1;
 }
-
 $result_usit0 = pg_execute($conn, "update_sit0", array($data_disatt, $cod_percorso)); 
 if (!pg_last_error($conn)){
     #$res_ok=0;

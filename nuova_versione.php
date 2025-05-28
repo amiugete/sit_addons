@@ -66,7 +66,19 @@ $fbin = $_POST['fbin'];
 $freq_sett = $_POST['freq_sett'];
 $freq_uo = $_POST['freq_uo'];
 $new_vers= $_POST['old_vers']+1;
-
+$stag = $_POST['stag'];
+if($stag != ''){
+  $switchON = $_POST['swon'];
+  $switchOng = substr($switchON, 0, 2);
+  $switchOnm = substr($switchON, 2);
+  $switchOFF = $_POST['swoff'];
+  $switchOffg = substr($switchOFF, 0, 2);
+  $switchOffm = substr($switchOFF, 2);
+}else{
+  $stag = null;
+  $switchON = null;
+  $switchOFF = null;
+}
 $eko = $_POST['eko'];
 //echo $eko."<br>";
 
@@ -77,6 +89,9 @@ $id_servizio_sit = intval($_POST['id_servizio_sit']);
 ?>
 <h3>Testata percorso  versione <?php echo $new_vers;?> </h3>
 <!--ul><?php
+echo '<li><b>giorno</b>: '.$stag.'</li>';
+echo '<li><b>giorno</b>: '.$switchOffg.'</li>';
+echo '<li><b>mese</b>: '.$switchOffm.'</li>';
 echo '<li><b>Codice</b>: '.$codice_percorso.'</li>';
 
 ?></ul--><?php
@@ -213,10 +228,39 @@ while($r3bis = pg_fetch_assoc($result3bis)) {
 
 
 <?php require('freq_sett_component.php');?>
-<hr><i class="fa-solid fa-triangle-exclamation"></i>
-Attenzione in questo momento si applica la nuova frequenza scelta a tutte le aste o piazzole 
-<br> <i class="fa-solid fa-person-digging"></i> Modifica in corso            
+
+
+
+
+
+
+<font color="red"><i class="fa-solid fa-triangle-exclamation"></i><b>ATTENZIONE</b> in questo momento si applica la nuova frequenza scelta a tutte le aste o piazzole </font>
+<br> <i class="fa-solid fa-person-digging"></i> Modifica in corso     
+<hr>       
 </div>
+
+<!--div class="row g-3 align-items-center"-->
+<div class="form-group  col-md-6" style=" padding-bottom: 2%;">
+  <label for="stag">Stagionalità:</label>
+  <select name="stag" id="stag" class="selectpicker show-tick form-control" data-live-search="true"  onchange="showSwitch(this)">
+    <option name="stag" value="" <?php if($stag ==''){echo 'selected';}?>>Nessuna</option>
+    <option name="stag" value="E" <?php if($stag =='E'){echo 'selected';}?>>Estate</option>
+    <option name="stag" value="I" <?php if($stag =='I'){echo 'selected';}?>>Inverno</option>
+  </select>            
+</div>
+<div class="form-group col-md-6" id="switchstag" style=" display: none;">
+    <div class="align-items-center" style="display: inline-flex; white-space:nowrap; margin-bottom: 5px;">
+      <label for="switchon"> Switch On </label> <font color="red">*</font>
+      <input type="number" placeholder="Giorno" name="switchong" id="gson" max="31" class="form-control" value="<?php if($stag !=''){echo $switchOng;}?>">
+      <input type="number" placeholder="Mese" name="switchonm" id="mson" max="12" class="form-control" value="<?php if($stag !=''){echo $switchOnm;}?>">
+  </div>
+    <div class="align-items-center" style="display: inline-flex; white-space:nowrap;">
+      <label for="switchoff"> Switch Off </label> <font color="red">*</font>
+      <input type="number" placeholder="Giorno" name="switchoffg" id="gsof" max="31" class="form-control" value="<?php if($stag !=''){echo $switchOffg;}?>">
+      <input type="number" placeholder="Mese" name="switchoffm" id="msof" max="12" class="form-control" value="<?php if($stag !=''){echo $switchOffm;}?>">
+  </div>
+  </div>
+<!--/div-->
 
 </div>
 
@@ -454,7 +498,39 @@ oci_free_statement($result_dd);
 
 
 
+<script type="text/javascript">
 
+  function showSwitch(val){
+    console.log(val.value)
+    if(val.value!=''){
+      document.getElementById('switchstag').style.display = "block";
+      document.getElementById('gson').setAttribute("required", "");
+      document.getElementById('mson').setAttribute("required", "");
+      document.getElementById('gsof').setAttribute("required", "");
+      document.getElementById('msof').setAttribute("required", "");
+    } else{
+      document.getElementById('switchstag').style.display = "none";
+      document.getElementById('gson').removeAttribute('required');
+      document.getElementById('mson').removeAttribute('required');
+      document.getElementById('gsof').removeAttribute('required');
+      document.getElementById('msof').removeAttribute('required');
+    }
+  }
+
+   function aggiornaVisibilita() {
+      const stagSel = document.getElementById('stag').value;
+
+      if (stagSel != '') {
+        document.getElementById('switchstag').style.display = "block";
+      } else{
+        document.getElementById('switchstag').style.display = "none";
+      }
+    }
+
+    // Esegui la funzione al caricamento della pagina
+    window.addEventListener('DOMContentLoaded', aggiornaVisibilita);
+
+</script>
 
 </div>
 

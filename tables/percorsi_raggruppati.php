@@ -27,7 +27,7 @@ if(!$conn) {
     ep.descrizione, af.descrizione as famiglia,
     at2.descrizione as tipo,
     array_agg(u.id_ut) as id_uts,
-    string_agg(distinct u.descrizione, ',') as ut,
+    string_agg(distinct u.descrizione, ', ') as ut,
     count(distinct pu.id_turno) as count_distinct_turni,
     case
     when ep.freq_settimane = 'T' then fo.descrizione_long 
@@ -41,7 +41,10 @@ if(!$conn) {
     when ep.data_inizio_validita > now()::date and ep.data_fine_validita > now()::date then 'In attivazione'
     when ep.data_inizio_validita < now()::date and ep.data_fine_validita <= (current_date + 7)::date then 'In disattivazione'
     else 'Attivo'
-    end flg_disattivo
+    end flg_disattivo,
+    ep.stagionalita,
+    ep.ddmm_switch_on, 
+    ep.ddmm_switch_off
     from anagrafe_percorsi.elenco_percorsi ep 
     left join elem.percorsi p on p.cod_percorso = ep.cod_percorso 
     	and p.id_categoria_uso in (3,6) 
@@ -57,7 +60,7 @@ if(!$conn) {
     left join etl.frequenze_ok fo on fo.cod_frequenza::int = ep.freq_testata 
     group by ep.cod_percorso, p.id_percorso, 
     ep.descrizione, af.descrizione, at2.descrizione, fo.descrizione_long, ep.versione_testata,  
-    ep.data_inizio_validita, ep.data_fine_validita, ep.freq_settimane
+    ep.data_inizio_validita, ep.data_fine_validita, ep.freq_settimane, ep.stagionalita, ep.ddmm_switch_on, ep.ddmm_switch_off
     order by 1,9";
     
     if($_GET['ut']) {

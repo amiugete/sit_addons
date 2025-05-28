@@ -64,7 +64,7 @@ require_once("select_ut.php");
                   
   <div id="toolbar"> Per esportare i dati completi rimuovere la paginazione (primo tasto dopo la ricerca)
 </div>
-				<table  id="percorsi" class="table-hover" 
+				<table  id="percorsi" class="table-hover table-sm" 
         idfield="id" 
         data-toolbar="#toolbar" 
         data-group-by="false"
@@ -105,7 +105,8 @@ require_once("select_ut.php");
         <th data-field="descrizione" data-sortable="true" data-visible="true" data-filter-control="input">Descrizione</th>
         <th data-field="freq" data-sortable="true" data-visible="true" data-filter-control="input">Frequenza</th>
         <th data-field="turno" data-sortable="true" data-visible="true" data-filter-control="select">Turno</th>
-        <th data-field="versione" data-sortable="true" data-visible="true" data-filter-control="select">Versione</th>
+        <th data-field="versione" data-sortable="true" data-visible="true" data-filter-control="select">V</th>
+        <th data-field="stagionalita" data-sortable="true" data-visible="true" data-filter-control="select">Stag</th>
         <th data-field="flg_disattivo" data-sortable="true" data-visible="true" data-formatter="nameFormatterAtt" 
         data-filter-strict-search="true" data-search-formatter="false" data-filter-data="var:opzioni" data-filter-control="select"></th>
         <th data-field="cp_report" data-sortable="false" data-formatter="nameFormatterReport" data-visible="true" >Report</th>

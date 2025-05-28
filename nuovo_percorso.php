@@ -166,7 +166,28 @@ require('freq_sett_component.php');
 ?>
 
 </div>
-
+</div>
+<div class="row g-3 align-items-center">
+<div class="form-group  col-md-6">
+  <label for="stag">Stagionalità:</label> <!--font color="red">*</font-->
+  <select name="stag" id="stag" class="selectpicker show-tick form-control" data-live-search="true"  onchange="showSwitch(this)">
+    <option name="stag" value="" selected>Nessuna</option>
+    <option name="stag" value="E">Estate</option>
+    <option name="stag" value="I">Inverno</option>
+  </select>            
+</div>
+<div class="form-group col-md-6" id="switchstag" style=" padding-top: 2%; display: none;">
+    <div class="align-items-center" style="display: inline-flex; white-space:nowrap; margin-bottom: 5px;">
+      <label for="switchon"> Switch On </label> <font color="red">*</font>
+      <input type="number" placeholder="Giorno" name="switchong" id="gson" max="31" class="form-control">
+      <input type="number" placeholder="Mese" name="switchonm" id="mson" max="12" class="form-control">
+  </div>
+    <div class="align-items-center" style="display: inline-flex; white-space:nowrap;">
+      <label for="switchoff"> Switch Off </label> <font color="red">*</font>
+      <input type="number" placeholder="Giorno" name="switchoffg" id="gsof" max="31" class="form-control">
+      <input type="number" placeholder="Mese" name="switchoffm" id="msof" max="12" class="form-control">
+  </div>
+  </div>
 </div>
 
 <hr>
@@ -182,7 +203,26 @@ require('freq_sett_component.php');
 
 
 
+<script type="text/javascript">
 
+  function showSwitch(val){
+    console.log(val.value)
+    if(val.value!=''){
+      document.getElementById('switchstag').style.display = "block";
+      document.getElementById('gson').setAttribute("required", "");
+      document.getElementById('mson').setAttribute("required", "");
+      document.getElementById('gsof').setAttribute("required", "");
+      document.getElementById('msof').setAttribute("required", "");
+    } else{
+      document.getElementById('switchstag').style.display = "none";
+      document.getElementById('gson').removeAttribute('required');
+      document.getElementById('mson').removeAttribute('required');
+      document.getElementById('gsof').removeAttribute('required');
+      document.getElementById('msof').removeAttribute('required');
+    }
+  } 
+
+</script>
 
 
 </div>

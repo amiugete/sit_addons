@@ -1,5 +1,6 @@
 <?php
 // componente per radio button settimane
+//echo 'fbin è: '.empty($fbin);
 ?>
 
 
@@ -8,12 +9,12 @@
 <div class="btn-group btn-group-sm" role="group" aria-label="Basic radio toggle button group">
 
   <input type="radio" class="btn-check" name="tipo_freq" id="Sett" autocomplete="off" 
-  <?php if (substr($fbin,7,4)=='0000'){ echo 'checked';}?>
+  <?php if (empty($fbin)==1 or substr($fbin,7,4)=='0000'){ echo 'checked';}?>
   >
   <label class="btn btn-outline-primary" for="Sett">Settimanale</label>
 
   <input type="radio" class="btn-check" name="tipo_freq" id="Mens" autocomplete="off"
-  <?php if (substr($fbin,7,4)!='0000'){ echo 'checked';}?>
+  <?php if (empty($fbin)!=1 and substr($fbin,7,4)!='0000'){ echo 'checked';}?>
   >
   <label class="btn btn-outline-primary" for="Mens">Mensile</label>
 

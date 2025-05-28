@@ -44,6 +44,18 @@ while($r0 = pg_fetch_assoc($result0)) {
 }
 
 $check_in_attivazione=0;
+
+//verifico se il percorso è stagionale ma in dismissione
+$check_stag_dismiss = 0;
+$query_check_stag_dismiss="select p.cod_percorso, p.stagionalita, p.ddmm_switch_on, p.ddmm_switch_off from elem.percorsi p 
+where p.cod_percorso = $1";
+$resultst = pg_prepare($conn, "query_check_stag_dismiss", $query_check_stag_dismiss);
+$resultst = pg_execute($conn, "query_check_stag_dismiss",array($cod_percorso));
+while($rst = pg_fetch_assoc($resultst)) {
+  if ($rst["stagionalita"] == '' && $rst["ddmm_switch_on"] != '' && $rst["ddmm_switch_off"] != ''){
+    $check_stag_dismiss=1;
+  }
+}
 ?>
 
 
@@ -67,7 +79,10 @@ when ep.data_inizio_validita > now()::date then 1
 else 0
 end flg_in_attivazione,
 to_char(ep.data_ultima_modifica, 'DD/MM/YYYY HH24:MI') as data_ultima_modifica, 
-ep.ekovision
+ep.ekovision,
+ep.stagionalita,
+ep.ddmm_switch_on, 
+ep.ddmm_switch_off
 from anagrafe_percorsi.elenco_percorsi ep
 join elem.turni t on t.id_turno = ep.id_turno
 join etl.frequenze_ok fo on fo.cod_frequenza = ep.freq_testata
@@ -385,7 +400,7 @@ while($r = pg_fetch_assoc($result)) {
               $tomorrow = new DateTime('tomorrow');
               ?>
               
-              <div class="col-12">
+              <div class="col-12 align-items-center" style="display: inline-flex; white-space:nowrap;">
               <div class="input-group">
             
                     <!--input name="data_disatt" id="js-date2" type="text" class="form-control" value="<?php echo $tomorrow->format('d/m/Y');?>" required=""-->
@@ -396,6 +411,18 @@ while($r = pg_fetch_assoc($result)) {
                     <button type="button" id="btnTomorrow" class="btn btn-info btn-sm" title="Imposta a domani"><i class="fa-solid fa-calendar-day"></i></button>
                     <button type="button" id="btnInf" class="btn btn-info btn-sm" title="Imposta all'infinito"><i class="fa-solid fa-calendar-xmark"></i></button>
               </div>
+              <?php 
+                if($r["stagionalita"]!='' && $check_stag_dismiss == 0){
+              ?>
+                  <div class="form-check" style="margin-left: 2%;">
+                    <input class="form-check-input" type="checkbox" value="t" id="dis_stag" name="dis_stag" style="border-width: 2px; border-color: darkgray;" <?php if ($check_superedit == 0) {echo 'disabled';} ?>>
+                    <label class="form-check-label" for="dis_stag">
+                      <small>spuntare la casella per dismettere il percorso stagionale</small>
+                    </label>
+                  </div>
+              <?php
+                }
+              ?>
               </div>
       
       
@@ -453,6 +480,83 @@ while($r = pg_fetch_assoc($result)) {
     echo ' - <b><font color=red>Percorso disattivo</font></b>';
   }
   echo '</li>';
+
+  $stag = $r["stagionalita"];
+  $switchON = $r["ddmm_switch_on"];
+  $switchOFF = $r["ddmm_switch_off"];
+  if($stag != ''){
+    if ($check_versione_successiva==0 and $check_superedit==1 and $check_in_attivazione==1 and $r["flg_disattivo"]==0){
+      $switchOng = substr($switchON, 0, 2);
+      $switchOnm = substr($switchON, 2);
+      $switchOffg = substr($switchOFF, 0, 2);
+      $switchOffm = substr($switchOFF, 2);
+      ?>
+        <li><b>Stagionalità</b>
+        <form class="row g-3 align-items-center" name="form_stag" id="form_stag" autocomplete="off" >
+          <input type="hidden" id="id_percorso" name="id_percorso" value="<?php echo $cod_percorso;?>">
+          <input type="hidden" id="old_vers" name="old_vers" value="<?php echo $versione;?>">
+          <div class="col-12 align-items-center" style="width: auto; display: inline-flex; white-space:nowrap;">
+            <label for="stag"> Stagione </label><span>&nbsp;</span>
+            <select name="stag" id="stag" class="form-select" data-live-search="true">
+              <option name="stag" value="" <?php if($stag ==''){echo 'selected';}?>>Nessuna</option>
+              <option name="stag" value="E" <?php if($stag =='E'){echo 'selected';}?>>Estate</option>
+              <option name="stag" value="I" <?php if($stag =='I'){echo 'selected';}?>>Inverno</option>
+            </select>        
+          </div>
+          <!--div class="form-group col-md-6" id="switchstag" style=" display: block;"-->
+          <div class="col-12 align-items-center" style="width:30%; display: inline-flex; white-space:nowrap;">
+            <label for="switchon"> Switch On </label> <span>&nbsp;</span>
+            <input type="number" placeholder="Giorno" name="switchong" id="gson" max="31" class="form-control" value="<?php if($stag !=''){echo $switchOng;}?>">
+            <input type="number" placeholder="Mese" name="switchonm" id="mson" max="12" class="form-control" value="<?php if($stag !=''){echo $switchOnm;}?>">
+          </div>
+          <br>
+          <div class=" col-12 align-items-center" style="width:30%; display: inline-flex; white-space:nowrap;">
+            <label for="switchoff"> Switch Off </label><span>&nbsp;</span>
+            <input type="number" placeholder="Giorno" name="switchoffg" id="gsof" max="31" class="form-control" value="<?php if($stag !=''){echo $switchOffg;}?>">
+            <input type="number" placeholder="Mese" name="switchoffm" id="msof" max="12" class="form-control" value="<?php if($stag !=''){echo $switchOffm;}?>">
+          </div>
+          <div class="col-12" style="width: auto;">
+            <button type="submit" class="btn btn-info">
+              <i class="fa-solid fa-arrow-up-from-bracket"></i> Salva
+            </button>
+          </div> 
+        </form>
+        <p><div id="results_stag"></div></p>
+          <script> 
+            $(document).ready(function () {                 
+                $('#form_stag').submit(function (event) { 
+                    console.log('Bottone form dd cliccato e finito qua');
+                    event.preventDefault();                  
+                    var formData = $(this).serialize();
+                    console.log(formData);
+                    $.ajax({ 
+                        url: 'backoffice/update_stagione.php', 
+                        method: 'POST', 
+                        data: formData, 
+                        //processData: true, 
+                        //contentType: false, 
+                        success: function (response) {                       
+                            //alert('Your form has been sent successfully.'); 
+                            console.log(response);
+                            $("#results_stag").html(response).fadeIn("slow");
+                        }, 
+                        error: function (jqXHR, textStatus, errorThrown) {                        
+                            alert('Your form was not sent successfully.'); 
+                            console.error(errorThrown); 
+                        } 
+                    }); 
+                }); 
+            }); 
+          </script>
+    <?php
+    }else{
+      echo '<li class="mt-1"><b> Stagionalità </b>'.$stag .'</li> ';
+      echo '<li class="mt-1"><b> Switch On </b>'.$switchON .'</li> ';
+      echo '<li class="mt-1"><b> Switch Off </b>'.$switchOFF .'</li> ';
+    }
+  }
+
+
   $eko=$r["ekovision"];
   if ($eko=='t'){
     echo '<li><i class="fa-solid fa-link"></i> Percorso trasmesso a ekovision</li>';
@@ -628,12 +732,141 @@ if (pg_num_rows($result2) > 0){
 echo '<ul>';
 while($r2 = pg_fetch_assoc($result2)) {
   echo '<h4><li class="mt-1"><b> Gruppo di coordinamento</b> '.$r2["ut"].'</li></h4>';
-  echo '<li class="mt-1"><b> Id Squadra </b>'.$r2["squadra"].'</li>'; 
+  //rendo la squadra modificabile se percorso non è ancor attivo
+  if ($check_versione_successiva==0 and $check_superedit==1 and $check_in_attivazione==1 and $r["flg_disattivo"]==0){
+    ?>
+    <li class="mt-1"><b>Id Squadra</b>
+    <!--form class="row row-cols-lg-auto g-3 align-items-center" name="form_dd" method="post" autocomplete="off" action="./backoffice/update_data_attivazione.php"-->
+    <form class="row row-cols-lg-auto g-3 align-items-center" name="form_squadra" id="form_squadra" autocomplete="off" >
+      <input type="hidden" id="id_percorso" name="id_percorso" value="<?php echo $cod_percorso;?>">
+      <input type="hidden" id="old_vers" name="old_vers" value="<?php echo $versione;?>">
+      <input type="hidden" id="id_ut_sit" name="id_ut_sit" value="<?php echo $r2["id_ut"];?>">
+      <div class="col-12">
+        <select name="sq_ut" id="sq_ut" class="form-select" data-size="5"  data-live-search="true" required="">
+          <?php
+          $query0_1="select id_squadra, 
+          concat(cod_squadra, ' - ', desc_squadra) as descr 
+          from elem.squadre s order by desc_squadra ;";
+          $result0_1 = pg_prepare($conn, "query0_1", $query0_1);            
+          $result0_1 = pg_execute($conn, "query0_1", array()); 
+          while($r0_1 = pg_fetch_assoc($result0_1)) {         
+            ?>
+            <option name="sq_ut" 
+            <?php 
+            if ($r0_1['id_squadra']==$r2["id_squadra"]){
+              echo ' selected ';
+            } ?>
+            value="<?php echo $r0_1['id_squadra']?>" ><?php echo $r0_1['descr'] ?></option>
+          <?php } ?>
+        </select>
+      </div>
+      <br>
+      <div class="col-12">
+        <button type="submit" class="btn btn-info">
+          <i class="fa-solid fa-arrow-up-from-bracket"></i> Salva
+        </button>
+      </div> 
+    </form>
+    <p><div id="results_squadra"></div></p>
+      <script> 
+        $(document).ready(function () {                 
+            $('#form_squadra').submit(function (event) { 
+                console.log('Bottone form dd cliccato e finito qua');
+                event.preventDefault();                  
+                var formData = $(this).serialize();
+                console.log(formData);
+                $.ajax({ 
+                    url: 'backoffice/update_squadra.php', 
+                    method: 'POST', 
+                    data: formData, 
+                    //processData: true, 
+                    //contentType: false, 
+                    success: function (response) {                       
+                        //alert('Your form has been sent successfully.'); 
+                        console.log(response);
+                        $("#results_squadra").html(response).fadeIn("slow");
+                    }, 
+                    error: function (jqXHR, textStatus, errorThrown) {                        
+                        alert('Your form was not sent successfully.'); 
+                        console.error(errorThrown); 
+                    } 
+                }); 
+            }); 
+        }); 
+      </script>
+  <?php
+  }else{
+    echo '<li class="mt-1"><b> Id Squadra </b>'.$r2["squadra"].'</li>';
+  }
 
   // inserire composizione squadra con funzioncina da recuperare anche sotto 
 
-
-  echo '<li class="mt-1"><b> Mezzo </b>'.$r2["mezzo"].'</li>';
+  if ($check_versione_successiva==0 and $check_superedit==1 and $check_in_attivazione==1 and $r["flg_disattivo"]==0){
+    ?>
+    <li class="mt-1"><b>Mezzo</b>
+    <!--form class="row row-cols-lg-auto g-3 align-items-center" name="form_dd" method="post" autocomplete="off" action="./backoffice/update_data_attivazione.php"-->
+    <form class="row row-cols-lg-auto g-3 align-items-center" name="form_mezzo" id="form_mezzo" autocomplete="off" >
+      <input type="hidden" id="id_percorso" name="id_percorso" value="<?php echo $cod_percorso;?>">
+      <input type="hidden" id="old_vers" name="old_vers" value="<?php echo $versione;?>">
+      <input type="hidden" id="id_ut_sit" name="id_ut_sit" value="<?php echo $r2["id_ut"];?>">
+      <div class="col-12">
+        <select name="mezzo_ut" id="mezzo_ut" class="form-select" data-size="5"  data-live-search="true" required="">
+          <?php
+          ## da cambiare la query per lista mezzi
+          $querymezzo="select cdaog3,
+          concat(categoria, ' (', nome, ')') as cat_estesa  from elem.automezzi a 
+          order by categoria ;";
+          $resultmezzo = pg_query($conn, $querymezzo);
+          //echo $query1;    
+          while($rm = pg_fetch_assoc($resultmezzo)) { 
+          ?>   
+            <option name="cdaog3" 
+            <?php
+            if ($rm['cdaog3']==$r2['cdaog3']){
+              echo ' selected ';
+            } ?>
+            value="<?php echo $rm['cdaog3']?>" ><?php echo $rm['cat_estesa'] ?></option>
+          <?php } ?>
+        </select>
+      </div>
+      <br>
+      <div class="col-12">
+        <button type="submit" class="btn btn-info">
+          <i class="fa-solid fa-arrow-up-from-bracket"></i> Salva
+        </button>
+      </div> 
+    </form>
+    <p><div id="results_mezzo"></div></p>
+      <script> 
+        $(document).ready(function () {                 
+            $('#form_mezzo').submit(function (event) { 
+                console.log('Bottone form dd cliccato e finito qua');
+                event.preventDefault();                  
+                var formData = $(this).serialize();
+                console.log(formData);
+                $.ajax({ 
+                    url: 'backoffice/update_mezzo.php', 
+                    method: 'POST', 
+                    data: formData, 
+                    //processData: true, 
+                    //contentType: false, 
+                    success: function (response) {                       
+                        //alert('Your form has been sent successfully.'); 
+                        console.log(response);
+                        $("#results_mezzo").html(response).fadeIn("slow");
+                    }, 
+                    error: function (jqXHR, textStatus, errorThrown) {                        
+                        alert('Your form was not sent successfully.'); 
+                        console.error(errorThrown); 
+                    } 
+                }); 
+            }); 
+        }); 
+      </script>
+  <?php
+  }else{
+    echo '<li class="mt-1"><b> Mezzo </b>'.$r2["mezzo"].'</li>';
+  }
   echo '<li class="mt-1"><b> Responsabile </b>'.$r2["responsabile"].'</li>';
   if ($r2["responsabile"]=='S'){
     $gc=$r2["id_ut"];
@@ -700,6 +933,9 @@ if($check_versione_successiva==0){
 <input type="hidden" id="sq_gc" name="sq_gc" value="<?php echo $sq_gc;?>">
 <input type="hidden" id="mezzo" name="mezzo" value="<?php echo $mezzo;?>">
 <input type="hidden" id="eko" name="eko" value="<?php echo $eko;?>">
+<input type="hidden" id="stag" name="stag" value="<?php echo $stag;?>">
+<input type="hidden" id="swon" name="swon" value="<?php echo $switchON;?>">
+<input type="hidden" id="swoff" name="swoff" value="<?php echo $switchOFF;?>">
 
 <?php if ($check_superedit==1 and $check_in_attivazione==0){?>
 <div class="row g-3 align-items-center">
@@ -734,6 +970,9 @@ if($check_versione_successiva==0){
 <input type="hidden" id="sq_ut" name="sq_ut" value="15">
 <input type="hidden" id="mezzo" name="mezzo" value="<?php echo $mezzo;?>">
 <input type="hidden" id="new_vers" name="new_vers" value="<?php echo $versione;?>">
+<input type="hidden" id="stag" name="stag" value="<?php echo $stag;?>">
+<input type="hidden" id="swon" name="swon" value="<?php echo $switchON;?>">
+<input type="hidden" id="swoff" name="swoff" value="<?php echo $switchOFF;?>">
 
 <div class="row g-3 align-items-center">
 

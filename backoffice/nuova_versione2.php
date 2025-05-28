@@ -131,7 +131,24 @@ echo $tipo."<br>";
 echo $id_servizio_uo."<br>";
 echo $id_servizio_sit."<br>";
 
+$stag =  $_POST['stag'];
+if($stag!=''){
+  $switchOng = str_pad($_POST['switchong'], 2, "0", STR_PAD_LEFT);
+  $switchOnm = str_pad($_POST['switchonm'], 2, "0", STR_PAD_LEFT);
+  $switchON = $switchOng.$switchOnm;
+  $switchOffg = str_pad($_POST['switchoffg'], 2, "0", STR_PAD_LEFT);
+  $switchOffm = str_pad($_POST['switchoffm'], 2, "0", STR_PAD_LEFT);
+  $switchOFF = $switchOffg.$switchOffm;
+}else{
+  $stag = null;
+  $switchON = null;
+  $switchOFF = null;
+}
 
+
+echo 'stagione è '.$stag.'<br>';
+echo 'ON è '.$switchON.'<br>';
+echo 'OFF è '.$switchOFF.'<br>';
 
 //$durata = intval($_POST['durata']);
 //echo $durata."<br>";
@@ -143,6 +160,8 @@ echo $new_vers."<br>";
 $data_att = $_POST['data_att'];
 $data_disatt = $_POST['data_disatt'];
 
+
+//exit();
 #mezzo
 
 $cdaog3 = $_POST['cdaog3'];
@@ -389,7 +408,6 @@ echo $ut_uo."<br>";
 echo $data_att."<br>";
 echo $data_disatt."<br>";
 
-
 echo $insert_uo."<br>";
 
 #exit();
@@ -538,17 +556,17 @@ if ($id_servizio_sit!=0 AND $cambio_frequenza_sit ==1 ){
   $3, 1,
   $4, $5,
   $6, $7,
-  NULL, $8, 
-  NULL, NULL,
-  $9, $10,
-  $11, to_date($12, 'DD/MM/YYYY')
+  $8, $9, 
+  $10, $11,
+  $12, $13,
+  $14, to_date($15, 'DD/MM/YYYY')
   ) returning id_percorso";
   $result_sit = pg_prepare($conn, "insert_sit", $insert_sit);
   if (pg_last_error($conn)){
     echo pg_last_error($conn).'<br>';
     $res_ok=$res_ok+1;
   }
-  $result_sit = pg_execute($conn, "insert_sit", array($cod_percorso,$cod_percorso, $desc, $cdaog3, $turno, $_SESSION['username'], $freq_sit, $sq_ut, $id_servizio_sit, $freq_sett, $id_categoria_uso, $data_att)); 
+  $result_sit = pg_execute($conn, "insert_sit", array($cod_percorso,$cod_percorso, $desc, $cdaog3, $turno, $_SESSION['username'], $freq_sit, $stag, $sq_ut, $switchON, $switchOFF, $id_servizio_sit, $freq_sett, $id_categoria_uso, $data_att)); 
   if (pg_last_error($conn)){
     echo pg_last_error($conn).'<br>';
     $res_ok=$res_ok+1;
@@ -661,7 +679,8 @@ $insert_elenco_percorsi= "INSERT INTO anagrafe_percorsi.elenco_percorsi (
   id_tipo, freq_testata, 
   id_turno, durata, codice_cer,
   versione_testata, 
-  data_inizio_validita, data_fine_validita, data_ultima_modifica, freq_settimane, ekovision ) 
+  data_inizio_validita, data_fine_validita, data_ultima_modifica, freq_settimane, ekovision,
+  stagionalita, ddmm_switch_on, ddmm_switch_off ) 
   VALUES
   (
     $1, $2,
@@ -669,7 +688,7 @@ $insert_elenco_percorsi= "INSERT INTO anagrafe_percorsi.elenco_percorsi (
     $5, $6, NULL, 
     $7,
     to_timestamp($8,'DD/MM/YYYY'), to_timestamp($9,'DD/MM/YYYY'), now()
-    ,$10, $11
+    ,$10, $11, $12, $13, $14
   )";
 
 
@@ -682,7 +701,7 @@ if (pg_last_error($conn)){
   $res_ok=$res_ok+1;
 }
 
-$result_elenco = pg_execute($conn, "insert2", array($cod_percorso, $desc, $tipo, $freq_sit, $turno, $durata, $new_vers, $data_att, $data_disatt, $freq_sett, $check_EKO)); 
+$result_elenco = pg_execute($conn, "insert2", array($cod_percorso, $desc, $tipo, $freq_sit, $turno, $durata, $new_vers, $data_att, $data_disatt, $freq_sett, $check_EKO, $stag, $switchON, $switchOFF)); 
 if (pg_last_error($conn)){
   echo pg_last_error($conn).'<br>';
   $res_ok=$res_ok+1;
@@ -842,7 +861,7 @@ if($_POST['rim']){
   echo  pg_result_error($result_percorsi_rim);
 }
 
-### verifico lo stato del percorso su SIT e se disattivo lo riattivo
+### verifico lo id_categoria (stato) del percorso su SIT per capire se sto creando una nuova versione da un percorso attivo o no
 $stato_sit="SELECT id_categoria_uso, id_percorso FROM elem.percorsi  
   WHERE cod_percorso=$1 and versione = (select max(versione) from elem.percorsi where cod_percorso=$1)";
 $result_stato_sit = pg_prepare($conn, "stato_sit", $stato_sit);
@@ -863,31 +882,58 @@ while($rss = pg_fetch_assoc($result_stato_sit)) {
   $stagionalita=$rss['stagionalita'];
 }
 
-if ($id_categoria_uso==4){
-  $update_stato_sit = "UPDATE elem.percorsi set id_categoria_uso= 3,
-  data_attivazione= to_date($1, 'DD/MM/YYYY'), 
-  data_disattivazione = to_date($2, 'DD/MM/YYYY')";
+### verifico se stagionalità non è nulla e conseguente data di attivazione per determinare id_categoria della nuova versione
+if (!is_null($stag)){
+  $data_att_dt = DateTime::createFromFormat('d/m/Y', $data_att);
+  $data_att_dt->setTime(0, 0, 0);
 
-  if (!is_null($stagionalita)){
+  $domani = new DateTime('tomorrow');
+  $domani->setTime(0, 0, 0);
+
+  if($data_att_dt == $domani){
+    $id_uso = 3;
+    //echo 'data attivazione ('.$data_att.') = domani</br>';
+  }else{
+    $id_uso = 6;
+    //echo 'data attivazione ('.$data_att.') != domani</br>';
+  }
+}else{
+  if ($id_categoria_uso==4){
+    $id_uso = 3;
+  }else{
+    $id_uso = $id_categoria_uso;
+  }
+}
+
+
+  $parametri = [$id_uso, $data_att, $data_disatt];
+  $update_stato_sit = "UPDATE elem.percorsi set
+  id_categoria_uso= $1,
+  data_attivazione= to_date($2, 'DD/MM/YYYY'), 
+  data_dismissione = to_date($3, 'DD/MM/YYYY')";
+
+  if (!is_null($stag)){
     $update_stato_sit .= ",
-    ddmm_switch_on = concat(TO_CHAR(data_attivazione, 'DD'), TO_CHAR(data_attivazione, 'mm')),
-    ddmm_switch_off = concat(TO_CHAR(data_disattivazione, 'DD'), TO_CHAR(data_disattivazione, 'mm'))
+    stagionalita = $4,
+    ddmm_switch_on = $5,
+    ddmm_switch_off = $6
     ";
+    $parametri = array_merge($parametri, [$stag, $switchON, $switchOFF]);
   }
 
-  $update_stato_sit .= " WHERE id_percorso = $3";
+  $update_stato_sit .= " WHERE id_percorso = $7";
+  $parametri[] = $id_percorso_old;
 
   $result_u_stato_sit = pg_prepare($conn, "update_stato_sit", $update_stato_sit);
   if (pg_last_error($conn)){
     echo pg_last_error($conn).'<br>';
     $res_ok=$res_ok+1;
   }
-  $result_u_stato_sit = pg_execute($conn, "update_stato_sit", array($data_att, $data_disatt, $id_percorso_old));
+  $result_u_stato_sit = pg_execute($conn, "update_stato_sit", $parametri);
   if (pg_last_error($conn)){
     echo pg_last_error($conn).'<br>';
     $res_ok=$res_ok+1;
   }
-}
 
 echo "res_ok == ". $res_ok."<br>";
 if ($res_ok ==0){

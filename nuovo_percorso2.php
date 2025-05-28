@@ -57,6 +57,28 @@ $versione= $_GET['v'];
 
 <?php
 // TIPOLOGIA PERCORSO
+
+//STAGIONALITà
+$stag =  $_POST['stag'];
+if($stag!=''){
+  $switchOng = str_pad($_POST['switchong'], 2, "0", STR_PAD_LEFT);
+  $switchOnm = str_pad($_POST['switchonm'], 2, "0", STR_PAD_LEFT);
+  $switchON = $switchOng.$switchOnm;
+  $switchOffg = str_pad($_POST['switchoffg'], 2, "0", STR_PAD_LEFT);
+  $switchOffm = str_pad($_POST['switchoffm'], 2, "0", STR_PAD_LEFT);
+  $switchOFF = $switchOffg.$switchOffm;
+}else{
+  $stag = null;
+  $switchON = null;
+  $switchOFF = null;
+}
+
+//echo 'stagione è '.$stag.'<br>';
+//echo 'ON è '.$switchON.'<br>';
+//echo 'OFF è '.$switchOFF.'<br>';
+
+//exit();
+
 $tipo = $_POST['tipo'];
 
 $query1="select id, descrizione, lpad(codice_servizio,4,'0') as cod_start, 
@@ -106,6 +128,9 @@ while($r3 = oci_fetch_assoc($result3)) {
   $durata=$r3['DURATA'];
 }
 oci_free_statement($result3);
+
+
+
 // FREQUENZA
 
 
@@ -218,6 +243,9 @@ echo '<li><b>Durata</b>: '.$durata.'</li>';
 <input type="hidden" id="durata" name="durata" value="<?php echo $durata;?>">
 <input type="hidden" id="turno" name="turno" value="<?php echo $turno;?>">
 <input type="hidden" id="tipo" name="tipo" value="<?php echo $tipo;?>">
+<input type="hidden" id="stag" name="stag" value="<?php echo $stag;?>">
+<input type="hidden" id="switchon" name="switchon" value="<?php echo $switchON;?>">
+<input type="hidden" id="switchoff" name="switchoff" value="<?php echo $switchOFF;?>">
 
 
 <?php
