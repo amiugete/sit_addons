@@ -13,6 +13,28 @@ if ($_SESSION['test']==1) {
 
 $res_ok=0;
 
+
+$stag =  $_POST['stag'];
+
+if ($stag==''){
+  echo '<br>Stringa vuota<br>';
+  $stag = NULL;
+  $switchON = null;
+  $switchOFF = null;
+}
+
+
+echo $stag;
+if (is_null($stag)){
+  echo '<br>OK<br>';
+}else {
+  echo '<br> vedo comunque una stagionalita<br>';
+}
+
+
+//exit();
+
+
 // TURNO
 $turno = intval($_POST['turno']);
 echo $turno."<br>";
@@ -131,7 +153,7 @@ echo $tipo."<br>";
 echo $id_servizio_uo."<br>";
 echo $id_servizio_sit."<br>";
 
-$stag =  $_POST['stag'];
+
 if($stag!=''){
   $switchOng = str_pad($_POST['switchong'], 2, "0", STR_PAD_LEFT);
   $switchOnm = str_pad($_POST['switchonm'], 2, "0", STR_PAD_LEFT);
@@ -906,6 +928,8 @@ if (!is_null($stag)){
 }
 
 
+
+
   $parametri = [$id_uso, $data_att, $data_disatt];
   $update_stato_sit = "UPDATE elem.percorsi set
   id_categoria_uso= $1,
@@ -917,12 +941,15 @@ if (!is_null($stag)){
     stagionalita = $4,
     ddmm_switch_on = $5,
     ddmm_switch_off = $6
+    WHERE id_percorso = $7
     ";
     $parametri = array_merge($parametri, [$stag, $switchON, $switchOFF]);
+    $parametri[] = $id_percorso_old;
+  } else {
+    $update_stato_sit .= " WHERE id_percorso = $4";
+    $parametri[] = $id_percorso_old;
   }
 
-  $update_stato_sit .= " WHERE id_percorso = $7";
-  $parametri[] = $id_percorso_old;
 
   $result_u_stato_sit = pg_prepare($conn, "update_stato_sit", $update_stato_sit);
   if (pg_last_error($conn)){
