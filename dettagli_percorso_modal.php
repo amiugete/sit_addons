@@ -573,6 +573,7 @@ while($r = pg_fetch_assoc($result)) {
   $tipo= $r['id_tipo'];
   $turno=$r["id_turno"];
   $data_attivazione_testata=$r['data_inizio_validita'];
+  $data_inizio_print=$r['data_inizio_print'];
   $data_disattivazione_testata=$r['data_disattivazione_testata'];
 
   
@@ -604,16 +605,25 @@ echo '</ul>';
 
 
 <?php
+//echo $data_inizio_print.'<br>';
+
 
 # percorso su SIT
-$query_sit = 'select p.id_percorso
-from elem.percorsi p 
-where cod_percorso = $1 and versione = (select max(versione)
-    from elem.percorsi p1 where cod_percorso = $1)';
+$query_sit = "
+select id_percorso_sit, cod_percorso, versioni_uo,
+data_inizio_validita, data_fine_validita                 
+from anagrafe_percorsi.date_percorsi_sit_uo
+where cod_percorso = $1
+and data_inizio_validita = to_date($2, 'DD/MM/YYYY')
+and data_fine_validita = to_date($3, 'DD/MM/YYYY')
+";
+
+
+
 
 
 $result_sit = pg_prepare($conn, "query_sit", $query_sit);
-$result_sit = pg_execute($conn, "query_sit", array($cod_percorso));  
+$result_sit = pg_execute($conn, "query_sit", array($cod_percorso, $data_inizio_print, $data_disattivazione_testata));  
 
 
 if ($_SESSION['test']==1) {
@@ -623,7 +633,7 @@ if ($_SESSION['test']==1) {
 }
 
 while($r_s = pg_fetch_assoc($result_sit)) {
-  echo '<a class="btn btn-primary" target="SIT" href="'.$url_sit.'/#!/percorsi/percorso-details/?idPercorso='.$r_s["id_percorso"].'"> 
+  echo '<a class="btn btn-primary" target="SIT" href="'.$url_sit.'/#!/percorsi/percorso-details/?idPercorso='.$r_s["id_percorso_sit"].'"> 
   <i class="fa-solid fa-map-location-dot"></i> '.$testo_tasto.' </a>';
 }
 
