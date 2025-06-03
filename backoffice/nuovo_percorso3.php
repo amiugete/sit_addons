@@ -36,9 +36,15 @@ if ($_POST['freq_sett']){
   $freq_sett='T';
 }
 
+
 $stag =  $_POST['stag'];
 $switchON = $_POST['switchon'];
 $switchOFF = $_POST['switchoff'];
+if ($stag==''){
+  $stag = NULL;
+  $switchON = null;
+  $switchOFF = null;
+}
 
 echo $stag."<br>";
 echo $switchON."<br>";
