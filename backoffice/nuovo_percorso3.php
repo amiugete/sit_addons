@@ -37,19 +37,6 @@ if ($_POST['freq_sett']){
 }
 
 
-$stag =  $_POST['stag'];
-$switchON = $_POST['switchon'];
-$switchOFF = $_POST['switchoff'];
-if ($stag==''){
-  $stag = NULL;
-  $switchON = null;
-  $switchOFF = null;
-}
-
-echo $stag."<br>";
-echo $switchON."<br>";
-echo $switchOFF."<br>";
-
 $id_servizio_uo = intval($_POST['id_servizio_uo']);
 $id_servizio_sit = intval($_POST['id_servizio_sit']);
 $tipo = $_POST['tipo'];
@@ -84,6 +71,37 @@ echo $durata."<br>";
 
 $data_att = $_POST['data_att'];
 $data_disatt = $_POST['data_disatt'];
+
+
+$stag =  $_POST['stag'];
+$switchON = $_POST['switchon'];
+$switchOFF = $_POST['switchoff'];
+if ($stag==''){
+  $stag = NULL;
+  $switchON = null;
+  $switchOFF = null;
+  $data_disatt_sit = NULL;
+  $id_uso = 3;
+}else{
+  $data_disatt_sit = $_POST['data_disatt'];
+  $data_att_dt = DateTime::createFromFormat('d/m/Y', $data_att);
+  $data_att_dt->setTime(0, 0, 0);
+
+  $domani = new DateTime('tomorrow');
+  $domani->setTime(0, 0, 0);
+
+  if($data_att_dt == $domani){
+    $id_uso = 3;
+    //echo 'data attivazione ('.$data_att.') = domani</br>';
+  }else{
+    $id_uso = 6;
+    //echo 'data attivazione ('.$data_att.') != domani</br>';
+  }
+}
+
+echo $stag."<br>";
+echo $switchON."<br>";
+echo $switchOFF."<br>";
 
 #mezzo
 
@@ -250,6 +268,7 @@ if ($id_servizio_sit!=0 and $check_SIT==1){
   famiglia_mezzo, id_turno, 
   id_categoria_uso,
   attivatore, data_attivazione,
+  data_dismissione,
   frequenza,
   stagionalita,
   id_squadra, 
@@ -263,17 +282,22 @@ if ($id_servizio_sit!=0 and $check_SIT==1){
   1, NULL,
   $2, 1,
   $3, $4,
-  3,
-  $5, to_timestamp($6,'DD/MM/YYYY')::date,
-  $7,
-  $8, 
-  $9, 
-  $10,
-  $11,
-  $12, 
-  $13)";
+  $5,
+  $6, to_timestamp($7,'DD/MM/YYYY')::date,";
+  if(!is_null($stag)){
+    $insert_sit .="to_timestamp($8,'DD/MM/YYYY')::date,";
+  }else{
+    $insert_sit .="$8,";
+  }
+  $insert_sit .="$9,
+  $10, 
+  $11, 
+  $12,
+  $13,
+  $14, 
+  $15)";
   $result_sit = pg_prepare($conn, "insert_sit", $insert_sit);
-  $result_sit = pg_execute($conn, "insert_sit", array($cod_percorso,$desc, $cdaog3, $turno, $_SESSION['username'], $data_att, $freq_sit, $stag, $sq_ut, $switchON, $switchOFF, $id_servizio_sit, $freq_sett)); 
+  $result_sit = pg_execute($conn, "insert_sit", array($cod_percorso,$desc, $cdaog3, $turno, $id_uso, $_SESSION['username'], $data_att, $data_disatt_sit, $freq_sit, $stag, $sq_ut, $switchON, $switchOFF, $id_servizio_sit, $freq_sett)); 
 }
 
 echo  pg_last_error($conn);
