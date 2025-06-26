@@ -23,7 +23,7 @@
   <label class="btn btn-outline-primary" for="Nulla">Nulla</label>
 
 </div>
-<hr>
+<hr style="border-width:0;">
 
 <?php
 
@@ -64,7 +64,7 @@
       <label class="form-check-label" for="inlineCheckbox2">Quarto</label>
     </div>
 
-<hr>
+<hr style="border-width:0;">
 </div>
 
 
@@ -122,7 +122,7 @@
 
 
 
-<hr>
+<hr style="border-width:0;">
 
 
 

@@ -106,10 +106,10 @@ $versione= $_GET['v'];
 
 <div class="form-group  col-md-6">
   <label for="tipo">Turno:</label> <font color="red">*</font>
-                <select name="turno" id="turno" class="selectpicker show-tick form-control" data-live-search="true"  required="">
+                <select name="turno" id="turno" class="selectpicker show-tick form-control" data-live-search="true"  required=""  onchange="showReferenceDay(this)">
                 <option name="turno" value="">Seleziona il turno</option>
   <?php            
-  $query2="SELECT ID_TURNO, 
+  $query2="SELECT ID_TURNO, INIZIO_ORA, FINE_ORA,
   concat(concat(codice_turno, ' --> '), DESCR_ORARIO) AS DESCR
   FROM ANAGR_TURNI at2 
   WHERE DTA_DISATTIVAZIONE > SYSDATE 
@@ -124,12 +124,18 @@ oci_execute($result2);
       //$valore=  $r2['id_via']. ";".$r2['desvia'];            
   ?>
             
-        <option name="turno" value="<?php echo $r2['ID_TURNO']?>" ><?php echo $r2['DESCR'];?></option>
+        <option name="turno" iniora="<?php echo $r2['INIZIO_ORA']?>" finora="<?php echo $r2['FINE_ORA']?>" value="<?php echo $r2['ID_TURNO']?>" ><?php echo $r2['DESCR'];?></option>
   <?php } 
    oci_free_statement($result2);
   ?>
  
-  </select>            
+  </select> 
+    <div class="form-check" id="refDay" style=" display: none;">
+  <input class="form-check-input" type="checkbox" value="-1" id="check_ref_day" name="check_ref_day" <?php if ($check_superedit == 0) {echo 'disabled';} ?>>
+  <label class="form-check-label" for="check_ref_day">
+    Il turno selezionato è a cavallo di due giorni, spuntare la checkbox se l'ora di inizio si riferisce al giorno precedente
+  </label>
+</div>           
   </div>
 
 
@@ -141,9 +147,11 @@ oci_execute($result2);
   <?php
   // FREQUENZA
   ?>
+
 <div class="form-group  col-md-6">
-  <!--label for="freq">Frequenza:</label> <font color="red">*</font>
-  <select name="freq" id="freq" class="selectpicker show-tick form-control" data-live-search="true" required="">
+  <hr>
+  <label for="freq">Frequenza:</label> <font color="red">*</font><br>
+  <!--select name="freq" id="freq" class="selectpicker show-tick form-control" data-live-search="true" required="">
     <option name="freq" value="">Seleziona la frequenza</option>
     <?php            
     /*$query3="select cod_frequenza, descrizione_long 
@@ -220,7 +228,23 @@ require('freq_sett_component.php');
       document.getElementById('gsof').removeAttribute('required');
       document.getElementById('msof').removeAttribute('required');
     }
-  } 
+  }
+
+  function showReferenceDay(val){
+      const iniOra = parseInt(val.options[val.selectedIndex].getAttribute('iniora'))
+      const finOra = parseInt(val.options[val.selectedIndex].getAttribute('finora'))
+      /*console.log('text è '+ val.options[val.selectedIndex].text)
+      console.log('iniora è '+ val.options[val.selectedIndex].getAttribute('iniora'))
+      console.log('finora è '+ val.options[val.selectedIndex].getAttribute('finora'))
+      console.log('il turno selezionato è '+ val.value)*/
+      if (iniOra > finOra){
+        document.getElementById('refDay').style.display = "block";
+        //console.log('il turno selezionato è a cavallo di due giorni');
+      }else{
+        document.getElementById('refDay').style.display = "none";
+        //console.log('il turno selezionato NON è a cavallo di due giorni');
+      }
+    }
 
 </script>
 

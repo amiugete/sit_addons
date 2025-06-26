@@ -65,7 +65,7 @@ while($rst = pg_fetch_assoc($resultst)) {
 
 <?php
 $query_testata = "select ep.cod_percorso, 
-ep.descrizione, t.cod_turno, t.id_turno, ep.durata, fo.descrizione_long, 
+ep.descrizione, t.cod_turno, t.id_turno, t.inizio_ora, t.fine_ora, ep.durata, fo.descrizione_long, 
 ep.freq_testata, ep.freq_testata::bit(12) as fbin, fo.freq_binaria, ep.id_tipo, ep.freq_settimane,
 at2.id_servizio_uo, at2.id_servizio_sit, 
 to_char(ep.data_inizio_validita, 'DD/MM/YYYY') as data_inizio_print,
@@ -82,7 +82,8 @@ to_char(ep.data_ultima_modifica, 'DD/MM/YYYY HH24:MI') as data_ultima_modifica,
 ep.ekovision,
 ep.stagionalita,
 ep.ddmm_switch_on, 
-ep.ddmm_switch_off
+ep.ddmm_switch_off,
+ep.giorno_competenza
 from anagrafe_percorsi.elenco_percorsi ep
 join elem.turni t on t.id_turno = ep.id_turno
 join etl.frequenze_ok fo on fo.cod_frequenza = ep.freq_testata
@@ -572,6 +573,9 @@ while($r = pg_fetch_assoc($result)) {
   $id_servizio_sit= $r['id_servizio_sit'];
   $tipo= $r['id_tipo'];
   $turno=$r["id_turno"];
+  $turnoIni=$r["inizio_ora"];
+  $turnoFine=$r["fine_ora"];
+  $turnoRefDay=$r["giorno_competenza"];
   $data_attivazione_testata=$r['data_inizio_validita'];
   $data_inizio_print=$r['data_inizio_print'];
   $data_disattivazione_testata=$r['data_disattivazione_testata'];
@@ -935,6 +939,9 @@ if($check_versione_successiva==0){
 <input type="hidden" id="id_servizio_sit" name="id_servizio_sit" value="<?php echo $id_servizio_sit;?>">
 <input type="hidden" id="durata" name="durata" value="<?php echo $durata;?>">
 <input type="hidden" id="turno" name="turno" value="<?php echo $turno;?>">
+<input type="hidden" id="turno_ini" name="turno_ini" value="<?php echo $turnoIni;?>">
+<input type="hidden" id="turno_fine" name="turno_fine" value="<?php echo $turnoFine;?>">
+<input type="hidden" id="turno_ref_day" name="turno_ref_day" value="<?php echo $turnoRefDay;?>">
 <input type="hidden" id="tipo" name="tipo" value="<?php echo $tipo;?>">
 <input type="hidden" id="old_vers" name="old_vers" value="<?php echo $versione;?>">
 <input type="hidden" id="rimessa" name="rimessa" value="<?php echo $rimessa;?>">

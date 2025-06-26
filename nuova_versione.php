@@ -61,6 +61,9 @@ $tipo = $_POST['tipo'];
 $codice_percorso=$_POST['id_percorso'];
 $desc= $_POST['desc'];
 $turno= $_POST['turno'];
+$turnoIni= $_POST['turno_ini'];
+$turnoFine= $_POST['turno_fine'];
+$turnoRefDay = $_POST['turno_ref_day'];
 $freq_sit = $_POST['freq_sit'];
 $fbin = $_POST['fbin'];
 $freq_sett = $_POST['freq_sett'];
@@ -94,6 +97,14 @@ echo '<li><b>giorno</b>: '.$switchOffg.'</li>';
 echo '<li><b>mese</b>: '.$switchOffm.'</li>';
 echo '<li><b>Codice</b>: '.$codice_percorso.'</li>';
 
+echo '<li><b>turno</b>: '.$turno.'</li>';
+echo '<li><b>turno Inizio</b>: '.$turnoIni.'</li>';
+echo '<li><b>turno Fine</b>: '.$turnoFine.'</li>';
+if(intval($turnoIni) > intval($turnoFine)){
+  $checkOraTurno = 1;
+  echo '<li><b>turno inizia un giorno e finisce l\'altro</b></li>';
+}
+//exit();
 ?></ul--><?php
 
 
@@ -129,10 +140,10 @@ echo '<li><b>Codice</b>: '.$codice_percorso.'</li>';
 
     <hr>
   <label for="tipo">Turno:</label> <font color="red">*</font>
-                <select name="turno" id="turno" class="selectpicker show-tick form-control" data-live-search="true"  required="">
+    <select name="turno" id="turno" class="selectpicker show-tick form-control" data-live-search="true"  required="" onchange="showReferenceDay(this)">
               
   <?php            
-  $query2bis="SELECT ID_TURNO, 
+  $query2bis="SELECT ID_TURNO, INIZIO_ORA, FINE_ORA,
   concat(concat(codice_turno, ' --> '), DESCR_ORARIO) AS DESCR
   FROM ANAGR_TURNI at2 
   WHERE DTA_DISATTIVAZIONE > SYSDATE 
@@ -147,7 +158,7 @@ oci_execute($result2bis);
       //$valore=  $r2['id_via']. ";".$r2['desvia'];            
   ?>
             
-        <option name="turno" 
+        <option name="turno" iniora="<?php echo $r2bis['INIZIO_ORA']?>" finora="<?php echo $r2bis['FINE_ORA']?>"
         <?php
         if ($r2bis['ID_TURNO']==$turno) {
         echo 'selected ';
@@ -159,8 +170,18 @@ oci_execute($result2bis);
  
   </select>            
   
-
-  <div class="form-check">
+  <div class="form-check" id="refDay" style=" display: none;">
+  <input class="form-check-input" type="checkbox" value="-1" <?php 
+  if ($turnoRefDay == -1){
+    echo ' checked ';
+  }
+  ?> id="check_ref_day" name="check_ref_day" <?php if ($check_superedit == 0) {echo 'disabled';} ?>>
+  <label class="form-check-label" for="check_ref_day">
+    Il turno selezionato è a cavallo di due giorni, spuntare la checkbox se l'ora di inizio si riferisce al giorno precedente
+  </label>
+</div>
+<hr>
+  <!--div class="form-check">
   <input class="form-check-input" type="checkbox" value="t" <?php 
   if ($eko =="t"){
     echo ' checked ';
@@ -169,7 +190,7 @@ oci_execute($result2bis);
   <label class="form-check-label" for="check_EKO">
     Il percorso verrà automaticamente trasferito anche a Ekovision <i class="fa-solid fa-circle-nodes"></i> (per disabilitare scrivere a </i>assterritorio</i>)
   </label>
-</div>
+</div-->
   
 </div>
 
@@ -261,6 +282,17 @@ while($r3bis = pg_fetch_assoc($result3bis)) {
   </div>
   </div>
 <!--/div-->
+
+  <div class="form-check">
+  <input class="form-check-input" type="checkbox" value="t" <?php 
+  if ($eko =="t"){
+    echo ' checked ';
+  }
+  ?> id="check_EKO" name="check_EKO" <?php if ($check_superedit == 0) {echo 'disabled';} ?>>
+  <label class="form-check-label" for="check_EKO">
+    Il percorso verrà automaticamente trasferito anche a Ekovision <i class="fa-solid fa-circle-nodes"></i> (per disabilitare scrivere a </i>assterritorio</i>)
+  </label>
+</div>
 
 </div>
 
@@ -529,6 +561,35 @@ oci_free_statement($result_dd);
 
     // Esegui la funzione al caricamento della pagina
     window.addEventListener('DOMContentLoaded', aggiornaVisibilita);
+
+    function showReferenceDay(val){
+      const iniOra = val.options[val.selectedIndex].getAttribute('iniora')
+      const finOra = val.options[val.selectedIndex].getAttribute('finora')
+      if (iniOra > finOra){
+        document.getElementById('refDay').style.display = "block";
+      }else{
+        document.getElementById('refDay').style.display = "none";
+      }
+      /*console.log('text è '+ val.options[val.selectedIndex].text)
+      console.log('iniora è '+ val.options[val.selectedIndex].getAttribute('iniora'))
+      console.log('finora è '+ val.options[val.selectedIndex].getAttribute('finora'))
+      console.log('il turno selezionato è '+ val.value)*/
+    }
+
+    function aggiornaRefDay() {
+      const checkRefDay = document.getElementById('check_ref_day');
+      const selTurno = document.getElementById('turno');
+      const iniOra = selTurno.options[selTurno.selectedIndex].getAttribute('iniora')
+      const finOra = selTurno.options[selTurno.selectedIndex].getAttribute('finora')
+      if (iniOra > finOra){
+        document.getElementById('refDay').style.display = "block";
+        console.log('il turno è notturno. Inizia alle '+ iniOra + ' e finisce alle '+ finOra)
+      }else{
+        document.getElementById('refDay').style.display = "none";
+        console.log('il turno NON è notturno.')
+      }
+    }
+    window.addEventListener('DOMContentLoaded', aggiornaRefDay);
 
 </script>
 

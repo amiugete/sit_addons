@@ -18,6 +18,9 @@ if ($_POST['rim']==$_POST['ut']){
 $turno = intval($_POST['turno']);
 echo $turno."<br>";
 
+$check_refday = intval($_POST['refday']);
+echo $check_refday."<br>";
+
 $desc = $_POST['desc'];
 echo $desc."<br>";
 
@@ -310,7 +313,7 @@ $insert_elenco_percorsi= "INSERT INTO anagrafe_percorsi.elenco_percorsi (
   id_turno, durata, codice_cer,
   versione_testata, 
   data_inizio_validita, data_fine_validita, data_ultima_modifica, 
-  freq_settimane, ekovision, stagionalita, ddmm_switch_on, ddmm_switch_off) 
+  freq_settimane, ekovision, stagionalita, ddmm_switch_on, ddmm_switch_off, giorno_competenza) 
   VALUES
   (
     $1, $2,
@@ -318,7 +321,7 @@ $insert_elenco_percorsi= "INSERT INTO anagrafe_percorsi.elenco_percorsi (
     $5, $6, NULL, 
     1,
     to_timestamp($7,'DD/MM/YYYY'), to_timestamp($8,'DD/MM/YYYY'), now()
-    , $9, $10, $11, $12, $13
+    , $9, $10, $11, $12, $13, $14
   )";
 
 
@@ -329,7 +332,7 @@ $result_elenco = pg_prepare($conn, "insert2", $insert_elenco_percorsi);
 echo "<br><br> ERRORI 1: <br>";
 echo  pg_last_error($conn);
 
-$result_elenco = pg_execute($conn, "insert2", array($cod_percorso, $desc, $tipo, $freq_sit, $turno, $durata, $data_att, $data_disatt, $freq_sett, $check_EKO, $stag, $switchON, $switchOFF)); 
+$result_elenco = pg_execute($conn, "insert2", array($cod_percorso, $desc, $tipo, $freq_sit, $turno, $durata, $data_att, $data_disatt, $freq_sett, $check_EKO, $stag, $switchON, $switchOFF, $check_refday)); 
 echo "<br><br> ERRORI 2: <br>";
 echo  pg_last_error($conn);
 

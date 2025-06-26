@@ -55,7 +55,15 @@ while($r3 = oci_fetch_assoc($result3)) {
 oci_free_statement($result3);
 
 
-echo $durata."<br>";;
+echo $durata."<br>";
+
+if ($_POST['check_ref_day']){
+  $check_refday = intval($_POST['check_ref_day']);
+} else {
+  $check_refday = 0;
+}
+echo "refday:".$check_refday."<br>";
+//echo gettype($check_refday);
 
 if ($_POST['check_EKO']){
   $check_EKO = $_POST['check_EKO'];
@@ -64,7 +72,7 @@ if ($_POST['check_EKO']){
 }
 echo "check_EKO:".$check_EKO."<br>";
 
-
+//exit();
 
 $desc = $_POST['desc'];
 echo $desc."<br>";
@@ -183,7 +191,7 @@ $data_att = $_POST['data_att'];
 $data_disatt = $_POST['data_disatt'];
 
 
-//exit();
+#exit();
 #mezzo
 
 $cdaog3 = $_POST['cdaog3'];
@@ -241,8 +249,8 @@ oci_free_statement($result_uo0);
 
 
 $update_sit1="UPDATE anagrafe_percorsi.elenco_percorsi ep
-SET data_fine_validita= To_DATE($1, 'DD/MM/YYYY'), data_ultima_modifica=now() 
-where cod_percorso LIKE $2 and data_fine_validita > now()";
+SET data_fine_validita= To_DATE($1, 'DD/MM/YYYY'), data_ultima_modifica=now(), giorno_competenza=$2
+where cod_percorso LIKE $3 and data_fine_validita > now()";
 
 $result_usit1 = pg_prepare($conn, "update_sit1", $update_sit1);
 if (pg_last_error($conn)){
@@ -251,7 +259,7 @@ if (pg_last_error($conn)){
 }
 
 
-$result_usit1 = pg_execute($conn, "update_sit1", array($data_att, $cod_percorso)); 
+$result_usit1 = pg_execute($conn, "update_sit1", array($data_att, $check_refday, $cod_percorso)); 
 if (pg_last_error($conn)){
   echo pg_last_error($conn).'<br>';
   $res_ok=$res_ok+1;

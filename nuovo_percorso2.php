@@ -130,7 +130,14 @@ while($r3 = oci_fetch_assoc($result3)) {
 oci_free_statement($result3);
 
 
+if ($_POST['check_ref_day']){
+  $check_refday = intval($_POST['check_ref_day']);
+} else {
+  $check_refday = 0;
+}
+//echo "refday:".$check_refday."<br>";
 
+//exit();
 // FREQUENZA
 
 
@@ -242,6 +249,7 @@ echo '<li><b>Durata</b>: '.$durata.'</li>';
 <input type="hidden" id="id_servizio_sit" name="id_servizio_sit" value="<?php echo $id_servizio_sit;?>">
 <input type="hidden" id="durata" name="durata" value="<?php echo $durata;?>">
 <input type="hidden" id="turno" name="turno" value="<?php echo $turno;?>">
+<input type="hidden" id="refday" name="refday" value="<?php echo $check_refday;?>">
 <input type="hidden" id="tipo" name="tipo" value="<?php echo $tipo;?>">
 <input type="hidden" id="stag" name="stag" value="<?php echo $stag;?>">
 <input type="hidden" id="switchon" name="switchon" value="<?php echo $switchON;?>">
