@@ -179,6 +179,17 @@ def main(arg1, arg2, arg3, arg4):
     
     '''
     Tipo report 1/2 che richiama le query diverse
+
+
+    NOTE: per poi suddividere i servizi che non sono su SIT fra più comuni 
+    dobbiamo creare una tabella accessoria da popolare manualmente o automaticamente 
+
+    RM ha  iniziato con la vista UNIOPE.V_PERCORSI_X_COMUNE_UO_GIORNO ma probabilmente non è strada percorribile
+    
+    1) vanno creati dei servizi per i singoli comuni (es. fiere e manifestazioni) da trattare in maniera statica
+    
+    2) gli altri vanno divisi non in maniera flat ma usando dei criteri da condividere con Arboco/Sobrino
+
     '''
 
     
@@ -212,8 +223,16 @@ def main(arg1, arg2, arg3, arg4):
                 hs.ID_SER_PER_UO,
                 hs.DTA_SERVIZIO,
                 to_char(hs.DTA_SERVIZIO, 'YYYY/MM') AS mese,
-                id_comune,  
-                comune,
+                CASE 
+                    WHEN id_comune IS NULL AND au1.ID_UO IN (SELECT cu.id_uo FROM comuni_ut cu WHERE cu.id_comune =1) 
+                    THEN 1
+                    ELSE id_comune
+                END id_comune, 
+                CASE 
+                    WHEN id_comune IS NULL AND au1.ID_UO IN (SELECT cu.id_uo FROM comuni_ut cu WHERE cu.id_comune =1) 
+                    THEN 'GENOVA'
+                    ELSE comune
+                END comune ,
                 id_municipio,
                 municipio,
                 au1.ID_UO, 
@@ -227,7 +246,7 @@ def main(arg1, arg2, arg3, arg4):
                 JOIN anagr_servizi as2 ON aspu.id_servizio = as2. id_servizio
                 LEFT JOIN ANAGR_SERVIZI_COGE asc2 
                     ON asc2.id_servizio_COGE = as2.id_servizio_coge		
-                LEFT JOIN PERCORSI_X_COMUNE_UO_GIORNO pxcuo 
+                LEFT JOIN UNIOPE.PERCORSI_X_COMUNE_UO_GIORNO pxcuo 
                     ON pxcuo.id_percorso = aspu.ID_PERCORSO 
                     AND pxcuo.giorno = hs.dta_servizio 
                     AND pxcuo.giorno BETWEEN aspu.DTA_ATTIVAZIONE AND aspu.DTA_DISATTIVAZIONE
@@ -290,8 +309,16 @@ def main(arg1, arg2, arg3, arg4):
                 hsm.DURATA, 
                 aspu.ID_PERCORSO, 
                 TO_DATE(see.DATA_PIANIF_INIZIALE,'YYYYMMDD') AS giorno,
-                id_comune,  
-                comune,
+                CASE 
+                    WHEN id_comune IS NULL AND au.ID_UO IN (SELECT cu.id_uo FROM comuni_ut cu WHERE cu.id_comune =1) 
+                    THEN 1
+                    ELSE id_comune
+                END id_comune, 
+                CASE 
+                    WHEN id_comune IS NULL AND au.ID_UO IN (SELECT cu.id_uo FROM comuni_ut cu WHERE cu.id_comune =1) 
+                    THEN 'GENOVA'
+                    ELSE comune
+                END comune ,
                 id_municipio,
                 municipio,
                 /*au.id_uo,
@@ -331,7 +358,7 @@ def main(arg1, arg2, arg3, arg4):
                 JOIN anagr_servizi as2 ON aspu.id_servizio = as2. id_servizio
                 LEFT JOIN ANAGR_SERVIZI_COGE asc2 
                     ON asc2.id_servizio_COGE = as2.id_servizio_coge	
-                LEFT JOIN PERCORSI_X_COMUNE_UO_GIORNO pxcuo 
+                LEFT JOIN UNIOPE.PERCORSI_X_COMUNE_UO_GIORNO pxcuo 
                     ON pxcuo.id_percorso = aspu.ID_PERCORSO 
                     AND pxcuo.giorno = to_date(see.DATA_ESECUZIONE_PREVISTA, 'YYYYMMDD')   
                     AND pxcuo.giorno BETWEEN aspu.DTA_ATTIVAZIONE AND aspu.DTA_DISATTIVAZIONE 
@@ -393,8 +420,16 @@ def main(arg1, arg2, arg3, arg4):
                 hs.ID_SER_PER_UO,
                 hs.DTA_SERVIZIO,
                 to_char(hs.DTA_SERVIZIO, 'YYYY/MM') AS mese,
-                id_comune,  
-                comune,
+                CASE 
+                    WHEN id_comune IS NULL AND au1.ID_UO IN (SELECT cu.id_uo FROM comuni_ut cu WHERE cu.id_comune =1) 
+                    THEN 1
+                    ELSE id_comune
+                END id_comune, 
+                CASE 
+                    WHEN id_comune IS NULL AND au1.ID_UO IN (SELECT cu.id_uo FROM comuni_ut cu WHERE cu.id_comune =1) 
+                    THEN 'GENOVA'
+                    ELSE comune
+                END comune ,
                 id_municipio,
                 municipio,
                 au1.ID_UO, 
@@ -408,7 +443,7 @@ def main(arg1, arg2, arg3, arg4):
                 JOIN anagr_servizi as2 ON aspu.id_servizio = as2. id_servizio
                 LEFT JOIN ANAGR_SERVIZI_COGE asc2 
                     ON asc2.id_servizio_COGE = as2.id_servizio_coge		
-                LEFT JOIN PERCORSI_X_COMUNE_UO_GIORNO pxcuo 
+                LEFT JOIN UNIOPE.PERCORSI_X_COMUNE_UO_GIORNO pxcuo 
                     ON pxcuo.id_percorso = aspu.ID_PERCORSO 
                     AND pxcuo.giorno = hs.dta_servizio 
                     AND pxcuo.giorno BETWEEN aspu.DTA_ATTIVAZIONE AND aspu.DTA_DISATTIVAZIONE
@@ -467,8 +502,16 @@ def main(arg1, arg2, arg3, arg4):
                 hsm.DURATA, 
                     aspu.ID_PERCORSO, 
                     TO_DATE(see.DATA_PIANIF_INIZIALE,'YYYYMMDD') AS giorno,
-                    id_comune,  
-                    comune,
+                CASE 
+                    WHEN id_comune IS NULL AND au.ID_UO IN (SELECT cu.id_uo FROM comuni_ut cu WHERE cu.id_comune =1) 
+                    THEN 1
+                    ELSE id_comune
+                END id_comune, 
+                CASE 
+                    WHEN id_comune IS NULL AND au.ID_UO IN (SELECT cu.id_uo FROM comuni_ut cu WHERE cu.id_comune =1) 
+                    THEN 'GENOVA'
+                    ELSE comune
+                END comune ,
                     id_municipio,
                     municipio,
                     /*au.id_uo,
@@ -508,7 +551,7 @@ def main(arg1, arg2, arg3, arg4):
                     JOIN anagr_servizi as2 ON aspu.id_servizio = as2. id_servizio
                     LEFT JOIN ANAGR_SERVIZI_COGE asc2 
                         ON asc2.id_servizio_COGE = as2.id_servizio_coge	
-                    LEFT JOIN PERCORSI_X_COMUNE_UO_GIORNO pxcuo 
+                    LEFT JOIN UNIOPE.PERCORSI_X_COMUNE_UO_GIORNO pxcuo 
                         ON pxcuo.id_percorso = aspu.ID_PERCORSO 
                         AND pxcuo.giorno = to_date(see.DATA_ESECUZIONE_PREVISTA, 'YYYYMMDD')   
                         AND pxcuo.giorno BETWEEN aspu.DTA_ATTIVAZIONE AND aspu.DTA_DISATTIVAZIONE 
@@ -575,6 +618,7 @@ def main(arg1, arg2, arg3, arg4):
         dettagli_personale=cur.fetchall()
     except Exception as e:
         logger.error(e)
+        logger.error(query_personale)
         error_log_mail(errorfile, 'roberto.marzocchi@amiu.genova.it', os.path.basename(__file__), logger )
         exit()
    
@@ -595,6 +639,7 @@ def main(arg1, arg2, arg3, arg4):
         dettagli_mezzi=cur.fetchall()
     except Exception as e:
         logger.error(e)
+        logger.error(query_mezzi)
         error_log_mail(errorfile, 'roberto.marzocchi@amiu.genova.it', os.path.basename(__file__), logger )
         exit()
     logger.info('Fine query mezzi')
