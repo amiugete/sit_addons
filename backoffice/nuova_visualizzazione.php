@@ -48,10 +48,6 @@ $cod_percorso = $_POST['id_percorso'];
 $freq_uo = $_POST['freq_uo'];
 $freq_sit = floor($_POST['freq_sit']);
 $freq_sett = $_POST['freq_sett'];
-//echo $freq_uo."<br>";
-//echo $freq_sit."<br>";
-
-
 
 $id_servizio_uo = intval($_POST['id_servizio_uo']);
 if($_POST['id_servizio_sit']){

@@ -160,6 +160,7 @@ while($r = pg_fetch_assoc($result)) {
   echo '</li>';
   echo '<li>Ultima modifica il '.$r['data_ultima_modifica'].'</li>';
   $freq_sit=$r["freq_testata"];
+  $freq_sett=$r["freq_settimane"];
   $freq_uo=$r["freq_binaria"];
   $id_servizio_uo=$r['id_servizio_uo'];
   $id_servizio_sit= $r['id_servizio_sit'];
@@ -516,6 +517,7 @@ if($check_versione_successiva==0){
 <input type="hidden" id="desc" name="desc" value="<?php echo $desc;?>">
 <input type="hidden" id="freq_uo" name="freq_uo" value="<?php echo $freq_uo;?>">
 <input type="hidden" id="freq_sit" name="freq_sit" value="<?php echo $freq_sit;?>">
+<input type="hidden" id="freq_sett" name="freq_sett" value="<?php echo $freq_sett;?>">
 <input type="hidden" id="id_servizio_uo" name="id_servizio_uo" value="<?php echo $id_servizio_uo;?>">
 <input type="hidden" id="id_servizio_sit" name="id_servizio_sit" value="<?php echo $id_servizio_sit;?>">
 <input type="hidden" id="durata" name="durata" value="<?php echo $durata;?>">
@@ -547,6 +549,7 @@ if($check_versione_successiva==0){
 <input type="hidden" id="desc" name="desc" value="<?php echo $desc;?>">
 <input type="hidden" id="freq_uo" name="freq_uo" value="<?php echo $freq_uo;?>">
 <input type="hidden" id="freq_sit" name="freq_sit" value="<?php echo $freq_sit;?>">
+<input type="hidden" id="freq_sett" name="freq_sett" value="<?php echo $freq_sett;?>">
 <input type="hidden" id="id_servizio_uo" name="id_servizio_uo" value="<?php echo $id_servizio_uo;?>">
 <input type="hidden" id="id_servizio_sit" name="id_servizio_sit" value="<?php echo $id_servizio_sit;?>">
 <input type="hidden" id="durata" name="durata" value="<?php echo $durata;?>">
