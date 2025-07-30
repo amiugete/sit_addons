@@ -10,10 +10,14 @@ case
 	then 'Oggi ci sono meno contenitori su SIT'
 	else 'OK'
 end as congruenza_sit,  
-round((100*(a.contenitori_ispezionati::real-a.contenitori_sovrariempiti::real)/a.contenitori_ispezionati)::numeric, 2) as indicatore
+case 
+	when a.contenitori_ispezionati > 0
+	then round((100*(a.contenitori_ispezionati::real-a.contenitori_sovrariempiti::real)/a.contenitori_ispezionati)::numeric, 2) 
+	else NULL
+end as indicatore
 from  
 ( 
-	select c.descr_comune, concat(p.id_piazzola, ' - ', v.nome, ', ', p.numero_civico, ' - Rif. ', p.riferimento) as piazzola,
+	select c.cod_istat, c.descr_comune, concat(p.id_piazzola, ' - ', v.nome, ', ', p.numero_civico, ' - Rif. ', p.riferimento) as piazzola,
 	za.cod_zona as zona, u.descrizione as ut, q.nome as quartiere,
 	string_agg(distinct pe.id_segnalazione::text, ' - ') as id_segnalazione,
 	string_agg(distinct to_char(pe.data_ora_segnalazione,  'DD/MM/YYYY HH24.MI'), ' - ') as data_ora_segnalazione,
@@ -27,21 +31,21 @@ from
 	string_agg(distinct ie.dettagli_svuotamenti, ', ') as dettagli_svuotamenti
 	 from sovrariempimenti.programmazione_ispezioni pe 
 	 join sovrariempimenti.ispezioni i on i.id_piazzola = pe.id_piazzola
-	 inner join sovrariempimenti.ispezione_elementi ie on ie.id_ispezione = i.id 
-	 join (select id_elemento, id_asta, tipo_elemento from elem.elementi
+	 left join sovrariempimenti.ispezione_elementi ie on ie.id_ispezione = i.id 
+	 left join (select id_elemento, id_asta, tipo_elemento from elem.elementi
    		union 
 		select id_elemento, id_asta, tipo_elemento from history.elementi) e on ie.id_elemento = e.id_elemento
-	 join elem.tipi_elemento te on te.tipo_elemento = e.tipo_elemento  
+	 left join elem.tipi_elemento te on te.tipo_elemento = e.tipo_elemento  
 	 left join elem.piazzole p on p.id_piazzola = i.id_piazzola 
 	 --join elem.elementi e on e.id_piazzola = p.id_piazzola 
-	 join elem.aste a on a.id_asta = coalesce(p.id_asta, e.id_asta) 
-	 join topo.vie v on v.id_via = a.id_via 
-	 join topo.ut u on u.id_ut=a.id_ut 
-	 join topo.quartieri q on q.id_quartiere = a.id_quartiere
-	 join topo.zone_amiu za on za.id_zona = u.id_zona 
-	 join topo.comuni c on c.id_comune = v.id_comune 
+	 left join elem.aste a on a.id_asta = coalesce(p.id_asta, e.id_asta) 
+	 left join topo.vie v on v.id_via = a.id_via 
+	 left join topo.ut u on u.id_ut=a.id_ut 
+	 left join topo.quartieri q on q.id_quartiere = a.id_quartiere
+	 left join topo.zone_amiu za on za.id_zona = u.id_zona 
+	 left join topo.comuni c on c.id_comune = v.id_comune 
 	 group by 
-	 c.descr_comune, concat(p.id_piazzola, ' - ', v.nome, ', ', p.numero_civico, ' - Rif. ', p.riferimento) ,
+	 c.cod_istat, c.descr_comune, concat(p.id_piazzola, ' - ', v.nome, ', ', p.numero_civico, ' - Rif. ', p.riferimento) ,
 	 za.cod_zona , u.descrizione , q.nome ,
 	 /*pe.id_segnalazione, pe.data_ora_segnalazione,*/ i.data_ora,
 	 i.ispettore, i.id 
