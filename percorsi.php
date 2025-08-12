@@ -144,7 +144,33 @@ require_once("select_ut.php");
 
 <script type="text/javascript">
 
+  document.addEventListener("DOMContentLoaded", function() {
+      const params = new URLSearchParams(window.location.search);
+      const cp = params.get("cp");
+      const v = params.get("v");
 
+      if (cp && v) {
+          //console.log("il percorso è: "+cp);
+          $.ajax({
+              type: "get",
+              url: "dettagli_percorso_modal.php",
+              data: { 'cp': cp, 
+              'v': v },
+              dataType: "text",
+              success: function(response) {
+                  $("#body_dettaglio").html(response);
+
+                  //console.log($("#body_dettaglio").html(response))
+                  var modal = new bootstrap.Modal(document.getElementById("viewMemberModal"));
+                  modal.show();
+
+                  // toglie i parametri dalla url
+                  const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                  window.history.replaceState({}, document.title, newUrl);
+              }
+          });
+      }
+  });
 
   var $table = $('#percorsi');
   
@@ -244,6 +270,7 @@ window.dpEvents = {
 
 
 </script>
+
 
 
 </div>	<!--tabella-->

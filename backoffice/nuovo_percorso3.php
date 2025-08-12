@@ -124,8 +124,7 @@ while($r0 = pg_fetch_assoc($result0)) {
 }
 echo $automezzo."<br>";
 
-
-//exit();
+#exit();
 
 $insert_uo = "INSERT INTO UNIOPE.ANAGR_SER_PER_UO 
     (ID_SER_PER_UO,
@@ -440,6 +439,8 @@ echo  pg_last_error($conn);
 }
 
 #exit();
-header("location: ../dettagli_percorso.php?cp=".$cod_percorso."&v=1");
+header("location: ../percorsi.php?cp=".$cod_percorso."&v=1");
+#header("location: ../percorsi.php?cp=0101000301&v=1");
+#header("location: ../dettagli_percorso.php?cp=".$cod_percorso."&v=1");
 
 ?>
