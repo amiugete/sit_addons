@@ -81,7 +81,7 @@ while($r = pg_fetch_assoc($result)) {
     $activeSheet->getStyle('I'.$i)->getAlignment()->setWrapText(true);
     $activeSheet->setCellValue('J'.$i , $r['percorsi']);
     $activeSheet->getStyle('J'.$i)->getAlignment()->setWrapText(true);
-    $activeSheet->setCellValue('J'.$i , $r['n_ispezioni_anno']);
+    $activeSheet->setCellValue('K'.$i , $r['n_ispezioni_anno']);
     $i++;
 }
 //exit;
