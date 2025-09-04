@@ -183,10 +183,10 @@ $(function() {
 
 </div>
 <!--hr-->
-<!--
+
 <button id="export-btn" class="btn btn-primary"><i class="fa-solid fa-file-excel"></i>Esporta dati</button>
 <button id="export-btn-filtered" class="btn btn-primary"><i class="fa-solid fa-file-excel"></i>Esporta dati filtrati</button>
--->
+
 <div id="tabella">
 
         <div class="table-responsive-sm">
@@ -421,8 +421,8 @@ function dateFormat(value, row, index) {
     if(ut == 0){
       ut = "";
     }
-
-    $('#export-btn').click(async () => {
+//////// esportazione totale
+  $('#export-btn').click(async () => {
   // Recupera tutti i dati dal server
   const res = await fetch('./tables/report_consuntivazione_ekovision.php?ut=<?php echo $_POST['ut']?>&data_inizio='+dataIni+'&data_fine='+dataFin+'');
   const data = await res.json();
@@ -438,6 +438,7 @@ function dateFormat(value, row, index) {
   XLSX.writeFile(wb, "export.xlsx");
 });
 
+//////// esportazione filtrata
   // Funzione per leggere i filtri delle colonne dai <input>/<select> nel thead
   window.getColumnFilters = function() {
     const filters = {};
@@ -498,7 +499,7 @@ function dateFormat(value, row, index) {
     }
 
     // Filtri colonna
-    Object.entries(filters).forEach(([k, v]) => {
+    /*Object.entries(filters).forEach(([k, v]) => {
       if (v !== undefined && v !== null && v !== '') {
         const obj = { [k]: v };
         console.log(obj)
@@ -507,7 +508,22 @@ function dateFormat(value, row, index) {
         params.set("filter", jsonString);
         //params.set(k, v);
       }
+    });*/
+
+    const filterObj = {};
+
+    Object.entries(filters).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && v !== '') {
+        filterObj[k] = v;
+      }
     });
+
+    // Lo trasformo in JSON
+    if (Object.keys(filterObj).length > 0) {
+      params.set("filter", JSON.stringify(filterObj));
+    }
+
+    console.log("Filtri JSON:", params.get("filter"));
 
     // URL finale sicuro
     const url = `${baseUrl}?${params.toString()}`;
