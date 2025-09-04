@@ -209,7 +209,7 @@ oci_free_statement($result);
                   
   <!--div id="toolbar"> Per esportare i dati completi rimuovere la paginazione (primo tasto dopo la ricerca)
 </div-->
-      <table  id="raccolta" class="table-hover" 
+      <table  id="raccolta" class="table-hover table-sm" 
         data-locale="it-IT"
         data-show-columns="true"
         data-show-search-clear-button="true"   
@@ -515,18 +515,24 @@ oci_free_statement($result);
                   
   <!--div id="toolbar"> Per esportare i dati completi rimuovere la paginazione (primo tasto dopo la ricerca)
 </div-->
-      <table  id="spazzamento" class="table-hover" 
+      <table  id="spazzamento" 
+        class="table-hover table-sm" 
         data-locale="it-IT"
         data-show-columns="true"
         data-show-search-clear-button="true"   
         data-show-export="true" 
         data-export-type=['json', 'xml', 'csv', 'txt', 'sql', 'pdf', 'excel',  'doc'] 
-				data-search="false" data-click-to-select="true" data-show-print="false"  
+				data-search="false" 
+        data-click-to-select="true" 
+        data-show-print="false"  
         data-virtual-scroll="false"
         data-show-pagination-switch="false"
-				data-pagination="true" data-page-size=75 data-page-list=[10,25,50,75,100,200,500]
+				data-pagination="true" 
+        data-page-size=75 
+        data-page-list=[10,25,50,75,100,200,500]
 				data-side-pagination="server" 
-        data-show-refresh="true" data-show-toggle="true"
+        data-show-refresh="true" 
+        data-show-toggle="true"
         data-show-columns="true"
 				data-filter-control="true"
         data-sort-select-options = "true"

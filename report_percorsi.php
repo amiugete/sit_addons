@@ -131,7 +131,7 @@ if ((int)$id_role_SIT = 0) {
                   
   <div id="toolbar"> Per esportare i dati completi rimuovere la paginazione (primo tasto dopo la ricerca)
 </div>
-				<table  id="percorsi" class="table-hover" 
+				<table  id="percorsi" class="table-hover table-sm" 
         idfield="id" 
         data-toolbar="#toolbar" 
         data-group-by="false"

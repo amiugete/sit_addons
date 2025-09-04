@@ -54,7 +54,7 @@ if ($ts=='RACCOLTA'){
 
         <div class="table-responsive-sm">
 
-		<table  id="ek_cons_dett" class="table-hover" 
+		<table  id="ek_cons_dett" class="table-hover table-sm" 
         data-cache="true"
         idfield="ID_PIAZZOLA" 
         data-show-columns="true"
@@ -125,7 +125,7 @@ $(function() {
 
         <div class="table-responsive-sm">
 
-		<table  id="ek_cons_dett" class="table-hover" 
+		<table  id="ek_cons_dett" class="table-hover table-sm" 
         data-cache="true"
         idfield="ID_PIAZZOLA" 
         data-show-columns="true"

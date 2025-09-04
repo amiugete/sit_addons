@@ -6,8 +6,9 @@ if (isset($filter_totem)){
   $filter_totem_ok= " "; 
 }
 
-$query_ut="select id_ut, descrizione
+$query_ut="select  cmu.id_uo, u.id_ut, u.descrizione
   from topo.ut u 
+  join anagrafe_percorsi.cons_mapping_uo cmu on cmu.id_uo_sit = u.id_ut 
   where ".$filter_totem_ok." id_ut in   
   (select 
     id_ut
@@ -26,6 +27,6 @@ $query_ut="select id_ut, descrizione
   and suu.id_ut = -1
   ) and id_ut in (select id_uo_sit from anagrafe_percorsi.cons_mapping_uo)
   and coalesce(u.data_disattivazione, (now()+ interval '1' year)) > now()
-  order by 2";
+  order by 3";
 
 ?>

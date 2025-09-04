@@ -112,7 +112,7 @@ if (!pg_last_error($conn)){
 
 
 if ($res_ok==0){
-    echo '<font color="green"> Nuovo turno salvato correttamente!</font>';
+    echo '<font color="green"> Nuovo mezzo salvato correttamente!</font>';
 } else {
     echo $res_ok.'<font color="red"> ERRORE - contatta assterritorio@amiu.genova.it</font>';
 }

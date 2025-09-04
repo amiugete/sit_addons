@@ -147,7 +147,7 @@ while($rmax = pg_fetch_assoc($result_max)) {
         <a target="_new" class="btn btn-primary btn-sm"
          href="./export_contenitori_bilaterali.php"><i class="fa-solid fa-file-excel"></i> Esporta xlsx completo</a>
       </div>
-				<table  id="contenitori" class="table-hover" 
+				<table  id="contenitori" class="table-hover table-sm" 
         data-cache="true"
         idfield="targa_contenitore" 
         data-show-columns="true"

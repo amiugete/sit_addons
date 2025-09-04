@@ -263,7 +263,7 @@ var comuni_filtro = {
                   
   <!--div id="toolbar"> Per esportare i dati completi rimuovere la paginazione (primo tasto dopo la ricerca)
 </div-->
-      <table  id="piazzole_sovr" class="table-hover" 
+      <table  id="piazzole_sovr" class="table-hover table-sm" 
         data-show-columns="true"
         data-show-search-clear-button="true"   
         data-show-export="true" 

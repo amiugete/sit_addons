@@ -70,7 +70,7 @@ $filter_totem="OK";
       <!--a target="_new" class="btn btn-primary btn-sm"
          href="./export_consuntivazione_ekovision.php"><i class="fa-solid fa-file-excel"></i> Esporta xlsx completo</a-->
       </div>
-				<table  id="totem_percorsi_dettaglio" class="table-hover" 
+				<table  id="totem_percorsi_dettaglio" class="table-hover table-sm" 
         idfield="ID_SCHEDA" 
         data-show-columns="true"
         data-group-by="false"
