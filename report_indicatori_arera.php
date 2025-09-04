@@ -194,14 +194,18 @@ oci_free_statement($result);
   
  
 
+<!--button id="export-btn" class="btn btn-primary" title="Esporta file Excel completo"><i class="fa-solid fa-table-list"></i>Esporta dati</button>
+<button id="export-btn-filtered" class="btn btn-primary" title="Esporta file Excel filtrato"><i class="fa-solid fa-filter"></i>Esporta dati filtrati</button-->
 
 <div id="tabella_raccolta">
             
         <h4>Indicatori raccolta
         <a href="#tabella_spazzamento" class="btn btn-sm btn-info"> Vai allo spazzamento </a></h4>
         AGGIORNAMENTO DATI: <?php echo $time_update_r;?><br> 
-        NOTE: (i) per servizi si intende il numero di elementi per cui è pianificato lo svuotamento, (ii) sono considerati come effettuati tutti i servizi effettuati regolarmente o con un recupero entro le 24 h
+        NOTE: (i) per servizi si intende il numero di elementi per cui è pianificato lo svuotamento, (ii) sono considerati come effettuati tutti i servizi effettuati regolarmente o con un recupero entro le 24 h<br><br>
 
+<button id="exportR-btn" class="btn btn-primary" title="Esporta file Excel completo"><i class="fa-solid fa-table-list"></i>Esporta dati</button>
+<button id="exportR-btn-filtered" class="btn btn-primary" title="Esporta file Excel filtrato"><i class="fa-solid fa-filter"></i>Esporta dati filtrati</button>
 
 
             <div class="row">
@@ -213,7 +217,7 @@ oci_free_statement($result);
         data-locale="it-IT"
         data-show-columns="true"
         data-show-search-clear-button="true"   
-        data-show-export="true" 
+        data-show-export="false" 
         data-export-type=['json', 'xml', 'csv', 'txt', 'sql', 'pdf', 'excel',  'doc'] 
 				data-search="false" data-click-to-select="true" data-show-print="false"  
         data-virtual-scroll="false"
@@ -348,6 +352,15 @@ function realFormat_pc(value, row, index) {
    }
 };
 
+
+$(function() {
+  initTableExport({
+    tableId: "raccolta",
+    exportAllBtn: "#exportR-btn",
+    exportFilteredBtn: "#exportR-btn-filtered",
+    baseUrl: "./tables/report_indicatori_arera_raccolta.php"
+  });
+});
 
 </script>
 
@@ -506,9 +519,10 @@ oci_free_statement($result);
         <a href="#tabella_raccolta" class="btn btn-sm btn-info"> Vai alla raccolta </a>
         </h4>
         AGGIORNAMENTO DATI: <?php echo $time_update_s;?><br>
-        NOTE: (i) per servizi si intende il valore in km lineari da spazzare / lavare (art 46.3 TQRIF) (ii) sono considerati come effettuati tutti i servizi effettuati regolarmente o con un recupero entro le 24 h
+        NOTE: (i) per servizi si intende il valore in km lineari da spazzare / lavare (art 46.3 TQRIF) (ii) sono considerati come effettuati tutti i servizi effettuati regolarmente o con un recupero entro le 24 h<br><br>
 
-
+        <button id="exportS-btn" class="btn btn-primary" title="Esporta file Excel completo"><i class="fa-solid fa-table-list"></i>Esporta dati</button>
+        <button id="exportS-btn-filtered" class="btn btn-primary" title="Esporta file Excel filtrato"><i class="fa-solid fa-filter"></i>Esporta dati filtrati</button>
 
             <div class="row">
 
@@ -520,7 +534,7 @@ oci_free_statement($result);
         data-locale="it-IT"
         data-show-columns="true"
         data-show-search-clear-button="true"   
-        data-show-export="true" 
+        data-show-export="false" 
         data-export-type=['json', 'xml', 'csv', 'txt', 'sql', 'pdf', 'excel',  'doc'] 
 				data-search="false" 
         data-click-to-select="true" 
@@ -639,7 +653,14 @@ function realFormat_pc(value, row, index) {
    }
 };
 
-
+$(function() {
+  initTableExport({
+    tableId: "spazzamento",
+    exportAllBtn: "#exportS-btn",
+    exportFilteredBtn: "#exportS-btn-filtered",
+    baseUrl: "./tables/report_indicatori_arera_spazzamento.php"
+  });
+});
 </script>
 
 

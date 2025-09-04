@@ -27,7 +27,6 @@ if ($_SESSION['test']==1) {
   require_once ('./conn.php');
 }
 ?> 
-<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 
 
@@ -406,144 +405,25 @@ function dateFormat(value, row, index) {
       return moment(date).format('DD/MM/YYYY HH:mm')
     };
 
-
-    const dataInizio = $('input[name="daterange"]').val().split(' - ')[0];
-    const partsI = dataInizio.split('/');
-    //const dateObjI = new Date(partsI[2], partsI[1]-1, partsI[0]); // mese 0-indexed
-    //const dataIni = dateObjI.toISOString().slice(0, 10);
-    const dataIni = `${partsI[2]}-${partsI[1]}-${partsI[0]}`;
-    const dataFine = $('input[name="daterange"]').val().split(' - ')[1];
-    const partsF = dataFine.split('/');
-    //const dateObjF = new Date(partsF[2], partsF[1]-1, partsF[0]); // mese 0-indexed
-    //const dataFin = dateObjF.toISOString().slice(0, 10); // filtro data fine
-    const dataFin = `${partsF[2]}-${partsF[1]}-${partsF[0]}`;
-    var ut = $('#ut').val();
-    if(ut == 0){
-      ut = "";
-    }
-//////// esportazione totale
-  $('#export-btn').click(async () => {
-  // Recupera tutti i dati dal server
-  const res = await fetch('./tables/report_consuntivazione_ekovision.php?ut=<?php echo $_POST['ut']?>&data_inizio='+dataIni+'&data_fine='+dataFin+'');
-  const data = await res.json();
-
-  console.log("URL fetch export:", res);
-
-  // SheetJS si aspetta un array → usiamo data.rows
-  const ws = XLSX.utils.json_to_sheet(data.rows);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-
-  // Salva file Excel
-  XLSX.writeFile(wb, "export.xlsx");
-});
-
-//////// esportazione filtrata
-  // Funzione per leggere i filtri delle colonne dai <input>/<select> nel thead
-  window.getColumnFilters = function() {
-    const filters = {};
-    const $thead = $table.find('thead');
-
-    $thead.find('input, select').each(function () {
-      const $el = $(this);
-      let field = $el.closest('th').attr('data-field');
-      if (!field) {
-        const idx = $el.closest('th').index();
-        field = $thead.find('tr:first th').eq(idx).attr('data-field');
-      }
-      const value = $el.val();
-      if (field && value !== '' && value != null) {
-        filters[field] = value;
-      }
-    });
-
-    return filters;
-  };
-
-  // queryParams: unisce params standard con filtri colonna
-  window.queryParams = function(params) {
-    const filters = window.getColumnFilters ? window.getColumnFilters() : {};
-    return Object.assign({}, params, filters);
-  };
-
-  // Bottone export Excel filtrato
-  $('#export-btn-filtered').click(async () => {
-    const options = $table.bootstrapTable('getOptions');
-    const filters = window.getColumnFilters();
-	  
-
-    // Base URL (senza query string)
-    const baseUrl = "./tables/report_consuntivazione_ekovision.php";
-
-    // Costruzione sicura dei parametri con URLSearchParams
-    const params = new URLSearchParams();
-
-    // Parametri fissi (se presenti)
-    
-    console.log($('input[name="daterange"]').val())
-    console.log(dataInizio);
-    console.log(dataFine);
-    params.set("ut", ut);
-    params.set("data_inizio", dataIni);
-    params.set("data_fine", dataFin);
-    //params.set("data_inizio", "2025-08-03");
-    //params.set("data_fine", "2025-09-03");
-
-    // Paginazione lato server
-    params.set("limit", options.totalRows || 1000);
-    params.set("offset", 0);
-
-    // Filtro globale (barra search)
-    if (options.searchText) {
-      params.set("search", options.searchText);
-    }
-
-    const filterObj = {};
-
-    Object.entries(filters).forEach(([k, v]) => {
-      if (v !== undefined && v !== null && v !== '') {
-        filterObj[k] = v;
-      }
-    });
-
-    // Lo trasformo in JSON
-    if (Object.keys(filterObj).length > 0) {
-      params.set("filter", JSON.stringify(filterObj));
-    }
-
-    console.log("Filtri JSON:", params.get("filter"));
-
-    // URL finale sicuro
-    const url = `${baseUrl}?${params.toString()}`;
-    console.log("URL fetch export:", url);
-
-    try {
-      const res = await fetch(url);
-      const text = await res.text(); // prima leggo testo per debug
-
-      // Provo a parsare JSON
-      let data;
-      try {
-        data = JSON.parse(text);
-      } catch (err) {
-        console.error("Risposta server non JSON valido:", text);
-        alert("Errore: risposta server non JSON valido. Controlla console.");
-        return;
-      }
-
-      const rows = data.rows || data;
-
-      // Genero Excel con SheetJS
-      const ws = XLSX.utils.json_to_sheet(rows);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Filtrati");
-      XLSX.writeFile(wb, "export-filtrato.xlsx");
-
-    } catch (err) {
-      console.error("Errore fetch export:", err);
-      alert("Errore durante la richiesta di export. Controlla console.");
+$(function() {
+  initTableExport({
+    tableId: "ek_cons",
+    exportAllBtn: "#export-btn",
+    exportFilteredBtn: "#export-btn-filtered",
+    baseUrl: "./tables/report_consuntivazione_ekovision.php",
+    extraParams: () => {
+      // parametri extra della pagina
+      const range = $('input[name="daterange"]').val().split(" - ");
+      return {
+        ut: $("#ut").val() == 0 ? "" : $("#ut").val(),
+        data_inizio: range[0].split('/').reverse().join('-'),
+        data_fine: range[1].split('/').reverse().join('-')
+      };
     }
   });
+});
+
+
 </script>
 
 
