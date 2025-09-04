@@ -184,8 +184,8 @@ $(function() {
 </div>
 <!--hr-->
 
-<button id="export-btn" class="btn btn-primary"><i class="fa-solid fa-file-excel"></i>Esporta dati</button>
-<button id="export-btn-filtered" class="btn btn-primary"><i class="fa-solid fa-file-excel"></i>Esporta dati filtrati</button>
+<button id="export-btn" class="btn btn-primary" title="Esporta file Excel completo"><i class="fa-solid fa-table-list"></i>Esporta dati</button>
+<button id="export-btn-filtered" class="btn btn-primary" title="Esporta file Excel filtrato"><i class="fa-solid fa-filter"></i>Esporta dati filtrati</button>
 
 <div id="tabella">
 
@@ -497,18 +497,6 @@ function dateFormat(value, row, index) {
     if (options.searchText) {
       params.set("search", options.searchText);
     }
-
-    // Filtri colonna
-    /*Object.entries(filters).forEach(([k, v]) => {
-      if (v !== undefined && v !== null && v !== '') {
-        const obj = { [k]: v };
-        console.log(obj)
-        const jsonString = JSON.stringify(obj);
-        console.log(jsonString)
-        params.set("filter", jsonString);
-        //params.set(k, v);
-      }
-    });*/
 
     const filterObj = {};
 
