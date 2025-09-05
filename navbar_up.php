@@ -423,3 +423,23 @@ if (window.innerWidth < 992) {
 }); 
 // 
 </script>
+
+<?php 
+$in_manutenzione=0;
+
+if ($in_manutenzione==1){
+  ?>
+  <body>
+    <div class="container" style="text-align:center;">
+        <h1>Sito in Manutenzione</h1>
+        <h4>Stiamo effettuando alcune operazioni di aggiornamento. Torna a trovarci tra poco!</h4>
+    </div>
+</body>
+
+  <?php 
+  die();
+
+}
+
+
+?> 
