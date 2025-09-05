@@ -86,4 +86,6 @@ Il tutto è controllato dalla tabella etl.sys_users_addons dove per ora (aprile 
 
 
 
+# Per mettere in manutenzione il sito 
 
+Agire sulla pagina `navbar_up.php` modificando il parametro `$in_manutenzione = 1;`
