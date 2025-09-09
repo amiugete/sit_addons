@@ -49,7 +49,7 @@ function initTableExport(config) {
     return;
   }
 
-  const $table = $(`#${config.tableId}`);
+  var $table = $(`#${config.tableId}`);
 
   if ($table.length === 0) {
     console.error(`initTableExport: tabella con id '${config.tableId}' non trovata`);
@@ -81,25 +81,21 @@ function initTableExport(config) {
   }
 
   // Recupera i parametri comuni (con extra e filtri opzionali)
-  function buildParams(includeFilters = false) {
-    const options = $table.bootstrapTable('getOptions');
-    const params = new URLSearchParams();
+function buildParams(includeFilters = false) {
+  const params = new URLSearchParams();
 
-    // Parametri extra (se definiti dall'utente)
-    if (typeof config.extraParams === 'function') {
-      try {
-        const extras = config.extraParams();
-        if (extras && typeof extras === 'object') {
-          for (const [k, v] of Object.entries(extras)) {
-            if (v !== undefined && v !== null && v !== '') {
-              params.set(k, v);
-            }
-          }
-        }
-      } catch (err) {
-        console.warn("initTableExport: errore in extraParams()", err);
+  // Parametri extra forniti dall'utente
+  if (typeof config.extraParams === "function") {
+    const extras = config.extraParams() || {};
+    Object.entries(extras).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && v !== "") {
+        params.set(k, v);
       }
-    }
+    });
+  }
+
+  if (includeFilters) {
+    const options = $table.bootstrapTable("getOptions");
 
     // Paginazione lato server
     params.set("limit", options.totalRows || 1000);
@@ -111,21 +107,20 @@ function initTableExport(config) {
     }
 
     // Filtri colonne
-    if (includeFilters) {
-      const filters = getColumnFilters();
-      const filterObj = {};
-      Object.entries(filters).forEach(([k, v]) => {
-        if (v !== undefined && v !== null && v !== '') {
-          filterObj[k] = v;
-        }
-      });
-      if (Object.keys(filterObj).length > 0) {
-        params.set("filter", JSON.stringify(filterObj));
-      }
+    const filters = getColumnFilters();
+    if (Object.keys(filters).length > 0) {
+      params.set("filter", JSON.stringify(filters));
     }
-
-    return params;
+  } else {
+    // Export totale: ignoriamo tutto
+    params.set("limit", 1000000); // un numero molto grande per prendere tutti i record
+    params.set("offset", 0);
+    // Non settiamo searchText né filtri
   }
+
+  return params;
+}
+
 
   function createExcelSheet(rows, fileName, sheetName) {
     if (!rows || rows.length === 0) {
@@ -142,17 +137,14 @@ function initTableExport(config) {
     // Creo il foglio Excel
     const ws = XLSX.utils.aoa_to_sheet(aoa);
 
-    // Applico i filtri sulla prima riga
-    const range = XLSX.utils.decode_range(ws["!ref"]);
-    ws["!autofilter"] = { ref: XLSX.utils.encode_range(range.s, { r: range.s.r, c: range.e.c }) };
+    // Autofilter sulla prima riga
+    const range = XLSX.utils.decode_range(ws['!ref']);
+    ws['!autofilter'] = { ref: XLSX.utils.encode_range(range.s, { r: range.s.r, c: range.e.c }) };
 
-    // Calcolo larghezza automatica delle colonne
-    ws["!cols"] = colNames.map(h => {
-      const maxLen = Math.max(
-        h.length,
-        ...rows.map(row => row[h] ? row[h].toString().length : 0)
-      );
-      return { wch: maxLen + 1 }; // + margine
+    // Larghezza automatica colonne
+    ws['!cols'] = colNames.map(h => {
+      const maxLen = Math.max(h.length, ...rows.map(r => r[h] ? r[h].toString().length : 0));
+      return { wch: maxLen + 1 }; //margine
     });
 
     // Creo la cartella Excel e aggiungo il foglio
@@ -185,13 +177,14 @@ function initTableExport(config) {
 
     try {
       const res = await fetch(url);
-      const text = await res.text();
+      //const text = await res.text();
       let data;
       try {
-        data = JSON.parse(text);
-      } catch (err) {
-        console.error("Risposta non JSON valida:", text);
-        alert("Errore: risposta server non valida.");
+        data = await res.json();
+      } catch {
+        const text = await res.text();
+        console.error('Risposta non JSON valida:', text);
+        alert('Errore: risposta server non valida.');
         return;
       }
       createExcelSheet(data.rows || data, "export_consuntivazione_filtrato.xlsx", "Dati");

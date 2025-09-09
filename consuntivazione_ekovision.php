@@ -50,16 +50,15 @@ require_once("./filter_tables/filter_consuntivazione_ekovision.php");
 ?>
 
 <div class="container">
-  <h4 style="margin-bottom: 4%;">Report consuntivazione Ekovision</h4>
-
-<div class="row justify-content-start">
-<div class="col-4">
-<?php 
+  <h4 style="margin-bottom: 2%;">Report consuntivazione Ekovision</h4>
+  <?php 
 
 require_once("./last_update_ekovision.php");
 
 ?>
-  </div>
+
+<div class="row justify-content-start" style="margin-top: 2%;">
+
   <div class="col-4">
   <!--FILTRO PER UT sulla base delle UT del mio profilo SIT-->
 <div class="rfix">
@@ -180,23 +179,23 @@ $(function() {
 });
 </script>
 
+<div class="col-4" style="align-content: center;">
+  <button id="export-btn" class="btn btn-primary" title="Esporta file Excel completo"><i class="bi bi-file-earmark-excel"></i>Esporta tabella</button>
+</div>
+
 </div>
 <!--hr-->
 
-<button id="export-btn" class="btn btn-primary" title="Esporta file Excel completo"><i class="fa-solid fa-table-list"></i>Esporta dati</button>
-<button id="export-btn-filtered" class="btn btn-primary" title="Esporta file Excel filtrato"><i class="fa-solid fa-filter"></i>Esporta dati filtrati</button>
+
+
 
 <div id="tabella">
 
         <div class="table-responsive-sm">
-
-                  <!--div id="toolbar">
-        <button id="showSelectedRows" class="btn btn-primary" type="button">Crea ordine di lavoro</button>
-      </div-->
-    
-      <div id="toolbar" class="isDisabled"> 
-      <!--a target="_new" class="btn btn-primary btn-sm"
-         href="./export_consuntivazione_ekovision.php"><i class="fa-solid fa-file-excel"></i> Esporta xlsx completo</a-->
+          
+   
+      <div id="toolbar"> 
+        <!--button id="export-btn-filtered" class="btn btn-primary" title="Esporta file Excel filtrato"><i class="fa-solid fa-filter"></i>Esporta tabella filtrata</button-->
       </div>
         <table  id="ek_cons" class="table-hover table-sm" 
         data-locale="it-IT"
@@ -220,7 +219,7 @@ $(function() {
         data-sort-select-options = "true"
         data-export-data-type="all"
         data-url="./tables/report_consuntivazione_ekovision.php?ut=<?php echo $_POST['ut']?>&data_inizio=<?php echo $last_month->format("Y-m-d");?>&data_fine=<?php echo $today->format("Y-m-d");?>" 
-        data-toolbar="#toolbar" 
+        data-toolbar="#toolbar"
         data-show-footer="false"
         data-query-params="queryParams"
         >
@@ -285,12 +284,32 @@ $(function() {
 <script type="text/javascript">
 
 
-const $table = $('#ek_cons');
+var $table = $('#ek_cons');
+
+/*
+function filterActive() {
+  options = $('#ek_cons').bootstrapTable('getOptions');
+  console.log(options)
+  const filters = options.filterControlValues || {};
+  const hasFilters = Object.values(filters).some(val => val !== '' && val !== null);
+
+  console.log(hasFilters)
+  return hasFilters
+};*/
+
+$table.on('post-body.bs.table', function () {
+  if ($('#export-btn-filtered').length === 0) {
+    $('.fixed-table-toolbar .columns')
+      .append('<button id="export-btn-filtered" class="btn btn-secondary ms-2" title="Esporta file Excel filtrato"><i class="bi bi-download"></i> Esporta tabella filtrata</button>');
+  }
+});
+
 
 $(function() {
     $table.bootstrapTable();
     //console.log($table.bootstrapTable());
   });
+
 
   
 var opzioni_prev = ['Previsto', 'Non previsto'] ;
