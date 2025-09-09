@@ -127,6 +127,42 @@ function initTableExport(config) {
     return params;
   }
 
+  function createExcelSheet(rows, fileName, sheetName) {
+    if (!rows || rows.length === 0) {
+      alert("Nessun dato da esportare.");
+      return;
+    }
+
+    // Recupero nomi delle colonne
+    const colNames = Object.keys(rows[0]);
+
+    // Creo array of arrays (prima riga = intestazione)
+    const aoa = [colNames, ...rows.map(row => colNames.map(h => row[h]))];
+
+    // Creo il foglio Excel
+    const ws = XLSX.utils.aoa_to_sheet(aoa);
+
+    // Applico i filtri sulla prima riga
+    const range = XLSX.utils.decode_range(ws["!ref"]);
+    ws["!autofilter"] = { ref: XLSX.utils.encode_range(range.s, { r: range.s.r, c: range.e.c }) };
+
+    // Calcolo larghezza automatica delle colonne
+    ws["!cols"] = colNames.map(h => {
+      const maxLen = Math.max(
+        h.length,
+        ...rows.map(row => row[h] ? row[h].toString().length : 0)
+      );
+      return { wch: maxLen + 1 }; // + margine
+    });
+
+    // Creo la cartella Excel e aggiungo il foglio
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+
+    // Salvo il file
+    XLSX.writeFile(wb, fileName);
+  }
+
   // Export dati totale
   $(config.exportAllBtn).off("click").on("click", async () => {
     const url = `${config.baseUrl}?${buildParams(false).toString()}`;
@@ -135,19 +171,14 @@ function initTableExport(config) {
     try {
       const res = await fetch(url);
       const data = await res.json();
-      const rows = data.rows || data;
-
-      const ws = XLSX.utils.json_to_sheet(rows);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Tutti");
-      XLSX.writeFile(wb, "export.xlsx");
+      createExcelSheet(data.rows || data, "export_consuntivazione.xlsx", "Dati");
     } catch (err) {
       console.error("Errore fetch export totale:", err);
       alert("Errore durante export totale.");
     }
   });
 
-  // Export dati filtrati
+  // Export dati filtrati applicando filtri e autodimensionamento colonne
   $(config.exportFilteredBtn).off("click").on("click", async () => {
     const url = `${config.baseUrl}?${buildParams(true).toString()}`;
     console.log("URL fetch export filtrato:", url);
@@ -163,13 +194,7 @@ function initTableExport(config) {
         alert("Errore: risposta server non valida.");
         return;
       }
-
-      const rows = data.rows || data;
-
-      const ws = XLSX.utils.json_to_sheet(rows);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Filtrati");
-      XLSX.writeFile(wb, "export-filtrato.xlsx");
+      createExcelSheet(data.rows || data, "export_consuntivazione_filtrato.xlsx", "Dati");
     } catch (err) {
       console.error("Errore fetch export filtrato:", err);
       alert("Errore durante export filtrato.");
