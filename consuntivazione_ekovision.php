@@ -180,7 +180,7 @@ $(function() {
 </script>
 
 <div class="col-4" style="align-content: center;">
-  <button id="export-btn" class="btn btn-primary" title="Esporta file Excel completo"><i class="bi bi-file-earmark-excel"></i>Esporta tabella</button>
+  <button id="export-btn" class="btn btn-primary" title="Esporta file Excel completo" style="float: right;"><i class="bi bi-file-earmark-excel" ></i>Esporta tabella</button>
 </div>
 
 </div>
