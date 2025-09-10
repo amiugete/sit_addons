@@ -84,7 +84,7 @@ if (!pg_last_error($conn)){
     pg_last_error($conn);
     $res_ok= $res_ok+1;
 }
-//$result_usit1 = pg_execute($conn, "update_sit1", array($data_att, $cod_percorso)); 
+$result_usit1 = pg_execute($conn, "update_sit1", array($data_att, $cod_percorso)); 
 
 if (!pg_last_error($conn)){
     #$res_ok=0;
