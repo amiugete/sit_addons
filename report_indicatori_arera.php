@@ -204,8 +204,19 @@ oci_free_statement($result);
         AGGIORNAMENTO DATI: <?php echo $time_update_r;?><br> 
         NOTE: (i) per servizi si intende il numero di elementi per cui è pianificato lo svuotamento, (ii) sono considerati come effettuati tutti i servizi effettuati regolarmente o con un recupero entro le 24 h<br><br>
 
-<button id="exportR-btn" class="btn btn-primary" title="Esporta file Excel completo"><i class="fa-solid fa-table-list"></i>Esporta dati</button>
-<button id="exportR-btn-filtered" class="btn btn-primary" title="Esporta file Excel filtrato"><i class="fa-solid fa-filter"></i>Esporta dati filtrati</button>
+
+  <!--div class="row justify-content-start" style="margin-top: 2%;">
+
+    <div class="col-5">
+    </div>
+    <div class="col-5">
+    </div>
+    <div class="col-2">
+      <button id="exportR-btn" class="btn btn-primary" title="Esporta file Excel completo" style="width: 100%;"><i class="bi bi-file-earmark-excel" ></i>Esporta tabella</button>
+    </div>
+  </div-->
+<!--button id="exportR-btn" class="btn btn-primary" title="Esporta file Excel completo"><i class="fa-solid fa-table-list"></i>Esporta dati</button>
+<button id="exportR-btn-filtered" class="btn btn-primary" title="Esporta file Excel filtrato"><i class="fa-solid fa-filter"></i>Esporta dati filtrati</button-->
 
 
             <div class="row">
@@ -302,6 +313,14 @@ oci_free_statement($result);
 
 
   var $table = $('#raccolta');
+
+
+$table.on('post-body.bs.table', function () {
+  if ($('#exportR-btn-filtered').length === 0) {
+    $('.fixed-table-toolbar .columns')
+      .append('<button id="exportR-btn-filtered" class="btn btn-secondary ms-2" title="Esporta file Excel"><i class="bi bi-download"></i> Esporta tabella</button>');
+  }
+});
   
   $(function() {
     $table.bootstrapTable()
@@ -520,6 +539,7 @@ oci_free_statement($result);
         </h4>
         AGGIORNAMENTO DATI: <?php echo $time_update_s;?><br>
         NOTE: (i) per servizi si intende il valore in km lineari da spazzare / lavare (art 46.3 TQRIF) (ii) sono considerati come effettuati tutti i servizi effettuati regolarmente o con un recupero entro le 24 h<br><br>
+
 
         <button id="exportS-btn" class="btn btn-primary" title="Esporta file Excel completo"><i class="fa-solid fa-table-list"></i>Esporta dati</button>
         <button id="exportS-btn-filtered" class="btn btn-primary" title="Esporta file Excel filtrato"><i class="fa-solid fa-filter"></i>Esporta dati filtrati</button>

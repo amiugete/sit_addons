@@ -59,7 +59,7 @@ require_once("./last_update_ekovision.php");
 
 <div class="row justify-content-start" style="margin-top: 2%;">
 
-  <div class="col-4">
+  <div class="col-5">
   <!--FILTRO PER UT sulla base delle UT del mio profilo SIT-->
 <div class="rfix">
 
@@ -145,7 +145,7 @@ $last_month = $dt->modify("-1 month");
 
 
 
-<div class="form-group col-lg-4">
+<div class="form-group col-5">
 <label for="data_inizio" >Da  (GG/MM/AAAA) - A (GG/MM/AAAA)</label><font color="red">*</font>
     <input type="text" class="form-control" name="daterange" value="<?php echo $last_month->format('d/m/Y');?> - <?php echo $today->format('d/m/Y');?>"/>
     <small>Massimo 31 giorni </small>
@@ -179,8 +179,8 @@ $(function() {
 });
 </script>
 
-<div class="col-4" style="align-content: center;">
-  <button id="export-btn" class="btn btn-primary" title="Esporta file Excel completo" style="float: right;"><i class="bi bi-file-earmark-excel" ></i>Esporta tabella</button>
+<div class="col-2" style="align-content: center;">
+  <!--button id="export-btn" class="btn btn-primary" title="Esporta file Excel completo" style="width: 100%;"><i class="bi bi-file-earmark-excel" ></i>Esporta tabella</button-->
 </div>
 
 </div>
@@ -300,7 +300,7 @@ function filterActive() {
 $table.on('post-body.bs.table', function () {
   if ($('#export-btn-filtered').length === 0) {
     $('.fixed-table-toolbar .columns')
-      .append('<button id="export-btn-filtered" class="btn btn-secondary ms-2" title="Esporta file Excel filtrato"><i class="bi bi-download"></i> Esporta tabella filtrata</button>');
+      .append('<button id="export-btn-filtered" class="btn btn-secondary ms-2" title="Esporta file Excel"><i class="bi bi-download"></i> Esporta tabella</button>');
   }
 });
 
