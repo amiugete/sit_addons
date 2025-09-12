@@ -1,5 +1,23 @@
 <?php
 
+//$filter="WHERE 1=1 ";
+
+if ($_GET['filter']){
+    foreach(json_decode($_GET['filter']) as $key => $val) {
+        /*if (is_numeric($val)){
+            $filter = $filter. " AND ".$key." = ".$val." ";
+        } else {*/
+            $filter = $filter." AND upper(".$key.") LIKE upper('%".$val."%') ";
+        //} 
+         
+    }
+} 
+
+#echo $filter;
+#echo '<br>';
+
+#exit();
+
 $query0= "
     /*report contenitori*/
 select vpd.id_piazzola, 
@@ -67,9 +85,9 @@ order by val_riemp desc, data_ora_last_sv";
 
     //questa parte per ora non serve
     if($_GET['ut']) {
-        $query= "select * from (".$query0.") a where $1 = any(id_uts) " ;  
+        $query= "select * from (".$query0.") a where $1 = any(id_uts) ".$filter ;  
     } else {
-        $query= $query0;
+        $query= "select * from (".$query0.") a where 1=1 ".$filter ;
     }
 
     //print $query."<br>";

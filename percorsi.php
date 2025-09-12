@@ -70,7 +70,7 @@ require_once("select_ut.php");
         data-group-by="false"
         data-group-by-field='["cod_percorso", "descrizione", "famiglia", "tipo"]'
         data-show-search-clear-button="true"   
-        data-show-export="true" 
+        data-show-export="false" 
         data-export-type="['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'doc', 'pdf']"
 				data-search="true" data-click-to-select="true" data-show-print="false"  
 				data-pagination="true" data-page-size=75 data-page-list=[10,25,50,75,100,200,500]
@@ -173,6 +173,13 @@ require_once("select_ut.php");
   });
 
   var $table = $('#percorsi');
+
+  $table.on('post-body.bs.table', function () {
+    if ($('#export-btn-filtered').length === 0) {
+      $('.fixed-table-toolbar .columns')
+        .append('<button id="export-btn-filtered" class="btn btn-secondary ms-2" title="Esporta file Excel"><i class="bi bi-download"></i> Esporta tabella</button>');
+    }
+  });
   
   $(function() {
     $table.bootstrapTable()
@@ -268,7 +275,23 @@ window.dpEvents = {
       }  
     };
 
-
+$(function() {
+  initTableExport({
+    tableId: "percorsi",
+    exportAllBtn: "#export-btn",
+    exportFilteredBtn: "#export-btn-filtered",
+    baseUrl: "./tables/percorsi_raggruppati.php",
+    extraParams: () => {
+      // parametri extra della pagina
+      //const range = $('input[name="daterange"]').val().split(" - ");
+      return {
+        ut: $("#ut0").val() == 0 ? "" : $("#ut0").val()//,
+        //data_inizio: range[0].split('/').reverse().join('-'),
+        //data_fine: range[1].split('/').reverse().join('-')
+      };
+    }
+  });
+});
 </script>
 
 

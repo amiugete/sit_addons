@@ -266,7 +266,7 @@ var comuni_filtro = {
       <table  id="piazzole_sovr" class="table-hover table-sm" 
         data-show-columns="true"
         data-show-search-clear-button="true"   
-        data-show-export="true" 
+        data-show-export="false" 
         data-export-type=['json', 'xml', 'csv', 'txt', 'sql', 'pdf', 'excel',  'doc'] 
 				data-search="false" data-click-to-select="true" data-show-print="false"  
         data-virtual-scroll="false"
@@ -317,6 +317,13 @@ var comuni_filtro = {
 
 
   var $table = $('#piazzole_sovr');
+
+  $table.on('post-body.bs.table', function () {
+  if ($('#export-btn-filtered').length === 0) {
+    $('.fixed-table-toolbar .columns')
+      .append('<button id="export-btn-filtered" class="btn btn-secondary ms-2" title="Esporta file Excel"><i class="bi bi-download"></i> Esporta tabella</button>');
+  }
+});
   
   $(function() {
     $table.bootstrapTable()
@@ -359,6 +366,15 @@ function realFormat_pc(value, row, index) {
     return '-';
    }
 };
+
+$(function() {
+  initTableExport({
+    tableId: "piazzole_sovr",
+    exportAllBtn: "#export-btn",
+    exportFilteredBtn: "#export-btn-filtered",
+    baseUrl: "./tables/report_piazzole_sovr.php"
+  });
+});
 
 
 </script>

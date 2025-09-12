@@ -541,8 +541,8 @@ oci_free_statement($result);
         NOTE: (i) per servizi si intende il valore in km lineari da spazzare / lavare (art 46.3 TQRIF) (ii) sono considerati come effettuati tutti i servizi effettuati regolarmente o con un recupero entro le 24 h<br><br>
 
 
-        <button id="exportS-btn" class="btn btn-primary" title="Esporta file Excel completo"><i class="fa-solid fa-table-list"></i>Esporta dati</button>
-        <button id="exportS-btn-filtered" class="btn btn-primary" title="Esporta file Excel filtrato"><i class="fa-solid fa-filter"></i>Esporta dati filtrati</button>
+        <!--button id="exportS-btn" class="btn btn-primary" title="Esporta file Excel completo"><i class="fa-solid fa-table-list"></i>Esporta dati</button>
+        <button id="exportS-btn-filtered" class="btn btn-primary" title="Esporta file Excel filtrato"><i class="fa-solid fa-filter"></i>Esporta dati filtrati</button-->
 
             <div class="row">
 
@@ -629,8 +629,25 @@ oci_free_statement($result);
 
   var $tables = $('#spazzamento');
   
+  /*$tables.on('post-body.bs.table', function () {
+  if ($('#exportS-btn-filtered').length === 0) {
+    $('.fixed-table-toolbar .columns')
+      .append('<button id="exportS-btn-filtered" class="btn btn-secondary ms-2" title="Esporta file Excel"><i class="bi bi-download"></i> Esporta tabella</button>');
+  }
+});*/
 
-  
+  $tables.on('post-body.bs.table', function () {
+    const $table = $(this); 
+    const $toolbar = $table.closest('.bootstrap-table').find('.fixed-table-toolbar .columns');
+
+    if ($toolbar.find('#exportS-btn-filtered').length === 0) {
+      $toolbar.append(
+        '<button id="exportS-btn-filtered" class="btn btn-secondary ms-2" title="Esporta file Excel">' +
+        '<i class="bi bi-download"></i> Esporta tabella</button>'
+      );
+    }
+  });
+    
 
   $(function() {
     $tables.bootstrapTable();

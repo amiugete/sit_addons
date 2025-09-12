@@ -76,7 +76,7 @@ $filter_totem="OK";
         data-group-by="false"
         data-group-by-field='["indirizzo", "frazione"]'
         data-show-search-clear-button="true"   
-        data-show-export="true" 
+        data-show-export="false" 
         data-export-type=['json', 'xml', 'csv', 'txt', 'sql', 'pdf', 'excel',  'doc'] 
 				data-search="false" data-click-to-select="true" data-show-print="false"  
         data-virtual-scroll="false"
@@ -121,6 +121,18 @@ $filter_totem="OK";
 
 
 var $table = $('#totem_percorsi_dettaglio');
+
+$table.on('post-body.bs.table', function () {
+    const $tableee = $(this); 
+    const $toolbar = $tableee.closest('.bootstrap-table').find('.fixed-table-toolbar .columns');
+
+    if ($toolbar.find('#export-btn-filtered').length === 0) {
+      $toolbar.append(
+        '<button id="export-btn-filtered" class="btn btn-secondary ms-2" title="Esporta file Excel">' +
+        '<i class="bi bi-download"></i> Esporta tabella</button>'
+      );
+    }
+  });
 
 $(function() {
     $table.bootstrapTable();
@@ -180,6 +192,31 @@ function dateFormat2(value, row, index) {
     function dateFormatter(value) {
       return moment(value).format('DD/MM/YYYY HH:mm')
     };
+
+let idp = "<?php echo $_POST['id']; ?>";
+let datalav = "<?php echo $_POST['datalav'];?>";
+
+console.log(idp);
+console.log(datalav);
+$(function() {
+
+  initTableExport({
+    tableId: "totem_percorsi_dettaglio",
+    exportAllBtn: "#export-btn",
+    exportFilteredBtn: "#export-btn-filtered",
+    baseUrl: "./tables/report_totem_percorsi_dettaglio.php",
+    extraParams: () => {
+      // parametri extra della pagina
+      //const range = $('input[name="daterange"]').val().split(" - ");
+      return {
+        //ut: $("#ut").val() == 0 ? "" : $("#ut").val(),
+        id: idp,
+        datalav: datalav//,
+        //data_fine: range[1].split('/').reverse().join('-')
+      };
+    }
+  });
+});
 
 </script>
 

@@ -121,7 +121,7 @@ $(function() {
         data-group-by="false"
         data-group-by-field='["indirizzo", "frazione"]'
         data-show-search-clear-button="true"   
-        data-show-export="true" 
+        data-show-export="false" 
         data-export-type=['json', 'xml', 'csv', 'txt', 'sql', 'pdf', 'excel',  'doc'] 
 				data-search="false" data-click-to-select="true" data-show-print="false"  
         data-virtual-scroll="false"
@@ -169,6 +169,13 @@ $(function() {
 
 var $table = $('#fascia_ora');
 
+$table.on('post-body.bs.table', function () {
+  if ($('#export-btn-filtered').length === 0) {
+    $('.fixed-table-toolbar .columns')
+      .append('<button id="export-btn-filtered" class="btn btn-secondary ms-2" title="Esporta file Excel"><i class="bi bi-download"></i> Esporta tabella</button>');
+  }
+});
+
 $(function() {
     $table.bootstrapTable();
   });
@@ -210,6 +217,25 @@ function dateFormat2(value, row, index) {
     function dateFormatter(value) {
       return moment(value).format('DD/MM/YYYY HH:mm')
     };
+
+
+    $(function() {
+  initTableExport({
+    tableId: "fascia_ora",
+    exportAllBtn: "#export-btn",
+    exportFilteredBtn: "#export-btn-filtered",
+    baseUrl: "./tables/report_fascia_oraria_esecuzione.php",
+    extraParams: () => {
+      // parametri extra della pagina
+      const range = $('input[name="daterange"]').val().split(" - ");
+      return {
+        //ut: $("#ut").val() == 0 ? "" : $("#ut").val(),
+        data_inizio: range[0].split('/').reverse().join('-'),
+        data_fine: range[1].split('/').reverse().join('-')
+      };
+    }
+  });
+});
 
 </script>
 

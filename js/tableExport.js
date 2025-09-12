@@ -163,7 +163,7 @@ function buildParams(includeFilters = false) {
     try {
       const res = await fetch(url);
       const data = await res.json();
-      createExcelSheet(data.rows || data, "export_consuntivazione.xlsx", "Dati");
+      createExcelSheet(data.rows || data, "export_completo.xlsx", "Dati");
     } catch (err) {
       console.error("Errore fetch export totale:", err);
       alert("Errore durante export totale.");
@@ -171,7 +171,7 @@ function buildParams(includeFilters = false) {
   });
 
   // Export dati filtrati applicando filtri e autodimensionamento colonne
-  $(config.exportFilteredBtn).off("click").on("click", async () => {
+  $(document).off("click", config.exportFilteredBtn).on("click", config.exportFilteredBtn, async () => {
     const url = `${config.baseUrl}?${buildParams(true).toString()}`;
     console.log("URL fetch export filtrato:", url);
 
@@ -187,7 +187,7 @@ function buildParams(includeFilters = false) {
         alert('Errore: risposta server non valida.');
         return;
       }
-      createExcelSheet(data.rows || data, "export_consuntivazione_filtrato.xlsx", "Dati");
+      createExcelSheet(data.rows || data, "export_filtrato.xlsx", "Dati");
     } catch (err) {
       console.error("Errore fetch export filtrato:", err);
       alert("Errore durante export filtrato.");

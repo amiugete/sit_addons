@@ -67,19 +67,18 @@ if ((int)$id_role_SIT = 0) {
 
 
 if ($_POST['ut0']) {
-  $query0='select u.id_ut, u.descrizione, cmu.id_uo
-  from topo.ut u
-  left join anagrafe_percorsi.cons_mapping_uo cmu on cmu.id_uo_sit = u.id_ut 
-  where id_ut = $1';
+  $query0='select cmu.id_uo as ut, u.id_ut, descrizione
+    from topo.ut u
+    join anagrafe_percorsi.cons_mapping_uo cmu on cmu.id_uo_sit = u.id_ut 
+    where u.id_ut = $1';
 
   $result0 = pg_prepare($conn, "my_query0", $query0);
   $result0 = pg_execute($conn, "my_query0", array($_POST['ut0']));
   
   while($r0 = pg_fetch_assoc($result0)) {
-      $uos=$r0["id_uo"];
+      $uos=$r0["ut"];
       $uos_descrizione= $r0["descrizione"];
   }
-  //echo $uos;
 
   ?> 
 
@@ -205,7 +204,7 @@ $(document).ready(function () {
         data-group-by="false"
         data-group-by-field='["indirizzo", "frazione"]'
         data-show-search-clear-button="true"   
-        data-show-export="true" 
+        data-show-export="false" 
         data-export-type=['json', 'xml', 'csv', 'txt', 'sql', 'pdf', 'excel',  'doc'] 
 				data-search="false" data-click-to-select="true" data-show-print="false"  
         data-virtual-scroll="false"
@@ -275,6 +274,18 @@ $(document).ready(function () {
 
 
 var $table = $('#totem_percorsi');
+
+$table.on('post-body.bs.table', function () {
+    const $tableee = $(this); 
+    const $toolbar = $tableee.closest('.bootstrap-table').find('.fixed-table-toolbar .columns');
+
+    if ($toolbar.find('#exportT-btn-filtered').length === 0) {
+      $toolbar.append(
+        '<button id="exportT-btn-filtered" class="btn btn-secondary ms-2" title="Esporta file Excel">' +
+        '<i class="bi bi-download"></i> Esporta tabella</button>'
+      );
+    }
+  });
 
 $(function() {
     $table.bootstrapTable();
@@ -383,6 +394,30 @@ window.operateEvents = {
     function dateFormatter(value) {
       return moment(value).format('DD/MM/YYYY HH:mm')
     };
+
+
+$(function() {
+  console.log($("#uos").val())
+  console.log($("#js-date3").val().split('/').reverse().join('-'))
+  console.log(<?php echo $today->format('d/m/Y');?>)
+  initTableExport({
+    tableId: "totem_percorsi",
+    exportAllBtn: "#exportT-btn",
+    exportFilteredBtn: "#exportT-btn-filtered",
+    baseUrl: "./tables/report_totem_percorsi.php",
+    extraParams: () => {
+      // parametri extra della pagina
+      //const range = $('input[name="daterange"]').val().split(" - ");
+      return {
+        //ut: $("#ut").val() == 0 ? "" : $("#ut").val(),
+        uos: $("#uos").val() == 0 ? "" : $("#uos").val(),
+        d: $("#js-date3").val(),
+        c:'none'
+        //data_fine: range[1].split('/').reverse().join('-')
+      };
+    }
+  });
+});
 
 </script>
 

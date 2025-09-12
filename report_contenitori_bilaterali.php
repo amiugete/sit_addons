@@ -144,8 +144,8 @@ while($rmax = pg_fetch_assoc($result_max)) {
       </div-->
     
       <div id="toolbar"> 
-        <a target="_new" class="btn btn-primary btn-sm"
-         href="./export_contenitori_bilaterali.php"><i class="fa-solid fa-file-excel"></i> Esporta xlsx completo</a>
+        <!--a target="_new" class="btn btn-primary btn-sm"
+         href="./export_contenitori_bilaterali.php"><i class="fa-solid fa-file-excel"></i> Esporta xlsx completo</a-->
       </div>
 				<table  id="contenitori" class="table-hover table-sm" 
         data-cache="true"
@@ -223,6 +223,13 @@ function idFormatter() {
 
 var $table = $('#contenitori')
 
+$table.on('post-body.bs.table', function () {
+  if ($('#export-btn-filtered').length === 0) {
+    $('.fixed-table-toolbar .columns')
+      .append('<button id="export-btn-filtered" class="btn btn-secondary ms-2" title="Esporta file Excel"><i class="bi bi-download"></i> Esporta tabella</button>');
+  }
+});
+
 $(function() {
     $table.bootstrapTable()
   })
@@ -259,6 +266,14 @@ function dateFormat(value, row, index) {
      
         }
 
+$(function() {
+  initTableExport({
+    tableId: "contenitori",
+    exportAllBtn: "#export-btn",
+    exportFilteredBtn: "#export-btn-filtered",
+    baseUrl: "./tables/report_contenitori_bilaterali.php"
+  });
+});
 </script>
 
 

@@ -39,8 +39,18 @@ if(!$conn_hub) {
     die('Connessione fallita !<br />');
 } else {
  
-    
-$query0="select id_piazzola, nome_via,
+if ($_GET['filter']){
+    foreach(json_decode($_GET['filter']) as $key => $val) {
+        /*if (is_numeric($val)){
+            $filter = $filter. " AND ".$key." = ".$val." ";
+        } else {*/
+            $filter = $filter." AND upper(".$key.") LIKE upper('%".$val."%') ";
+        //} 
+         
+    }
+} 
+
+$query="select id_piazzola, nome_via,
 case 
 	when (num_elementi- fatto)=0 then null
 	else concat((num_elementi- fatto)::text, ' di ', num_elementi::text)
@@ -61,7 +71,7 @@ and datalav = to_date($2, 'YYYY-MM-DD')
 //echo $uos;
 //echo "Sono qua";
 
-
+$query0 = "select * from (".$query.") a where 1=1 ".$filter ;
 
 $result = pg_prepare($conn_hub, "query0", $query0);
 
