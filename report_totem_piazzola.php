@@ -157,6 +157,7 @@ if ($hour < '1120'){
   });
 };
 
+
 $(document).ready(function () {                 
   $('#form_filtro').submit(function (event) { 
       console.log("Bottone filtro cliccato");
@@ -181,6 +182,9 @@ $(document).ready(function () {
   });
 });
 
+function getFiltroPercorsi() {
+   return $('#filtro_percorsi').is(":checked") ? 'all' : 'none';
+}
 </script>
 
 
@@ -209,7 +213,7 @@ $(document).ready(function () {
         data-group-by="false"
         data-group-by-field='["indirizzo", "frazione"]'
         data-show-search-clear-button="true"   
-        data-show-export="true" 
+        data-show-export="false" 
         data-export-type=['json', 'xml', 'csv', 'txt', 'sql', 'pdf', 'excel',  'doc'] 
 				data-search="false" data-click-to-select="true" data-show-print="false"  
         data-virtual-scroll="false"
@@ -259,6 +263,18 @@ $(document).ready(function () {
 
 
 var $table = $('#totem_piazzole');
+
+$table.on('post-body.bs.table', function () {
+    const $tableee = $(this); 
+    const $toolbar = $tableee.closest('.bootstrap-table').find('.fixed-table-toolbar .columns');
+
+    if ($toolbar.find('#exportT-btn-filtered').length === 0) {
+      $toolbar.append(
+        '<button id="exportT-btn-filtered" class="btn btn-secondary ms-2" title="Esporta file Excel">' +
+        '<i class="bi bi-download"></i> Esporta tabella</button>'
+      );
+    }
+  });
 
 $(function() {
     $table.bootstrapTable();
@@ -327,6 +343,31 @@ function dateFormat2(value, row, index) {
     function dateFormatter(value) {
       return moment(value).format('DD/MM/YYYY HH:mm')
     };
+
+
+    $(function() {
+  console.log($("#uos").val())
+  console.log($("#js-date3").val().split('/').reverse().join('-'))
+  console.log(<?php echo $today->format('d/m/Y');?>)
+  console.log(getFiltroPercorsi())
+  initTableExport({
+    tableId: "totem_piazzole",
+    exportAllBtn: "#exportT-btn",
+    exportFilteredBtn: "#exportT-btn-filtered",
+    baseUrl: "./tables/report_totem_piazzola.php",
+    extraParams: () => {
+      // parametri extra della pagina
+      //const range = $('input[name="daterange"]').val().split(" - ");
+      return {
+        //ut: $("#ut").val() == 0 ? "" : $("#ut").val(),
+        uos: $("#uos").val() == 0 ? "" : $("#uos").val(),
+        d: $("#js-date3").val(),
+        c: getFiltroPercorsi()
+        //data_fine: range[1].split('/').reverse().join('-')
+      };
+    }
+  });
+});
 
 </script>
 

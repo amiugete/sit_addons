@@ -75,7 +75,7 @@ if ((int)$id_role_SIT = 0) {
         data-group-by="false"
         data-group-by-field='["cod_percorso", "descrizione", "famiglia", "tipo"]'
         data-show-search-clear-button="true"   
-        data-show-export="true" 
+        data-show-export="false" 
         data-export-type="['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'doc', 'pdf']"
 				data-search="true" data-click-to-select="true" data-show-print="false"  
 				data-pagination="true" data-page-size=75 data-page-list=[10,25,50,75,100,200,500]
@@ -103,7 +103,7 @@ if ((int)$id_role_SIT = 0) {
  	<tr>
         <!--th data-checkbox="true" data-field="id"></th-->  
         <!--th data-field="state" data-checkbox="true" ></th-->  
-        <th data-field="ut" data-sortable="true" data-visible="true" data-filter-control="select">Gruppo di<br>Coordinamento</th>
+        <th data-field="descrizione" data-sortable="true" data-visible="true" data-filter-control="select">Gruppo di<br>Coordinamento</th>
         <th data-field="id_uo" data-sortable="true" data-visible="false"  data-filter-control="select">Id UO</th>
         <th data-field="targa" data-sortable="true" data-visible="true" data-filter-control="input">Targa</th> 
         <th data-field="quintali" data-sortable="true" data-visible="true" data-filter-control="select">Quintali</th>
@@ -144,6 +144,18 @@ if ((int)$id_role_SIT = 0) {
 
 
   var $table = $('#targhe');
+
+  $table.on('post-body.bs.table', function () {
+    const $table = $(this); 
+    const $toolbar = $table.closest('.bootstrap-table').find('.fixed-table-toolbar .columns');
+
+    if ($toolbar.find('#export-btn-filtered').length === 0) {
+      $toolbar.append(
+        '<button id="export-btn-filtered" class="btn btn-secondary ms-2" title="Esporta file Excel">' +
+        '<i class="bi bi-download"></i> Esporta tabella</button>'
+      );
+    }
+  });
   
   $(function() {
     $table.bootstrapTable()
@@ -339,6 +351,16 @@ window.dpEvents = {
         ].join('');
       }  
     };
+
+
+$(function() {
+  initTableExport({
+    tableId: "targhe",
+    exportAllBtn: "#export-btn",
+    exportFilteredBtn: "#export-btn-filtered",
+    baseUrl: "./tables/targhe_ditte_terze.php"
+  });
+});
 
 
 </script>

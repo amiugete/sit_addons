@@ -42,8 +42,18 @@ if(!$conn_hub) {
     die('Connessione fallita !<br />');
 } else {
  
-    
-$query0="select piazzola, ordine_rifiuto, tipo_rifiuto, id_percorso, descr_percorso, descr_orario,
+if ($_GET['filter']){
+    foreach(json_decode($_GET['filter']) as $key => $val) {
+        /*if (is_numeric($val)){
+            $filter = $filter. " AND ".$key." = ".$val." ";
+        } else {*/
+            $filter = $filter." AND upper(".$key.") LIKE upper('%".$val."%') ";
+        //} 
+         
+    }
+} 
+
+$query="select piazzola, ordine_rifiuto, tipo_rifiuto, id_percorso, descr_percorso, descr_orario,
 uo_esec, id_uo_esec, id_uo, stato_consuntivazione,
 descr_causale, check_previsto, 
 datalav
@@ -120,7 +130,7 @@ order by descr_orario, stato_consuntivazione, ordine_rifiuto, nome_via, civico
 //echo $uos;
 //echo "Sono qua";
 
-
+$query0 = "select * from (".$query.") a where 1=1 ".$filter ;
 
 $result = pg_prepare($conn_hub, "query0", $query0);
 

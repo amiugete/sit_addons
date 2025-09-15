@@ -176,6 +176,10 @@ $(document).ready(function () {
   });
 });
 
+function getFiltroPercorsi() {
+   return $('#filtro_percorsi').is(":checked") ? 'all' : 'none';
+}
+
 </script>
 
 
@@ -412,7 +416,7 @@ $(function() {
         //ut: $("#ut").val() == 0 ? "" : $("#ut").val(),
         uos: $("#uos").val() == 0 ? "" : $("#uos").val(),
         d: $("#js-date3").val(),
-        c:'none'
+        c: getFiltroPercorsi()
         //data_fine: range[1].split('/').reverse().join('-')
       };
     }
