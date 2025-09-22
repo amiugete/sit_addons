@@ -117,7 +117,78 @@ mail_footer='''<hr>Questa mail è stata creata in automatico.
 
 
     
-   
+
+# ============================
+# DIZIONARIO DELLE INTESTAZIONI  (da cabiare all'occorrenza)
+# ============================
+
+HEADERS = {
+    "personale": {
+        "1": [
+            "ID servizio COGE", "Desc servizio COGE", "Mese",
+            "ID Comune", "Comune", "ID Municipio", "Municipio",
+            "ID UO", "Desc UO", "ID UO Lavoro", "Desc UO Lavoro",
+            "Mansione", "Ore"
+        ],
+        "2": [
+            "ID servizio", "Desc servizio",
+            "ID servizio COGE", "Desc servizio COGE",
+            "Mese", "ID Comune", "Comune",
+            "ID Municipio", "Municipio",
+            "ID UO", "Desc UO", "ID UO Lavoro", "Desc UO Lavoro",
+            "Mansione", "Ore"
+        ],
+        "3": [
+            "ID percorso", "Desc percorso",
+            "ID servizio", "Desc servizio",
+            "ID servizio COGE", "Desc servizio COGE",
+            "Mese", "ID Comune", "Comune",
+            "ID Municipio", "Municipio",
+            "ID UO", "Desc UO", "ID UO Lavoro", "Desc UO Lavoro",
+            "Mansione", "Ore"
+        ]
+    },
+    "mezzi": {
+        "1": [
+            "ID servizio COGE", "Desc servizio COGE", "Giorno",
+            "ID Comune", "Comune", "ID Municipio", "Municipio",
+            "ID UO", "Desc UO", "Tipo mezzo", "Sportello", "Ore"
+        ],
+        "2": [
+            "ID servizio", "Desc servizio",
+            "ID servizio COGE", "Desc servizio COGE",
+            "Giorno", "ID Comune", "Comune",
+            "ID Municipio", "Municipio",
+            "ID UO", "Desc UO", "Tipo mezzo", "Sportello", "Ore"
+        ],
+        "3": [
+            "ID percorso", "Desc percorso",
+            "ID servizio", "Desc servizio",
+            "ID servizio COGE", "Desc servizio COGE",
+            "Giorno", "ID Comune", "Comune",
+            "ID Municipio", "Municipio",
+            "ID UO", "Desc UO", "Tipo mezzo", "Sportello", "Ore"
+        ]
+    }
+}
+
+# ============================
+# FUNZIONE PER SCRIVERE INTESTAZIONI
+# ============================
+
+def write_headers(ws, tipo, arg3, cell_format_title):
+    """
+    Scrive le intestazioni sul worksheet.
+    
+    :param ws: oggetto worksheet
+    :param tipo: "personale" o "mezzi"
+    :param arg3: stringa "1", "2" o "3"
+    :param cell_format_title: formato celle intestazione
+    """
+    
+    headers = HEADERS.get(tipo, {}).get(arg3, [])
+    for col, title in enumerate(headers):
+        ws.write(0, col, title, cell_format_title)   
 
 
 ############################################################################################
@@ -193,33 +264,18 @@ def main(arg1, arg2, arg3, arg4):
     '''
 
     
-    try: 
-        #codice='0203009803'
-        if arg3=='1': #sys.argv[3]=='no':
-            logger.info('Tipo report 1 definisco le query per personale e mezzi')
-            query_personale='''
-            SELECT 
-            ID_SERVIZIO_COGE, DESCR_SERVIZIO_COGE,
-            mese,
-            id_comune,  
-            comune,
-            id_municipio,
-            municipio,
-            id_uo,
-            desc_uo,
-            id_uo_lavoro,
-            desc_uo_lavoro,
-            MANSIONE,
-            round(sum(COALESCE(perc,1)*durata)/60,2) AS ore
-            FROM (
-            SELECT 
+    
+    query_personale0=''' SELECT 
                 DISTINCT 
                 coalesce(hs.COD_DIPENDENTE, CAST(hs.ID_PERSONA AS varchar(20))) AS pers,
                 per.cod_postoorg AS MANSIONE, 
                 COALESCE (asc2.ID_SERVIZIO_COGE,'SRV0000') AS ID_SERVIZIO_COGE,
                 COALESCE (asc2.DESCR_SERVIZIO_COGE,'Ore non assegnate') AS DESCR_SERVIZIO_COGE,
+                as2.id_SERVIZIO,
+                as2.DESC_SERVIZIO,
                 hs.DURATA, 
-                aspu.ID_PERCORSO, 
+                aspu.ID_PERCORSO,
+                aspu.descrizione, 
                 hs.ID_SER_PER_UO,
                 hs.DTA_SERVIZIO,
                 to_char(hs.DTA_SERVIZIO, 'YYYY/MM') AS mese,
@@ -252,7 +308,7 @@ def main(arg1, arg2, arg3, arg4):
                     AND pxcuo.giorno BETWEEN aspu.DTA_ATTIVAZIONE AND aspu.DTA_DISATTIVAZIONE
                 JOIN anagr_uo au1 ON aspu.ID_UO = au1.ID_UO
                 LEFT JOIN T_ANAGR_PERS_EKOVISION per
-                    ON (/*per.id_persona = hs.id_persona OR*/ hs.COD_DIPENDENTE = concat(concat(per.COD_MATLIBROMAT, '_'),per.id_azienda))
+                    ON (/*per.id_persona = hs.id_persona OR*/ hs.COD_DIPENDENTE = concat(concat(lpad(per.COD_MATLIBROMAT, 5,'0'), '_'),per.id_azienda))
                     AND hs.dta_servizio BETWEEN per.dta_inizio
                                             AND per.dta_fine
                     AND per.dta_fine > TO_DATE('01/01/2024', 'DD/MM/YYYY')                        
@@ -266,48 +322,19 @@ def main(arg1, arg2, arg3, arg4):
                 --JOIN anagr_uo au2 ON hs.ID_UO_LAVORO = au2.ID_UO
             WHERE  
             hs.DTA_SERVIZIO BETWEEN TO_DATE(:d1, 'DD/MM/YYYY') AND to_date(:d2, 'DD/MM/YYYY')
-            AND hs.durata > 0 AND coalesce(perc,1) > 0 
-            ) pp
-            WHERE durata > 0
-            GROUP BY 
-            ID_SERVIZIO_COGE, DESCR_SERVIZIO_COGE, 
-            mese,
-            id_comune,  
-            comune,
-            id_municipio,
-            municipio,
-            id_uo,
-            desc_uo, id_uo_lavoro,
-            desc_uo_lavoro, mansione
-            ORDER BY 1, 5, 3 
-            '''
-
-
-
-
-
-
-
-            query_mezzi='''SELECT 
-            ID_SERVIZIO_COGE,
-            DESCR_SERVIZIO_COGE,
-            giorno,
-            id_comune,  
-            comune,
-            id_municipio,
-            municipio,
-            id_uo,
-            desc_uo,
-            TIPO_MEZZO,
-            sportello,
-            sum(COALESCE(perc,1)*durata/60) AS ore
-            FROM (
-                SELECT 
+            AND hs.durata > 0 AND coalesce(perc,1) > 0 '''
+            
+            
+            
+    query_mezzi0='''SELECT 
                 DISTINCT hsm.sportello,
                 COALESCE (asc2.ID_SERVIZIO_COGE,'SRV0000') AS ID_SERVIZIO_COGE,
                 COALESCE (asc2.DESCR_SERVIZIO_COGE,'Ore non assegnate') AS DESCR_SERVIZIO_COGE,
+                as2.id_SERVIZIO,
+                as2.DESC_SERVIZIO,
                 hsm.DURATA, 
-                aspu.ID_PERCORSO, 
+                aspu.ID_PERCORSO,
+                aspu.descrizione,
                 TO_DATE(see.DATA_PIANIF_INIZIALE,'YYYYMMDD') AS giorno,
                 CASE 
                     WHEN id_comune IS NULL AND au.ID_UO IN (SELECT cu.id_uo FROM comuni_ut cu WHERE cu.id_comune =1) 
@@ -371,7 +398,65 @@ def main(arg1, arg2, arg3, arg4):
                 /*trim(a.sportello)= '03754' and*/
                 TO_DATE(see.DATA_PIANIF_INIZIALE,'YYYYMMDD') 
                 BETWEEN TO_DATE(:d1, 'DD/MM/YYYY') AND to_date(:d2, 'DD/MM/YYYY')
-                ORDER BY ID_PERCORSO, giorno
+                /*ORDER BY ID_PERCORSO, giorno*/'''
+    
+    try: 
+        #codice='0203009803'
+        if arg3=='1': #sys.argv[3]=='no':
+            logger.info('Tipo report 1 definisco le query per personale e mezzi')
+            query_personale='''
+            SELECT 
+            ID_SERVIZIO_COGE, DESCR_SERVIZIO_COGE,
+            mese,
+            id_comune,  
+            comune,
+            id_municipio,
+            municipio,
+            id_uo,
+            desc_uo,
+            id_uo_lavoro,
+            desc_uo_lavoro,
+            MANSIONE,
+            round(sum(COALESCE(perc,1)*durata)/60,2) AS ore
+            FROM (
+            {0}
+            ) pp
+            WHERE durata > 0
+            GROUP BY 
+            ID_SERVIZIO_COGE, DESCR_SERVIZIO_COGE, 
+            mese,
+            id_comune,  
+            comune,
+            id_municipio,
+            municipio,
+            id_uo,
+            desc_uo, id_uo_lavoro,
+            desc_uo_lavoro, mansione
+            ORDER BY 1, 5, 3 
+            '''.format(query_personale0)
+
+
+
+
+
+
+
+
+            query_mezzi='''SELECT 
+            ID_SERVIZIO_COGE,
+            DESCR_SERVIZIO_COGE,
+            giorno,
+            id_comune,  
+            comune,
+            id_municipio,
+            municipio,
+            id_uo,
+            desc_uo,
+            TIPO_MEZZO,
+            sportello,
+            sum(COALESCE(perc,1)*durata/60) AS ore
+            FROM (
+                {0}
             ) pp
             WHERE sportello IS NOT NULL 
             GROUP BY
@@ -384,12 +469,12 @@ def main(arg1, arg2, arg3, arg4):
             municipio,
             id_uo,
             desc_uo, tipo_mezzo, sportello
-            ORDER BY 1, 3, 4, 6, 8, 9'''
+            ORDER BY 1, 3, 4, 6, 8, 9'''.format(query_mezzi0)
 
 
 
         elif arg3 == '2':
-            logger.info('Tipo report 1 definisco le query per personale e mezzi')
+            logger.info('Tipo report 2 definisco le query per personale e mezzi')
 
             query_personale='''
             SELECT 
@@ -407,61 +492,7 @@ def main(arg1, arg2, arg3, arg4):
             MANSIONE,
             round(sum(COALESCE(perc,1)*durata)/60,2) AS ore
             FROM (
-            SELECT 
-                DISTINCT 
-                coalesce(hs.COD_DIPENDENTE, CAST(hs.ID_PERSONA AS varchar(20))) AS pers,
-                per.cod_postoorg AS MANSIONE, 
-                COALESCE (asc2.ID_SERVIZIO_COGE,'SRV0000') AS ID_SERVIZIO_COGE,
-                COALESCE (asc2.DESCR_SERVIZIO_COGE,'Ore non assegnate') AS DESCR_SERVIZIO_COGE,
-                as2.ID_SERVIZIO,
-                as2.DESC_SERVIZIO, 
-                hs.DURATA, 
-                aspu.ID_PERCORSO, 
-                hs.ID_SER_PER_UO,
-                hs.DTA_SERVIZIO,
-                to_char(hs.DTA_SERVIZIO, 'YYYY/MM') AS mese,
-                CASE 
-                    WHEN id_comune IS NULL AND au1.ID_UO IN (SELECT cu.id_uo FROM comuni_ut cu WHERE cu.id_comune =1) 
-                    THEN 1
-                    ELSE id_comune
-                END id_comune, 
-                CASE 
-                    WHEN id_comune IS NULL AND au1.ID_UO IN (SELECT cu.id_uo FROM comuni_ut cu WHERE cu.id_comune =1) 
-                    THEN 'GENOVA'
-                    ELSE comune
-                END comune ,
-                id_municipio,
-                municipio,
-                au1.ID_UO, 
-                au1.DESC_UO, -- da cahiamare DESC_UO_SERVIZIO
-                au2.id_uo AS id_uo_lavoro, 
-                au2.DESC_UO AS desc_uo_lavoro,-- da cahiamare DESC_UO_UOMO
-                perc
-            FROM HIST_SERVIZI hs
-                JOIN ANAGR_SER_PER_UO aspu 
-                    ON aspu.ID_SER_PER_UO = hs.ID_SER_PER_UO
-                JOIN anagr_servizi as2 ON aspu.id_servizio = as2. id_servizio
-                LEFT JOIN ANAGR_SERVIZI_COGE asc2 
-                    ON asc2.id_servizio_COGE = as2.id_servizio_coge		
-                LEFT JOIN UNIOPE.PERCORSI_X_COMUNE_UO_GIORNO pxcuo 
-                    ON pxcuo.id_percorso = aspu.ID_PERCORSO 
-                    AND pxcuo.giorno = hs.dta_servizio 
-                    AND pxcuo.giorno BETWEEN aspu.DTA_ATTIVAZIONE AND aspu.DTA_DISATTIVAZIONE
-                JOIN anagr_uo au1 ON aspu.ID_UO = au1.ID_UO
-                LEFT JOIN T_ANAGR_PERS_EKOVISION per
-                ON     (/*per.id_persona = hs.id_persona OR*/ hs.COD_DIPENDENTE = concat(concat(lpad(cod_matlibromat, 5,'0'), '_'),per.id_azienda))
-                    AND hs.dta_servizio BETWEEN per.dta_inizio AND per.dta_fine
-                    AND per.dta_fine > TO_DATE('01/01/2024', 'DD/MM/YYYY')
-                /*JOIN HCMDB9.hrhistory@cezanne8 h 
-                    ON h.ID_PERSONA = hs.ID_PERSONA 
-                    AND hs.dta_servizio BETWEEN h.DTA_INIZIO AND h.DTA_FINE*/
-                LEFT JOIN UNIOPE.V_AFFERENZE_PERSONALE vap 
-                    ON per.COD_SEDE=vap.ID_SEDE_TRASPORTO AND per.COD_CDC = vap.CODICE_CDC AND per.COD_UNITAORG = vap.COD_UNITAORG
-                LEFT JOIN ANAGR_UO au2 ON vap.ID_UO_GEST = au2.ID_UO
-                --JOIN anagr_uo au2 ON hs.ID_UO_LAVORO = au2.ID_UO
-            WHERE  
-            hs.DTA_SERVIZIO BETWEEN TO_DATE(:d1, 'DD/MM/YYYY') AND to_date(:d2, 'DD/MM/YYYY')
-            AND hs.durata > 0 AND coalesce(perc,1) > 0 
+            {0}
             ) pp
             WHERE durata > 0
             GROUP BY 
@@ -475,7 +506,7 @@ def main(arg1, arg2, arg3, arg4):
             id_uo,
             desc_uo, id_uo_lavoro,
             desc_uo_lavoro, mansione
-            ORDER BY 1, 5, 3 '''
+            ORDER BY 1, 5, 3 '''.format(query_personale0)
 
 
             query_mezzi='''SELECT 
@@ -493,78 +524,7 @@ def main(arg1, arg2, arg3, arg4):
                 sportello,
                 sum(COALESCE(perc,1)*durata/60) AS ore
                 FROM (
-                    SELECT 
-                    DISTINCT hsm.sportello,
-                    COALESCE (asc2.ID_SERVIZIO_COGE,'SRV0000') AS ID_SERVIZIO_COGE,
-                    COALESCE (asc2.DESCR_SERVIZIO_COGE,'Ore non assegnate') AS DESCR_SERVIZIO_COGE,
-                    as2.id_SERVIZIO,
-                    as2.DESC_SERVIZIO,
-                hsm.DURATA, 
-                    aspu.ID_PERCORSO, 
-                    TO_DATE(see.DATA_PIANIF_INIZIALE,'YYYYMMDD') AS giorno,
-                CASE 
-                    WHEN id_comune IS NULL AND au.ID_UO IN (SELECT cu.id_uo FROM comuni_ut cu WHERE cu.id_comune =1) 
-                    THEN 1
-                    ELSE id_comune
-                END id_comune, 
-                CASE 
-                    WHEN id_comune IS NULL AND au.ID_UO IN (SELECT cu.id_uo FROM comuni_ut cu WHERE cu.id_comune =1) 
-                    THEN 'GENOVA'
-                    ELSE comune
-                END comune ,
-                    id_municipio,
-                    municipio,
-                    /*au.id_uo,
-                    au.desc_uo,*/
-                    /*Correggo i mezzi grandi*/
-                    CASE 
-                        WHEN /*trim(a.CDAOG3) NOT IN ('08','09', 'I1')*/
-                        COALESCE(a.SEDE_PRESA_SERV, 'ND') LIKE 'RIMESSA%' AND au.ID_ZONATERRITORIALE IN (1,2,3) THEN 
-                            (SELECT DISTINCT au1.id_uo FROM ANAGR_SER_PER_UO aspu1 
-                                JOIN anagr_uo au1 ON au1.ID_UO = aspu1.ID_UO 
-                                WHERE au1.ID_ZONATERRITORIALE = 5 AND aspu1.ID_PERCORSO = aspu.ID_PERCORSO)
-                        ELSE /*au.ID_UO*/
-                        (SELECT DISTINCT aspu1.ID_UO FROM ANAGR_SER_PER_UO aspu1 
-                        WHERE id_squadra <> 15 AND aspu1.ID_SER_PER_UO = aspu.ID_SER_PER_UO)
-                    END AS id_uo, 
-                    CASE 
-                        WHEN /*trim(a.CDAOG3) NOT IN ('08','09', 'I1') */
-                        COALESCE(a.SEDE_PRESA_SERV, 'ND') LIKE 'RIMESSA%' AND au.ID_ZONATERRITORIALE IN (1,2,3) THEN 
-                            (SELECT DISTINCT au1.DESC_UO FROM ANAGR_SER_PER_UO aspu1 
-                                JOIN anagr_uo au1 ON au1.ID_UO = aspu1.ID_UO 
-                                WHERE au1.ID_ZONATERRITORIALE = 5 AND aspu1.ID_PERCORSO = aspu.ID_PERCORSO)
-                        ELSE (SELECT DISTINCT au1.DESC_UO FROM ANAGR_SER_PER_UO aspu1
-                        JOIN anagr_uo au1 ON au1.ID_UO = aspu1.ID_UO
-                        WHERE id_squadra <> 15 AND aspu1.ID_SER_PER_UO = aspu.ID_SER_PER_UO)
-                    END AS desc_uo,
-                    codice_tipologia_mezzo,
-                    descrizione_tipologia_mezzo AS tipo_mezzo,
-                    perc     
-                    FROM HIST_SERVIZI_MEZZI_OK hsm
-                    JOIN SCHEDE_ESEGUITE_EKOVISION see 
-                        ON see.ID_SCHEDA = hsm.ID_SCHEDA_EKOVISION AND see.RECORD_VALIDO='S'
-                        AND see.COD_CAUS_SRV_NON_ESEG_EXT IS null
-                    JOIN ANAGR_SER_PER_UO aspu 
-                        ON aspu.ID_PERCORSO = see.CODICE_SERV_PRED 
-                        AND to_date(see.DATA_ESECUZIONE_PREVISTA, 'YYYYMMDD') 
-                        BETWEEN aspu.DTA_ATTIVAZIONE AND aspu.DTA_DISATTIVAZIONE 
-                    JOIN anagr_servizi as2 ON aspu.id_servizio = as2. id_servizio
-                    LEFT JOIN ANAGR_SERVIZI_COGE asc2 
-                        ON asc2.id_servizio_COGE = as2.id_servizio_coge	
-                    LEFT JOIN UNIOPE.PERCORSI_X_COMUNE_UO_GIORNO pxcuo 
-                        ON pxcuo.id_percorso = aspu.ID_PERCORSO 
-                        AND pxcuo.giorno = to_date(see.DATA_ESECUZIONE_PREVISTA, 'YYYYMMDD')   
-                        AND pxcuo.giorno BETWEEN aspu.DTA_ATTIVAZIONE AND aspu.DTA_DISATTIVAZIONE 
-                    JOIN anagr_uo au
-                        ON au.ID_UO= aspu.ID_UO
-                    /*LEFT JOIN (SELECT ma.numatr AS sportello, ma.CDAOG3, oa.DSAOG3 FROM MAC_AMIUAUTO@info ma
-                JOIN OG3_AMIUAUTO@info oa ON oa.CDAOG3 =ma.CDAOG3) a ON trim(a.sportello) = lpad(hsm.sportello, 5,'0') */
-                    LEFT JOIN v_AUTO_EKOVISION@info a ON  trim(a.sportello) = lpad(hsm.sportello, 5,'0')
-                    WHERE  /*id_comune = 2 AND au.id_uo = 10 AND*/
-                    /*trim(a.sportello)= '03754' and*/
-                    TO_DATE(see.DATA_PIANIF_INIZIALE,'YYYYMMDD') 
-                    BETWEEN TO_DATE(:d1, 'DD/MM/YYYY') AND to_date(:d2, 'DD/MM/YYYY')
-                    ORDER BY ID_PERCORSO, giorno
+                    {0}
                 ) pp
                 WHERE sportello IS NOT NULL 
                 GROUP BY
@@ -578,7 +538,81 @@ def main(arg1, arg2, arg3, arg4):
                 municipio,
                 id_uo,
                 desc_uo, tipo_mezzo, sportello
-                ORDER BY 1, 3, 4, 6, 8, 9'''
+                ORDER BY 1, 3, 4, 6, 8, 9'''.format(query_mezzi0)
+                
+                
+                
+        elif arg3 == '3':
+            logger.info(f'Tipo report {arg3} definisco le query per personale e mezzi')
+
+            query_personale='''
+            SELECT 
+            ID_PERCORSO, DESCRIZIONE AS DESC_PERCORSO,
+            ID_SERVIZIO, DESC_SERVIZIO,
+            ID_SERVIZIO_COGE, DESCR_SERVIZIO_COGE,
+            mese,
+            id_comune,  
+            comune,
+            id_municipio,
+            municipio,
+            id_uo,
+            desc_uo,
+            id_uo_lavoro,
+            desc_uo_lavoro,
+            MANSIONE,
+            round(sum(COALESCE(perc,1)*durata)/60,2) AS ore
+            FROM (
+            {0}
+            ) pp
+            WHERE durata > 0
+            GROUP BY 
+            ID_PERCORSO, DESCRIZIONE,
+            ID_SERVIZIO, DESC_SERVIZIO,
+            ID_SERVIZIO_COGE, DESCR_SERVIZIO_COGE,
+            mese,
+            id_comune,  
+            comune,
+            id_municipio,
+            municipio,
+            id_uo,
+            desc_uo, id_uo_lavoro,
+            desc_uo_lavoro, mansione
+            ORDER BY 1, 5, 3 '''.format(query_personale0)
+
+
+            query_mezzi='''SELECT 
+                ID_PERCORSO, 
+                DESCRIZIONE AS DESC_PERCORSO, 
+                ID_SERVIZIO,
+                DESC_SERVIZIO,
+                ID_SERVIZIO_COGE, DESCR_SERVIZIO_COGE,
+                giorno,
+                id_comune,  
+                comune,
+                id_municipio,
+                municipio,
+                id_uo,
+                desc_uo,
+                TIPO_MEZZO,
+                sportello,
+                sum(COALESCE(perc,1)*durata/60) AS ore
+                FROM (
+                    {0}
+                ) pp
+                WHERE sportello IS NOT NULL 
+                GROUP BY
+                ID_PERCORSO, DESCRIZIONE,
+                ID_SERVIZIO,
+                DESC_SERVIZIO,
+                ID_SERVIZIO_COGE, DESCR_SERVIZIO_COGE,
+                giorno,
+                id_comune,  
+                comune,
+                id_municipio,
+                municipio,
+                id_uo,
+                desc_uo, tipo_mezzo, sportello
+                ORDER BY 1, 3, 4, 6, 8, 9'''.format(query_mezzi0)
             
     except Exception as e:
         logger.error(e)
@@ -647,7 +681,16 @@ def main(arg1, arg2, arg3, arg4):
 
     
     #nome_file="driver_ekovision_{0}".format(giorno_file)
-    nome_file="driver_ekovision"
+    
+    if arg3=='1':
+        desc_file='ID_COGE'
+    elif arg3=='2':
+        desc_file='ID_SERVIZIO'    
+    elif arg3=='3':
+        desc_file='ID_PERCORSO'  
+    
+    nome_file=f"driver_ekovision_{desc_file}"
+
 
 
     '''
@@ -752,7 +795,7 @@ def main(arg1, arg2, arg3, arg4):
 
     '''
     
-    
+    '''
     
     if arg3 == '1':
         w.write('A1', 'ID servizio COGE', cell_format_title) 
@@ -785,7 +828,11 @@ def main(arg1, arg2, arg3, arg4):
         w.write('N1', 'Mansione', cell_format_title)   
         w.write('O1', 'Ore', cell_format_title)   
     
-    
+    '''
+    # Per personale
+    write_headers(w, "personale", arg3, cell_format_title)
+
+
     r=1       
     for pp in dettagli_personale:
         c=0
@@ -843,7 +890,7 @@ def main(arg1, arg2, arg3, arg4):
     '''
     
     
-    
+    '''
     if arg3 == '1':
         w.write('A1', 'ID servizio COGE', cell_format_title) 
         w.write('B1', 'Desc servizio COGE', cell_format_title)
@@ -873,7 +920,9 @@ def main(arg1, arg2, arg3, arg4):
         w.write('M1', 'Sportello', cell_format_title)   
         w.write('N1', 'Ore', cell_format_title)   
 
-    
+    '''
+    # Per mezzi
+    write_headers(w, "mezzi", arg3, cell_format_title)
     
     r=1       
     for mm in dettagli_mezzi:
@@ -939,7 +988,7 @@ def main(arg1, arg2, arg3, arg4):
     message = MIMEMultipart()
     message["From"] = sender_email
     message["To"] =  dest_mail
-    message["Cc"] = debug_email
+    message["Cc"] = receiver_email
     message["Subject"] = subject
     #message["Bcc"] = debug_email  # Recommended for mass emails
     message.preamble = "Driver ekovision"

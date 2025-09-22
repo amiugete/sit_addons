@@ -13,6 +13,16 @@ $email = $_POST['email'];
 $output=null;
 $retval=null;
 
+
+if ($tipo_report==1) {
+  $desc_file='ID_COGE';
+} else if ($tipo_report==2) {
+  $desc_file='ID_SERVIZIO';    
+} else if ($tipo_report==3){
+  $desc_file='ID_PERCORSO';  
+}    
+
+
 #echo $_SERVER['REQUEST_URI'];
 #echo "<br>";
 #echo $_SERVER['SCRIPT_FILENAME'];
@@ -25,7 +35,7 @@ $comando='/usr/bin/python3 ../py_scripts/export_driver_ekovision.py '.$data_star
 //echo '<br><br>';
 exec($comando, $output, $retval);
 if ($retval == 0) {
-  $file_name = '/tmp/driver_eko/driver_ekovision.xlsx';
+  $file_name = '/tmp/driver_eko/driver_ekovision_'.$desc_file.'.xlsx';
   // first, get MIME information from the file
   $finfo = finfo_open(FILEINFO_MIME_TYPE); 
   $mime =  finfo_file($finfo, $file_name);
@@ -37,7 +47,7 @@ if ($retval == 0) {
   //header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
   //header("Content-Description: File Transfer");
   //header("Access-Control-Allow-Origin: *");
-  header('Content-Disposition: attachment;  filename="driver_ekovision_'.date('YmdHis').'.xlsx"');
+  header('Content-Disposition: attachment;  filename="driver_ekovision_'.$desc_file.'_'.date('YmdHis').'.xlsx"');
   header('Content-type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   header('Content-Length: ' . filesize($file_name));
   header("Content-Transfer-Encoding: binary");

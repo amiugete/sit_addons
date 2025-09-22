@@ -166,6 +166,7 @@ $(window).bind ("beforeunload",  function (zEvent) {
 <label for="tipo_report" >Seleziona la tipologia di report</label><font color="red">*</font>
 <select name="tipo_report" class="form-select form-select-sm" aria-label="Small select example">
   <option value="2">Raggruppate per Servizio Ekovision</option>
+  <option value="3">Raggruppate solo per codice percorso Ekovision</option>
   <option value="1">Raggruppate per Servizio COGE</option>
 </select>
 </div>
