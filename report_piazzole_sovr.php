@@ -233,25 +233,28 @@ var comuni_filtro = {
             $(document).ready(function () {                 
                 $('#btn_fefresh').click(function (event) { 
                     console.log('Bottone refresh elemento cliccato e finito qua');
-                    event.preventDefault();                  
+                    //event.preventDefault();                  
                     $.ajax({ 
                         url: 'backoffice/refresh_mv_sovr.php', 
-                        method: 'POST', 
+                        type: 'POST', 
                         //data: {}, 
                         //processData: true, 
                         //contentType: false, 
                         success: function (response) {                       
                             //alert('Your form has been sent successfully.'); 
                             console.log(response);
-                              $("#result_refresh").html(response).fadeIn("slow");
-                              setTimeout(function(){// wait for 5 secs(2)
-                                location.reload(); // then reload the page.(3)
-                            }, 1000);
+                            // mostro il messaggio 
+                            $("#result_refresh").html(response).fadeIn("slow");
+                            // refresh tabella
+                            $table.bootstrapTable('refresh', {
+                              url: "./tables/report_piazzole_sovr.php"
+                            });   
+                            console.log('refresh fatto');
                                       
                         }, 
                         error: function (jqXHR, textStatus, errorThrown) {                        
-                            alert('Your form was not sent successfully.'); 
-                            console.error(errorThrown); 
+                          $("#msg").text("❌ Errore AJAX: " + xhr.statusText);
+                          console.error(errorThrown); 
                         } 
                     }); 
                 });
@@ -294,17 +297,18 @@ var comuni_filtro = {
  	<tr>
         <!--th data-checkbox="true" data-field="id"></th-->  
         <!--th data-field="state" data-checkbox="true" ></th-->  
+        <th data-field="comune"   data-sortable="true" data-visible="true" data-filter-control="select" data-filter-data="var:comuni_filtro" >Comune</th>
         <th data-field="id_piazzola" data-sortable="true" data-visible="true" data-filter-control="input">Id<br>piazzola</th>
         <th data-field="id_elemento" data-sortable="true" data-visible="true"  data-filter-control="input">Id<br>Elemento</th>
         <th data-field="rif"  data-sortable="true" data-visible="true" data-filter-control="input">Rif</th>
-        <th data-field="municipio"  data-sortable="true" data-visible="true" data-filter-control="select" data-filter-data="var:municipi_filtro">Municipio</th>
-        <th data-field="comune"   data-sortable="true" data-visible="true" data-filter-control="select" data-filter-data="var:comuni_filtro" >Comune</th>
+        <th data-field="municipio"  data-sortable="true" data-visible="true" data-filter-control="select" data-filter-data="var:municipi_filtro">Mun</th>
         <th data-field="eliminata"   data-sortable="true" data-visible="true" data-filter-control="select">Eliminata</th>
         <th data-field="segnalazioni"   data-sortable="true" data-visible="true" data-filter-control="select">Segnalazioni</th>
         <th data-field="elementi"   data-sortable="true" data-visible="true" data-filter-control="select">Elementi<br>(al 31/12)</th>
         <th data-field="percorsi"   data-sortable="true" data-visible="true" data-filter-control="select">Percorsi<br>(al 31/12)</th>
         <th data-field="anno"   data-sortable="true" data-visible="true" data-filter-control="select" data-filter-data="var:anni_filtro">Anno</th>
-        <th data-field="n_ispezioni_anno"   data-sortable="true" data-visible="true" data-filter-control="input">Numero<br>ispezioni<br>anno</th>
+        <th data-field="n_ispezioni_anno_previste"   data-sortable="true" data-visible="true" data-filter-control="input">Numero<br>ispezioni<br>prev</th>
+        <th data-field="n_ispezioni_anno_effettuate"   data-sortable="true" data-visible="true" data-filter-control="input">Numero<br>ispezioni<br>effettuate</th>
     </tr>
 </thead>
 </table>

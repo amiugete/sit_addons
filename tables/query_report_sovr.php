@@ -28,7 +28,9 @@ from
 	count(distinct ie.id_elemento) as contenitori_ispezionati, 
 	count(distinct ie.id_elemento) filter (where ie.sovrariempito) as contenitori_sovrariempiti, 
 	string_agg(distinct te.descrizione, ', ') filter (where ie.sovrariempito) as dettagli_sovrariempiti,
-	string_agg(distinct ie.dettagli_svuotamenti, ', ') as dettagli_svuotamenti
+	string_agg(distinct ie.dettagli_svuotamenti, ', ') as dettagli_svuotamenti,
+	(select count(id) from sovrariempimenti.ispezioni i2 where i2.id_piazzola = p.id_piazzola) as num_ispezioni_effettuate,
+	pe.num_ispezioni as num_ispezioni_previste
 	 from sovrariempimenti.programmazione_ispezioni pe 
 	 join sovrariempimenti.ispezioni i on i.id_piazzola = pe.id_piazzola
 	 left join sovrariempimenti.ispezione_elementi ie on ie.id_ispezione = i.id 
@@ -48,7 +50,7 @@ from
 	 c.cod_istat, c.descr_comune, concat(p.id_piazzola, ' - ', v.nome, ', ', p.numero_civico, ' - Rif. ', p.riferimento) ,
 	 za.cod_zona , u.descrizione , q.nome ,
 	 /*pe.id_segnalazione, pe.data_ora_segnalazione,*/ i.data_ora,
-	 i.ispettore, i.id 
+	 i.ispettore, i.id, pe.num_ispezioni, p.id_piazzola
 	 )a
 order by id_ispezione";
     

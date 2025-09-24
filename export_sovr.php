@@ -78,7 +78,9 @@ $intestazioni = [
     'Dettagli sovrariempiti',
     'Dettagli svuotamenti',
     'Congruenza SIT',
-    'Indicatore'
+    'Indicatore', 
+    'Num ispezioni effettuate',
+    'Num ispezioni previste'
 ];
 
 foreach ($intestazioni as $i => $label) {
@@ -152,7 +154,9 @@ $campi = [
   'dettagli_sovrariempiti',
   'dettagli_svuotamenti',
   'congruenza_sit',
-  'indicatore'
+  'indicatore',
+  'num_ispezioni_effettuate',
+  'num_ispezioni_previste'
 ];
 
 
