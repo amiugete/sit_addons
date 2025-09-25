@@ -417,12 +417,25 @@ join anagrafe_percorsi.cons_mapping_uo cmu on cmu.id_uo = pu.id_ut
 left join elem.automezzi a on a.cdaog3 = pu.cdaog3 
 join elem.squadre s on s.id_squadra = pu.id_squadra 
 join topo.ut u on u.id_ut = cmu.id_uo_sit  
-where pu.cod_percorso = $1  and pu.data_disattivazione = $2";
+where pu.cod_percorso = $1  and pu.data_disattivazione = to_date($2, 'DD/MM/YYYY')";
 
 // RIMESSA / SEDE OPERATIVA
 $query_rimessa=$query0 ." and rimessa = 'S' and responsabile = 'N'";
 $result1 = pg_prepare($conn, "query_rimessa", $query_rimessa);
+
+if (pg_last_error($conn)){
+  echo pg_last_error($conn_sovr);
+}
+
 $result1 = pg_execute($conn, "query_rimessa", array($cod_percorso, $data_disattivazione_testata));
+if (pg_last_error($conn)){
+  echo pg_last_error($conn_sovr);
+}
+/*echo $cod_percorso;
+echo '<br>';
+echo $data_disattivazione_testata;
+*/
+
 echo '<ul>';
 while($r1 = pg_fetch_assoc($result1)) {
   echo '<h4><li class="mt-1"><b> Sede operativa </b>'.$r1["ut"].'</li></h4>';
@@ -576,7 +589,7 @@ if($check_versione_successiva==0){
   from topo.ut   
   where id_ut not in (select distinct cmu.id_uo_sit  from anagrafe_percorsi.percorsi_ut pu 
 join anagrafe_percorsi.cons_mapping_uo cmu on cmu.id_uo = pu.id_ut 
-where cod_percorso = $1 and data_disattivazione  =$2)
+where cod_percorso = $1 and data_disattivazione  = to_date($2, 'DD/MM/YYYY'))
   order by descrizione  ;";
   
   $result3 = pg_prepare($conn, "query3", $query3);
