@@ -193,8 +193,8 @@ function dateFormat2(value, row, index) {
       return moment(value).format('DD/MM/YYYY HH:mm')
     };
 
-let idp = "<?php echo $_POST['id']; ?>";
-let datalav = "<?php echo $_POST['datalav'];?>";
+//let idp = "<?php echo $_POST['id']; ?>";
+//let datalav = "<?php echo $_POST['datalav'];?>";
 
 console.log(idp);
 console.log(datalav);
@@ -210,8 +210,8 @@ $(function() {
       //const range = $('input[name="daterange"]').val().split(" - ");
       return {
         //ut: $("#ut").val() == 0 ? "" : $("#ut").val(),
-        id: idp,
-        datalav: datalav//,
+        id: <?php echo $_POST['id']; ?>,
+        datalav: <?php echo $_POST['datalav'];?>//,
         //data_fine: range[1].split('/').reverse().join('-')
       };
     }
