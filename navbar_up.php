@@ -101,7 +101,7 @@ if ($check_modal!=1){
         <?php if ($id_role_SIT >= 0) { ?>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#"  role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="navbarDropdown1">
-          Anagrafica percorsi / servizi
+          Anagrafica servizi
           </a>
           <div class="dropdown-menu" id="navbarDropdown1" aria-labelledby="navbarDropdown1">
             <a class="dropdown-item" href="./percorsi.php">Elenco servizi UO/SIT</a>
@@ -112,17 +112,16 @@ if ($check_modal!=1){
           </div>
         </li>
         <?php } ?>
-        <?php if ($check_superedit == 1) { ?>
+        <!--?php if ($check_superedit == 1) { ?>
           <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#"  role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="navbarDropdown2">
           Funzionalità amministratori SIT
           </a>
           <div class="dropdown-menu" id="navbarDropdown2" aria-labelledby="navbarDropdown2">
             <a class="dropdown-item" href="./update_elementi.php">Forzare update elementi</a>
-            <!--a class="dropdown-item" href="./nuovo_percorso.php">Nuovo servizio</a-->
           </div>
-        </li>
-        <?php } ?>
+        </li-->
+        <!--?php } ?-->
               
 
 
@@ -223,6 +222,17 @@ if ($check_modal!=1){
           </div>
         </li>
         <?php } ?>
+        <?php if ($check_superedit == 1) { ?>
+          <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#"  role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="navbarDropdown2">
+          Admin SIT
+          </a>
+          <div class="dropdown-menu" id="navbarDropdown2" aria-labelledby="navbarDropdown2">
+            <a class="dropdown-item" href="./update_elementi.php">Forzare update elementi</a>
+            <!--a class="dropdown-item" href="./nuovo_percorso.php">Nuovo servizio</a-->
+          </div>
+        </li>
+        <?php } ?>
         <script type="text/javascript">
           function closeWindow() {
 
@@ -241,7 +251,7 @@ if ($check_modal!=1){
       </script>
         <li id="link_pc2" class="nav-item">
           <!--a class="nav-link" target="SIT" href="<?php echo $url_sit?>"> Torna a SIT</a-->
-          <a class="nav-link" target="SIT" title="Chiudere funzionalità avanzate" href="#" onclick="return closeWindow();"> Chiudi e torna a SIT</a>
+          <a class="nav-link" target="SIT" title="Chiudere funzionalità avanzate" href="#" onclick="return closeWindow();"> Torna a SIT</a>
         </li>
         <!--li class="nav-item">
           <a class="nav-link" href="./ordini.php"> Modifica percorsi</a>
@@ -261,7 +271,7 @@ if ($check_modal!=1){
         <a class="nav-link dropdown-toggle" href="#"  role="button" data-bs-toggle="dropdown" 
         aria-expanded="false" aria-controls="navbarDropdown4">
 
-          <i class="fas fa-user"></i> Connesso come <?php echo $_SESSION['username'];?> (
+          <i class="fas fa-user"></i><?php echo $_SESSION['username'];?> (
             <?php 
               echo $role_SIT;
             if ($check_edit==0){
