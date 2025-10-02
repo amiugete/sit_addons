@@ -19,7 +19,14 @@ session_start();
     <title>Ricerca utenze</title>
 <?php 
 require_once('./req.php');
-require_once('./conn.php');
+
+the_page_title();
+
+if ($_SESSION['test']==1) {
+  require_once ('./conn_test.php');
+} else {
+  require_once ('./conn.php');
+}
 ?> 
 
 </head>

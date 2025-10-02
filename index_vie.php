@@ -20,6 +20,8 @@ session_start();
 <?php 
 require_once('./req.php');
 
+the_page_title();
+
 if ($_SESSION['test']==1) {
   require_once ('./conn_test.php');
 } else {
