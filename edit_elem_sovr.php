@@ -4,7 +4,7 @@ session_start();
 
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 
 <?php
 $check_modal = 1;

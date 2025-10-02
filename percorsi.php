@@ -5,7 +5,7 @@ session_start();
     
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 
 <head>
 
@@ -323,7 +323,7 @@ $(function() {
     //console.log($table);
     $table.bootstrapTable('refresh', {
     url: "./tables/percorsi_raggruppati.php?ut=<?php echo $_POST['ut0'];?>"
-});   
+    });   
     console.log('refresh fatto');
 });
 

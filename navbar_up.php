@@ -8,7 +8,8 @@ $query_role="SELECT  su.id_user, sr.id_role, sr.\"name\" as \"role\",
 coalesce(suse.esternalizzati, 'f') as esternalizzati, 
 coalesce(suse.sovrariempimenti, 'f') as sovrariempimenti, 
 coalesce(suse.sovrariempimenti_admin, 'f') as sovrariempimenti_admin, 
-coalesce(suse.coge, 'f') as coge
+coalesce(suse.coge, 'f') as coge,
+coalesce(suse.utenze, 'f') as utenze
 FROM util.sys_users su
 join util.sys_roles sr on sr.id_role = su.id_role  
 left join etl.sys_users_addons suse on suse.id_user = su.id_user 
@@ -26,6 +27,7 @@ while($r = pg_fetch_assoc($result_n)) {
   $check_sovr=$r['sovrariempimenti'];
   $check_sovr_admin=$r['sovrariempimenti_admin'];
   $check_coge=$r['coge'];
+  $check_utenze=$r['utenze'];
   $check_SIT=1;
 }
 //echo "<script type='text/javascript'>alert('$check_SIT');</script>";
@@ -207,6 +209,20 @@ if ($check_modal!=1){
         </li>
         <?php } ?>
         <?php } ?>
+        <?php if ($check_utenze == 't') { ?>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#"  role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="navbarDropdown7">
+          Estrazione utenze
+          </a>
+          <div class="dropdown-menu" id="navbarDropdown7" aria-labelledby="navbarDropdown7">
+              <!--span class="disable-links"><a class="dropdown-item" href="#">Import dati per verifiche</a></span-->
+              <a class="dropdown-item" href="./index_vie.php">Estrazione utenze per via</a>
+              <a class="dropdown-item" href="./index_aree.php">Estrazione utenze per area</a>
+            <!--a class="dropdown-item" href="./index_ecopunti.php">Estrazione utenze ecopunti</a-->
+
+          </div>
+        </li>
+        <?php } ?>
         <script type="text/javascript">
           function closeWindow() {
 
@@ -329,6 +345,13 @@ if ($check_modal!=1){
             </li>
               <li><b>Controllo gestione: </b>
               <?php if ($check_coge=='t'){?>
+                <i class="fa-solid fa-check" style="color: #00c217;"></i>
+              <?php } else {?>
+                <i class="fa-solid fa-xmark" style="color: #ff0000;"></i>
+              <?php } ?>
+            </li>
+            <li><b>Estrazione utenze: </b>
+              <?php if ($check_utenze =='t'){?>
                 <i class="fa-solid fa-check" style="color: #00c217;"></i>
               <?php } else {?>
                 <i class="fa-solid fa-xmark" style="color: #ff0000;"></i>

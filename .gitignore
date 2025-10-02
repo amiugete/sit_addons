@@ -15,7 +15,6 @@ py_scripts/log/*.log
 
 
 py_scripts/driver_eko/*.xlsx
-py_scripts/utenze/*.xlsx
 
 
 py_scripts/__pycache__/*
