@@ -7,13 +7,17 @@
 
 </script>
 
-<div class="rfix">
 
-<form class="row" name="open_ut" method="post" id="open_ut" autocomplete="off" action="<?php echo basename($_SERVER['PHP_SELF']);?>" >
 
+
+<div class="row align-items-center g-2">
+
+<form name="open_ut" method="post" id="open_ut" autocomplete="off"
+        action="<?php echo basename($_SERVER['PHP_SELF']);?>"
+        class="col-md-6 d-flex align-items-center flex-wrap">
 <?php //echo $username;?>
 
-<div class="form-group col-lg-4">
+<div class="form-group me-2 mb-4">
   <select class="selectpicker show-tick form-control" 
   data-live-search="true" name="ut0" id="ut0" onchange="utScelta(this.value);" required="">
   
@@ -62,12 +66,50 @@
   </select>  
   <!--small>L'elenco delle piazzole..  </small-->        
 </div>
-<div class="form-group col-lg-4">
-<a class="btn btn-primary" href="<?php echo basename($_SERVER['PHP_SELF']);?>">Tutte le mie UT</a>
+<div class="form-group mb-2">
+  <a class="btn btn-primary" href="<?php echo basename($_SERVER['PHP_SELF']);?>">Tutte le mie UT</a>
 </div>
-  </form>
+
+
+</form>
+
+
+
+ <div class="col-md-6 d-flex align-items-center justify-content-end">
+<!--label for="js-date_attivi" class="me-4 mb-0">Attivi al</label>
+<input type="text" class="form-control w-auto" id="js-date_attivi" name="data_percorsi" value="<?php echo $today->format('d/m/Y');?>" required-->
+<div class="form-check form-switch">
+    <input class="form-check-input" type="checkbox" id="flag_attivi" name="flag_attivi" onchange="flagCambiato(this)">
+    <label class="form-check-label fw-bold ms-2" for="flag_attivi">Mostra anche versioni dismesse</label>
+  </div>
+
+</div>
+
+
+<script type="text/javascript">
+  function flagCambiato(el) {
+    if (el.checked) {
+      console.log("Flag disattivi ON");
+      $(function() {    // Faccio refres della data-url
+      $table.bootstrapTable('refresh', {
+        url: "./tables/percorsi_raggruppati.php?ut=<?php echo $_POST['ut0'];?>&solo_attivi=f"
+      }); 
+
+    });
+    } else {
+      console.log("Flag disattivi OFF");
+      $(function() {    // Faccio refres della data-url
+      $table.bootstrapTable('refresh', {
+        url: "./tables/percorsi_raggruppati.php?ut=<?php echo $_POST['ut0'];?>&solo_attivi=t"
+      }); 
+
+    });
+    }
+  }
+</script>
 
   </div>
   
   <hr>
+
   <?php ?>

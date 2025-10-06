@@ -48,13 +48,19 @@ if ((int)$id_role_SIT = 0) {
 <div class="container">
 
 
-<?php
+<?php 
+
+$today = new DateTime('now');
+$timezone = new DateTimeZone('Europe/Rome');
+$today->setTimezone($timezone);
+
+
 require_once("select_ut.php");
 ?>
 
 <div id="tabella">
             
-        <h4>Elenco percorsi</h4>
+        <h4>Elenco percorsi <?php echo $today->format('d/m/Y');;?> </h4>
 
 
 
@@ -62,7 +68,7 @@ require_once("select_ut.php");
             <div class="row">
 
                   
-  <div id="toolbar"> Per esportare i dati completi rimuovere la paginazione (primo tasto dopo la ricerca)
+  <div id="toolbar"> 
 </div>
 				<table  id="percorsi" class="table-hover table-sm" 
         idfield="id" 
@@ -87,7 +93,7 @@ require_once("select_ut.php");
         data-sort-select-options = "true"
         data-filter-control-multiple-search="false"
         data-query-params="queryParams"
-        data-url="./tables/percorsi_raggruppati.php?ut=<?php echo $_POST['ut0'];?>">
+        data-url="./tables/percorsi_raggruppati.php?ut=<?php echo $_POST['ut0'];?>&solo_attivi=t">
         
 
         
@@ -108,7 +114,10 @@ require_once("select_ut.php");
         <th data-field="versione" data-sortable="true" data-visible="true" data-filter-control="select">V</th>
         <th data-field="stagionalita" data-sortable="true" data-visible="true" data-filter-control="select">Stag</th>
         <th data-field="flg_disattivo" data-sortable="true" data-visible="true" data-formatter="nameFormatterAtt" 
-        data-filter-strict-search="true" data-search-formatter="false" data-filter-data="var:opzioni" data-filter-control="select"></th>
+        data-filter-strict-search="true" data-search-formatter="false" data-filter-data="var:opzioni" 
+        data-filter-control="select" data-filter-control-multiple-search="true" data-filter-control-multiple-search-delimiter=","
+data-filter-options="{ filterAlgorithm: 'or' }"></th>
+        <!--   data-filter-default='' -->
         <th data-field="cp_report" data-sortable="false" data-formatter="nameFormatterReport" data-visible="true" >Report</th>
         <?php if ($check_superedit == 1) { ?>
           <th data-field="cp_edit" data-sortable="true"  data-visible="true"  data-events="dpEvents" data-formatter="nameFormatterEdit_ok">Edit</th>
@@ -331,6 +340,12 @@ $(function() {
 </script>
 
 
+
+
+
+
+
+
 <?php
 require_once('req_bottom.php');
 require_once('./footer.php');
@@ -339,6 +354,23 @@ require_once('./footer.php');
 
   </div>
 
+
+
+  <script type="text/javascript">
+ var today = new Date();
+ //var week_before=new Date();
+ //week_before.setDate(week_before.getDate() - 7);
+$('#js-date_attivi').datepicker({
+      format: 'dd/mm/yyyy',
+      todayBtn: "linked", // in conflitto con startDate
+      endDate:today,
+      //startDate:week_before,
+      language:'it', 
+      autoclose: true
+  });
+
+  
+</script>
 </body>
 
 </html>

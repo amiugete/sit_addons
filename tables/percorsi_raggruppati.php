@@ -36,6 +36,8 @@ if(!$conn) {
     end as freq,
     string_agg(distinct t.descrizione, ',') as turno, 
     ep.versione_testata as versione, 
+    ep.data_inizio_validita,
+    ep.data_fine_validita,
     case 
     when ep.data_fine_validita <= now()::date then 'Disattivo'
     when ep.data_inizio_validita > now()::date and ep.data_fine_validita > now()::date then 'In attivazione'
@@ -63,19 +65,44 @@ if(!$conn) {
     ep.data_inizio_validita, ep.data_fine_validita, ep.freq_settimane, ep.stagionalita, ep.ddmm_switch_on, ep.ddmm_switch_off
     order by 1,9";
     
-    if($_GET['ut']) {
-        $query= "select * from (".$query0.") a where $1 = any(id_uts) " ;  
+
+
+    /* SE VOLESSI USARE UN FORM CON LA DATA*/
+    /*if($_GET['ut']) {
+        $query= "select * from (".$query0.") a where $1 = any(id_uts) 
+        and to_date($2, 'YYYYMMDD') between data_inizio_validita and data_fine_validita" ;  
     } else {
         require_once("../query_ut.php");
         $query= "select * from (".$query0.") a 
-                where (select array_agg(id_ut) from (".$query_ut.") b) && (id_uts) ";
+                where (select array_agg(id_ut) from (".$query_ut.") b) && (id_uts) 
+                and to_date($2, 'YYYYMMDD') between data_inizio_validita and data_fine_validita";
+    }*/
+
+    
+
+    if($_GET['ut']) {
+        $query= "select * from (".$query0.") a where $1 = any(id_uts)" ;  
+    } else {
+        require_once("../query_ut.php");
+        $query= "select * from (".$query0.") a 
+                where (select array_agg(id_ut) from (".$query_ut.") b) && (id_uts)";
     }
 
+    if ($_GET['solo_attivi']=='t') {
+        $query= $query. " and  flg_disattivo != 'Disattivo'";
+    } else if ($_GET['solo_attivi']=='f') {
+        $query= $query;
+    }
+    
     //print $query."<br>";
     //print $_SESSION['username'];
 
     $result = pg_prepare($conn, "my_query", $query);
-    
+    if (pg_last_error($conn_sovr)){
+        echo pg_last_error($conn_sovr);
+        exit;
+    }
+
     if($_GET['ut']) {
         $result = pg_execute($conn, "my_query", array($_GET['ut']));  
     } else {

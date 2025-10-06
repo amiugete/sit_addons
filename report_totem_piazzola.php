@@ -150,11 +150,11 @@ if ($hour < '1120'){
     
     $("#nota_data").html("").fadeIn("slow");
     $(function() {    // Faccio refres della data-url
-    $table.bootstrapTable('refresh', {
-      url: "./tables/report_totem_piazzola.php?uos="+uos+"&d="+data_percorsi
-    }); 
+      $table.bootstrapTable('refresh', {
+        url: "./tables/report_totem_piazzola.php?uos="+uos+"&d="+data_percorsi
+      }); 
 
-  });
+    });
 };
 
 
