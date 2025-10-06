@@ -30,9 +30,9 @@ require_once('../conn.php');
 
 <?php 
 
-if (isset($_POST)){
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-if ($_POST['submit']) {
+//if ($_POST['submit']) {
      //Save File        
 
 
@@ -40,7 +40,7 @@ if ($_POST['submit']) {
     $eco = $_POST['eco'];
     //$ecopoint = $_POST['ecop'];
 
-    echo $eco."<br>";
+    //echo $eco."<br>";
     $query_eco= "select ecopunto from etl.aree_4326 where id = $1;";
     $resulteco =pg_prepare($conn, "my_query_eco", $query_eco);
     $resulteco = pg_execute($conn, "my_query_eco", array($eco));
@@ -67,16 +67,14 @@ if ($_POST['submit']) {
 (id, geom, cod_strada, numero, lettera, colore, testo, cod_civico, ins_date, mod_date)
 select n.* from geo.civici_neri n, etl.aree_4326 a 
 where a.id=$1 and st_intersects(n.geoloc, st_transform(a.geom, 3003));";
-    //$result1 = pg_prepare($conn, "my_query1", $query1);
-    //$result1 = pg_execute($conn, "my_query1", array($eco,));
+
 
     # la popolo con i dati dei civici rossi
     $query2="insert into etl.base_ecopunti 
 (id, geom, cod_strada, numero, lettera, colore, testo, cod_civico, ins_date, mod_date)
 select n.* from geo.civici_rossi n, etl.aree_4326 a 
 where a.id=$1 and st_intersects(n.geoloc, st_transform(a.geom, 3003));";
-    //$result2 = pg_prepare($conn, "my_query2", $query2);
-    //$result2 = pg_execute($conn, "my_query2", array($eco,));
+
 
     $result1 =pg_prepare($conn, "my_query1", $query1);
     $result2 =pg_prepare($conn, "my_query2", $query2);
@@ -108,18 +106,18 @@ where a.id=$1 and st_intersects(n.geoloc, st_transform(a.geom, 3003));";
     }
 
     
-    echo $comando;
+    //echo $comando;
     //exit;
     
     
     #echo '<br><br>';
     exec($comando, $output, $retval);
-    foreach($output as $key => $value)
+    /*foreach($output as $key => $value)
     {
       echo $key." ".$value."<br>";
-    }
+    }*/
 
-    if ($retval == 0) {
+    /*if ($retval == 0) {
         //echo 'OK<br>';
       $zipfile = trim(file_get_contents("/tmp/utenze_area/last_zip.txt"));
       echo $zipfile;
@@ -155,6 +153,27 @@ where a.id=$1 and st_intersects(n.geoloc, st_transform(a.geom, 3003));";
         http_response_code(200);
     } else {
         echo "Errore: file ZIP non trovato ($zipfile)";
+    }*/
+
+        if ($retval === 0) {
+    $zipfile = trim(file_get_contents("/tmp/utenze_area/last_zip.txt"));
+    if ($zipfile && file_exists($zipfile)) {
+        if (ob_get_length()) ob_end_clean(); // chiudi qualsiasi output buffer
+        header("Content-Type: application/zip");
+        header("Content-Disposition: attachment; filename=" . basename($zipfile));
+        header("Content-Length: " . filesize($zipfile));
+        flush();
+        readfile($zipfile);
+        exit;
+    } else {
+        http_response_code(500);
+        echo json_encode(["error" => "File ZIP non trovato"]);
+        exit;
+    }
+    } else {
+        http_response_code(500);
+        echo json_encode(["error" => "Errore nello script Python"]);
+        exit;
     }
    
       
@@ -165,9 +184,9 @@ where a.id=$1 and st_intersects(n.geoloc, st_transform(a.geom, 3003));";
       echo "C'è un problema con l'invio dei dati ti invitiamo a contattare il gruppo GETE via mail (assterritorio@amiu.genova.it) 
             o telefonicamente al 010 55 84496 ";
     }
- }
+//}
 
-}
+//}
 require_once('./req_bottom.php');
 ?>
 
