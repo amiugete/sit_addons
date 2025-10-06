@@ -122,38 +122,183 @@ function buildParams(includeFilters = false) {
 }
 
 
-  function createExcelSheet(rows, fileName, sheetName) {
-    if (!rows || rows.length === 0) {
-      alert("Nessun dato da esportare.");
-      return;
+/*function createExcelSheet(rows, fileName, sheetName) {
+  if (!rows || rows.length === 0) {
+    alert("Nessun dato da esportare.");
+    return;
+  }
+
+  const colNames = Object.keys(rows[0]);
+
+  function detectCellType(val) {
+    if (val === null || val === undefined || val === "") return null;
+
+    // Numeri
+    if (typeof val === "number" || (!isNaN(val) && val !== "")) {
+      const num = Number(val);
+      if (Number.isInteger(num)) {
+        return { v: num, t: "n", z: "0" }; // intero
+      } else {
+        return { v: num, t: "n", z: "0.00" }; // decimale
+      }
     }
 
-    // Recupero nomi delle colonne
-    const colNames = Object.keys(rows[0]);
+    // Boolean
+    if (typeof val === "boolean") return { v: val, t: "b" };
 
-    // Creo array of arrays (prima riga = intestazione)
-    const aoa = [colNames, ...rows.map(row => colNames.map(h => row[h]))];
+    // Solo ora (es. "14:35" o "14:35:22")
+    if (typeof val === "string" && /^([01]?\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/.test(val)) {
+      const parts = val.split(":").map(Number);
+      const d = new Date();
+      d.setHours(parts[0], parts[1], parts[2] || 0, 0);
+      return { v: d, t: "d", z: "hh:mm:ss" };
+    }
 
-    // Creo il foglio Excel
-    const ws = XLSX.utils.aoa_to_sheet(aoa);
+    // Solo data (es. "2025-10-03")
+    if (typeof val === "string" && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
+      const d = new Date(val);
+      d.setHours(0, 0, 0, 0); // azzera orario
+      return { v: d, t: "d", z: "dd/mm/yyyy" };
+    }
 
-    // Autofilter sulla prima riga
-    const range = XLSX.utils.decode_range(ws['!ref']);
-    ws['!autofilter'] = { ref: XLSX.utils.encode_range(range.s, { r: range.s.r, c: range.e.c }) };
+    // Oggetto Date
+    if (val instanceof Date && !isNaN(val)) {
+      const hasTime = val.getHours() + val.getMinutes() + val.getSeconds() > 0;
+      if (!hasTime) val.setHours(0, 0, 0, 0); // azzera se solo data
+      return { v: val, t: "d", z: hasTime ? "dd/mm/yyyy hh:mm:ss" : "dd/mm/yyyy" };
+    }
 
-    // Larghezza automatica colonne
-    ws['!cols'] = colNames.map(h => {
-      const maxLen = Math.max(h.length, ...rows.map(r => r[h] ? r[h].toString().length : 0));
-      return { wch: maxLen + 1 }; //margine
-    });
+    // Stringa parsabile come data completa
+    if (typeof val === "string" && !isNaN(Date.parse(val))) {
+      const d = new Date(val);
+      const hasTime = d.getHours() + d.getMinutes() + d.getSeconds() > 0;
+      if (!hasTime) d.setHours(0, 0, 0, 0);
+      return { v: d, t: "d", z: hasTime ? "dd/mm/yyyy hh:mm:ss" : "dd/mm/yyyy" };
+    }
 
-    // Creo la cartella Excel e aggiungo il foglio
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, sheetName);
-
-    // Salvo il file
-    XLSX.writeFile(wb, fileName);
+    // Stringhe generiche
+    return { v: val.toString(), t: "s" };
   }
+
+  // Header
+  const aoa = [colNames];
+  rows.forEach(row => {
+    const r = colNames.map(h => detectCellType(row[h]));
+    aoa.push(r);
+  });
+
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+
+  // Autofilter
+  const range = XLSX.utils.decode_range(ws['!ref']);
+  ws['!autofilter'] = { ref: XLSX.utils.encode_range(range.s, { r: range.s.r, c: range.e.c }) };
+
+  // Larghezza colonne
+  ws['!cols'] = colNames.map(h => {
+    const maxLen = Math.max(h.length, ...rows.map(r => r[h] ? r[h].toString().length : 0));
+    return { wch: maxLen + 1 };
+  });
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, sheetName);
+
+  XLSX.writeFile(wb, fileName);
+}*/
+
+function createExcelSheet(rows, fileName, sheetName) {
+  if (!rows || rows.length === 0) {
+    alert("Nessun dato da esportare.");
+    return;
+  }
+
+  const colNames = Object.keys(rows[0]);
+
+  function detectCellType(val) {
+    if (val === null || val === undefined || val === "") return null;
+
+    // Numeri
+    if (typeof val === "number" || (!isNaN(val) && val !== "")) {
+      const num = Number(val);
+      if (Number.isInteger(num)) return { v: num, t: "n", z: "0" };
+      return { v: num, t: "n", z: "0.00" };
+    }
+
+    // Boolean
+    if (typeof val === "boolean") return { v: val, t: "b" };
+
+    // Solo ora (stringa tipo "HH:mm" o "HH:mm:ss")
+    if (typeof val === "string" && /^([01]?\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/.test(val)) {
+      const parts = val.split(":").map(Number);
+      const d = new Date(0, 0, 0, parts[0], parts[1], parts[2] || 0);
+      const format = parts.length === 3 && parts[2] > 0 ? "hh:mm:ss" : "hh:mm";
+      return { v: d, t: "d", z: format };
+    }
+
+    // Solo data (stringa "YYYY-MM-DD")
+    if (typeof val === "string" && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
+      const d = new Date(val);
+      d.setHours(0, 0, 0, 0);
+      return { v: d, t: "d", z: "dd/mm/yyyy" };
+    }
+
+    // Oggetto Date
+    if (val instanceof Date && !isNaN(val)) {
+      const h = val.getHours(), m = val.getMinutes(), s = val.getSeconds();
+      const hasTime = h + m + s > 0;
+      let format = "dd/mm/yyyy";
+      if (hasTime) {
+        format = s > 0 ? "dd/mm/yyyy hh:mm:ss" : "dd/mm/yyyy hh:mm";
+      } else {
+        val.setHours(0, 0, 0, 0); // solo data
+      }
+      return { v: val, t: "d", z: format };
+    }
+
+    // Stringa parsabile come data completa
+    if (typeof val === "string" && !isNaN(Date.parse(val))) {
+      const d = new Date(val);
+      const h = d.getHours(), m = d.getMinutes(), s = d.getSeconds();
+      const hasTime = h + m + s > 0;
+      let format = "dd/mm/yyyy";
+      if (hasTime) {
+        format = s > 0 ? "dd/mm/yyyy hh:mm:ss" : "dd/mm/yyyy hh:mm";
+      } else {
+        d.setHours(0, 0, 0, 0);
+      }
+      return { v: d, t: "d", z: format };
+    }
+
+    // Stringhe generiche
+    return { v: val.toString(), t: "s" };
+  }
+
+  // Header
+  const aoa = [colNames];
+
+  // Righe
+  rows.forEach(row => {
+    const r = colNames.map(h => detectCellType(row[h]));
+    aoa.push(r);
+  });
+
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+
+  // Autofilter
+  const range = XLSX.utils.decode_range(ws['!ref']);
+  ws['!autofilter'] = { ref: XLSX.utils.encode_range(range.s, { r: range.s.r, c: range.e.c }) };
+
+  // Larghezza colonne
+  ws['!cols'] = colNames.map(h => {
+    const maxLen = Math.max(h.length, ...rows.map(r => r[h] ? r[h].toString().length : 0));
+    return { wch: maxLen + 1 };
+  });
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, sheetName);
+
+  XLSX.writeFile(wb, fileName);
+}
+
 
   // Export dati totale
   $(config.exportAllBtn).off("click").on("click", async () => {

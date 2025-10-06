@@ -189,11 +189,15 @@ while($rmax = pg_fetch_assoc($result_max)) {
         <th data-field="frazione" data-sortable="true" data-visible="true" data-filter-control="select">Frazione<br>rifiuto</th>
         <th data-field="targa_contenitore" data-sortable="true" data-visible="false" data-filter-control="input">Targa<br>cont</th>
         <th data-field="volume_contenitore" data-sortable="true" data-visible="false" data-filter-control="select">Volume</th>
-        <th data-field="data_ultimo_agg" data-formatter="dateFormat" data-sortable="true" data-visible="true" data-filter-control="input">DataOra<br>agg</th>
+        <!--th data-field="data_ultimo_agg" data-formatter="dateFormat" data-sortable="true" data-visible="true" data-filter-control="input">Data<br>agg</th>
+        <th data-field="ora_ultimo_agg" data-formatter="timeFormat" data-sortable="true" data-visible="true" data-filter-control="input">Ora<br>agg</th-->
+        <th data-field="dataora_ultimo_agg" data-formatter="dateTimeFormat" data-sortable="false" data-visible="true" data-filter-control="input">DataOra<br>agg</th>
         <th data-field="val_riemp" data-sortable="true" data-visible="true" data-filter-control="input">Riemp</th>
         <th data-field="val_bat_elettronica" data-sortable="true" data-visible="true" data-filter-control="input">Batt</th>
         <th data-field="val_bat_bocchetta" data-sortable="true" data-visible="false" data-filter-control="input">Batt<br>bocchetta</th>
-        <th data-field="data_ora_last_sv" data-formatter="dateFormat" data-sortable="true" data-visible="true" data-filter-control="input">DataOra<br>svuot</th>
+        <!--th data-field="data_last_sv" data-formatter="dateFormat" data-sortable="true" data-visible="true" data-filter-control="input">Data<br>svuot</th>
+        <th data-field="ora_last_sv" data-formatter="timeFormat" data-sortable="true" data-visible="true" data-filter-control="input">Ora<br>svuot</th-->
+        <th data-field="data_ora_last_sv" data-formatter="dateTimeFormat" data-sortable="false" data-visible="true" data-filter-control="input">DataOra<br>svuot</th>
         <th data-field="riempimento_svuotamento" data-sortable="true" data-visible="true" data-filter-control="input">Riemp<br>svuot</th>
         <th data-field="media_conf_giorno" data-sortable="true" data-visible="true" data-filter-control="input">Media<br>conf<br>giorno</th>
         <th data-field="percorsi" data-sortable="true" data-visible="true" data-filter-control="input">Percorsi</th>
@@ -245,12 +249,18 @@ $(function() {
   }
 
 
-
+/*
 function dateFormat(value, row, index) {
-   return moment(value).format('DD/MM/YYYY HH:mm');
+   return moment(value).format('DD/MM/YYYY');
 }
 
-
+function timeFormat(value, row, index) {
+   return moment(value, "HH:mm:ss").format('HH:mm');
+}
+*/
+function dateTimeFormat(value, row, index) {
+      return moment(value).format('DD/MM/YYYY HH:mm')
+    }
 
   /*data.forEach(d=>{
        data_creazione = moment(d.data_creazione).format('DD/MM/YYYY HH24:MI')

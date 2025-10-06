@@ -27,14 +27,18 @@ vpd.quartiere,
 cc.descrizione as frazione,
 ci.targa_contenitore, 
 ci.volume_contenitore,
+/*date(ci.data_ultimo_agg) as data_ultimo_agg,
+date_trunc('minute',ci.data_ultimo_agg::time) as ora_ultimo_agg,*/ 
 date_trunc('minute', ci.data_ultimo_agg) as data_ultimo_agg, /* approssimo al minuto */
 case 
     when ci.val_riemp > 100 then null
     else ci.val_riemp
 end val_riemp,
 ci.val_bat_elettronica,
-ci.val_bat_bocchetta, 
-date_trunc('minute', sv.data_ora_last_sv) as data_ora_last_sv,  /* approssimo al minuto */
+ci.val_bat_bocchetta,
+/*date(sv.data_ora_last_sv) as data_last_sv,
+date_trunc('minute',sv.data_ora_last_sv::time) ora_last_sv, */
+date_trunc('minute', sv.data_ora_last_sv) as data_ora_last_sv, /* approssimo al minuto */
 sv.riempimento as riempimento_svuotamento,
 mc.media_conf_giorno,
 string_agg(distinct pp.percorso, ', ') as percorsi
@@ -65,6 +69,7 @@ left join (
 	left join elem.percorsi p on p.id_percorso = ap.id_percorso
 	where p.id_categoria_uso = 3 and te.tipologia_elemento in ('B', 'R')
 ) pp on pp.id_piazzola = vpd.id_piazzola and pp.codice_cer=coalesce(cc.codice_cer_corretto, cc.codice_cer::varchar)
+where trim(ci.tipo_contenitore) != 'ECOISOLA'
 group by vpd.id_piazzola, 
 vpd.via,
 vpd.civ,
