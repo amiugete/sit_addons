@@ -191,7 +191,7 @@ while($rmax = pg_fetch_assoc($result_max)) {
         <th data-field="volume_contenitore" data-sortable="true" data-visible="false" data-filter-control="select">Volume</th>
         <!--th data-field="data_ultimo_agg" data-formatter="dateFormat" data-sortable="true" data-visible="true" data-filter-control="input">Data<br>agg</th>
         <th data-field="ora_ultimo_agg" data-formatter="timeFormat" data-sortable="true" data-visible="true" data-filter-control="input">Ora<br>agg</th-->
-        <th data-field="dataora_ultimo_agg" data-formatter="dateTimeFormat" data-sortable="false" data-visible="true" data-filter-control="input">DataOra<br>agg</th>
+        <th data-field="data_ultimo_agg" data-formatter="dateTimeFormat" data-sortable="false" data-visible="true" data-filter-control="input">DataOra<br>agg</th>
         <th data-field="val_riemp" data-sortable="true" data-visible="true" data-filter-control="input">Riemp</th>
         <th data-field="val_bat_elettronica" data-sortable="true" data-visible="true" data-filter-control="input">Batt</th>
         <th data-field="val_bat_bocchetta" data-sortable="true" data-visible="false" data-filter-control="input">Batt<br>bocchetta</th>
