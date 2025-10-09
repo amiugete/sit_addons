@@ -89,7 +89,7 @@ if ((int)$id_role_SIT = 0) {
     
 
 
-    <?php if ($check_superedit == 1 OR $check_esternalizzati==1) { ?>
+    <?php if ($check_superedit == 1 OR $check_esternalizzati=='t') { ?>
     <div class="col-sm-4">
     <div class="card" >
       <div class="card-header">
@@ -165,7 +165,7 @@ if ((int)$id_role_SIT = 0) {
     <hr>
 <div class="row">
 <h3>Altre funzionalità</h3>
-<?php if ($check_superedit == 1 OR $check_sovrariempimenti==1) { ?>
+<?php if ($check_superedit == 1 OR $check_sovr=='t') { ?>
 <div class="col-sm-4">
     <div class="card">
       <div class="card-header">
@@ -178,6 +178,19 @@ if ((int)$id_role_SIT = 0) {
         <?php if ($check_superedit == 1) { ?>
           <a class="list-group-item" href="./delete_ispezioni_sovr.php">Rimozione sovrariempimenti (solo superuser)</a>
         <?php } ?>
+      </ul>
+    </div>
+    </div>
+    <?php } ?>
+    <?php if ($check_superedit == 1 OR $check_utenze=='t') { ?>
+<div class="col-sm-4">
+    <div class="card">
+      <div class="card-header">
+        <h3><i class="fa-solid fa-user"></i>Estrazione utenze</h3>
+      </div>
+      <ul class="list-group list-group-flush">
+        <a class="list-group-item" href="./index_vie.php">Estrazione utenze per via</a>
+        <a class="list-group-item" href="./index_aree.php">Estrazione utenze per area</a>
       </ul>
     </div>
     </div>
