@@ -66,7 +66,7 @@ if (isset($_POST)){
       //echo getcwd();
 
       //$comando='/usr/bin/python3 ../py_scripts/seleziona_utenze_vie.py -i /var/www/html/utenze_bko/elenco_vie.txt -m '.$mail.'  -p '. $zona.'  -c '. $cons.' > /dev/null 2>&1 &';
-      $comando='/usr/bin/python3 ../py_scripts/seleziona_utenze_vie.py -i /var/www/html/utenze_bko/elenco_vie.txt -p '. $zona.' -u '.$utenze.' -c '. $cons;
+      $comando='/usr/bin/python3 ../py_scripts/seleziona_utenze_vie.py -i ./utenze_file/elenco_vie.txt -p '. $zona.' -u '.$utenze.' -c '. $cons;
       echo $comando;
       //exit();
 
