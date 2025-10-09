@@ -1,2 +1,0 @@
-cod_via, nome_via
-26180, VIA ALLE VECCHIE FORNACI
