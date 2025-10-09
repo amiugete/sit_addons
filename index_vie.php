@@ -130,7 +130,7 @@ if (trim($check_utenze) != 't') {
                 <a href="#" class="btn btn-warning btn-sm" id="removeline" ><i class="far fa-trash-alt"></i>Elimina ultima via</a>
                 <!--br> o riparti dall'inizio<br-->
                 <a href="#" class="btn btn-danger btn-sm" id="aggiorna" ><i class="fas fa-redo"></i>Elimina intero elenco</a></small>
-                <button type="submit" name="submit" id=submit value="invia_utenze" class="btn btn-success btn-sm" style="margin-left: auto;"><i class="fa-solid fa-file-arrow-down"></i>Sacrica utenze</button>
+                <button type="submit" name="submit" id=submit value="invia_utenze" class="btn btn-success btn-sm" style="margin-left: auto;"><i class="fa-solid fa-file-arrow-down"></i>Scarica utenze</button>
             </div>
             </div>
             </div>
