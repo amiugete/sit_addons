@@ -331,7 +331,7 @@ $(function() {
     //console.log(data_percorsi);
     //console.log($table);
     $table.bootstrapTable('refresh', {
-    url: "./tables/percorsi_raggruppati.php?ut=<?php echo $_POST['ut0'];?>"
+    url: "./tables/percorsi_raggruppati.php?ut=<?php echo $_POST['ut0'];?>&solo_attivi=t"
     });   
     console.log('refresh fatto');
 });
