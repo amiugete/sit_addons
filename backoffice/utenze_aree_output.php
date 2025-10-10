@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 ?>
 
 
@@ -155,7 +155,7 @@ where a.id=$1 and st_intersects(n.geoloc, st_transform(a.geom, 3003));";
         echo "Errore: file ZIP non trovato ($zipfile)";
     }*/
 
-        if ($retval === 0) {
+    if ($retval === 0) {
     $zipfile = trim(file_get_contents("/tmp/utenze_area/last_zip.txt"));
     if ($zipfile && file_exists($zipfile)) {
         if (ob_get_length()) ob_end_clean(); // chiudi qualsiasi output buffer
@@ -164,6 +164,29 @@ where a.id=$1 and st_intersects(n.geoloc, st_transform(a.geom, 3003));";
         header("Content-Length: " . filesize($zipfile));
         flush();
         readfile($zipfile);
+        // salvo il log
+        $description_log='Nuova estrazione utenze per area'; 
+        $insert_history="INSERT INTO util.sys_history 
+        (\"type\", \"action\", 
+        description, 
+        datetime,  id_user) 
+        VALUES(
+        'UTENZE', 'DOWNLOAD',
+        $1, 
+        CURRENT_TIMESTAMP, 
+        (select id_user from util.sys_users su where \"name\" ilike $2));";
+
+        $result_sit3 = pg_prepare($conn, "insert_history", $insert_history);
+        if (pg_last_error($conn)){
+        echo pg_last_error($conn).'<br>';
+        $res_ok=$res_ok+1;
+        }
+
+        $result_sit3 = pg_execute($conn, "insert_history", array($description_log, $_SESSION['username'])); 
+        if (pg_last_error($conn)){
+        echo pg_last_error($conn).'<br>';
+        $res_ok=$res_ok+1;
+        }
         exit;
     } else {
         http_response_code(500);
@@ -181,8 +204,7 @@ where a.id=$1 and st_intersects(n.geoloc, st_transform(a.geom, 3003));";
     } else {
       echo "KO";
       echo $comando;
-      echo "C'è un problema con l'invio dei dati ti invitiamo a contattare il gruppo GETE via mail (assterritorio@amiu.genova.it) 
-            o telefonicamente al 010 55 84496 ";
+      echo "C'è un problema con l'invio dei dati ti invitiamo a contattare il gruppo GETE via mail (assterritorio@amiu.genova.it)";
     }
 //}
 

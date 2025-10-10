@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 ?>
 
 
@@ -117,17 +117,44 @@ if (isset($_POST)){
 
           //die();
           http_response_code(200);
+          
+          // salvo il log
+          $description_log='Nuova estrazione utenze per via'; 
+          $insert_history="INSERT INTO util.sys_history 
+          (\"type\", \"action\", 
+          description, 
+          datetime,  id_user) 
+          VALUES(
+          'UTENZE', 'DOWNLOAD',
+          $1, 
+          CURRENT_TIMESTAMP, 
+          (select id_user from util.sys_users su where \"name\" ilike $2));";
+          //echo $description_log;
+          //echo $_SESSION['username'];
+          //exit();
+          $result_sit3 = pg_prepare($conn, "insert_history", $insert_history);
+          if (pg_last_error($conn)){
+            echo pg_last_error($conn).'<br>';
+            $res_ok=$res_ok+1;
+          }
+
+          $result_sit3 = pg_execute($conn, "insert_history", array($description_log, $_SESSION['username'])); 
+          if (pg_last_error($conn)){
+            echo pg_last_error($conn).'<br>';
+            $res_ok=$res_ok+1;
+          }
+
       } else {
           echo "Errore: file ZIP non trovato ($zipfile)";
+          echo "C'è un problema con il download del file zip, ti invitiamo a contattare il gruppo GETE via mail (assterritorio@amiu.genova.it)";
       }
     
-        
+
 
       } else {
         echo "KO";
         echo $comando;
-        echo "C'è un problema con l'invio dei dati ti invitiamo a contattare il gruppo GETE via mail (assterritorio@amiu.genova.it) 
-              o telefonicamente al 010 55 84496 ";
+        echo "C'è un problema con l'invio dei dati ti invitiamo a contattare il gruppo GETE via mail (assterritorio@amiu.genova.it)";
       }
   /*
       $zipfile = trim(file_get_contents("../utenze/last_zip.txt"));
