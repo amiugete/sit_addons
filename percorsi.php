@@ -294,13 +294,14 @@ $(function() {
       // parametri extra della pagina
       //const range = $('input[name="daterange"]').val().split(" - ");
       return {
-        ut: $("#ut0").val() == 0 ? "" : $("#ut0").val()//,
-        //data_inizio: range[0].split('/').reverse().join('-'),
+        ut: $("#ut0").val() == 0 ? "" : $("#ut0").val(),
+        solo_attivi: getStatoVersioni()//,
         //data_fine: range[1].split('/').reverse().join('-')
       };
     }
   });
 });
+
 </script>
 
 

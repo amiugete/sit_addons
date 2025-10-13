@@ -87,8 +87,20 @@
 
 
 <script type="text/javascript">
+  let stato_versioni = 't';
+
+  function setStatoVersioni(val) {
+    stato_versioni = val;
+  }
+
+  function getStatoVersioni() {
+    return stato_versioni;
+  }
+
   function flagCambiato(el) {
     if (el.checked) {
+      setStatoVersioni('f');
+      console.log(stato_versioni)
       console.log("Flag disattivi ON");
       $(function() {    // Faccio refres della data-url
       $table.bootstrapTable('refresh', {
@@ -97,6 +109,8 @@
 
     });
     } else {
+      setStatoVersioni('t');
+      console.log(stato_versioni)
       console.log("Flag disattivi OFF");
       $(function() {    // Faccio refres della data-url
       $table.bootstrapTable('refresh', {

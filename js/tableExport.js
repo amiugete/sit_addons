@@ -213,64 +213,68 @@ function createExcelSheet(rows, fileName, sheetName) {
 
   const colNames = Object.keys(rows[0]);
 
-  function detectCellType(val) {
-    if (val === null || val === undefined || val === "") return null;
+function detectCellType(val) {
+  if (val === null || val === undefined || val === "") return null;
 
-    // Numeri
-    if (typeof val === "number" || (!isNaN(val) && val !== "")) {
-      const num = Number(val);
-      if (Number.isInteger(num)) return { v: num, t: "n", z: "0" };
-      return { v: num, t: "n", z: "0.00" };
-    }
+  // 🔹 STRINGA numerica con zero iniziale → STRINGA (es. "00123")
+  if (typeof val === "string" && /^\d+$/.test(val) && val.length > 1 && val.startsWith("0")) {
+    return { v: val, t: "s" };
+  }
 
-    // Boolean
-    if (typeof val === "boolean") return { v: val, t: "b" };
+  // 🔹 NUMERI reali
+  if (typeof val === "number" || (typeof val === "string" && !isNaN(val) && val.trim() !== "")) {
+    const num = Number(val);
+    if (Number.isInteger(num)) return { v: num, t: "n", z: "0" };
+    return { v: num, t: "n", z: "0.00" };
+  }
 
-    // Solo ora (stringa tipo "HH:mm" o "HH:mm:ss")
-    if (typeof val === "string" && /^([01]?\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/.test(val)) {
-      const parts = val.split(":").map(Number);
-      const d = new Date(0, 0, 0, parts[0], parts[1], parts[2] || 0);
-      const format = parts.length === 3 && parts[2] > 0 ? "hh:mm:ss" : "hh:mm";
-      return { v: d, t: "d", z: format };
-    }
+  // 🔹 BOOLEAN
+  if (typeof val === "boolean") return { v: val, t: "b" };
 
-    // Solo data (stringa "YYYY-MM-DD")
-    if (typeof val === "string" && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
-      const d = new Date(val);
-      d.setHours(0, 0, 0, 0);
-      return { v: d, t: "d", z: "dd/mm/yyyy" };
-    }
+  // 🔹 SOLO ORA "HH:mm" o "HH:mm:ss"
+  if (typeof val === "string" && /^([01]?\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/.test(val)) {
+    const parts = val.split(":").map(Number);
+    const d = new Date(1899, 11, 30, parts[0], parts[1], parts[2] || 0); // Excel base date
+    const format = parts.length === 3 && parts[2] > 0 ? "hh:mm:ss" : "hh:mm";
+    return { v: d, t: "d", z: format };
+  }
 
-    // Oggetto Date
-    if (val instanceof Date && !isNaN(val)) {
-      const h = val.getHours(), m = val.getMinutes(), s = val.getSeconds();
-      const hasTime = h + m + s > 0;
-      let format = "dd/mm/yyyy";
-      if (hasTime) {
-        format = s > 0 ? "dd/mm/yyyy hh:mm:ss" : "dd/mm/yyyy hh:mm";
-      } else {
-        val.setHours(0, 0, 0, 0); // solo data
-      }
+  // 🔹 SOLO DATA ISO "YYYY-MM-DD"
+  if (typeof val === "string" && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
+    const d = new Date(val + "T00:00:00");
+    return { v: d, t: "d", z: "dd/mm/yyyy" };
+  }
+
+  // 🔹 SOLO DATA Italiana "DD/MM/YYYY"
+  if (typeof val === "string" && /^\d{2}\/\d{2}\/\d{4}$/.test(val)) {
+    const [dd, mm, yyyy] = val.split("/").map(Number);
+    const d = new Date(yyyy, mm - 1, dd, 0, 0, 0);
+    return { v: d, t: "d", z: "dd/mm/yyyy" };
+  }
+
+  // 🔹 DATA + ORA ISO "YYYY-MM-DDTHH:mm" o "YYYY-MM-DDTHH:mm:ss"
+  if (typeof val === "string" && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/.test(val)) {
+    const d = new Date(val);
+    const s = d.getSeconds();
+    const format = s > 0 ? "dd/mm/yyyy hh:mm:ss" : "dd/mm/yyyy hh:mm";
+    return { v: d, t: "d", z: format };
+  }
+
+  // 🔹 Oggetto Date
+  if (val instanceof Date && !isNaN(val)) {
+    const h = val.getHours(), m = val.getMinutes(), s = val.getSeconds();
+    if (h + m + s === 0) {
+      return { v: val, t: "d", z: "dd/mm/yyyy" };
+    } else {
+      const format = s > 0 ? "dd/mm/yyyy hh:mm:ss" : "dd/mm/yyyy hh:mm";
       return { v: val, t: "d", z: format };
     }
-
-    // Stringa parsabile come data completa
-    if (typeof val === "string" && !isNaN(Date.parse(val))) {
-      const d = new Date(val);
-      const h = d.getHours(), m = d.getMinutes(), s = d.getSeconds();
-      const hasTime = h + m + s > 0;
-      let format = "dd/mm/yyyy";
-      if (hasTime) {
-        format = s > 0 ? "dd/mm/yyyy hh:mm:ss" : "dd/mm/yyyy hh:mm";
-      } else {
-        d.setHours(0, 0, 0, 0);
-      }
-      return { v: d, t: "d", z: format };
-    }
-
-    // Stringhe generiche
-    return { v: val.toString(), t: "s" };
   }
+
+  // 🔹 Tutto il resto → STRINGA
+  return { v: val.toString(), t: "s" };
+}
+
 
   // Header
   const aoa = [colNames];

@@ -21,6 +21,16 @@ if(!$conn) {
     die('Connessione fallita !<br />');
 } else {
 
+    if ($_GET['filter']){
+        foreach(json_decode($_GET['filter']) as $key => $val) {
+            /*if (is_numeric($val)){
+                $filter = $filter. " AND ".$key." = ".$val." ";
+            } else {*/
+                $filter = $filter." AND upper(".$key.") LIKE upper('%".$val."%') ";
+            //} 
+            
+        }
+    } 
 
     $query0= "select ep.cod_percorso as cp_edit, ep.cod_percorso,
      ep.cod_percorso as cp_report, p.id_percorso as id_percorso_sit, 
@@ -97,7 +107,9 @@ if(!$conn) {
     //print $query."<br>";
     //print $_SESSION['username'];
 
-    $result = pg_prepare($conn, "my_query", $query);
+    $queryF = "select * from (".$query.") b where 1=1 ".$filter ;
+
+    $result = pg_prepare($conn, "my_query", $queryF);
     if (pg_last_error($conn_sovr)){
         echo pg_last_error($conn_sovr);
         exit;
