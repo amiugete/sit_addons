@@ -35,7 +35,7 @@ $ut = intval($_POST['ut0']);
 
 $insert_sit0="INSERT INTO etl.mezzi_ditte_terze 
 (id_uo, targa, in_uso, data_inserimento) 
-VALUES($1, $2, true, now());";
+VALUES($1, upper($2), true, now());";
 
 $result_usit0 = pg_prepare($conn, "insert_sit0", $insert_sit0);
 if (!pg_last_error($conn)){
