@@ -13,7 +13,7 @@ if ($_SESSION['test']==1) {
 $res_ok=0;
 
 
-
+# tolgo gli spazi
 $targa = str_replace(" ","",$_POST['targa']) ;
 //echo $desc."<br>";
 
@@ -21,7 +21,7 @@ $targa = str_replace(" ","",$_POST['targa']) ;
 $ut = intval($_POST['ut0']);
 //echo $vers."<br>";
 
-
+$quintali=intval($_POST['quintali']);
 
 
 
@@ -34,8 +34,8 @@ $ut = intval($_POST['ut0']);
 
 
 $insert_sit0="INSERT INTO etl.mezzi_ditte_terze 
-(id_uo, targa, in_uso, data_inserimento) 
-VALUES($1, upper($2), true, now());";
+(id_uo, targa, in_uso, quintali, data_inserimento) 
+VALUES($1, upper($2), true, $3, now());";
 
 $result_usit0 = pg_prepare($conn, "insert_sit0", $insert_sit0);
 if (!pg_last_error($conn)){
@@ -44,7 +44,7 @@ if (!pg_last_error($conn)){
     echo "<br><br>Update quintali<br>". pg_last_error($conn);
     $res_ok= $res_ok+1;
 }
-$result_usit0 = pg_execute($conn, "insert_sit0", array($ut, $targa)); 
+$result_usit0 = pg_execute($conn, "insert_sit0", array($ut, $targa, $quintali)); 
 if (!pg_last_error($conn)){
     #$res_ok=0;
 } else {
