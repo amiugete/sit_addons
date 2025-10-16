@@ -448,6 +448,10 @@ pg_free_result($result0);
                   //alert('Your form has been sent successfully.'); 
                   console.log(response);
                   $("#results_desc").html(response).fadeIn("slow");
+                  $table.bootstrapTable('refresh', {
+                    url: "./tables/targhe_ditte_terze.php"
+                  });   
+                  console.log('refresh fatto');
               }, 
               error: function (jqXHR, textStatus, errorThrown) {                        
                   alert('Your form was not sent successfully.'); 

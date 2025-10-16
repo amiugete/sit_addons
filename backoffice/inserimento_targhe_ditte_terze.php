@@ -35,7 +35,11 @@ $quintali=intval($_POST['quintali']);
 
 $insert_sit0="INSERT INTO etl.mezzi_ditte_terze 
 (id_uo, targa, in_uso, quintali, data_inserimento) 
-VALUES($1, upper($2), true, $3, now());";
+VALUES($1, upper($2), true, $3, now())
+ ON CONFLICT (id_uo, targa) /* or you may use [DO NOTHING;] */ 
+ DO UPDATE  SET quintali=EXCLUDED.quintali, 
+ in_uso=EXCLUDED.in_uso,
+ data_aggiornamento=now();";
 
 $result_usit0 = pg_prepare($conn, "insert_sit0", $insert_sit0);
 if (!pg_last_error($conn)){
@@ -85,7 +89,7 @@ if ($_POST['quintali']){
 
 
 if ($res_ok==0){
-    echo '<font color="green"> Nuova targa inserita correttamente!</font>';
+    echo '<font color="green"> Nuova targa inserita correttamente o fatto update del record già esistente!</font>';
 } else {
     echo $res_ok.'<font color="red"> ERRORE - contatta assterritorio@amiu.genova.it</font>';
 }
