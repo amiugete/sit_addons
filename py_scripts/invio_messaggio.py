@@ -183,7 +183,7 @@ http://amiuintranet.amiu.genova.it/content/accesso-server-amiugis'''.format(scri
    
    
    
-def warning_message_mail(message, receiver_email, script_name, logger_name):
+def warning_message_mail(message, receiver_email, script_name, logger_name, subject=None):
     '''
     Funzione presente nello script invio_messaggio.py per inviare l'eventuale LOG con WARNING via mail
     Input:
@@ -191,15 +191,23 @@ def warning_message_mail(message, receiver_email, script_name, logger_name):
         - receiver_email
         - script_name
         - logger_name
+        [- soggetto mail] OPZIONALE
     '''
 
 
-   
-    subject = 'WARNING MESSAGE - {}'.format(script_name)
-    body = '''
-    {0}<br><br>
-    Automatically sent from AMIU Genova by {1} script<br><br>
-    '''.format(message,script_name)
+    
+    if subject is None:
+        subject = 'WARNING MESSAGE - {}'.format(script_name)
+
+        body = '''
+        {0}<br><br>
+        Automatically sent from AMIU Genova by {1} script<br><br>
+        '''.format(message,script_name)
+    else:
+        body='''
+        {0}<br><br>
+        Messaggio automatico. Si prega di non rispondere. In caso di problemi contattare {1} <br><br>
+        '''.format(message,'assterritorio@amiu.genova.it')
     #sender_email = user_mail
 
 
@@ -209,7 +217,7 @@ def warning_message_mail(message, receiver_email, script_name, logger_name):
     message["To"] = receiver_email
     #message["CC"] = 'roberto.marzocchi@amiu.genova.it'
     message["Subject"] = subject
-    #message["Bcc"] = debug_email  # Recommended for mass emails
+    message["Bcc"] = mail_cc_assterritorio  # Recommended for mass emails
     message.preamble = subject
 
                     
