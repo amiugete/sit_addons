@@ -56,99 +56,57 @@ if (trim($check_coge) != 't') {
 <script type="text/javascript">
 
 
-$(document).ready(function(){
-  $('form#open_ut').submit(function() {
-    console.log('Sono qua');
-    $('#output_message').show(); 
-    
 
-    event.preventDefault();                  
 
-    var formData = $(this).serialize();
-    console.log(formData);
 
-    $.ajax({ 
-        url: './backoffice/download_driver_ekovision.php', 
-        method: 'POST', 
-        data: formData, 
-        //processData: true, 
-        //contentType: false, 
-        xhrFields: {
-        responseType: 'blob' // to avoid binary data being mangled on charset conversion
-        },
-        success: function(blob, status, xhr) {
-            console.log('Finito di elaborare il file');
-            //console.log(response);
-          
-            $('#output_message').hide(); 
-            // check for a filename
-            var filename = "";
-            var disposition = xhr.getResponseHeader('Content-Disposition');
-            if (disposition && disposition.indexOf('attachment') !== -1) {
-                var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-                var matches = filenameRegex.exec(disposition);
-                if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
-            }
 
-            if (typeof window.navigator.msSaveBlob !== 'undefined') {
-                // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
-                window.navigator.msSaveBlob(blob, filename);
-            } else {
+$(document).ready(function() {
+    // assicuriamoci di rimuovere ogni binding precedente
+    $('#sbtn').off('click.download_excel').on('click.download_excel', function(event) {
+        event.preventDefault();
+
+        console.log('Click eseguito: ' + new Date().toISOString());
+        console.trace();
+
+        $('#output_message').show();
+
+        var formData = $('#open_ut').serialize();
+
+        $.ajax({
+            url: './backoffice/download_driver_ekovision.php',
+            method: 'POST',
+            data: formData,
+            xhrFields: { responseType: 'blob' },
+            success: function(blob, status, xhr) {
+                $('#output_message').hide();
+                var filename = "";
+                var disposition = xhr.getResponseHeader('Content-Disposition');
+                if (disposition && disposition.indexOf('attachment') !== -1) {
+                    var matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+                    if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+                }
+
                 var URL = window.URL || window.webkitURL;
                 var downloadUrl = URL.createObjectURL(blob);
-
-                if (filename) {
-                    // use HTML5 a[download] attribute to specify filename
-                    var a = document.createElement("a");
-                    // safari doesn't support this yet
-                    if (typeof a.download === 'undefined') {
-                        window.location.href = downloadUrl;
-                    } else {
-                        a.href = downloadUrl;
-                        a.download = filename;
-                        document.body.appendChild(a);
-                        a.click();
-                    }
+                var a = document.createElement("a");
+                if (typeof a.download !== 'undefined') {
+                    a.href = downloadUrl;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
                 } else {
                     window.location.href = downloadUrl;
                 }
-
-                setTimeout(function () { URL.revokeObjectURL(downloadUrl); }, 100); // cleanup
+                setTimeout(function() { URL.revokeObjectURL(downloadUrl); }, 100);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert('Errore durante l\'elaborazione del file.');
+                console.error(errorThrown);
+                $('#output_message').hide();
             }
-            console.log('Sono arrivato qua');
-        },
-        error: function (jqXHR, textStatus, errorThrown) {                        
-            alert('Your form was not sent successfully.'); 
-            console.error(errorThrown); 
-        } 
-    }); 
-
-    
-
-
-    /*var seconds = 0;
-    var el = document.getElementById('seconds-counter');
-
-    function incrementSeconds() {
-        seconds += 1;
-        el.innerText = "Sto elaborando il file da " + seconds + " secondi. Attendi con pazienza";
-    }
-
-    var cancel = setInterval(incrementSeconds, 1000);*/
-
-
-
-
-    return true;
+        });
     });
 });
-
-
-
-$(window).bind ("beforeunload",  function (zEvent) {
-  console.log('Nascondo gif 2');
-  //$('#output_message').hide();
-} );
 
 
 </script>
@@ -157,7 +115,7 @@ $(window).bind ("beforeunload",  function (zEvent) {
 <hr>
 
 <!--form class="row" name="open_ut" method="post" id="open_ut" autocomplete="off" action="download_driver_ekovision.php" -->
-<form class="row" name="open_ut" method="POST" id="open_ut" autocomplete="off" action="">
+<form class="row" name="open_ut" method="POST" id="open_ut" autocomplete="off" >
 <input type="hidden" id="email" name="email" value="<?php echo $mail_user;?>">
 
 <?php //echo $username;?>
@@ -196,27 +154,21 @@ $(function() {
     },
     showISOWeekNumbers: true,
     minDate: "<?php echo $partenza_ekovision;?>"
-
-    
-  }, function(start, end, label) {
+  }/*, function(start, end, label) {
     var data_inizio = start.format('YYYY-MM-DD') ;
     var data_fine= end.format('YYYY-MM-DD');
     console.log("A new date selection was made: " + data_inizio + ' to ' + data_fine);
-    
-  
-
-    // Faccio refres della data-url
-    //$table.bootstrapTable('refresh', {
-    //  url: "./tables/report_consuntivazione_ekovision.php?ut=<?php echo $_POST['ut']?>&data_inizio="+data_inizio+"&data_fine="+data_fine+""
-    //});
-  });
+  }*/
+  );
 });
 </script>
 
 
 
 <div class="form-group col-lg-4">
-<button type="submit" id="sbtn" class="btn btn-primary"><i class="fa-solid fa-file-excel"></i> Esporta excel</button>
+<button type="button" id="sbtn" class="btn btn-primary">
+  <i class="fa-solid fa-file-excel"></i> Esporta excel
+</button>
 </div>
 
 
@@ -243,20 +195,6 @@ require_once('req_bottom.php');
 require('./footer.php');
 ?>
 
-
-<script>
-
-$('#js-date').datepicker({
-    format: 'dd/mm/yyyy',
-    //startDate: '+1d', 
-    language:'it' 
-});
-
-$('#js-date1').datepicker({
-    format: 'dd/mm/yyyy', 
-    language:'it'
-});
-</script>
 
 
 </body>

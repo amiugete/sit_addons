@@ -47,6 +47,9 @@ if ((int)$id_role_SIT = 0) {
 
 <div class="container">
 
+
+<div class="row">
+  <div class="col-md-10">
 <?php 
 
 $query_min="select ci.id_piazzola,
@@ -125,7 +128,117 @@ while($rmax = pg_fetch_assoc($result_max)) {
 }
 
 ?>
+</div>
 
+
+
+
+<script type="text/javascript">
+
+
+$(document).ready(function(){
+  $('#downloadBtn').on('click', function(event) {
+    event.preventDefault(); 
+    console.log('Sono qua');
+    $('#output_message').show(); 
+    
+
+    $.ajax({ 
+        url: './backoffice/download_report_percorsi_bilaterali.php', 
+        method: 'POST', 
+        data: [], 
+        //processData: true, 
+        //contentType: false, 
+        xhrFields: {
+        responseType: 'blob' // to avoid binary data being mangled on charset conversion
+        },
+        success: function(blob, status, xhr) {
+            console.log('Finito di elaborare il file');
+            //console.log(response);
+          
+            $('#output_message').hide(); 
+            // check for a filename
+            var filename = "";
+            var disposition = xhr.getResponseHeader('Content-Disposition');
+            if (disposition && disposition.indexOf('attachment') !== -1) {
+                var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                var matches = filenameRegex.exec(disposition);
+                if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+            }
+
+            if (typeof window.navigator.msSaveBlob !== 'undefined') {
+                // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
+                window.navigator.msSaveBlob(blob, filename);
+            } else {
+                var URL = window.URL || window.webkitURL;
+                var downloadUrl = URL.createObjectURL(blob);
+
+                if (filename) {
+                    // use HTML5 a[download] attribute to specify filename
+                    var a = document.createElement("a");
+                    // safari doesn't support this yet
+                    if (typeof a.download === 'undefined') {
+                        window.location.href = downloadUrl;
+                    } else {
+                        a.href = downloadUrl;
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                    }
+                } else {
+                    window.location.href = downloadUrl;
+                }
+
+                setTimeout(function () { URL.revokeObjectURL(downloadUrl); }, 100); // cleanup
+            }
+            console.log('Sono arrivato qua');
+        },
+        error: function (jqXHR, textStatus, errorThrown) {                        
+            alert('Your form was not sent successfully.'); 
+            console.error(errorThrown); 
+        } 
+    }); 
+
+  
+
+
+
+
+    //return true;
+    });
+});
+
+
+
+$(window).bind ("beforeunload",  function (zEvent) {
+  console.log('Nascondo gif 2');
+  //$('#output_message').hide();
+} );
+
+
+</script>
+
+
+
+
+<div class="col-md-2">
+  <button class="btn btn-sm btn-info" id="downloadBtn"><i class="fa-regular fa-file-excel"></i> Report percorsi bilaterali</button>
+  <!--a class="btn btn-sm btn-info" href="./download_report_percorsi_bilaterali.php"><i class="fa-regular fa-file-excel"></i> Report percorsi bilaterali</a--> 
+</div>
+</div>
+
+
+
+
+
+<div class="row align-items-center" style="display:none;" id="output_message">
+  <hr>
+  <img src="./img/loading.gif" alt="loader1" style="height:40px; width:auto;" class="img-fluid" id="loaderImg">
+  L'operazione potrebbe impiegare un po' di tempo. Attendere, il file sarà presto disponibile per il download. 
+  <img src="./img/loading.gif" alt="loader1" style="height:40px; width:auto;" class="img-fluid" id="loaderImg">
+
+  <!--div id='seconds-counter'> </div-->
+</div>
 
 
 <hr>
