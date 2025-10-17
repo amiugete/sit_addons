@@ -222,7 +222,7 @@ $(window).bind ("beforeunload",  function (zEvent) {
 
 
 <div class="col-md-2">
-  <button class="btn btn-sm btn-info" id="downloadBtn"><i class="fa-regular fa-file-excel"></i> Report percorsi bilaterali</button>
+  <button class="btn btn-sm btn-info" id="downloadBtn"><i class="fa-regular fa-file-excel"></i> Scarica dettaglio percorsi</button>
   <!--a class="btn btn-sm btn-info" href="./download_report_percorsi_bilaterali.php"><i class="fa-regular fa-file-excel"></i> Report percorsi bilaterali</a--> 
 </div>
 </div>
