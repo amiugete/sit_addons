@@ -108,7 +108,13 @@ c_handler.setFormatter(cc_format)
 f_handler.setFormatter(cc_format)
 
 
-
+def coalesce_py(s, d):
+    if s is None:
+        return d
+    else:
+        return s
+    
+    
 def sett(giorno):
     if giorno%7==0:
         set=int(giorno/7)
@@ -374,20 +380,21 @@ data_attivazione
     
     query_elementi_bilaterale='''with valori_bilaterali as (
  select s.id_piazzola, 
- ci.cod_cer_mat,
+ coalesce(cc.codice_cer_corretto::text, ci.cod_cer_mat::text) as cod_cer,
  max(s.riempimento) as riemp_max_svuot,
  max(s.data_ora_svuotamento) as data_ora_svuot,
  min(ci.data_ultimo_agg) as  data_ultimo_agg, 
- max(ci.val_riemp) as riemp_max, 
+ round(avg(case when ci.val_riemp > 100 then 100 else ci.val_riemp end)) as riemp_max, 
  avg(mc.media_conf_giorno) as media_conf_giorno
  from idea.svuotamenti s 
  /*join idea.v_ultimi_svuotamenti vus 
 on s.targa_contenitore = vus.targa_contenitore 
 and s.data_ora_svuotamento = vus.last_data_ora_svuotamento*/ 
 left join idea.censimento_idea ci on ci.targa_contenitore = s.targa_contenitore
+left join idea.codici_cer cc on cc.codice_cer =ci.cod_cer_mat 
 left join idea.mv_conferimenti_per_giorno_ultimo_mese mc on mc.targa_contenitore = s.targa_contenitore
 group by s.id_piazzola, 
- ci.cod_cer_mat
+ coalesce(cc.codice_cer_corretto::text, ci.cod_cer_mat::text)
 ), percorso_sel as (
     select id_percorso 
     from elem.percorsi 
@@ -423,8 +430,9 @@ select coalesce(e.id_piazzola, e.id_elemento) as id,
         on eap.frequenza::int = fo.cod_frequenza  
         join elem.tipi_elemento te 
         on te.tipo_elemento = e.tipo_elemento
+        join elem.tipi_rifiuto tr on tr.tipo_rifiuto = te.tipo_rifiuto
        	left join valori_bilaterali vb on 
-       	vb.id_piazzola = e.id_piazzola::text
+       	vb.id_piazzola = e.id_piazzola::text and vb.cod_cer = tr.codice_cer 
 		/*where id_percorso = (select id_percorso from elem.percorsi p where p.cod_percorso= '0507124601' and id_categoria_uso in (3,6))  
         */
         group by coalesce(e.id_piazzola, e.id_elemento) , 
@@ -572,7 +580,18 @@ select coalesce(e.id_piazzola, e.id_elemento) as id,
             'align': 'center'
         })
 
-
+        cell_format_ev = workbook.add_format({
+            'border': 1,
+            'font_color': '#ff0000',
+            'bg_color': '#fce805'
+        })
+        
+        data_format_ev = workbook.add_format({
+            'border': 1,
+            'num_format': 'dd/mm/yyyy hh:mm',
+            'font_color': '#ff0000',
+            'bg_color': '#fce805'
+        })
 
         # PAGE SETUP
         w.set_landscape()
@@ -693,11 +712,19 @@ select coalesce(e.id_piazzola, e.id_elemento) as id,
 
             k=0       
             for vv in lista_elementi:
-                w.write(6+k,0, vv[0], cell_format) # id
-                w.write(6+k,1, vv[1], cell_format) # indirizzo
-                w.write(6+k,2, vv[2], cell_format) # riferimento
-                w.write(6+k,3, '{} x {}'.format(vv[8],vv[3]), cell_format) # tipo
-                w.write(6+k,4, vv[4], cell_format) # note
+                if check_b==1 and coalesce_py(vv[12],0) > 80:
+                    cf=cell_format_ev
+                    df=data_format_ev
+                else: 
+                    cf=cell_format
+                    df=data_format
+                    
+                    
+                w.write(6+k,0, vv[0], cf) # id
+                w.write(6+k,1, vv[1], cf) # indirizzo
+                w.write(6+k,2, vv[2], cf) # riferimento
+                w.write(6+k,3, '{} x {}'.format(vv[8],vv[3]), cf) # tipo
+                w.write(6+k,4, vv[4], cf) # note
                 i=0
                 while i<7:
                     c=i-datetime.datetime.today().weekday()
@@ -726,11 +753,11 @@ select coalesce(e.id_piazzola, e.id_elemento) as id,
                     # 11 last update
                     # 12 riemp_last_update
                     # 13 media conf giorni
-                    w.write(6+k, 12, vv[11], data_format)
-                    w.write(6+k, 13, vv[12], cell_format) 
-                    w.write(6+k, 14, vv[10], data_format)
-                    w.write(6+k, 15, vv[9], cell_format)
-                    w.write(6+k, 16, vv[13], cell_format)
+                    w.write(6+k, 12, vv[11], df)
+                    w.write(6+k, 13, vv[12], cf) 
+                    w.write(6+k, 14, vv[10], df)
+                    w.write(6+k, 15, vv[9], cf)
+                    w.write(6+k, 16, vv[13], cf)
                 k+=1
             
             if k==0:
