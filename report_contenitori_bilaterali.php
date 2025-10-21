@@ -228,19 +228,19 @@ $(window).bind ("beforeunload",  function (zEvent) {
 
 <div class="row justify-content-end g-2" style="display: flex; margin-top:1%;">
   <div class="col-auto">
-  <button class="btn btn-sm btn-rsu downloadBtn" data-report="200301"><i class="fa-regular fa-file-excel"></i> Percorsi RSU</button>
+  <button class="btn btn-sm btn-rsu downloadBtn" title="Scarica report di tutti i percorsi bilaterali RSU" data-report="200301"><i class="fa-regular fa-file-excel"></i> Percorsi RSU</button>
   </div>
   <div class="col-auto">
-  <button class="btn btn-sm btn-carta downloadBtn" data-report="200101"><i class="fa-regular fa-file-excel"></i> Percorsi CARTA</button>
+  <button class="btn btn-sm btn-carta downloadBtn" title="Scarica report di tutti i percorsi bilaterali CARTA" data-report="200101"><i class="fa-regular fa-file-excel"></i> Percorsi CARTA</button>
   </div>
   <div class="col-auto">
-  <button class="btn btn-sm btn-multi downloadBtn" data-report="150106"><i class="fa-regular fa-file-excel"></i> Percorsi MULTI</button>
+  <button class="btn btn-sm btn-multi downloadBtn" title="Scarica report di tutti i percorsi bilaterali MULTI" data-report="150106"><i class="fa-regular fa-file-excel"></i> Percorsi MULTI</button>
   </div>
   <div class="col-auto">
-  <button class="btn btn-sm btn-org downloadBtn" data-report="200108"><i class="fa-regular fa-file-excel"></i> Percorsi ORG</button>
+  <button class="btn btn-sm btn-org downloadBtn" title="Scarica report di tutti i percorsi bilaterali ORGANICO" data-report="200108"><i class="fa-regular fa-file-excel"></i> Percorsi ORG</button>
   </div>
   <div class="col-auto">
-  <button class="btn btn-sm btn-dark downloadBtn" data-report="all"><i class="fa-regular fa-file-excel"></i> TUTTI percorsi</button>
+  <button class="btn btn-sm btn-dark downloadBtn" title="Scarica report di tutti i percorsi bilaterali" data-report="all"><i class="fa-regular fa-file-excel"></i> TUTTI percorsi</button>
   <!--a class="btn btn-sm btn-info" href="./download_report_percorsi_bilaterali.php"><i class="fa-regular fa-file-excel"></i> Report percorsi bilaterali</a--> 
 </div>
 </div>
