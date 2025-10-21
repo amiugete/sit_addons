@@ -271,8 +271,9 @@
   color: white;
 }
 .btn-multi {
-  background-color: #f4b311 !important;/* giallo */
-  color: #212529;
+  background-color: #eeab00 !important;/* giallo */
+  color: white;
+;
 }
 .btn-org {
   background-color: #883001 !important; /* rosso */
@@ -282,8 +283,8 @@
 /* opzionale: effetto hover migliorabile */
 .btn-rsu:hover, .btn-carta:hover, .btn-multi:hover, .btn-org:hover {
   opacity: 0.85;
-  color: inherit !important;
-  background-color: inherit !important;
+  color: white !important;
+  /*background-color: inherit !important;*/
 }
 
 

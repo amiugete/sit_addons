@@ -17,7 +17,7 @@
         class="col-md-6 d-flex align-items-center flex-wrap">
 <?php //echo $username;?>
 
-<div class="form-group me-2 mb-4">
+<div class="form-group me-2">
   <select class="selectpicker show-tick form-control" 
   data-live-search="true" name="ut0" id="ut0" onchange="utScelta(this.value);" required="">
   
@@ -66,7 +66,7 @@
   </select>  
   <!--small>L'elenco delle piazzole..  </small-->        
 </div>
-<div class="form-group mb-2">
+<div class="form-group me-2">
   <a class="btn btn-primary" href="<?php echo basename($_SERVER['PHP_SELF']);?>">Tutte le mie UT</a>
 </div>
 
