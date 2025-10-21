@@ -282,19 +282,33 @@ def main(arg1, arg2, arg3, arg4):
         
     
     
+    if check_b==1 and codice=='0':
+        cer_list = ['200301', '150106', '200101', '200108']
+    elif check_b==1 and codice == '200301':
+        cer_list = ['200301']
+    elif check_b==1 and codice == '150106':
+        cer_list = ['150106']        
+    elif check_b==1 and codice == '200101':
+        cer_list = ['200101']    
+    elif check_b==1 and codice == '200108':
+        cer_list = ['200108']    
+    
+    logger.debug(cer_list)
+    placeholders = ','.join(['%s'] * len(cer_list))
+
     
     
-    
-    query_bilaterali='''select cod_percorso, descrizione, id_servizio, fo.num_giorni  
+    query_bilaterali=f'''select p.cod_percorso, p.descrizione, id_servizio, fo.num_giorni, t.cer 
 from elem.percorsi p 
+join anagrafe_percorsi.anagrafe_tipo t on t.id_servizio_sit = p.id_servizio 
 join etl.frequenze_ok fo on fo.cod_frequenza = p.frequenza  
 where id_categoria_uso = 3 and 
 	id_servizio in (
-		select id_servizio from elem.servizi s where s.descrizione ilike '%bilaterale%'
+		select id_servizio from elem.servizi s where s.descrizione ilike %s
 	)
+    and t.cer in ({placeholders})
 order by 4 desc,1'''
-    
-    
+        
     
     
     query='''select p.cod_percorso, p.versione, p.descrizione, 
@@ -479,11 +493,17 @@ select coalesce(e.id_piazzola, e.id_elemento) as id,
     
     if check_b==1:
         codici_percorsi=[]
-    
         try:
-            curr.execute(query_bilaterali)
+            params = ['%bilaterale%'] + cer_list  # primo param ILIKE, poi i CER
+            curr.execute(query_bilaterali, params)
             elenco_percorsi_bilaterali=curr.fetchall()
         except Exception as e:
+            logger.error("Query: %s", query_bilaterali)  # ✅ corretto
+            logger.error("Query: " + query_bilaterali)   # ✅ corretto
+            logger.error("Query: %s" % query_bilaterali) # ✅ corretto
+
+            logger.error("Query: %s", query_bilaterali, tuple(cer_list))  # ❌ può causare errore se il logger non gestisce bene le tuple
+            logger.error(tuple(cer_list))
             logger.error(e)
             sent_log_by_mail(filename,logfile)
             #print('''Manca l'input''')
@@ -653,7 +673,7 @@ select coalesce(e.id_piazzola, e.id_elemento) as id,
 
         k=0       
         for dd in dettagli_percorso:
-            logger.info('''Inizio a scrivere l'intestazione''')
+            logger.info(f'''Inizio a scrivere l'intestazione del percorso {dd[0]}''')
             w.write('B1', dd[0], cell_format_grande) # codice percorso
             if check_s==0: 
                 w.write('D1', dd[1], cell_format) # versione

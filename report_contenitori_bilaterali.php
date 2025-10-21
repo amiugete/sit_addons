@@ -129,7 +129,7 @@ while($rmax = pg_fetch_assoc($result_max)) {
 
 ?>
 </div>
-
+</div>
 
 
 
@@ -137,16 +137,21 @@ while($rmax = pg_fetch_assoc($result_max)) {
 
 
 $(document).ready(function(){
-  $('#downloadBtn').on('click', function(event) {
+  $('.downloadBtn').on('click', function(event) {
     event.preventDefault(); 
     console.log('Sono qua');
     $('#output_message').show(); 
     
 
+    // 🔹 Leggo i parametri dal bottone cliccato
+    const reportType = $(this).data('report'); // es: "bilaterali", "ekovision", ecc.
+
+    console.log('Download richiesto per:', reportType);
+
     $.ajax({ 
         url: './backoffice/download_report_percorsi_bilaterali.php', 
         method: 'POST', 
-        data: [], 
+        data: { report: reportType }, // invio i dati
         //processData: true, 
         //contentType: false, 
         xhrFields: {
@@ -199,11 +204,6 @@ $(document).ready(function(){
         } 
     }); 
 
-  
-
-
-
-
     //return true;
     });
 });
@@ -221,12 +221,29 @@ $(window).bind ("beforeunload",  function (zEvent) {
 
 
 
-<div class="col-md-2">
-  <button class="btn btn-sm btn-info" id="downloadBtn"><i class="fa-regular fa-file-excel"></i> Scarica dettaglio percorsi</button>
+
+
+
+
+
+<div class="row justify-content-end g-2" style="display: flex; margin-top:1%;">
+  <div class="col-auto">
+  <button class="btn btn-sm btn-rsu downloadBtn" data-report="200301"><i class="fa-regular fa-file-excel"></i> Percorsi RSU</button>
+  </div>
+  <div class="col-auto">
+  <button class="btn btn-sm btn-carta downloadBtn" data-report="200101"><i class="fa-regular fa-file-excel"></i> Percorsi CARTA</button>
+  </div>
+  <div class="col-auto">
+  <button class="btn btn-sm btn-multi downloadBtn" data-report="150106"><i class="fa-regular fa-file-excel"></i> Percorsi MULTI</button>
+  </div>
+  <div class="col-auto">
+  <button class="btn btn-sm btn-org downloadBtn" data-report="200108"><i class="fa-regular fa-file-excel"></i> Percorsi ORG</button>
+  </div>
+  <div class="col-auto">
+  <button class="btn btn-sm btn-dark downloadBtn" data-report="all"><i class="fa-regular fa-file-excel"></i> TUTTI percorsi</button>
   <!--a class="btn btn-sm btn-info" href="./download_report_percorsi_bilaterali.php"><i class="fa-regular fa-file-excel"></i> Report percorsi bilaterali</a--> 
 </div>
 </div>
-
 
 
 
