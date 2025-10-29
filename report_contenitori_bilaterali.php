@@ -59,14 +59,23 @@ from idea.v_last_svuotamenti vls
 left join idea.censimento_idea ci on ci.targa_contenitore = vls.targa_contenitore
 left join elem.v_piazzole_dwh vpd on vpd.id_piazzola = ci.id_piazzola::int
 left join idea.codici_cer cc on cc.codice_cer = ci.cod_cer_mat 
-where data_ora_last_sv = (select min(data_ora_last_sv) as data_min
+where ci.id_piazzola not like 'MAG%' and data_ora_last_sv = (select min(data_ora_last_sv) as data_min
 		from idea.v_last_svuotamenti 
-		where targa_contenitore in (select targa_contenitore from idea.censimento_idea ci)
+		where targa_contenitore in (select targa_contenitore from idea.censimento_idea ci where ci.id_piazzola not like 'MAG%')
 )";
 
-$result_min = pg_prepare($conn, "query_min", $query_min);   
+$result_min = pg_prepare($conn, "query_min", $query_min); 
+if (pg_last_error($conn)){
+  echo pg_last_error($conn);
+  $res_ok=$res_ok+1;
+  exit(0);
+}  
 $result_min = pg_execute($conn, "query_min", array());
-
+if (pg_last_error($conn)){
+  echo pg_last_error($conn);
+  $res_ok=$res_ok+1;
+  exit(0);
+}
 
 while($rmin = pg_fetch_assoc($result_min)) {
   echo "";
@@ -76,11 +85,21 @@ while($rmin = pg_fetch_assoc($result_min)) {
 
 $query_max1="select date_trunc('minute',max(ci.data_agg_api)) as max_data_agg_api
 from idea.censimento_idea ci 
-left join elem.v_piazzole_dwh vpd on vpd.id_piazzola = ci.id_piazzola::int";
+left join elem.v_piazzole_dwh vpd on vpd.id_piazzola = ci.id_piazzola::int
+where ci.id_piazzola not like 'MAG%'";
 
-$result_max1 = pg_prepare($conn, "query_max1", $query_max1);   
+$result_max1 = pg_prepare($conn, "query_max1", $query_max1);  
+if (pg_last_error($conn)){
+  echo pg_last_error($conn);
+  $res_ok=$res_ok+1;
+  exit(0);
+}
 $result_max1 = pg_execute($conn, "query_max1", array());
-
+if (pg_last_error($conn)){
+  echo pg_last_error($conn);
+  $res_ok=$res_ok+1;
+  exit(0);
+}
 
 while($rmax1 = pg_fetch_assoc($result_max1)) {
   echo '<i class="fa-solid fa-stopwatch"></i> ';
@@ -93,11 +112,21 @@ while($rmax1 = pg_fetch_assoc($result_max1)) {
 
 $query_max0="select date_trunc('minute',max(ci.data_ultimo_agg)) as max_data_ultimo_agg
 from idea.censimento_idea ci 
-left join elem.v_piazzole_dwh vpd on vpd.id_piazzola = ci.id_piazzola::int";
+left join elem.v_piazzole_dwh vpd on vpd.id_piazzola = ci.id_piazzola::int
+where ci.id_piazzola not like 'MAG%'";
 
 $result_max0 = pg_prepare($conn, "query_max0", $query_max0);   
+if (pg_last_error($conn)){
+  echo pg_last_error($conn);
+  $res_ok=$res_ok+1;
+  exit(0);
+}
 $result_max0 = pg_execute($conn, "query_max0", array());
-
+if (pg_last_error($conn)){
+  echo pg_last_error($conn);
+  $res_ok=$res_ok+1;
+  exit(0);
+}
 
 while($rmax0 = pg_fetch_assoc($result_max0)) {
   echo '<i class="fa-solid fa-stopwatch-20"></i>';
@@ -113,14 +142,25 @@ from idea.v_last_svuotamenti vls
 left join idea.censimento_idea ci on ci.targa_contenitore = vls.targa_contenitore
 left join elem.v_piazzole_dwh vpd on vpd.id_piazzola = ci.id_piazzola::int
 left join idea.codici_cer cc on cc.codice_cer = ci.cod_cer_mat 
-where data_ora_last_sv = (select max(data_ora_last_sv) as data_min
+where ci.id_piazzola not like 'MAG%' 
+and data_ora_last_sv = (select max(data_ora_last_sv) as data_min
 		from idea.v_last_svuotamenti 
-		where targa_contenitore in (select targa_contenitore from idea.censimento_idea ci)
+		where targa_contenitore in (select targa_contenitore from idea.censimento_idea ci where ci.id_piazzola not like 'MAG%')
 )";
 
 $result_max = pg_prepare($conn, "query_max", $query_max);   
+if (pg_last_error($conn)){
+  echo '4';
+  echo pg_last_error($conn);
+  $res_ok=$res_ok+1;
+  exit(0);
+}
 $result_max = pg_execute($conn, "query_max", array());
-
+if (pg_last_error($conn)){
+  echo pg_last_error($conn);
+  $res_ok=$res_ok+1;
+  exit(0);
+}
 
 while($rmax = pg_fetch_assoc($result_max)) {
   echo '<i class="fa-solid fa-truck-droplet"></i>';

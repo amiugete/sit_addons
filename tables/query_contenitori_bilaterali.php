@@ -69,7 +69,8 @@ left join (
 	left join elem.percorsi p on p.id_percorso = ap.id_percorso
 	where p.id_categoria_uso = 3 and te.tipologia_elemento in ('B', 'R')
 ) pp on pp.id_piazzola = vpd.id_piazzola and pp.codice_cer=coalesce(cc.codice_cer_corretto, cc.codice_cer::varchar)
-where trim(ci.tipo_contenitore) != 'ECOISOLA'
+where ci.id_piazzola not like 'MAG%'
+and trim(ci.tipo_contenitore) != 'ECOISOLA'
 group by vpd.id_piazzola, 
 vpd.via,
 vpd.civ,
