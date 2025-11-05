@@ -137,7 +137,7 @@ if ($_POST['id']){
     //echo 'ID definito';
 
     $update_ispezione= "UPDATE sovrariempimenti.ispezioni 
-    SET id_piazzola = $1, data_ora = $2, ispettore = $3
+    SET id_piazzola = $1, data_ora = to_timestamp($2, 'DD/MM/YYYY HH24:MI'), ispettore = $3
     WHERE id= $4 "; 
 
     $result_id1 = pg_prepare($conn_sovr, "update_ispezione", $update_ispezione);
