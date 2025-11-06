@@ -281,7 +281,7 @@ def main(arg1, arg2, arg3, arg4):
     #conn.autocommit = True
         
     
-    
+    cer_list=[]
     if check_b==1 and codice=='0':
         cer_list = ['200301', '150106', '200101', '200108']
     elif check_b==1 and codice == '200301':
@@ -292,6 +292,7 @@ def main(arg1, arg2, arg3, arg4):
         cer_list = ['200101']    
     elif check_b==1 and codice == '200108':
         cer_list = ['200108']    
+    
     
     logger.debug(cer_list)
     placeholders = ','.join(['%s'] * len(cer_list))
