@@ -24,7 +24,7 @@ if ($_GET['filter']){
             $filter = $filter. " AND ".$key." = ".$val." ";
         } else {*/
         if ($key != 'undefined'){
-            $filter = $filter. " AND upper(".$key.") LIKE upper('%".$val."%')";
+            $filter = $filter. " AND ".$key."::text LIKE '%".$val."%'";
         }
             /* }*/ 
          
