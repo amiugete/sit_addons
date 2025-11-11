@@ -53,7 +53,7 @@ from
 	 i.ispettore, i.id, pe.num_ispezioni, p.id_piazzola, pe.anno
 	 )a
 	 where anno = extract(year from data_ora)
-order by id_ispezione desc";
+order by id_ispezione";
     
 
     //questa parte per ora non serve
