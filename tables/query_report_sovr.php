@@ -16,8 +16,7 @@ case
 	else NULL
 end as indicatore
 from  
-( 
-	select c.cod_istat, c.descr_comune, concat(p.id_piazzola, ' - ', v.nome, ', ', p.numero_civico, ' - Rif. ', p.riferimento) as piazzola,
+( select c.cod_istat, c.descr_comune, concat(p.id_piazzola, ' - ', v.nome, ', ', p.numero_civico, ' - Rif. ', p.riferimento) as piazzola,
 	za.cod_zona as zona, u.descrizione as ut, q.nome as quartiere,
 	string_agg(distinct pe.id_segnalazione::text, ' - ') as id_segnalazione,
 	string_agg(distinct to_char(pe.data_ora_segnalazione,  'DD/MM/YYYY HH24.MI'), ' - ') as data_ora_segnalazione,
@@ -30,7 +29,8 @@ from
 	string_agg(distinct te.descrizione, ', ') filter (where ie.sovrariempito) as dettagli_sovrariempiti,
 	string_agg(distinct ie.dettagli_svuotamenti, ', ') as dettagli_svuotamenti,
 	(select count(id) from sovrariempimenti.ispezioni i2 where i2.id_piazzola = p.id_piazzola) as num_ispezioni_effettuate,
-	pe.num_ispezioni as num_ispezioni_previste
+	pe.num_ispezioni as num_ispezioni_previste,
+	pe.anno, i.data_ora
 	 from sovrariempimenti.programmazione_ispezioni pe 
 	 join sovrariempimenti.ispezioni i on i.id_piazzola = pe.id_piazzola
 	 left join sovrariempimenti.ispezione_elementi ie on ie.id_ispezione = i.id 
@@ -50,9 +50,10 @@ from
 	 c.cod_istat, c.descr_comune, concat(p.id_piazzola, ' - ', v.nome, ', ', p.numero_civico, ' - Rif. ', p.riferimento) ,
 	 za.cod_zona , u.descrizione , q.nome ,
 	 /*pe.id_segnalazione, pe.data_ora_segnalazione,*/ i.data_ora,
-	 i.ispettore, i.id, pe.num_ispezioni, p.id_piazzola
+	 i.ispettore, i.id, pe.num_ispezioni, p.id_piazzola, pe.anno
 	 )a
-order by id_ispezione";
+	 where anno = extract(year from data_ora)
+order by id_ispezione desc";
     
 
     //questa parte per ora non serve
