@@ -335,7 +335,7 @@ def main(arg1, arg2, arg3, arg4):
                 hsm.DURATA, 
                 aspu.ID_PERCORSO,
                 aspu.descrizione,
-                TO_DATE(see.DATA_PIANIF_INIZIALE,'YYYYMMDD') AS giorno,
+                TO_DATE(see.DATA_ESECUZIONE_PREVISTA,'YYYYMMDD') AS giorno,
                 CASE 
                     WHEN id_comune IS NULL AND au.ID_UO IN (SELECT cu.id_uo FROM comuni_ut cu WHERE cu.id_comune =1) 
                     THEN 1
@@ -380,14 +380,14 @@ def main(arg1, arg2, arg3, arg4):
                     AND see.COD_CAUS_SRV_NON_ESEG_EXT IS null
                 JOIN ANAGR_SER_PER_UO aspu 
                     ON aspu.ID_PERCORSO = see.CODICE_SERV_PRED 
-                    AND to_date(see.DATA_ESECUZIONE_PREVISTA, 'YYYYMMDD') BETWEEN 
+                    AND to_date(see.DATA_PIANIF_INIZIALE, 'YYYYMMDD') BETWEEN 
                     aspu.DTA_ATTIVAZIONE AND aspu.DTA_DISATTIVAZIONE 
                 JOIN anagr_servizi as2 ON aspu.id_servizio = as2. id_servizio
                 LEFT JOIN ANAGR_SERVIZI_COGE asc2 
                     ON asc2.id_servizio_COGE = as2.id_servizio_coge	
                 LEFT JOIN UNIOPE.PERCORSI_X_COMUNE_UO_GIORNO pxcuo 
                     ON pxcuo.id_percorso = aspu.ID_PERCORSO 
-                    AND pxcuo.giorno = to_date(see.DATA_ESECUZIONE_PREVISTA, 'YYYYMMDD')   
+                    AND pxcuo.giorno = to_date(see.DATA_PIANIF_INIZIALE, 'YYYYMMDD')   
                     AND pxcuo.giorno BETWEEN aspu.DTA_ATTIVAZIONE AND aspu.DTA_DISATTIVAZIONE 
                 JOIN anagr_uo au
                     ON au.ID_UO= aspu.ID_UO
@@ -842,8 +842,10 @@ def main(arg1, arg2, arg3, arg4):
         r+=1
         if r==500:
             w.autofit()
+    
+    
         
-    w.autofilter('A1:M{}'.format(r))
+    w.autofilter('A1:Q{}'.format(r))
     
     if len(dettagli_personale)< 500 :    
         w.autofit()    
@@ -939,7 +941,7 @@ def main(arg1, arg2, arg3, arg4):
         r+=1
         
         
-    w.autofilter('A1:L{}'.format(r))
+    w.autofilter('A1:P{}'.format(r))
     
     if len(dettagli_mezzi)< 1000:    
         w.autofit()    
