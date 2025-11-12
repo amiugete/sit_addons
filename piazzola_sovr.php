@@ -593,7 +593,7 @@ Prima di salvare i dati dell'ispezione verifica che su SIT ci siano tutti i cont
   
   
   <select class="selectpicker show-tick form-control" 
-data-live-search="true" name="tipo_elemento_ae" id="tipo_elemento_ae" placeholder="Seleziona tipo elemento da aggiungere" required="">
+data-live-search="true" name="tipo_elemento_ae" id="tipo_elemento_ae" placeholder="Seleziona tipo elemento da aggiungere"  required="">
 
     <!--option name="piazzola" value="NO">Seleziona una piazzola</option-->
     <?php            
@@ -615,7 +615,7 @@ data-live-search="true" name="tipo_elemento_ae" id="tipo_elemento_ae" placeholde
     <?php } ?>
 
   </select>
-  <button type="submit" id="add_elemento_submit" class="btn btn-success btn-sm">
+  <button type="submit" id="add_elemento_submit" class="btn btn-success btn-sm" >
   <i class="fa-solid fa-plus"></i>
   </button> 
   <!--/form-->
@@ -626,9 +626,67 @@ data-live-search="true" name="tipo_elemento_ae" id="tipo_elemento_ae" placeholde
 
   <div id=result_add>  </div>
 
-<!-- lancio il form e scrivo il risultato -->
-<script> 
-        $(document).ready(function () {                 
+<!-- pARTE JQUERY -->
+<script>
+$(document).ready(function () {
+  const $select = $('#tipo_elemento_ae');
+  const $button = $('#add_elemento_submit');
+
+  // inizialmente disabilito il bottone
+  $button.prop('disabled', true);
+
+  // ascolta i cambiamenti del select
+  $select.on('change', function () {
+    if ($(this).val()) {
+      $button.prop('disabled', false); // abilita
+    } else {
+      $button.prop('disabled', true); // disabilita se deselezionato
+    }
+  });
+
+  // click sul bottone
+  $button.on('click', function (event) {
+    event.preventDefault();
+
+    console.log('Bottone add elemento generico cliccato');
+    $button.prop('disabled', true).hide(); // disabilita e nascondi per evitare doppi click
+
+    const id_piazzola = $('#id_piazzola_ae').val();
+    const tipo_elemento = $select.val();
+
+    if (!tipo_elemento) {
+      $("#result_add").html(
+        '<div class="alert alert-warning mt-2">⚠️ Seleziona un tipo elemento prima di procedere.</div>'
+      ).fadeIn("slow");
+      $button.prop('disabled', false).show();
+      return;
+    }
+
+    const id = `${id_piazzola}_${tipo_elemento}`;
+    console.log('Invio id:', id);
+
+    $.ajax({
+      url: 'backoffice/add_elemento.php',
+      method: 'POST',
+      data: { id_piazzola: id },
+      success: function (response) {
+        console.log(response);
+        $("#result_add").html(response).fadeIn("slow");
+        setTimeout(() => location.reload(), 1000);
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        alert('Errore durante l’invio del form.');
+        console.error(errorThrown);
+        $button.prop('disabled', false).show();
+      }
+    });
+  });
+});
+    
+        
+        
+        /*
+        $(document).ready(function () {     
             $('#add_elemento_submit').click(function (event) { 
                 console.log('Bottone add elemento  generico cliccato e finito qua');
                 $('#add_elemento_submit').attr("disabled", true);
@@ -662,7 +720,7 @@ data-live-search="true" name="tipo_elemento_ae" id="tipo_elemento_ae" placeholde
                 }); 
                 
             });
-          }); 
+          }); */
 
     </script>
   
@@ -777,7 +835,7 @@ $today->setTimezone($timezone);
 
 <div class="form-group col-md-4">
     <label for="ispettore" class="form-label">Verificatore</label>
-    <input type="text" class="form-control" name="ispettore" id="ispettore" value="<?php echo $_SESSION['username'];?>" required>
+    <input type="text" class="form-control" name="ispettore" id="ispettore" value="<?php echo $_SESSION['username'];?>" required <?php if ($check_superedit==0){ echo 'readonly'; }?>>
 </div>
 
 
