@@ -29,6 +29,7 @@ class ComposerStaticInita241ea074bd78bf1eff14ea6fd160183
             'Psr\\Cache\\' => 10,
             'Picqer\\Barcode\\' => 15,
             'PhpOffice\\PhpSpreadsheet\\' => 25,
+            'PHPMailer\\PHPMailer\\' => 20,
         ),
         'O' => 
         array (
@@ -91,6 +92,10 @@ class ComposerStaticInita241ea074bd78bf1eff14ea6fd160183
         'PhpOffice\\PhpSpreadsheet\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet',
+        ),
+        'PHPMailer\\PHPMailer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
         ),
         'OomphInc\\ComposerInstallersExtender\\' => 
         array (
