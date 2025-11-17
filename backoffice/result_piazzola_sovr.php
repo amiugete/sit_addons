@@ -4,11 +4,14 @@ session_start();
 
 
 if ($_SESSION['test']==1) {
-    require_once ('../conn_test.php');
+    require('../conn_test.php');
 } else {
-    require_once ('../conn.php');
+    require('../conn.php');
 }
 
+
+//echo 'Session test = ' . $_SESSION['test']; 
+//exit;
 
 $res_ok=0;
 

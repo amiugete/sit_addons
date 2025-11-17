@@ -231,8 +231,6 @@ Recupera dettagli piazzola
 
 </div> <!-- fine row-->
 </form>
-
-<br>
 <hr>
 <div id="refreshDataContainer">
 <div id="dettagli_piazzola" class="row">
@@ -440,12 +438,13 @@ $result_pp = pg_prepare($conn_sovr, "my_query_pp", $query_percorsi);
 </div>
 
 
-<div class="row g-3 align-items-center">
-<!--form autocomplete="off" id="messaggio" action="invio_mail_assterritorio.php" method="post">
+<hr>
+
+<form autocomplete="off" id="messaggio" action="backoffice/invio_mail_rutt.php" method="post">
 <input type="hidden" id="id_piazzola" name="id_piazzola" value=<?php echo $id_piazzola?>>
 <div class="row g-3 align-items-center">
 <div class="form-group  col-md-10">
-  <label for="testo_mail" class="form-label">Messaggio mail per assterritorio</label>
+  <label for="testo_mail" class="form-label">Messaggio mail per RUTT (eventuali anomalie)</label>
   <textarea class="form-control" id="testo_mail" name="testo_mail" rows="3"></textarea>
 </div>
 <div class="form-group  col-md-2">
@@ -455,7 +454,8 @@ $result_pp = pg_prepare($conn_sovr, "my_query_pp", $query_percorsi);
 </div>
 </div>
 </form>
-<hr-->
+<hr>
+
 </div>
 </div>
 

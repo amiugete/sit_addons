@@ -20,3 +20,4 @@ py_scripts/driver_eko/*.xlsx
 py_scripts/__pycache__/*
 
 backoffice/utenze_file/*.txt
+backoffice/credenziali_mail.php
