@@ -437,23 +437,125 @@ $result_pp = pg_prepare($conn_sovr, "my_query_pp", $query_percorsi);
 </div>
 </div>
 
+<!-- non serve appena committeremo il main.css-->
+<!--style>
 
+  .toast {
+    opacity: 0;
+    transform: translateX(20px);
+    transition: all .4s ease-in-out;
+  }
+
+  .toast.show {
+      opacity: 1;
+      transform: translateX(0);
+  }
+  .toast {
+    border: 2px solid red !important;
+  }
+
+
+</style-->
+
+
+<!-- Toast container -->
+<div id="dynamicToast"
+     class="toast position-fixed bottom-0 end-0 m-3 p-2 text-bg-primary"
+     role="alert"
+     aria-live="assertive"
+     aria-atomic="true"
+     style="z-index: 99999;">
+    <div class="d-flex">
+        <div id="toastMessage" class="toast-body"></div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+</div>
+
+  
+<script type="text/javascript">
+
+function showToast(message, type = "primary") {
+    const toastEl = document.getElementById("dynamicToast");
+    const toastBody = document.getElementById("toastMessage");
+
+   // Imposta classi dinamiche (Bootstrap 5)
+    toastEl.className =
+        "toast position-fixed bottom-0 end-0 m-3 p-2 text-bg-" + type;
+    
+        // Testo
+    toastBody.innerHTML = message;
+
+    // Mostra il toast
+    const bsToast = bootstrap.Toast.getOrCreateInstance(toastEl, {
+        delay: 3000,
+        animation: true
+    });
+
+    bsToast.show();
+}
+
+$(document).ready(function () {
+
+    $("#btn_invia_mail").click(function () {
+        console.log("Bottone invia mail cliccato");
+        const id_piazzola = $("#id_piazzola").val();
+        const testo = $("#testo_mail").val().trim();
+
+        console.log("ID piazzola:", id_piazzola);
+        console.log("Testo mail:", testo);
+        if (testo === "") {
+            showToast('<i class="bi bi-exclamation-triangle-fill"></i> Scrivi un messaggio prima di inviare.', 'warning');
+            return;
+        }
+
+        $.ajax({
+            url: "backoffice/invio_mail_rutt.php",
+            type: "POST",
+            data: {
+                id_piazzola: id_piazzola,
+                testo_mail: testo
+            },
+            success: function (response) {
+                console.log("Risposta server:", response);
+
+                showToast('<i class="bi bi-check-circle-fill"></i> Mail inviata con successo!', 'success');
+                console.log(bootstrap.Toast.getOrCreateInstance(document.getElementById("dynamicToast")));
+                $("#testo_mail").val(""); // svuoto textarea
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+                showToast('<i class="bi bi-x-circle-fill"></i> Errore nell’invio mail.', 'danger');
+            }
+        });
+
+    });
+
+});
+
+
+</script>
 <hr>
 
-<form autocomplete="off" id="messaggio" action="backoffice/invio_mail_rutt.php" method="post">
-<input type="hidden" id="id_piazzola" name="id_piazzola" value=<?php echo $id_piazzola?>>
-<div class="row g-3 align-items-center">
-<div class="form-group  col-md-10">
-  <label for="testo_mail" class="form-label">Messaggio mail per RUTT (eventuali anomalie)</label>
-  <textarea class="form-control" id="testo_mail" name="testo_mail" rows="3"></textarea>
+<div id="messaggio_container">
+    <input type="hidden" id="id_piazzola" value="<?php echo $id_piazzola; ?>">
+
+    <div class="row g-3 align-items-center">
+        <div class="form-group col-md-10">
+            <label for="testo_mail" class="form-label">
+                Messaggio mail ai RUTT con eventuali segnalazioni
+            </label>
+            <textarea class="form-control" id="testo_mail" rows="3"></textarea>
+        </div>
+
+        <div class="form-group col-md-2">
+            <button type="button" class="btn btn-info" id="btn_invia_mail">
+                <i class="fa-solid fa-at"></i> Invia mail
+            </button>
+        </div>
+    </div>
 </div>
-<div class="form-group  col-md-2">
-      <button type="submit" class="btn btn-info">
-      <i class="fa-solid fa-at"></i>Invia mail
-      </button>
-</div>
-</div>
-</form>
+<br>
 <hr>
 
 </div>

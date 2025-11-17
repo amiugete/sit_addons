@@ -44,8 +44,13 @@ $mail->SMTPDebug = 0;
 require('./credenziali_mail.php');
 
 
+// commentato perchè definito in invio_mail_rutt.php
 //Set who the message is to be sent from
-$mail->setFrom('applicativi@amiu.genova.it', 'Applicativi');
+//$mail->setFrom('no-reply@amiu.genova.it', 'No Reply');
+
+
+
+
 //Set an alternative reply-to address
 $mail->addReplyTo('no-reply@amiu.genova.it', 'No Reply');
 //Set who the message is to be sent to

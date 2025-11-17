@@ -14,7 +14,7 @@ if ($_SESSION['test']==1) {
 }
 
 
-
+$res_ok=0;
 
 //require_once('./credenziali_mail.php');
 
@@ -25,8 +25,15 @@ if ($_SESSION['test']==1) {
 
 $query_mail='select email from util.sys_users su where "name" = $1 ';
 $result_m = pg_prepare($conn, "my_query_mail", $query_mail);
+if (pg_last_error($conn)){
+    echo pg_last_error($conn);
+    $res_ok=$res_ok+1;
+}
 $result_m = pg_execute($conn, "my_query_mail", array($_SESSION['username']));
-
+if (pg_last_error($conn)){
+    echo pg_last_error($conn);
+    $res_ok=$res_ok+1;
+}
 
 
 
@@ -41,10 +48,10 @@ while($rm = pg_fetch_assoc($result_m)) {
     $mail_utente = $rm['email'];
 }
 
-echo $mail_utente."<br>";
+//echo $mail_utente."<br>";
 $id_piazzola=$_POST['id_piazzola'];
 
-echo $id_piazzola."<br>";
+//echo $id_piazzola."<br>";
 
 
 $query_ut="select id_piazzola, concat(v.nome, ', ', p.numero_civico, ' - rif:', p.riferimento) as indirizzo, 
@@ -55,8 +62,15 @@ left join topo.vie v on v.id_via = a.id_via
 left join topo.ut u on u.id_ut = a.id_ut 
 where p.id_piazzola = $1";
 $result_u = pg_prepare($conn, "query_ut", $query_ut);
+if (pg_last_error($conn)){
+    echo pg_last_error($conn);
+    $res_ok=$res_ok+1;
+}
 $result_u = pg_execute($conn, "query_ut", array(intval($id_piazzola)));
-
+if (pg_last_error($conn)){
+    echo pg_last_error($conn);
+    $res_ok=$res_ok+1;
+}
 
 while($ru = pg_fetch_assoc($result_u)) {
     $riferimento_piazzola = $ru['indirizzo'];
@@ -75,10 +89,10 @@ if ($_SESSION['test']==1) {
 $testo_mail=$testo_mail. "Buongiorno ". $ut .",<br>" . $_POST['testo_mail'];
 
 $testo_mail= $testo_mail."<br><br>Ricevi questo messaggio 
-per conto dell'utente ".$_SESSION['username']." che ha effettuato un'ispezione di sovrariempimento
+per conto dell'utente ".$_SESSION['username']." che sta effettuato un'ispezione di sovrariempimento
 sulla piazzola ".$id_piazzola. " ".$riferimento_piazzola ;
 
-echo $testo_mail."<br>";
+//echo $testo_mail."<br>";
 
 
 //exit();
@@ -100,7 +114,7 @@ while($r = pg_fetch_assoc($result)) {
   //sendMessage($r['id_telegram'], $messaggio , $token);
 }
 */
-echo "fino a qua<br>";
+//echo "fino a qua<br>";
 // In questo momento il pezzo sopra non serve.. più semplice indirizzo fisso
 
 
@@ -116,7 +130,7 @@ if ($_SESSION['test']==1) {
     //$mails=array('assterritorio@amiu.genova.it',  $mail_utente, $mail_ut);
 }
 
-echo "fino a qua 1<br>";
+//echo "fino a qua 1<br>";
 
 /*while (list($key, $val) = each ($mails)) {
   $mail->AddAddress($val);
@@ -126,15 +140,15 @@ foreach ($mails as $val) {
     $mail->AddAddress($val);
     }
 
-echo "fino a qua 2";
+//echo "fino a qua 2";
 //Set the subject line
+$mail->setFrom($mail_utente, $_SESSION['username']);
+
 $mail->Subject = 'Messaggio inviato da '. $_SESSION['username'] .' durante ispezione sovrariempimento ';
 //$mail->Subject = 'PHPMailer SMTP without auth test';
 //Read an HTML message body from an external file, convert referenced images to embedded,
 //convert HTML into a basic plain-text alternative body
-$body =  $testo_mail.'
-    
-    <br> <br> '.$titolo_app.'';
+$body =  $testo_mail;
   
 require('./informativa_privacy_mail.php');
 
@@ -148,26 +162,19 @@ $mail->AltBody = 'This is a plain-text message body';
 //$mail->addAttachment('images/phpmailer_mini.png');
 //send the message, check for errors
 //echo "<br>OK 2<br>";
+
+
 if (!$mail->send()) {
     echo "<h3>Problema nell'invio della mail: " . $mail->ErrorInfo;
-	?>
-	<script> //alert(<?php echo "Problema nell'invio della mail: " . $mail->ErrorInfo;?>) </script>
-	<?php
-	//echo '<br>La comunicazione è stata correttamente inserita a sistema, ma si è riscontrato un problema nell\'invio della mail.';
-	echo '<div style="text-align: center;"><img src="../../img/no_mail_com.png" width="75%" alt=""></div>';
-	echo '<br>Entro 10" verrai re-indirizzato alla pagina precedente, clicca al seguente ';
-	echo '<a href="./piazzola.php?piazzola='.$id_piazzola.'">link</a> per saltare l\'attesa.</h3>' ;
-	//sleep(30);
-    header("refresh:10;url=../piazzola_sovr.php?piazzola=".$id_piazzola."");
+
+
 } else {
-    echo "Message sent!";
-	header("location: ../piazzola_sovr.php?piazzola=".$id_piazzola);
+    
+    echo 'Mail inviata correttamente al RUTT';
+    
 }
 //exit;
 //header("location: ../dettagli_incarico.php?id=".$id);
-
-
-?>
 
 
 ?>
