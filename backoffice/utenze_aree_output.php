@@ -78,8 +78,10 @@ where a.id=$1 and st_intersects(n.geoloc, st_transform(a.geom, 3003));";
 
     $result1 =pg_prepare($conn, "my_query1", $query1);
     $result2 =pg_prepare($conn, "my_query2", $query2);
+    $result1 = pg_execute($conn, "my_query1", array($eco));
+    $result2 = pg_execute($conn, "my_query2", array($eco));
 
-    if ($utenze == 'uted') {
+    /*if ($utenze == 'uted') {
         // solo civici neri
         $result1 = pg_execute($conn, "my_query1", array($eco));
     } else if ($utenze == 'utend') {
@@ -89,7 +91,7 @@ where a.id=$1 and st_intersects(n.geoloc, st_transform(a.geom, 3003));";
         // entrambi
         $result1 = pg_execute($conn, "my_query1", array($eco));
         $result2 = pg_execute($conn, "my_query2", array($eco));
-    }
+    }*/
     
     if ($ecopoint == 't'){
         $query3="insert into etl.ecopunti

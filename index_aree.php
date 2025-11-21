@@ -46,7 +46,7 @@ if (trim($check_utenze) != 't') {
 ?>
 
 <div class="banner"> <div id="banner-image"></div> </div>
-      <div class="container">
+      <div class="container-fluid">
 <!--script type="text/javascript">
 
 
@@ -129,16 +129,17 @@ $(window).bind ("beforeunload",  function (zEvent) {
 </script-->
       
 
-            <h2> Utenze Piazzole <i class="fas fa-users"></i> </h2>
+            <h3> Utenze Piazzole <i class="fas fa-users"></i> </h3>
             <hr>
             <h5> Eseguire il login (credenziali del proprio PC) e disegnare l'area sulla mappa prima di inviare la richiesta di estrazione utenze</h5>
-            <div class="row">
+            <div class="row row-small">
               <iframe src="https://amiugis.amiu.genova.it/mappe/lizmap/www/index.php/view/map?repository=repository1&project=utenze_piazzole_iframe" 
               title="Disegna area per estrazione utenze\" style="height:500px;" allowfullscreen></iframe>
             </div>
               <hr>  
             <!--form name="openfile" method="post" autocomplete="off" action="<?php echo $_SERVER['PHP_SELF'] ?>" -->
-            <form name="openfile" id="open_file" method="post" autocomplete="off" action="" >
+            <div class = "row row-small">
+            <form class="tag-small" name="openfile" id="open_file" method="post" autocomplete="off" action="" >
 
             <div class="row">
             
@@ -201,7 +202,7 @@ $(window).bind ("beforeunload",  function (zEvent) {
             <div class="col-md-4 d-flex justify-content-center align-items-end">
 
             <div class="form-group  ">
-            <button type="submit" name="submit" id=submit value="invia_utenze" class="btn btn-success"><i class="fa-solid fa-file-arrow-down"></i>Sacrica utenze</button>
+            <button type="submit" name="submit" id=submit value="invia_utenze" class="btn btn-success"><i class="fa-solid fa-file-arrow-down"></i>Scarica utenze</button>
             </div>
             </div>
             </div>
@@ -212,8 +213,8 @@ $(window).bind ("beforeunload",  function (zEvent) {
           L'operazione potrebbe impiegare un po' di tempo. Attendere, il file sarà presto disponibile per il download. 
           <img src="./img/loading.gif" alt="loader1" style="height:30px; width:auto;" class="img-fluid" id="loaderImg">
         </div>
-
-</div>
+            </div>
+      </div>
 
 
 </div>
