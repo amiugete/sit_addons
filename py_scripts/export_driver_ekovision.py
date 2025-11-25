@@ -359,7 +359,9 @@ def main(arg1, arg2, arg3, arg4):
                             WHERE au1.ID_ZONATERRITORIALE = 5 AND aspu1.ID_PERCORSO = aspu.ID_PERCORSO)
                     ELSE /*au.ID_UO*/
                     (SELECT DISTINCT aspu1.ID_UO FROM ANAGR_SER_PER_UO aspu1 
-                    WHERE id_squadra <> 15 AND aspu1.ID_SER_PER_UO = aspu.ID_SER_PER_UO)
+                    JOIN anagr_uo au1 ON au1.ID_UO = aspu1.ID_UO
+                    WHERE id_squadra <> 15 AND aspu1.ID_SER_PER_UO = aspu.ID_SER_PER_UO
+                    and au1.ID_ZONATERRITORIALE <> 5)
                 END AS id_uo, 
                 CASE 
                     WHEN /*trim(a.CDAOG3) NOT IN ('08','09', 'I1') */
@@ -367,9 +369,11 @@ def main(arg1, arg2, arg3, arg4):
                         (SELECT DISTINCT au1.DESC_UO FROM ANAGR_SER_PER_UO aspu1 
                             JOIN anagr_uo au1 ON au1.ID_UO = aspu1.ID_UO 
                             WHERE au1.ID_ZONATERRITORIALE = 5 AND aspu1.ID_PERCORSO = aspu.ID_PERCORSO)
-                    ELSE (SELECT DISTINCT au1.DESC_UO FROM ANAGR_SER_PER_UO aspu1
+                    ELSE 
+                    (SELECT DISTINCT au1.DESC_UO FROM ANAGR_SER_PER_UO aspu1
                     JOIN anagr_uo au1 ON au1.ID_UO = aspu1.ID_UO
-                    WHERE id_squadra <> 15 AND aspu1.ID_SER_PER_UO = aspu.ID_SER_PER_UO)
+                    WHERE id_squadra <> 15 AND aspu1.ID_SER_PER_UO = aspu.ID_SER_PER_UO
+                    and au1.ID_ZONATERRITORIALE <> 5)
                 END AS desc_uo,
                 codice_tipologia_mezzo,
                 descrizione_tipologia_mezzo AS tipo_mezzo,
@@ -393,9 +397,10 @@ def main(arg1, arg2, arg3, arg4):
                     ON au.ID_UO= aspu.ID_UO
                 /*LEFT JOIN (SELECT ma.numatr AS sportello, ma.CDAOG3, oa.DSAOG3 FROM MAC_AMIUAUTO@info ma
             JOIN OG3_AMIUAUTO@info oa ON oa.CDAOG3 =ma.CDAOG3) a ON trim(a.sportello) = lpad(hsm.sportello, 5,'0') */
-                LEFT JOIN v_AUTO_EKOVISION@info a ON  trim(a.sportello) = lpad(hsm.sportello, 5,'0')
+                JOIN v_AUTO_EKOVISION@info a ON  trim(a.sportello) = lpad(hsm.sportello, 5,'0')
                 WHERE  /*id_comune = 2 AND au.id_uo = 10 AND*/
                 /*trim(a.sportello)= '03754' and*/
+                trim(a.sportello) is not null AND
                 TO_DATE(see.DATA_PIANIF_INIZIALE,'YYYYMMDD') 
                 BETWEEN TO_DATE(:d1, 'DD/MM/YYYY') AND to_date(:d2, 'DD/MM/YYYY')
                 /*ORDER BY ID_PERCORSO, giorno*/'''
@@ -459,6 +464,7 @@ def main(arg1, arg2, arg3, arg4):
                 {0}
             ) pp
             WHERE sportello IS NOT NULL 
+            and id_uo is not null
             GROUP BY
             ID_SERVIZIO_COGE,
             DESCR_SERVIZIO_COGE,
@@ -527,6 +533,7 @@ def main(arg1, arg2, arg3, arg4):
                     {0}
                 ) pp
                 WHERE sportello IS NOT NULL 
+                and id_uo is not null
                 GROUP BY
                 ID_SERVIZIO,
                 DESC_SERVIZIO,
@@ -600,6 +607,7 @@ def main(arg1, arg2, arg3, arg4):
                     {0}
                 ) pp
                 WHERE sportello IS NOT NULL 
+                and id_uo is not null
                 GROUP BY
                 ID_PERCORSO, DESCRIZIONE,
                 ID_SERVIZIO,
@@ -931,7 +939,11 @@ def main(arg1, arg2, arg3, arg4):
         #logger.debug(r)
         c=0
         while c<len(mm):
-            if c==2:
+            if arg3=='1' and c==2:
+                w.write(r, c, mm[c], data_format)
+            elif arg3=='2' and c==4:
+                w.write(r, c, mm[c], data_format)
+            elif arg3=='3' and c==6:
                 w.write(r, c, mm[c], data_format)
             else:
                 w.write(r, c, mm[c], cell_format)
