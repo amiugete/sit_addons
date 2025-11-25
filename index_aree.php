@@ -147,8 +147,8 @@ $(window).bind ("beforeunload",  function (zEvent) {
 
             <div class="col-md-4"> 
             <div class="form-group">
-            <label for="eco">Area:</label> <font color="red">*</font>
-            <select class="selectpicker show-tick form-control" name="eco" id="eco" data-live-search="true">
+            <label for="id_area">Area:</label> <font color="red">*</font>
+            <select class="selectpicker show-tick form-control" name="id_area" id="id_area" data-live-search="true">
             <option value="" > Scegli un'area </option>
             <?php            
             //$query2="SELECT * From etl.aree_4326 where data_disegno::date>=(NOW() - INTERVAL '30' DAY) order by data_disegno desc;";
@@ -164,7 +164,7 @@ $(window).bind ("beforeunload",  function (zEvent) {
             //echo $query1;    
             while($r2 = pg_fetch_assoc($result2)) { 
             ?>    
-                    <option name="eco" value="<?php echo $r2['id'];?>" ><?php echo $r2['nome']. "(".$r2['data_disegno2']. ")";?></option>
+                    <option name="id_area" value="<?php echo $r2['id'];?>" ><?php echo $r2['nome']. "(".$r2['data_disegno2']. ")";?></option>
              <?php } ?>
              </select>
                 
@@ -294,6 +294,8 @@ document.getElementById('open_file').addEventListener('submit', function (e) {
     body: new FormData(this)
   })
   .then(res => {
+  console.log(res);
+  console.log(res.status); 
   if (!res.ok) throw new Error("Errore server: " + res.status);
   
   // leggo l'header Content-Disposition
