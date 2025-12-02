@@ -45,14 +45,10 @@ if ((int)$id_role_SIT = 0) {
 ?>
 
 
-<div class="container">
+<div class="container-fluid">
 <div class="row justify-content-start">
-<div class="col-6">
-<?php 
+<div class="col-auto">
 
-require_once("./last_update_ekovision.php");
-
-?>
   
 </div>
 
@@ -63,10 +59,25 @@ $last_month = $dt->modify("-1 month");
 ?>
 
 
-<div class="form-group col-lg-6">
-<label for="data_inizio" >Da  (GG/MM/AAAA) - A (GG/MM/AAAA)</label><font color="red">*</font>
+
+
+
+</div>
+<div id="tabella">
+            
+        <h4 style="margin-bottom: 1%; display:inline;">Report fasce orarie consuntivazione (ditte terze) - </h4>
+
+
+        <?php 
+
+        require_once("./last_update_ekovision.php");
+
+        ?>
+
+        <br><br><div class="form-group col-4">
+<label for="data_inizio" >Da  (GG/MM/AAAA) - A (GG/MM/AAAA) <small>Massimo 31 giorni </small></label><font color="red">*</font>
     <input type="text" class="form-control" name="daterange" value="<?php echo $last_month->format('d/m/Y');?> - <?php echo $today->format('d/m/Y');?>"/>
-    <small>Massimo 31 giorni </small>
+    
 </div>
 
 
@@ -93,17 +104,6 @@ $(function() {
   });
 });
 </script>
-
-
-</div>
-<hr>
-
-<div id="tabella">
-            
-        <h4>Report fasce orarie consuntivazione (ditte terze)</h4>
-
-
-
 
         <div class="table-responsive-sm">
 

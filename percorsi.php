@@ -45,7 +45,7 @@ if ((int)$id_role_SIT = 0) {
 ?>
 
 
-<div class="container">
+<div class="container-fluid">
 
 
 <?php 
@@ -60,7 +60,7 @@ require_once("select_ut.php");
 
 <div id="tabella">
             
-        <h4>Elenco percorsi <?php echo $today->format('d/m/Y');;?> </h4>
+        <!--h4>Elenco percorsi <?php echo $today->format('d/m/Y');;?> </h4-->
 
 
 
@@ -108,16 +108,18 @@ require_once("select_ut.php");
         <th data-field="tipo" data-sortable="true" data-visible="true"  data-filter-control="select">Tipo</th>
         <th data-field="ut" data-sortable="true" data-visible="true" data-filter-control="select">UT/Rimessa</th> 
         <th data-field="cod_percorso" data-sortable="true" data-visible="true" data-filter-control="input">Codice</th>
-        <th data-field="descrizione" data-sortable="true" data-visible="true" data-filter-control="input">Descrizione</th>
+        <th data-field="descrizione" data-sortable="true" data-visible="true" data-filter-control="input" data-formatter="troncaFormatter">Descrizione</th>
         <th data-field="freq" data-sortable="true" data-visible="true" data-filter-control="input">Frequenza</th>
         <th data-field="turno" data-sortable="true" data-visible="true" data-filter-control="select">Turno</th>
         <th data-field="versione" data-sortable="true" data-visible="true" data-filter-control="select">V</th>
         <th data-field="stagionalita" data-sortable="true" data-visible="true" data-filter-control="select">Stag</th>
+        <th data-field="destinazione" data-sortable="true" data-visible="false" data-filter-control="select">Dest</th>
+        <th data-field="data_inizio_validita" data-sortable="true" data-visible="false"  data-formatter="dateFormat" data-filter-control="select">Attivazione</th>
+        <th data-field="data_fine_validita" data-sortable="true" data-visible="false" data-formatter="dateFormat" data-filter-control="select">Disattivazione</th>
         <th data-field="flg_disattivo" data-sortable="true" data-visible="true" data-formatter="nameFormatterAtt" 
         data-filter-strict-search="true" data-search-formatter="false" data-filter-data="var:opzioni" 
         data-filter-control="select" data-filter-control-multiple-search="true" data-filter-control-multiple-search-delimiter=","
 data-filter-options="{ filterAlgorithm: 'or' }"></th>
-        <!--   data-filter-default='' -->
         <th data-field="cp_report" data-sortable="false" data-formatter="nameFormatterReport" data-visible="true" >Report</th>
         <?php if ($check_superedit == 1) { ?>
           <th data-field="cp_edit" data-sortable="true"  data-visible="true"  data-events="dpEvents" data-formatter="nameFormatterEdit_ok">Edit</th>
@@ -205,10 +207,23 @@ data-filter-options="{ filterAlgorithm: 'or' }"></th>
   };
 
 
-
+  function troncaFormatter(value, row, index) {
+    const max = 20;
+    if (!value) return '';
+    const tronca = value.length > max ? value.substring(0, max) + '…' : value;
+    return `<span title="${value}">${tronca}</span>`;
+  }
 
  
-
+function dateFormat(value, row, index) {
+   if (value){ 
+    if(!value.startsWith('2099')){
+      return moment(value).format('DD/MM/YYYY');
+    }
+   } else {
+    return '-';
+   }
+}
 
     var opzioni = ['Attivo', 'In attivazione', 'In disattivazione', 'Disattivo'] ;
 
@@ -270,10 +285,7 @@ window.dpEvents = {
     
 
 
-
-
-
-    function nameFormatterReport(value, row) {
+function nameFormatterReport(value, row) {
       if (row.flg_disattivo == 'Attivo' && !row.tipo.includes('SOLO TESTATA')) {
         return [
           '<div class="btn-group btn-group-sm" role="group" aria-label="...">',
@@ -329,12 +341,13 @@ $(function() {
     //console.log("Modal chiuso");
     // Qui puoi chiamare qualsiasi altra funzione
     var data_percorsi=$('#js-date3').val();
-    //console.log(data_percorsi);
+    var attivi=$('#flag_attivi').is(':checked') ? 'f' : 't';
+    //console.log('Attivi: '+attivi);
     //console.log($table);
     $table.bootstrapTable('refresh', {
-    url: "./tables/percorsi_raggruppati.php?ut=<?php echo $_POST['ut0'];?>&solo_attivi=t"
+      url: "./tables/percorsi_raggruppati.php?ut=<?php echo $_POST['ut0'];?>&solo_attivi="+attivi+""
     });   
-    console.log('refresh fatto');
+    //console.log('refresh fatto');
 });
 
   

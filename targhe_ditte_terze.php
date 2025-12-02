@@ -45,7 +45,7 @@ if ((int)$id_role_SIT = 0) {
 ?>
 
 
-<div class="container">
+<div class="container-fluid">
 
 
 <div id="success_alert" class="alert alert-success" style="display:none;" role="alert">
@@ -67,8 +67,8 @@ if ((int)$id_role_SIT = 0) {
   <div class="row">
 
                   
-  <div id="toolbar"> Per esportare i dati completi rimuovere la paginazione (primo tasto dopo la ricerca)
-</div>
+  <!--div id="toolbar"> Per esportare i dati completi rimuovere la paginazione (primo tasto dopo la ricerca)
+</div-->
 				<table  id="targhe" class="table-hover table-sm" 
         idfield="id" 
         data-toolbar="#toolbar" 

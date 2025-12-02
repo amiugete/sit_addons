@@ -187,7 +187,7 @@ oci_free_statement($result);
 </script>
 
 
-<div class="container">
+<div class="container-fluid">
 
 
 

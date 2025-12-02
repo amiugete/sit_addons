@@ -37,8 +37,8 @@ $versione= $_GET['v'];
 $check_versione_successiva=0;
 $query_check_versione="select ep.cod_percorso from anagrafe_percorsi.elenco_percorsi ep
 where ep.cod_percorso = $1 and ep.versione_testata > $2";
-$result0 = pg_prepare($conn, "query_check_versione", $query_check_versione);
-$result0 = pg_execute($conn, "query_check_versione", array($cod_percorso, intval($versione)));
+$result0 = pg_prepare($conn_sit, "query_check_versione", $query_check_versione);
+$result0 = pg_execute($conn_sit, "query_check_versione", array($cod_percorso, intval($versione)));
 while($r0 = pg_fetch_assoc($result0)) {
   $check_versione_successiva=1;
 }
@@ -49,8 +49,8 @@ $check_in_attivazione=0;
 $check_stag_dismiss = 0;
 $query_check_stag_dismiss="select p.cod_percorso, p.stagionalita, p.ddmm_switch_on, p.ddmm_switch_off from elem.percorsi p 
 where p.cod_percorso = $1";
-$resultst = pg_prepare($conn, "query_check_stag_dismiss", $query_check_stag_dismiss);
-$resultst = pg_execute($conn, "query_check_stag_dismiss",array($cod_percorso));
+$resultst = pg_prepare($conn_sit, "query_check_stag_dismiss", $query_check_stag_dismiss);
+$resultst = pg_execute($conn_sit, "query_check_stag_dismiss",array($cod_percorso));
 while($rst = pg_fetch_assoc($resultst)) {
   if ($rst["stagionalita"] == '' && $rst["ddmm_switch_on"] != '' && $rst["ddmm_switch_off"] != ''){
     $check_stag_dismiss=1;
@@ -83,14 +83,15 @@ ep.ekovision,
 ep.stagionalita,
 ep.ddmm_switch_on, 
 ep.ddmm_switch_off,
-ep.giorno_competenza
+ep.giorno_competenza,
+at2.cdr
 from anagrafe_percorsi.elenco_percorsi ep
 join elem.turni t on t.id_turno = ep.id_turno
 join etl.frequenze_ok fo on fo.cod_frequenza = ep.freq_testata
 join anagrafe_percorsi.anagrafe_tipo at2 on at2.id = ep.id_tipo 
 where ep.cod_percorso = $1 and ep.versione_testata  = $2";
-$result = pg_prepare($conn, "query_testata", $query_testata);
-$result = pg_execute($conn, "query_testata", array($cod_percorso, $versione));  
+$result = pg_prepare($conn_sit, "query_testata", $query_testata);
+$result = pg_execute($conn_sit, "query_testata", array($cod_percorso, $versione));  
 
 //echo $cod_percorso . '<br>';
 //echo $versione . '<br>';
@@ -579,6 +580,7 @@ while($r = pg_fetch_assoc($result)) {
   $data_attivazione_testata=$r['data_inizio_validita'];
   $data_inizio_print=$r['data_inizio_print'];
   $data_disattivazione_testata=$r['data_disattivazione_testata'];
+  $cdr=$r['cdr'];
 
   
 }
@@ -626,8 +628,8 @@ and data_fine_validita = to_date($3, 'DD/MM/YYYY')
 
 
 
-$result_sit = pg_prepare($conn, "query_sit", $query_sit);
-$result_sit = pg_execute($conn, "query_sit", array($cod_percorso, $data_inizio_print, $data_disattivazione_testata));  
+$result_sit = pg_prepare($conn_sit, "query_sit", $query_sit);
+$result_sit = pg_execute($conn_sit, "query_sit", array($cod_percorso, $data_inizio_print, $data_disattivazione_testata));  
 
 
 if ($_SESSION['test']==1) {
@@ -655,8 +657,8 @@ where dpsu.cod_percorso in (
 	and dpsu.cod_percorso = $1
 order by 2,1";
 
-$result_anomalie_sit = pg_prepare($conn, "query_anomalie_sit", $query_anomalie_sit);
-$result_anomalie_sit = pg_execute($conn, "query_anomalie_sit", array($cod_percorso));  
+$result_anomalie_sit = pg_prepare($conn_sit, "query_anomalie_sit", $query_anomalie_sit);
+$result_anomalie_sit = pg_execute($conn_sit, "query_anomalie_sit", array($cod_percorso));  
 $check_anomalie=0;
 while($r_as = pg_fetch_assoc($result_anomalie_sit)) {
   $check_anomalie=1;
@@ -708,8 +710,8 @@ where pu.cod_percorso = $1  and pu.data_disattivazione = to_date($2, 'DD/MM/YYYY
 
 // RIMESSA / SEDE OPERATIVA
 $query_rimessa=$query0_modal ." and rimessa = 'S' and responsabile = 'N'";
-$result1 = pg_prepare($conn, "query_rimessa", $query_rimessa);
-$result1 = pg_execute($conn, "query_rimessa", array($cod_percorso, $data_disattivazione_testata));
+$result1 = pg_prepare($conn_sit, "query_rimessa", $query_rimessa);
+$result1 = pg_execute($conn_sit, "query_rimessa", array($cod_percorso, $data_disattivazione_testata));
 echo '<ul>';
 while($r1 = pg_fetch_assoc($result1)) {
   echo '<h4><li class="mt-1"><b> Sede operativa </b>'.$r1["ut"].'</li></h4>';
@@ -735,8 +737,8 @@ echo '</ul>';
 
 //$query_ut=$query0_modal ." and pu.id_squadra!= 15 and (rimessa = 'N' and responsabile = 'N') or ";
 $query_ut=$query0_modal ." AND responsabile = 'S' and pu.id_squadra!= 15 ";
-$result2 = pg_prepare($conn, "query_ut", $query_ut);
-$result2 = pg_execute($conn, "query_ut", array($cod_percorso, $data_disattivazione_testata));
+$result2 = pg_prepare($conn_sit, "query_ut", $query_ut);
+$result2 = pg_execute($conn_sit, "query_ut", array($cod_percorso, $data_disattivazione_testata));
 //echo '<hr>';
 if (pg_num_rows($result2) > 0){
   echo '<h4> <b>Gruppo di coordinamento</b></h4>';
@@ -746,6 +748,140 @@ if (pg_num_rows($result2) > 0){
 echo '<ul>';
 while($r2 = pg_fetch_assoc($result2)) {
   echo '<h4><li class="mt-1"><b> Gruppo di coordinamento</b> '.$r2["ut"].'</li></h4>';
+  echo '<form class="row row-cols-lg-auto g-3 align-items-center" name="form_com" id="form_com" autocomplete="off">';
+  echo '<input type="hidden" id="id_percorso" name="id_percorso" value="'.$cod_percorso.'">';
+  echo '<input type="hidden" id="id_servizio_uo" name="id_servizio_uo" value="'.$id_servizio_uo.'">';
+  echo '<input type="hidden" id="old_vers" name="old_vers" value="'.$versione.'">';
+  echo '<div id="comuni" class="form-group col-md-12" style="display: none !important;">';
+  if ($id_servizio_sit=="" and $cdr=='f'){
+    $query_comuni="SELECT 
+        cu.id_comune,
+        cu.id_ut,
+        c.descr_comune,
+        COALESCE(pc.competenza, 0) AS competenza
+        FROM topo.comuni_ut cu
+        JOIN topo.comuni c 
+            ON c.id_comune = cu.id_comune 
+        LEFT JOIN anagrafe_percorsi.percorsi_comuni pc 
+            ON pc.id_comune = cu.id_comune
+            AND pc.cod_percorso = $1
+        WHERE cu.id_ut = $2
+        ORDER BY c.descr_comune;";
+      $resultC = pg_prepare($conn_sit, "queryC", $query_comuni);
+      $resultC = pg_execute($conn_sit, "queryC", array($cod_percorso, $r2["id_ut"]));  
+      $count_result = pg_num_rows($resultC);
+      //echo $count_result.'<br>';
+      //echo 'UT:'.$r2["id_ut"].'<br>';
+      if($check_versione_successiva==0 and $check_edit==1 and $r["flg_disattivo"]==0){
+        while($rC = pg_fetch_assoc($resultC)) {
+          ?>
+          <div class="comuni-row">
+            <label for="inlineCheckbox1"><?php echo $rC['descr_comune']?></label>
+            <?php
+              if($count_result == 1) {
+                // Se c'è un solo comune, lo seleziono automaticamente e metto la checkbox disabled
+                //devo però passare il valore dell'id_comune con un input hidden perchè il disabled non passa il valor in post
+                echo '<input type="hidden" name="comuni[]" value="' . $rC['id_comune'] . '">';
+              }
+            ?>
+            <input class="comuni-check" type="checkbox" style="border-color:darkgrey;" name="comuni[]" id="comune_<?php echo $rC['id_comune']?>" value="<?php echo $rC['id_comune']?>" <?php 
+            if ($count_result == 1){
+                echo "checked disabled";
+            } elseif ($count_result > 1 and $rC['competenza'] > 0 ){
+                echo "checked";
+            } ?>>
+            <input type="number" class="percent-input" name="percentuali[<?= $rC['id_comune'] ?>]" placeholder="%" min="0" max="100" <?php
+              if ($count_result == 1) {
+                // Se c'è un solo comune, imposto il valore 100 e metto l'input readonly
+                //altrimenti lo metto disabled in modo che venga attivato solo se viene checcata la checbox corrispondente
+                  echo 'value="100" readonly';
+              } elseif ($count_result > 1 and $rC['competenza'] > 0 ){
+                  echo 'value="'.$rC['competenza'].'"';
+              }
+              else {
+                  echo 'disabled';
+              }
+            ?>>
+          </div>
+      <?php
+        } // chiude il while della query_comuni
+      ?>
+          <br>
+          <div class="comuni-row">
+          <button type="submit" class="btn btn-info">
+          <i class="fa-solid fa-arrow-up-from-bracket"></i> Salva
+          </button>
+          </div>
+          
+        <?php
+          }else{
+            echo 'non sono super edit e non posso modificare i comuni';
+            while($rC = pg_fetch_assoc($resultC)) {
+              echo '<div class="comuni-row">'.$rC['descr_comune'].': '.$rC['competenza'].'% </div>';
+            }
+          }
+        }
+        echo '</div>'; // chiude il div comuni
+        echo '</form>';
+      ?>
+    
+<!-- lancio il form e scrivo il risultato -->
+  <!-- RIPARTIRE DA QUI il salva non deve comparire se non sono suoper edit quindi il form si deve chiudere nell'if, nell'else devo rifare la query per far vedere i valori?-->
+<p><div id="results_com"></div></p>
+            <script> 
+            $(document).ready(function () {
+              $('#form_com').on('submit', function (event) {
+
+                // verifico se almeno un comune  è selezionato
+                let checkedC = $("input[name='comuni[]']:checked");
+                console.log("Checkbox selezionate:", checkedC.length);
+
+                if (checkedC.length === 0) {
+                    event.preventDefault();
+                    alert("E' necessario selezionare almeno un comune.");
+                    return false;
+                }
+
+                // verifico se la somma delle percentuali è 100
+                let somma = 0;
+                $(".percent-input:not([disabled])").each(function () {
+                    somma += parseFloat($(this).val()) || 0;
+                });
+
+                console.log("Somma percentuali:", somma);
+
+                if (somma !== 100) {
+                    event.preventDefault();
+                    alert("La somma delle percentuali deve essere 100. Somma attuale: " + somma);
+                    return false;
+                }
+
+                // --- Se i controlli sono ok → invio AJAX ---
+                event.preventDefault();  
+                console.log("Controlli OK, invio form comuni");
+
+                var formData = $(this).serialize();
+
+                $.ajax({
+                    url: 'backoffice/update_comuni.php',
+                    method: 'POST',
+                    data: formData,
+                    success: function (response) {
+                      console.log(response);
+                      $("#results_com").html(response).fadeIn("slow");
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                      alert('Errore durante l\'invio del form.');
+                       console.error(errorThrown);
+                    }
+                });
+
+            });
+
+          });
+
+        </script>
+      <?php
   //rendo la squadra modificabile se percorso non è ancor attivo
   if ($check_versione_successiva==0 and $check_superedit==1 and $check_in_attivazione==1 and $r["flg_disattivo"]==0){
     ?>
@@ -761,8 +897,8 @@ while($r2 = pg_fetch_assoc($result2)) {
           $query0_1="select id_squadra, 
           concat(cod_squadra, ' - ', desc_squadra) as descr 
           from elem.squadre s order by desc_squadra ;";
-          $result0_1 = pg_prepare($conn, "query0_1", $query0_1);            
-          $result0_1 = pg_execute($conn, "query0_1", array()); 
+          $result0_1 = pg_prepare($conn_sit, "query0_1", $query0_1);            
+          $result0_1 = pg_execute($conn_sit, "query0_1", array()); 
           while($r0_1 = pg_fetch_assoc($result0_1)) {         
             ?>
             <option name="sq_ut" 
@@ -781,7 +917,7 @@ while($r2 = pg_fetch_assoc($result2)) {
         </button>
       </div> 
     </form>
-    <p><div id="results_squadra"></div></p>
+    <div id="results_squadra"></div>
       <script> 
         $(document).ready(function () {                 
             $('#form_squadra').submit(function (event) { 
@@ -830,7 +966,7 @@ while($r2 = pg_fetch_assoc($result2)) {
           $querymezzo="select cdaog3,
           concat(categoria, ' (', nome, ')') as cat_estesa  from elem.automezzi a 
           order by categoria ;";
-          $resultmezzo = pg_query($conn, $querymezzo);
+          $resultmezzo = pg_query($conn_sit, $querymezzo);
           //echo $query1;    
           while($rm = pg_fetch_assoc($resultmezzo)) { 
           ?>   
@@ -899,8 +1035,8 @@ echo '</ul>';
 // ALtre UT Visualizzazione
 
 $query_ut2=$query0_modal ." and pu.id_squadra= 15 and rimessa = 'N' order by responsabile desc";
-$result2 = pg_prepare($conn, "query_ut2", $query_ut2);
-$result2 = pg_execute($conn, "query_ut2", array($cod_percorso, $data_disattivazione_testata));
+$result2 = pg_prepare($conn_sit, "query_ut2", $query_ut2);
+$result2 = pg_execute($conn_sit, "query_ut2", array($cod_percorso, $data_disattivazione_testata));
 //echo '<hr>';
 
 if (pg_num_rows($result2) > 0){
@@ -953,6 +1089,7 @@ if($check_versione_successiva==0){
 <input type="hidden" id="stag" name="stag" value="<?php echo $stag;?>">
 <input type="hidden" id="swon" name="swon" value="<?php echo $switchON;?>">
 <input type="hidden" id="swoff" name="swoff" value="<?php echo $switchOFF;?>">
+<input type="hidden" id="cdr" name="cdr" value="<?php echo $cdr;?>">
 
 <?php if ($check_superedit==1 and $check_in_attivazione==0){?>
 <div class="row g-3 align-items-center">
@@ -990,6 +1127,7 @@ if($check_versione_successiva==0){
 <input type="hidden" id="stag" name="stag" value="<?php echo $stag;?>">
 <input type="hidden" id="swon" name="swon" value="<?php echo $switchON;?>">
 <input type="hidden" id="swoff" name="swoff" value="<?php echo $switchOFF;?>">
+<input type="hidden" id="cdr" name="cdr" value="<?php echo $cdr;?>">
 
 <div class="row g-3 align-items-center">
 
@@ -1008,8 +1146,8 @@ join anagrafe_percorsi.cons_mapping_uo cmu on cmu.id_uo = pu.id_ut
 where cod_percorso = $1 and data_disattivazione  =to_date($2, 'DD/MM/YYYY'))
   order by descrizione  ;";
   
-  $result3 = pg_prepare($conn, "query3", $query3);
-  $result3 = pg_execute($conn, "query3", array($cod_percorso , $data_disattivazione_testata));  
+  $result3 = pg_prepare($conn_sit, "query3", $query3);
+  $result3 = pg_execute($conn_sit, "query3", array($cod_percorso , $data_disattivazione_testata));  
   while($r3 = pg_fetch_assoc($result3)) { 
       //$valore=  $r2['id_via']. ";".$r2['desvia'];            
   ?>
@@ -1123,6 +1261,48 @@ $(document).ready(function(){
     //$('#ut').removeAttr('disabled');
     $('#ut').selectpicker("show");
     //$('#ut').selectpicker("refresh");
+});
+
+
+$(document).ready(function() {
+    // Se ci sono checkbox già selezionate al caricamento della pagina, abilita gli input percentuali corrispondenti
+    id_sit = "<?php echo $id_servizio_sit;?>";
+    cdr = "<?php echo $cdr;?>";
+    if(id_sit==""){
+      console.log("percorso SENZA id sit");
+      if(cdr=="f"){
+        console.log("NON è un CDR");
+        document.getElementById('comuni').style.display = "";
+      }
+    } else {
+      console.log("percorso CON id sit, non devo fare nulla");
+    }
+});
+
+document.addEventListener("change", function(e) {
+    if (e.target.classList.contains("comuni-check")) {
+
+        //trovo il div padre della checkbox
+        let div_check = e.target.closest(".comuni-row") || e.target.parentElement;
+        console.log(div_check);
+      
+        // cerca l'input test nel div padre
+        let inputPercent = div_check.querySelector(".percent-input");
+        if (!inputPercent) {
+            // fallback: niente input trovato (debug)
+            console.warn("Percent input non trovato per la checkbox", e.target);
+            return;
+        }
+
+        if (e.target.checked) {
+            inputPercent.disabled = false;
+            // mette il puntatore del mouse sull'input corrispondente
+            inputPercent.focus();
+        } else {
+            inputPercent.disabled = true;
+            inputPercent.value = "";
+        }
+    }
 });
 
 

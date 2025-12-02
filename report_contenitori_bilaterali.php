@@ -45,7 +45,7 @@ if ((int)$id_role_SIT = 0) {
 ?>
 
 
-<div class="container">
+<div class="container-fluid">
 
 
 <div class="row">

@@ -9,6 +9,7 @@ Dato codice percorso e data disattivazione invia mail con elenco id schede ekovi
 
 arg1 = cod_percorso
 arg2 = data in formato YYYYMMDD (tipico di Ekovision)
+arg3 = specifico se lo script viene lanciato da test o esercizio
 
 '''
 
@@ -122,7 +123,7 @@ from invio_messaggio import *
 
 
 
-def main(arg1, arg2):
+def main(arg1, arg2, arg3):
     
     logger.info('Il PID corrente è {0}'.format(os.getpid()))
 
@@ -177,8 +178,10 @@ def main(arg1, arg2):
     
     cod_percorso=arg1
     data_dis=arg2
-
+    ambiente=arg3  # test o esercizio
     
+    logger.debug('ambiente= {}'.format(ambiente))
+
     logger.debug(oggi)
     #logger.debug(vv[1])
     
@@ -246,8 +249,12 @@ def main(arg1, arg2):
 
         # messaggio='Test invio messaggio'
 
-
-            subject = "ELIMINAZIONE SCHEDE LAVORO - Nuova versione"
+            if ambiente == "1":
+                test = "VERSIONE TEST - DO NOTHING "
+            else:
+                test = ""
+            
+            subject = "{}ELIMINAZIONE SCHEDE LAVORO - Nuova versione".format(test)
             
             ##sender_email = user_mail
             receiver_email='assterritorio@amiu.genova.it'
@@ -262,18 +269,18 @@ def main(arg1, arg2):
             message.preamble = "Cambio frequenze"
 
 
-            body='''Per il percorso con codice {0} è stata creta una nuova versione. 
+            body='''<font color="red">{0}</font><br>Per il percorso con codice {1} è stata creta una nuova versione. 
             <br><br>
             Bisogna eliminare <b>manualmente</b> le schede di lavoro su Ekovision. Usare la voce <i>Eliminazione massiva schede lavoro</i> 
             del menù scorciatoia di Ekovision e caricare la lista di ID schede da cancellare riportata nel seguito.
             Verificare il log e controllare a mano eventuali anomalie.
             <br><br>
             Elenco schede da cancellare: <br>
-            {1}
+            {2}
             <br><br>
             AMIU Assistenza Territorio<br>
             <img src="cid:image1" alt="Logo" width=197>
-            <br>'''.format(cod_percorso, schede_cancellare)
+            <br>'''.format(test, cod_percorso, schede_cancellare)
                                 
             # Add body to email
             message.attach(MIMEText(body, "html"))
@@ -314,4 +321,4 @@ def main(arg1, arg2):
 
 if __name__ == "__main__":
     # passo le variabili come input della funzione main 
-    main(sys.argv[1], sys.argv[2])  
+    main(sys.argv[1], sys.argv[2], sys.argv[3])  

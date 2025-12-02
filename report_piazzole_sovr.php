@@ -51,7 +51,7 @@ require_once('./tables/query_piazzole_sovr.php');
 
 
 
-<div class="container">
+<div class="container-fluid">
 
 
 <?php 
@@ -108,7 +108,7 @@ if (!pg_last_error($conn_sovr)){
     pg_last_error($conn_sovr);
     $res_ok= $res_ok+1;
 }
-//echo "Sono qua 3";
+#echo "Sono qua 3";
 
 ?>
 <script>

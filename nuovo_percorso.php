@@ -52,7 +52,7 @@ $versione= $_GET['v'];
 <div class="container">
 
 
-<form name="bilat" method="post" autocomplete="off" action="nuovo_percorso2.php">
+<form id="newpercorso" name="bilat" method="post" autocomplete="off" action="nuovo_percorso2.php">
 
 <div class="row g-3 align-items-center">
 
@@ -62,34 +62,64 @@ $versione= $_GET['v'];
 
 <div class="form-group  col-md-6">
   <label for="tipo">Tipologia percorso:</label> <font color="red">*</font>
-                <select name="tipo" id="tipo" class="selectpicker show-tick form-control" data-live-search="true" required="">
-                <option name="tipo" value="">Seleziona la tipologia di servizio</option>
+  <select name="tipo" id="tipo" class="selectpicker show-tick form-control" data-live-search="true" required="" onchange="showDestination(this)">
+    <option name="tipo" value="">Seleziona la tipologia di servizio</option>
   <?php            
-  $query1="select id, descrizione, codice_servizio
-  from anagrafe_percorsi.anagrafe_tipo at2;";
-  $result1 = pg_query($conn, $query1);
+  $query1="select id, descrizione, id_servizio_sit, codice_servizio, cdr
+  from anagrafe_percorsi.anagrafe_tipo at2
+  where abilitato=true
+  order by descrizione;";
+  $result1 = pg_query($conn_sit, $query1);
   //echo $query1;    
   while($r1 = pg_fetch_assoc($result1)) { 
       //$valore=  $r2['id_via']. ";".$r2['desvia'];            
   ?>
             
-        <option name="tipo" value="<?php echo $r1['id']?>" ><?php echo $r1['descrizione'] .'('.$r1['codice_servizio'].')';?></option>
+        <option name="tipo" value="<?php echo $r1['id']?>" data-cdr="<?php echo $r1['cdr']?>" data-sit="<?php echo $r1['id_servizio_sit']?>"><?php echo $r1['descrizione'] .'('.$r1['codice_servizio'].')';?></option>
   <?php } ?>
 
-  </select>            
+  </select>
+  <input type="hidden" name="id_sit" id="id_sit">
+  <input type="hidden" name="cdr" id="cdr">            
   </div>
- 
- 
- 
+
+  <div id="divdesc" class="form-group col-md-6">
+    <label class="form-check-label" for="desc"> Descrizione </label> <font color="red">*</font>
+    <input type="text" name="desc" id="desc" maxlength="60" class="form-control" required="">
+  </div>
+
+  </div>
+
+ <div class="row g-3 align-items-center">
+  <div id="destinazioni" class="form-group col-md-12" style="display: none;">
+    <?php            
+  $queryD="select id_destinazione, destinazione 
+  from anagrafiche.destinazioni
+    where cdr = true and attivo = true
+    order by destinazione;";
+  $resultD = pg_query($conn_sit, $queryD);
+  //echo $query1;    
+  while($rD = pg_fetch_assoc($resultD)) { 
+      //$valore=  $r2['id_via']. ";".$r2['desvia'];            
+  ?>
+    <div class="form-check form-check-inline">
+      <input class="form-check-input" type="checkbox" style="border-color:darkgrey;" name="destinazioni[]" id="dest_<?php echo $rD['id_destinazione']?>" value="<?php echo $rD['id_destinazione']?>">
+      <label class="form-check-label" for="inlineCheckbox1"><?php echo $rD['destinazione']?></label>
+  </div>
+  <?php } ?>
+  </div>
+ </div>
  
  <?php
   // DESCRIZIONE
   ?>
   <!--div class="col-md-6"--> 
-  <div class="form-group col-md-6">
-    <label for="desc"> Descrizione </label> <font color="red">*</font>
+  <div id="spaziodescr" class="row g-3 align-items-center">
+    
+  <!--div class="form-group col-md-6">
+    <label class="form-check-label" for="desc"> Descrizione </label> <font color="red">*</font>
     <input type="text" name="desc" id="desc" maxlength="60" class="form-control" required="">
-  </div>
+  </div-->
 
   </div>
 
@@ -105,7 +135,7 @@ $versione= $_GET['v'];
 
 
 <div class="form-group  col-md-6">
-  <label for="tipo">Turno:</label> <font color="red">*</font>
+  <label class="form-check-label" for="tipo">Turno:</label> <font color="red">*</font>
                 <select name="turno" id="turno" class="selectpicker show-tick form-control" data-live-search="true"  required=""  onchange="showReferenceDay(this)">
                 <option name="turno" value="">Seleziona il turno</option>
   <?php            
@@ -149,14 +179,14 @@ oci_execute($result2);
   ?>
 
 <div class="form-group  col-md-6">
-  <hr>
-  <label for="freq">Frequenza:</label> <font color="red">*</font><br>
+  
+  <label class="form-check-label" for="freq">Frequenza:</label> <font color="red">*</font><br>
   <!--select name="freq" id="freq" class="selectpicker show-tick form-control" data-live-search="true" required="">
     <option name="freq" value="">Seleziona la frequenza</option>
     <?php            
     /*$query3="select cod_frequenza, descrizione_long 
     from etl.frequenze_ok fo";
-    $result3 = pg_query($conn, $query3);
+    $result3 = pg_query($conn_sit, $query3);
     //echo $query1;    
     while($r3 = pg_fetch_assoc($result3)) { 
       //$valore=  $r2['id_via']. ";".$r2['desvia'];            
@@ -198,6 +228,27 @@ require('freq_sett_component.php');
   </div>
 </div>
 
+<div class="row g-3 align-items-center" style="margin-top: 5px;">
+<div class="form-group  col-md-6">
+  <!--div class="input-group date" data-provide="datepicker"-->
+  <label for="data_inizio" >Data attivazione (GG/MM/AAAA) </label><font color="red">*</font>
+      <input name="data_att" id="js-date" type="text" class="form-control" value="" required="">
+      <div class="input-group-addon">
+          <span class="glyphicon glyphicon-th"></span>
+      </div>
+  <!--/div-->
+</div>
+
+<div class="form-group  col-md-6">
+  <!--div class="input-group date" data-provide="datepicker"-->
+  <label for="data_inizio" >Data disattivazione (GG/MM/AAAA) </label><font color="red">*</font>
+      <input name="data_disatt" id="js-date1"  type="text" class="form-control" value="31/12/2099" required="">
+      <div class="input-group-addon">
+          <span class="glyphicon glyphicon-th"></span>
+      </div>
+  <!--/div-->
+</div>
+</div>
 <hr>
 
 <?php if ($check_edit==1){?>
@@ -245,6 +296,49 @@ require('freq_sett_component.php');
         //console.log('il turno selezionato NON è a cavallo di due giorni');
       }
     }
+  
+  function showDestination(val){
+    console.log(val.value)
+    console.log(val)
+    tipo = document.getElementById("tipo");
+    opt = tipo.selectedOptions[0];
+    divdescr = document.getElementById("divdesc");
+    divdest = document.getElementById("spaziodescr");
+    console.log(opt.dataset)
+    if(opt.dataset.cdr === 't'){
+      console.log('è cdr')
+      document.getElementById('destinazioni').style.display = "block";
+      divdest.appendChild(divdescr);
+      /*document.getElementById('rimessa').style.display = "block";
+      document.getElementById('sqrimessa').style.display = "block";*/
+    } else{
+      console.log('NON è cdr')
+      document.getElementById('destinazioni').style.display = "none";
+      /*document.getElementById('rimessa').style.display = "none";
+      document.getElementById('sqrimessa').style.display = "none";*/
+    }
+  }
+
+  form = document.getElementById("newpercorso");
+  form.addEventListener("submit", function(e) {
+
+    // prende tutte le checkbox checked
+    let checked = document.querySelectorAll("input[name='destinazioni[]']:checked");
+    tipo = document.getElementById("tipo");
+    opt = tipo.selectedOptions[0];
+    console.log(checked);
+    console.log(opt.dataset.cdr)
+    // verifico se la lunghezza è 0 vuol dire che non hanno selezionato nulla
+    if (checked.length === 0 && opt.dataset.cdr ==='t') {
+        e.preventDefault(); // blocca invio form
+        alert("E' necessario selezionare almeno una destinazione avendo scelto 'Isole ecologiche' come tipologia percorso.");
+        return false;
+    }
+
+    let sit = opt.dataset.sit;
+    document.getElementById("id_sit").value = sit;
+
+  });
 
 </script>
 
@@ -258,9 +352,20 @@ require_once('req_bottom.php');
 require('./footer.php');
 ?>
 
+<script>
+  $('#js-date').datepicker({
+      format: 'dd/mm/yyyy',
+      startDate: '+1d', 
+      language:'it' 
+  });
 
+  $('#js-date1').datepicker({
+      format: 'dd/mm/yyyy', 
+      language:'it'
+  });
 
-
+  
+</script>
 
 </body>
 

@@ -68,6 +68,7 @@ $freq_sit = $_POST['freq_sit'];
 $fbin = $_POST['fbin'];
 $freq_sett = $_POST['freq_sett'];
 $freq_uo = $_POST['freq_uo'];
+$old_vers= $_POST['old_vers'];
 $new_vers= $_POST['old_vers']+1;
 $stag = $_POST['stag'];
 if($stag != ''){
@@ -86,9 +87,14 @@ $eko = $_POST['eko'];
 //echo $eko."<br>";
 
 $id_servizio_uo = intval($_POST['id_servizio_uo']);
-if($_POST['id_servizio_sit']){
+if(!empty($_POST['id_servizio_sit'])){
 $id_servizio_sit = intval($_POST['id_servizio_sit']);
+}else {
+  $id_servizio_sit = "";
 }
+
+$cdr = $_POST['cdr'];
+
 ?>
 <h3>Testata percorso  versione <?php echo $new_vers;?> </h3>
 <!--ul><?php
@@ -114,7 +120,7 @@ if(intval($turnoIni) > intval($turnoFine)){
 
 
 
-<form name="nv1" method="post" autocomplete="off" action="./backoffice/nuova_versione2.php">
+<form id="newversione" name="nv1" method="post" autocomplete="off" action="./backoffice/nuova_versione2.php">
 
 <!--input type="hidden" id="id_percorso" name="id_percorso" value="<?php echo $codice_percorso;?>">
 <input type="hidden" id="desc" name="desc" value="<?php echo $desc;?>"-->
@@ -126,6 +132,52 @@ if(intval($turnoIni) > intval($turnoFine)){
 <!--input type="hidden" id="turno" name="turno" value="<?php echo $turno;?>"-->
 <input type="hidden" id="tipo" name="tipo" value="<?php echo $tipo;?>">
 <input type="hidden" id="new_vers" name="new_vers" value="<?php echo $new_vers;?>">
+
+<div class="row g-3 align-items-center">
+  <div class="form-group col-md-6">
+    <label for="tipo_descr"> Tipologia percorso: </label> <font color="red">*</font> 
+    <?php            
+      $queryT="SELECT id, descrizione, codice_servizio, cdr
+      from anagrafe_percorsi.anagrafe_tipo at2
+      where id = $1;";
+      $resultT = pg_prepare($conn_sit, "queryT", $queryT);
+      $resultT = pg_execute($conn_sit, "queryT", array($tipo));
+      while($rT = pg_fetch_assoc($resultT)) { ?>
+      <input type="text" name="tipo_descr" id="tipo_descr" data-cdr="<?php echo $rT['cdr']?>" class="form-control" value="<?php echo $rT['descrizione']?>" readonly="" required="">
+      <?php
+      }       
+    ?>
+    <br>
+  </div>
+  <div id="destinazioni" class="form-group col-md-6" style="display: none;">
+    <?php            
+      $queryD="select id_destinazione, destinazione 
+      from anagrafiche.destinazioni
+        where cdr = true and attivo = true
+        order by destinazione;";
+      $resultD = pg_query($conn_sit, $queryD);
+      //echo $query1;
+      $queryChecked = "SELECT * from anagrafe_percorsi.percorsi_destinazione pd 
+      where pd.cod_percorso = $1 and pd.versione = $2";
+      $resultChecked = pg_prepare($conn_sit, "queryChecked", $queryChecked);
+      $resultChecked = pg_execute($conn_sit, "queryChecked", array($codice_percorso, $old_vers));
+      $dest_checked = [];
+      while ($rc = pg_fetch_assoc($resultChecked)) {
+          $dest_checked[] = $rc['id_destinazione'];
+      }
+
+      while($rD = pg_fetch_assoc($resultD)) { 
+          $id = $rD['id_destinazione'];
+          $checkedD = in_array($id, $dest_checked) ? "checked" : "";            
+    ?>
+    <div class="form-check form-check-inline">
+      <input class="form-check-input" type="checkbox" style="border-color:darkgrey;" name="destinazioni[]" id="dest_<?php echo $rD['id_destinazione']?>" value="<?php echo $rD['id_destinazione']?>" <?php echo $checkedD; ?>>
+      <label class="form-check-label" for="inlineCheckbox1"><?php echo $rD['destinazione']?></label>
+    </div>
+    <?php } ?>
+  </div>
+  <hr>
+ </div>
 
 <div class="row g-3 align-items-center">
 
@@ -206,8 +258,8 @@ oci_execute($result2bis);
 
   $query3a="select cod_frequenza, descrizione_long 
   from etl.frequenze_ok fo where cod_frequenza = $1;";
-  $result3a = pg_prepare($conn, "query3a", $query3a);
-  $result3a = pg_execute($conn, "query3a", array($freq_sit));
+  $result3a = pg_prepare($conn_sit, "query3a", $query3a);
+  $result3a = pg_execute($conn_sit, "query3a", array($freq_sit));
   while($r3a = pg_fetch_assoc($result3a)) { 
     $freq_long = $r3a['descrizione_long'];
   }
@@ -229,8 +281,8 @@ oci_execute($result2bis);
   <?php            
   $query3bis="select cod_frequenza, descrizione_long 
 from etl.frequenze_ok fo;";
-$result3bis = pg_prepare($conn, "result3bis", $query3bis);
-$result3bis = pg_execute($conn, "result3bis", array());
+$result3bis = pg_prepare($conn_sit, "result3bis", $query3bis);
+$result3bis = pg_execute($conn_sit, "result3bis", array());
 //echo $query1;    
 while($r3bis = pg_fetch_assoc($result3bis)) { 
     //$valore=  $r2['id_via']. ";".$r2['desvia'];            
@@ -296,54 +348,165 @@ while($r3bis = pg_fetch_assoc($result3bis)) {
 
 </div>
 
+<hr>
+<h4>Gruppo di coordinamento o UT Responsabile</h4>
+<div class="row g-3 align-items-center">
+  <div class="form-group  col-md-6">
+    <label for="ut">UT (o Rimessa):</label> <font color="red">*</font>
+    <select name="ut" id="ut" class="selectpicker show-tick form-control" data-live-search="false" data-size="5" required="" >
+      <?php if (!$_POST["gc"]){?>
+        <option name="ut" value="">Nessun GC selezionato</option>
+      <?php }
+      else{          
+        $query1="SELECT id_ut, descrizione from topo.ut 
+        where id_ut = $1;";
+        $result1 = pg_prepare($conn_sit, "query1", $query1);
+        $result1 = pg_execute($conn_sit, "query1", array($_POST["gc"]));
+        //echo $query1;    
+        while($r1 = pg_fetch_assoc($result1)) {
+            $id_ut_sel = $r1['id_ut'];
+            //$valore=  $r2['id_via']. ";".$r2['desvia'];            
+      ?>
+      <option name="ut" value="<?php echo $r1['id_ut']?>" ><?php echo $r1['descrizione'] ?></option>
+      <?php }} ?>
+    </select>
+  </div>
 
+  <div class="form-group  col-md-6">
+    <label for="sq_ut">Squadra UT:</label> <font color="red">*</font>
+    
+      <?php if (!$_POST["gc"]){?>
+        <select name="sq_ut" id="sq_ut" class="selectpicker show-tick form-control" data-size="5"  data-live-search="false" required="">
+          <option name="ut" value="">Nessun GC selezionato</option>
+        </select>
+      <?php } else{?>
+        <select name="sq_ut" id="sq_ut" class="selectpicker show-tick form-control" data-size="5"  data-live-search="true" required="">
+      <?php            
+        $query0_1="select id_squadra, 
+        concat(cod_squadra, ' - ', desc_squadra) as descr 
+        from elem.squadre s order by desc_squadra ;";
+        $result0_1 = pg_prepare($conn_sit, "query0_1", $query0_1); 
+        $result0_1 = pg_execute($conn_sit, "query0_1", array()); 
+        while($r0_1 = pg_fetch_assoc($result0_1)) { 
+            //$valore=  $r2['id_via']. ";".$r2['desvia'];            
+      ?>
+        <option name="sq_ut" 
+        <?php 
+          if ($_POST["sq_gc"]==$r0_1['id_squadra']){
+            echo ' selected ';
+          } 
+        ?>
+        value="<?php echo $r0_1['id_squadra']?>" ><?php echo $r0_1['descr'] ?></option>
+      <?php } }?>
+    </select>
+  </div>
+</div>
 
+ <div class="row g-3 align-items-center">
+  <div id="comuni" class="form-group col-md-12" style="display: none !important;">
+    <?php
+    if ($id_servizio_sit=="" and $cdr=='f'){
+      $query_comuni="SELECT 
+      cu.id_comune,
+      cu.id_ut,
+      c.descr_comune,
+      COALESCE(pc.competenza, 0) AS competenza
+      FROM topo.comuni_ut cu
+      JOIN topo.comuni c 
+          ON c.id_comune = cu.id_comune 
+      LEFT JOIN anagrafe_percorsi.percorsi_comuni pc 
+          ON pc.id_comune = cu.id_comune
+          AND pc.cod_percorso = $1
+      WHERE cu.id_ut = $2
+      ORDER BY c.descr_comune;";
+      $resultC = pg_prepare($conn_sit, "queryC", $query_comuni);
+      $resultC = pg_execute($conn_sit, "queryC", array($codice_percorso, $_POST["gc"]));  
+      $count_result = pg_num_rows($resultC);
+      //echo $count_result."<br>"; 
+      //echo $codice_percorso."<br>";
+      //echo $_POST["gc"]."<br>";
+
+      while($rC = pg_fetch_assoc($resultC)) { 
+        ?>
+          <div class="comuni-row">
+            <label for="inlineCheckbox1"><?php echo $rC['descr_comune']?></label>
+            <?php
+              if($count_result == 1) {
+                // Se c'è un solo comune, lo seleziono automaticamente e metto la checkbox disabled
+                //devo però passare il valore dell'id_comune con un input hidden perchè il disabled non passa il valor in post
+                echo '<input type="hidden" name="comuni[]" value="' . $rC['id_comune'] . '">';
+              }
+            ?>
+            <input class="comuni-check" type="checkbox" style="border-color:darkgrey;" name="comuni[]" id="comune_<?php echo $rC['id_comune']?>" value="<?php echo $rC['id_comune']?>" <?php 
+            if ($count_result == 1){
+                echo "checked disabled";
+            } elseif ($count_result > 1 and $rC['competenza'] > 0 ){
+                echo "checked";
+            } ?>>
+            <input type="number" class="percent-input" name="percentuali[<?= $rC['id_comune'] ?>]" placeholder="%" min="0" max="100" <?php
+              if ($count_result == 1) {
+                // Se c'è un solo comune, imposto il valore 100 e metto l'input readonly
+                //altrimenti lo metto disabled in modo che venga attivato solo se viene checcata la checbox corrispondente
+                  echo 'value="100" readonly';
+              } elseif ($count_result > 1 and $rC['competenza'] > 0 ){
+                  echo 'value="'.$rC['competenza'].'"';
+              }
+              else {
+                  echo 'disabled';
+              }
+            ?>>
+          </div>
+      <?php } 
+      }?>
+
+  </div>
+ </div>
 
 <hr>
-<h4>Sede Operativa (rimessa) se presente</h4>
 
+<h4>Sede Operativa (rimessa) se presente</h4>
 <div class="row g-3 align-items-center">
 
 <div class="form-group  col-md-6">
   <label for="rim">Rimessa: <?php echo $_POST["rimessa"]; ?></label> 
-                <select name="rim" id="rim" class="selectpicker show-tick form-control" data-live-search="true" >
-                <?php if (!$_POST["rimessa"]){?>
-                <option name="rim" value="">Seleziona la rimessa</option>
-                <?php }?>
-  <?php            
-  $query0="select id_ut, descrizione from topo.ut 
-  where id_zona in (5) 
-  order by descrizione ;";
-  $result0 = pg_query($conn, $query0);
-  //echo $query1;    
-  while($r0 = pg_fetch_assoc($result0)) { 
-      //$valore=  $r2['id_via']. ";".$r2['desvia'];            
-  ?>
-            
-        <option name="rim"
-        <?php 
-        if ($_POST["rimessa"]==$r0['id_ut']){
-          echo ' selected ';
-        } ?>
-        value="<?php echo $r0['id_ut']?>" ><?php echo $r0['descrizione'] ?></option>
-  <?php } ?>
+  <select name="rim" id="rim" class="selectpicker show-tick form-control" data-live-search="false" >
+  <?php if (!$_POST["rimessa"]){?>
+    <option name="rim" value="">Nessuna rimessa selezionata</option>
+  <?php }else{
+    $query0="SELECT id_ut, descrizione from topo.ut 
+    where id_ut = $1;";
+    $result0 = pg_prepare($conn_sit, "query0", $query0);
+    $result0 = pg_execute($conn_sit, "query0", array($_POST["rimessa"]));
+    //echo $query1;    
+    while($r0 = pg_fetch_assoc($result0)) { 
+        //$valore=  $r2['id_via']. ";".$r2['desvia'];            
+    ?>
+    <option name="rim"
+    <?php 
+    if ($_POST["rimessa"]==$r0['id_ut']){
+      echo ' selected ';
+    } ?>
+    value="<?php echo $r0['id_ut']?>" ><?php echo $r0['descrizione'] ?></option>
+  <?php }} ?>
 
   </select>            
 </div>
 
 <div class="form-group  col-md-6">
   <label for="sq_rim">Squadra rimessa:</label> 
-                <select name="sq_rim" id="sq_rim" class="selectpicker show-tick form-control"  data-size="5"  data-live-search="true">
-                <?php if (!$_POST["rimessa"]){?>
-                  <option name="sq_rim" value="">Seleziona la squadra della rimessa</option>
-                <?php } ?>
-  <?php            
+  <?php if (!$_POST["rimessa"]){?>
+    <select name="sq_rim" id="sq_rim" class="selectpicker show-tick form-control"  data-size="5"  data-live-search="false">
+      <option name="sq_rim" value="">Nessuna rimessa selezionata</option>
+    </select>
+  <?php } else{?>
+    <select name="sq_rim" id="sq_rim" class="selectpicker show-tick form-control"  data-size="5"  data-live-search="true">
+  <?php
   $query0_1="select id_squadra, 
   concat(cod_squadra, ' - ', desc_squadra) as descr 
   from elem.squadre s order by desc_squadra ;";
 
-  $result0_1 = pg_prepare($conn, "query0_1", $query0_1);
-  $result0_1 = pg_execute($conn, "query0_1", array());  
+  $result0_1 = pg_prepare($conn_sit, "query0_1", $query0_1);
+  $result0_1 = pg_execute($conn_sit, "query0_1", array());  
   //echo $query1;    
   while($r0_1 = pg_fetch_assoc($result0_1)) { 
       //$valore=  $r2['id_via']. ";".$r2['desvia'];            
@@ -355,83 +518,14 @@ while($r3bis = pg_fetch_assoc($result3bis)) {
           echo ' selected ';
         } ?>
         value="<?php echo $r0_1['id_squadra']?>" ><?php echo $r0_1['descr'] ?></option>
-  <?php } ?>
-
-  </select>            
-</div>
-
-
-
-
-</div>
-
-
-<hr>
-<h4>Gruppo di coordinamento o UT Responsabile</h4>
-<small id="ut" class="form-text text-muted"> Deve sempre esserci un Gruppo di Coordinamento. <b>Per tutti i servizi di raccolta deve essere una Unità territoriale.</b> 
-    Nel caso di servizi della sola rimessa (es. Ganci) è la rimessa stessa.</small>
-<div class="row g-3 align-items-center">
-
-
-<div class="form-group  col-md-6">
-  <label for="ut">UT (o Rimessa):</label> <font color="red">*</font>
-                <select name="ut" id="ut" class="selectpicker show-tick form-control" data-live-search="true" data-size="5" required="">
-                <!--option name="ut" value="">Seleziona la tipologia di servizio</option-->
-                <?php if (!$_POST["gc"]){?>
-                  <option name="ut" value="">Seleziona il GC</option>
-                <?php } ?>
-  <?php            
-  $query1="select id_ut, descrizione from topo.ut 
-  /*where id_zona not in (5) */
-  order by descrizione ;";
-  $result1 = pg_query($conn, $query1);
-  //echo $query1;    
-  while($r1 = pg_fetch_assoc($result1)) { 
-      //$valore=  $r2['id_via']. ";".$r2['desvia'];            
-  ?>
-            
-        <option name="ut" 
-        <?php 
-        if ($_POST["gc"]==$r1['id_ut']){
-          echo ' selected ';
-        } ?>
-        value="<?php echo $r1['id_ut']?>" ><?php echo $r1['descrizione'] ?></option>
-  <?php } ?>
-
-  </select>            
-</div>
-
-
-<div class="form-group  col-md-6">
-  <label for="sq_ut">Squadra UT:</label> <font color="red">*</font>
-                <select name="sq_ut" id="sq_ut" class="selectpicker show-tick form-control" data-size="5"  data-live-search="true" required="">
-                <?php if (!$_POST["gc"]){?>
-                  <option name="ut" value="">Seleziona la squadra del GC</option>
-                <?php } ?>
-                <!--option name="sq_ut" value="">Seleziona la squadra della rimessa</option-->
-  <?php            
-  /*$query0_1="select id_squadra, 
-  concat(cod_squadra, ' - ', desc_squadra) as descr 
-  from elem.squadre s order by desc_squadra ;";
-  $result0_1 = pg_query($conn, $query0_1);
-  //echo $query1; */   
-  $result0_1 = pg_execute($conn, "query0_1", array()); 
-  while($r0_1 = pg_fetch_assoc($result0_1)) { 
-      //$valore=  $r2['id_via']. ";".$r2['desvia'];            
-  ?>
-            
-        <option name="sq_ut" 
-        <?php 
-        if ($_POST["sq_gc"]==$r0_1['id_squadra']){
-          echo ' selected ';
-        } ?>
-        value="<?php echo $r0_1['id_squadra']?>" ><?php echo $r0_1['descr'] ?></option>
-  <?php } ?>
+  <?php } }?>
 
   </select>            
 </div>
 
 </div>
+
+
 <hr>
 <div class="row g-3 align-items-center">
 
@@ -481,9 +575,7 @@ oci_free_statement($result_dd);
       </div>
 </div>
 
-<!--div class="form-group  col-md-4">
-<label for="data_inizio" >Comuni</label>
-<div-->
+
 
 
 <hr>
@@ -497,7 +589,7 @@ oci_free_statement($result_dd);
   $query2="select cdaog3,
   concat(categoria, ' (', nome, ')') as cat_estesa  from elem.automezzi a 
   order by categoria ;";
-  $result2 = pg_query($conn, $query2);
+  $result2 = pg_query($conn_sit, $query2);
   //echo $query1;    
   while($r2 = pg_fetch_assoc($result2)) { 
       //$valore=  $r2['id_via']. ";".$r2['desvia'];            
@@ -591,6 +683,105 @@ oci_free_statement($result_dd);
     }
     window.addEventListener('DOMContentLoaded', aggiornaRefDay);
 
+  function showDestination(){
+    tipo = document.getElementById("tipo_descr");
+    if(tipo.dataset.cdr === 't'){
+      console.log('è cdr')
+      document.getElementById('destinazioni').style.display = "grid";
+      document.getElementById('destinazioni').style.gridTemplateColumns = "50% 50%";
+      //divdest.appendChild(divdescr);
+      /*document.getElementById('rimessa').style.display = "block";
+      document.getElementById('sqrimessa').style.display = "block";*/
+    } else{
+      console.log('NON è cdr')
+      document.getElementById('destinazioni').style.display = "none";
+      /*document.getElementById('rimessa').style.display = "none";
+      document.getElementById('sqrimessa').style.display = "none";*/
+    }
+  }
+  window.addEventListener('DOMContentLoaded', showDestination);
+
+  form = document.getElementById("newversione");
+  form.addEventListener("submit", function(e) {
+
+    // prende tutte le checkbox checked
+    let checked = document.querySelectorAll("input[name='destinazioni[]']:checked");
+    tipo = document.getElementById("tipo_descr");
+    // verifico se la lunghezza è 0 vuol dire che non hanno selezionato nulla
+    if (checked.length === 0 && tipo.dataset.cdr ==='t') {
+        e.preventDefault(); // blocca invio form
+        alert("E' necessario selezionare almeno una destinazione.");
+        return false;
+    }
+
+    if(id_sit==""){
+      console.log("percorso SENZA id sit");
+      if(cdr=="f"){
+        // prende tutte le checkbox checked
+        let checkedC = document.querySelectorAll("input[name='comuni[]']:checked");
+        // verifico se la lunghezza è 0 vuol dire che non hanno selezionato nulla
+        if (checkedC.length === 0) {
+            e.preventDefault(); // blocca invio form
+            alert("E' necessario selezionare almeno un comune avendo scelto un'UT che copre più comuni.");
+            return false;
+        }
+
+        let comuni_checked = document.querySelectorAll(".percent-input:not([disabled])");
+        let somma = 0;
+        comuni_checked.forEach(cc => {
+            somma += parseFloat(cc.value || 0);
+        });
+
+        // se vuoi permettere decimali, usa un controllo con tolleranza:
+        if (somma != 100) {
+            e.preventDefault();
+            alert("La somma delle percentuali inserite per i comuni selezionati deve essere ESATTAMENTE 100. Somma attuale: " + somma);
+        }
+      }
+    }
+});
+
+ document.addEventListener("change", function(e) {
+    if (e.target.classList.contains("comuni-check")) {
+
+        //trovo il div padre della checkbox
+        let div_check = e.target.closest(".comuni-row") || e.target.parentElement;
+        console.log(div_check);
+      
+        // cerca l'input test nel div padre
+        let inputPercent = div_check.querySelector(".percent-input");
+        if (!inputPercent) {
+            // fallback: niente input trovato (debug)
+            console.warn("Percent input non trovato per la checkbox", e.target);
+            return;
+        }
+
+        if (e.target.checked) {
+            inputPercent.disabled = false;
+            // mette il puntatore del mouse sull'input corrispondente
+            inputPercent.focus();
+        } else {
+            inputPercent.disabled = true;
+            inputPercent.value = "";
+        }
+    }
+});
+
+window.addEventListener('DOMContentLoaded', function() {
+    // Se ci sono checkbox già selezionate al caricamento della pagina, abilita gli input percentuali corrispondenti
+    id_sit = "<?php echo $id_servizio_sit;?>";
+    cdr = "<?php echo $cdr;?>";
+    if(id_sit==""){
+      console.log("percorso SENZA id sit");
+      if(cdr=="f"){
+        console.log("NON è un CDR");
+        document.getElementById('comuni').style.display = "";
+      }
+    } else {
+      console.log("percorso CON id sit, non devo fare nulla");
+    }
+});
+
 </script>
 
 </div>
@@ -612,6 +803,7 @@ $('#js-date1').datepicker({
     format: 'dd/mm/yyyy',
     language:'it'
 });
+
 </script>
 
 

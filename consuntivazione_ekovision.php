@@ -49,17 +49,17 @@ require_once("./filter_tables/filter_consuntivazione_ekovision.php");
 
 ?>
 
-<div class="container">
-  <h4 style="margin-bottom: 2%;">Report consuntivazione Ekovision</h4>
+<div class="container-fluid">
+  <h4 style="margin-bottom: 1%; display:inline;">Report consuntivazione Ekovision - </h4>
   <?php 
 
 require_once("./last_update_ekovision.php");
 
 ?>
 
-<div class="row justify-content-start" style="margin-top: 2%;">
+<div class="row justify-content-start" style="margin-top: 1%;">
 
-  <div class="col-5">
+  <div class="col-4">
   <!--FILTRO PER UT sulla base delle UT del mio profilo SIT-->
 <div class="rfix">
 
@@ -145,10 +145,10 @@ $last_month = $dt->modify("-1 month");
 
 
 
-<div class="form-group col-5">
-<label for="data_inizio" >Da  (GG/MM/AAAA) - A (GG/MM/AAAA)</label><font color="red">*</font>
+<div class="form-group col-4">
+<label for="data_inizio" >Da (GG/MM/AAAA) - A (GG/MM/AAAA) <small>Massimo 31 giorni </small></label><font color="red">*</font>
     <input type="text" class="form-control" name="daterange" value="<?php echo $last_month->format('d/m/Y');?> - <?php echo $today->format('d/m/Y');?>"/>
-    <small>Massimo 31 giorni </small>
+    
 </div>
 
 
@@ -179,7 +179,7 @@ $(function() {
 });
 </script>
 
-<div class="col-2" style="align-content: center;">
+<div class="col-4" style="align-content: center;">
   <!--button id="export-btn" class="btn btn-primary" title="Esporta file Excel completo" style="width: 100%;"><i class="bi bi-file-earmark-excel" ></i>Esporta tabella</button-->
 </div>
 

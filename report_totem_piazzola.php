@@ -57,7 +57,7 @@ if ((int)$id_role_SIT = 0) {
 </script>
 
 
-<div class="container">
+<div class="container-fluid">
 <?php 
 
 
@@ -112,24 +112,24 @@ if ($hour < '1120'){
 <form  class="row row-cols-lg-auto g-3 align-items-center" name="form_filtro" id="form_filtro" autocomplete="off">
     <input type="hidden" class="form-control" id="uos" name="uos" value="<?php echo $uos;?>" required>
 
-    <div class="form-group col-lg-3">
+    <div class="form-group col-lg-3 form-row">
       <?php echo $uos_descrizione." - " ;?>
 <a class="btn btn-info" href="<?php echo basename($_SERVER['PHP_SELF']);?>"> <i class="fa-solid fa-house"></i>Cambia UT</a>
 </div>
 
-<i class="fa-solid fa-grip-lines-vertical"></i>
+<!--i class="fa-solid fa-grip-lines-vertical"></i-->
 
-<div class="form-group col-lg-3">
+<div class="form-group col-lg-3 form-row" >
     <label for="data_percorsi" class="form-label">Data verifica</label>
     <!--input type="text" class="form-control" id="js-date3" name="data_percorsi" onchange="cambiata_data(this.value);" value="<?php echo $today->format('d/m/Y');?>" required-->
     <input type="text" class="form-control" id="js-date3" name="data_percorsi" value="<?php echo $today->format('d/m/Y');?>" required>
     <div id="nota_data" class="form-text"><?php echo $nota_data;?></div>
 </div>
-<div class="form-group col-lg-3">
+<div class="form-group col-auto form-row">
   <input type="checkbox" class="form-check-input" id="filtro_percorsi" name="filtro_percorsi">
   <label class="form-check-label" for="filtro_percorsi">Anche tappe completate</label>
 </div>
-<div class="form-group col-lg-2">
+<div class="form-group col-auto form-row">
 <button type="submit" class="btn btn-primary">Filtra</button>
 </div>
 </form>

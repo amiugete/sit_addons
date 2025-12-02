@@ -52,8 +52,8 @@ $versione= $_GET['v'];
 $check_versione_successiva=0;
 $query_check_versione="select ep.cod_percorso from anagrafe_percorsi.elenco_percorsi ep
 where ep.cod_percorso = $1 and ep.versione_testata > $2";
-$result0 = pg_prepare($conn, "query_check_versione", $query_check_versione);
-$result0 = pg_execute($conn, "query_check_versione", array($cod_percorso, intval($versione)));
+$result0 = pg_prepare($conn_sit, "query_check_versione", $query_check_versione);
+$result0 = pg_execute($conn_sit, "query_check_versione", array($cod_percorso, intval($versione)));
 while($r0 = pg_fetch_assoc($result0)) {
   $check_versione_successiva=1;
 }
@@ -84,8 +84,8 @@ join elem.turni t on t.id_turno = ep.id_turno
 join etl.frequenze_ok fo on fo.cod_frequenza = ep.freq_testata
 join anagrafe_percorsi.anagrafe_tipo at2 on at2.id = ep.id_tipo 
 where ep.cod_percorso = $1 and ep.versione_testata  = $2";
-$result = pg_prepare($conn, "query_testata", $query_testata);
-$result = pg_execute($conn, "query_testata", array($cod_percorso, $versione));  
+$result = pg_prepare($conn_sit, "query_testata", $query_testata);
+$result = pg_execute($conn_sit, "query_testata", array($cod_percorso, $versione));  
 
 //echo $cod_percorso . '<br>';
 //echo $versione . '<br>';
@@ -339,8 +339,8 @@ where cod_percorso = $1 and versione = (select max(versione)
     from elem.percorsi p1 where cod_percorso = $1)';
 
 
-$result_sit = pg_prepare($conn, "query_sit", $query_sit);
-$result_sit = pg_execute($conn, "query_sit", array($cod_percorso));  
+$result_sit = pg_prepare($conn_sit, "query_sit", $query_sit);
+$result_sit = pg_execute($conn_sit, "query_sit", array($cod_percorso));  
 
 
 if ($_SESSION['test']==1) {
@@ -368,8 +368,8 @@ where dpsu.cod_percorso in (
 	and dpsu.cod_percorso = $1
 order by 2,1";
 
-$result_anomalie_sit = pg_prepare($conn, "query_anomalie_sit", $query_anomalie_sit);
-$result_anomalie_sit = pg_execute($conn, "query_anomalie_sit", array($cod_percorso));  
+$result_anomalie_sit = pg_prepare($conn_sit, "query_anomalie_sit", $query_anomalie_sit);
+$result_anomalie_sit = pg_execute($conn_sit, "query_anomalie_sit", array($cod_percorso));  
 $check_anomalie=0;
 while($r_as = pg_fetch_assoc($result_anomalie_sit)) {
   $check_anomalie=1;
@@ -421,14 +421,14 @@ where pu.cod_percorso = $1  and pu.data_disattivazione = to_date($2, 'DD/MM/YYYY
 
 // RIMESSA / SEDE OPERATIVA
 $query_rimessa=$query0 ." and rimessa = 'S' and responsabile = 'N'";
-$result1 = pg_prepare($conn, "query_rimessa", $query_rimessa);
+$result1 = pg_prepare($conn_sit, "query_rimessa", $query_rimessa);
 
-if (pg_last_error($conn)){
+if (pg_last_error($conn_sit)){
   echo pg_last_error($conn_sovr);
 }
 
-$result1 = pg_execute($conn, "query_rimessa", array($cod_percorso, $data_disattivazione_testata));
-if (pg_last_error($conn)){
+$result1 = pg_execute($conn_sit, "query_rimessa", array($cod_percorso, $data_disattivazione_testata));
+if (pg_last_error($conn_sit)){
   echo pg_last_error($conn_sovr);
 }
 /*echo $cod_percorso;
@@ -461,8 +461,8 @@ echo '</ul>';
 
 //$query_ut=$query0 ." and pu.id_squadra!= 15 and (rimessa = 'N' and responsabile = 'N') or ";
 $query_ut=$query0 ." AND responsabile = 'S' and pu.id_squadra!= 15 ";
-$result2 = pg_prepare($conn, "query_ut", $query_ut);
-$result2 = pg_execute($conn, "query_ut", array($cod_percorso, $data_disattivazione_testata));
+$result2 = pg_prepare($conn_sit, "query_ut", $query_ut);
+$result2 = pg_execute($conn_sit, "query_ut", array($cod_percorso, $data_disattivazione_testata));
 //echo '<hr>';
 if (pg_num_rows($result2) > 0){
   echo '<h4> <b>Gruppo di coordinamento</b></h4>';
@@ -496,8 +496,8 @@ echo '</ul>';
 // ALtre UT Visualizzazione
 
 $query_ut2=$query0 ." and pu.id_squadra= 15 and rimessa = 'N' order by responsabile desc";
-$result2 = pg_prepare($conn, "query_ut2", $query_ut2);
-$result2 = pg_execute($conn, "query_ut2", array($cod_percorso, $data_disattivazione_testata));
+$result2 = pg_prepare($conn_sit, "query_ut2", $query_ut2);
+$result2 = pg_execute($conn_sit, "query_ut2", array($cod_percorso, $data_disattivazione_testata));
 //echo '<hr>';
 
 if (pg_num_rows($result2) > 0){
@@ -592,9 +592,9 @@ join anagrafe_percorsi.cons_mapping_uo cmu on cmu.id_uo = pu.id_ut
 where cod_percorso = $1 and data_disattivazione  = to_date($2, 'DD/MM/YYYY'))
   order by descrizione  ;";
   
-  $result3 = pg_prepare($conn, "query3", $query3);
-  $result3 = pg_execute($conn, "query3", array($cod_percorso , $data_disattivazione_testata));
-  //$result1 = pg_query($conn, $query1);
+  $result3 = pg_prepare($conn_sit, "query3", $query3);
+  $result3 = pg_execute($conn_sit, "query3", array($cod_percorso , $data_disattivazione_testata));
+  //$result1 = pg_query($conn_sit, $query1);
   //echo $query1;    
   while($r3 = pg_fetch_assoc($result3)) { 
       //$valore=  $r2['id_via']. ";".$r2['desvia'];            

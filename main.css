@@ -1,3 +1,73 @@
+html {
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/*body {
+  /*font-family: 'Roboto', Arial, sans-serif;
+  font-family: 'Open Sans', Arial, sans-serif;
+}*/
+
+iframe {
+  width: 80% !important; /* o una larghezza fissa */
+  max-width: 80% !important;
+  display: block !important;
+}
+
+.row-small {
+  display: flex;
+  justify-content: center;
+}
+
+.tag-small{
+  width: 80% !important; /* o una larghezza fissa */
+  max-width: 80% !important;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;     /* allinea verticalmente */
+  gap: 10px;               /* spazio tra label e input */
+  /*margin-bottom: 10px;*/     /* spaziatura tra righe */
+}
+
+.row {
+  margin-bottom: 1%;
+}
+
+/* opzionale: larghezza fissa per allineare tutte le label */
+/*label {
+  min-width: 100px;        
+}*/
+
+.form-check-label{
+  min-width: 0px; 
+}
+
+#comuni {
+  display: flex !important;     /* forzo flex se qualche regola lo impedisce */
+  gap: 12px;
+  flex-wrap: wrap;              /* evita overflow se schermo stretto */
+  align-items: flex-start;
+}
+
+.comuni-row {
+  display: flex;                /* mantiene label+checkbox+input in riga */
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;               /* NON si allarghi: usa la larghezza del contenuto */
+  width: auto !important;   /* separazione righe */
+}
+
+.comuni-row label {
+    margin: 0;
+}
+
+.comuni-row .percent-input {
+    width: 70px;
+}
+
 .banner {
     top: 0;
     background: url(./img/bg-navbar-rid.png);
@@ -287,4 +357,18 @@
   /*background-color: inherit !important;*/
 }
 
+
+
+
+
+.toast {
+    opacity: 0;
+    transform: translateX(20px);
+    transition: all .4s ease-in-out;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(0);
+}
 

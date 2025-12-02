@@ -36,7 +36,7 @@
 
 
 
-<div id="freq_mensili">
+<div id="freq_mensili" style="display:none;">
 
 
     <div class="form-check form-check-inline">

@@ -2,10 +2,13 @@
 session_start();
 #require('../validate_input.php');
 
-
 if ($_SESSION['test']==1) {
+    echo "CONNESSIONE TEST<br>";
+    $checkTest=1;
     require_once ('../conn_test.php');
 } else {
+    echo "CONNESSIONE ESERCIZIO<br>";
+    $checkTest=0;
     require_once ('../conn.php');
 }
 //echo "OK";
@@ -116,147 +119,237 @@ $query0="select cdaog3,
 categoria  
 from elem.automezzi a 
 where cdaog3= $1"; 
-$result0 = pg_prepare($conn, "query0", $query0);
-$result0 = pg_execute($conn, "query0", array($cdaog3));  
+$result0 = pg_prepare($conn_sit, "query0", $query0);
+$result0 = pg_execute($conn_sit, "query0", array($cdaog3));  
 //echo $query1;    
 while($r0 = pg_fetch_assoc($result0)) { 
   $automezzo=$r0['categoria'];
 }
 echo $automezzo."<br>";
 
-#exit();
+if (!empty($_POST['destinazioni'])) {
+  $destinazioni= $_POST['destinazioni'];
+} else {
+    $destinazioni = [];
+}
+echo "n. destinazioni: ".count($destinazioni)."<br>";
 
-$insert_uo = "INSERT INTO UNIOPE.ANAGR_SER_PER_UO 
-    (ID_SER_PER_UO,
-    ID_UO, ID_PERCORSO,
-    ID_TURNO, PROG_PERCORSO,
-    DTA_ATTIVAZIONE, DTA_DISATTIVAZIONE,
-    DURATA, FAM_MEZZO, 
-    DESCRIZIONE,
-    ID_SERVIZIO, 
-    ID_SQUADRA, 
-    FROM_SIT, 
-    FREQUENZA_NEW, 
-    FREQ_SETTIMANE)
-    VALUES(
-    (SELECT max(id_ser_per_uo)+1 FROM  UNIOPE.ANAGR_SER_PER_UO),
-    :p1, :p2,
-    :p3, 0, 
-    to_date(:p4,'DD/MM/YYYY'), to_date(:p5,'DD/MM/YYYY'),
-    :p6, :p7, 
-    :p8,
-    :p9, 
-    :p10,
-    1,
-    :p11,
-    :p12)";
-
-
-
-if($_POST['rim']){
-    $rim_sit = $_POST['rim'];
-    $sq_rim = $_POST['sq_rim'];
-    
-    #cerco id rimessa UO
-    $query1="select id_uo 
-    from anagrafe_percorsi.cons_mapping_uo cmu 
-    where id_uo_sit = $1;";
-    $result1 = pg_prepare($conn, "query1", $query1);
-    $result1 = pg_execute($conn, "query1", array($rim_sit));  
-    //echo $query1;    
-    while($r1 = pg_fetch_assoc($result1)) { 
-      $rim_uo=$r1['id_uo'];
-    }
-
-    # insert UO 
-
-    
-    $result_uo1 = oci_parse($oraconn, $insert_uo);
-    # passo i parametri
-    oci_bind_by_name($result_uo1, ':p1', $rim_uo);
-    oci_bind_by_name($result_uo1, ':p2', $cod_percorso);
-    oci_bind_by_name($result_uo1, ':p3', $turno);
-    oci_bind_by_name($result_uo1, ':p4', $data_att);
-    oci_bind_by_name($result_uo1, ':p5', $data_disatt);
-    oci_bind_by_name($result_uo1, ':p6', $durata);
-    oci_bind_by_name($result_uo1, ':p7', $automezzo);
-    oci_bind_by_name($result_uo1, ':p8', $desc);
-    oci_bind_by_name($result_uo1, ':p9', $id_servizio_uo);
-    oci_bind_by_name($result_uo1, ':p10', $sq_rim);
-    oci_bind_by_name($result_uo1, ':p11', $freq_uo);
-    oci_bind_by_name($result_uo1, ':p12', $freq_sett);
-
-
-    oci_execute($result_uo1);
-
-    oci_free_statement($result_uo1);
-
+if (!empty($_POST['percentuali'])) {
+  $comuni_percent = $_POST['percentuali'];}
+else {
+    $comuni_percent = [];
 }
 
+foreach($_POST['percentuali'] as $key => $value){
+  echo "Comune: ".$key." - Percentuale: ".$value."<br>";
+}
 
-
-
-
+#exit();
 $ut_sit = intval($_POST['ut']);
 $sq_ut = intval($_POST['sq_ut']);
+
+#exit();
+
 
 # cerco id ut UO
 $query2="select id_uo 
 from anagrafe_percorsi.cons_mapping_uo cmu 
 where id_uo_sit = $1;";
-$result2 = pg_prepare($conn, "query2", $query2);
-$result2 = pg_execute($conn, "query2", array($ut_sit));  
+$result2 = pg_prepare($conn_sit, "query2", $query2);
+$result2 = pg_execute($conn_sit, "query2", array($ut_sit));  
 //echo $query1;    
 while($r2 = pg_fetch_assoc($result2)) { 
   $ut_uo=intval($r2['id_uo']);
 }
-echo $sq_ut."<br>";
-echo $ut_sit."<br>";
-echo $ut_uo."<br>";
-echo $data_att."<br>";
-echo $data_disatt."<br>";
 
-
-echo $insert_uo."<br>";
-
-#exit();
-
-
-# INSERT UO 
-$result_uo2 = oci_parse($oraconn, $insert_uo);
-# passo i parametri
-oci_bind_by_name($result_uo2, ':p1', $ut_uo);
-oci_bind_by_name($result_uo2, ':p2', $cod_percorso);
-oci_bind_by_name($result_uo2, ':p3', $turno);
-oci_bind_by_name($result_uo2, ':p4', $data_att);
-oci_bind_by_name($result_uo2, ':p5', $data_disatt);
-oci_bind_by_name($result_uo2, ':p6', $durata);
-oci_bind_by_name($result_uo2, ':p7', $automezzo);
-oci_bind_by_name($result_uo2, ':p8', $desc);
-oci_bind_by_name($result_uo2, ':p9', $id_servizio_uo);
-oci_bind_by_name($result_uo2, ':p10', $sq_ut);
-oci_bind_by_name($result_uo2, ':p11', $freq_uo);
-oci_bind_by_name($result_uo2, ':p12', $freq_sett);
-
-
-# commit
-$ris=oci_execute($result_uo2);
-
-if (!$ris) {
-  echo "<br>ci sono errori<br>";
-  $e = oci_error($result_uo2);  // For oci_execute errors pass the statement handle
-  echo $e;
-  echo $e['message'];
-  echo htmlentities($e['message']);
-  echo "\n<pre>\n";
-  echo htmlentities($e['sqltext']);
-  echo "\n%".($e['offset']+1)."s", "^";
-  echo  "\n</pre>\n";
+if($_POST['rim']){
+      $rim_sit = $_POST['rim'];
+      $sq_rim = $_POST['sq_rim'];
+      
+      #cerco id rimessa UO
+      $query1="select id_uo 
+      from anagrafe_percorsi.cons_mapping_uo cmu 
+      where id_uo_sit = $1;";
+      $result1 = pg_prepare($conn_sit, "query1", $query1);
+      $result1 = pg_execute($conn_sit, "query1", array($rim_sit));  
+      //echo $query1;    
+      while($r1 = pg_fetch_assoc($result1)) { 
+        $rim_uo=$r1['id_uo'];
+      }
 }
+###################### INIZIO INSERT UO #########################
 
-echo "<br> sono arrivato qua";
-oci_free_statement($result_uo2);
+if ($checkTest == 0){
+  echo "faccio insert su UO <br>";
 
+
+  $insert_uo = "INSERT INTO UNIOPE.ANAGR_SER_PER_UO 
+      (ID_SER_PER_UO,
+      ID_UO, ID_PERCORSO,
+      ID_TURNO, PROG_PERCORSO,
+      DTA_ATTIVAZIONE, DTA_DISATTIVAZIONE,
+      DURATA, FAM_MEZZO, 
+      DESCRIZIONE,
+      ID_SERVIZIO, 
+      ID_SQUADRA, 
+      FROM_SIT, 
+      FREQUENZA_NEW, 
+      FREQ_SETTIMANE)
+      VALUES(
+      (SELECT max(id_ser_per_uo)+1 FROM  UNIOPE.ANAGR_SER_PER_UO),
+      :p1, :p2,
+      :p3, 0, 
+      to_date(:p4,'DD/MM/YYYY'), to_date(:p5,'DD/MM/YYYY'),
+      :p6, :p7, 
+      :p8,
+      :p9, 
+      :p10,
+      1,
+      :p11,
+      :p12) returning ID_SER_PER_UO INTO :id_ser_uo";
+
+
+
+  if($_POST['rim']){
+      # insert UO 
+
+      
+      $result_uo1 = oci_parse($oraconn, $insert_uo);
+      # passo i parametri
+      oci_bind_by_name($result_uo1, ':p1', $rim_uo);
+      oci_bind_by_name($result_uo1, ':p2', $cod_percorso);
+      oci_bind_by_name($result_uo1, ':p3', $turno);
+      oci_bind_by_name($result_uo1, ':p4', $data_att);
+      oci_bind_by_name($result_uo1, ':p5', $data_disatt);
+      oci_bind_by_name($result_uo1, ':p6', $durata);
+      oci_bind_by_name($result_uo1, ':p7', $automezzo);
+      oci_bind_by_name($result_uo1, ':p8', $desc);
+      oci_bind_by_name($result_uo1, ':p9', $id_servizio_uo);
+      oci_bind_by_name($result_uo1, ':p10', $sq_rim);
+      oci_bind_by_name($result_uo1, ':p11', $freq_uo);
+      oci_bind_by_name($result_uo1, ':p12', $freq_sett);
+
+
+      oci_execute($result_uo1);
+
+      oci_free_statement($result_uo1);
+
+  }// fine if rimessa
+
+  
+  echo $sq_ut."<br>";
+  echo $ut_sit."<br>";
+  echo $ut_uo."<br>";
+  echo $data_att."<br>";
+  echo $data_disatt."<br>";
+
+
+  echo $insert_uo."<br>";
+
+  #exit();
+
+
+  # INSERT UO 
+  $result_uo2 = oci_parse($oraconn, $insert_uo);
+  # passo i parametri
+  oci_bind_by_name($result_uo2, ':p1', $ut_uo);
+  oci_bind_by_name($result_uo2, ':p2', $cod_percorso);
+  oci_bind_by_name($result_uo2, ':p3', $turno);
+  oci_bind_by_name($result_uo2, ':p4', $data_att);
+  oci_bind_by_name($result_uo2, ':p5', $data_disatt);
+  oci_bind_by_name($result_uo2, ':p6', $durata);
+  oci_bind_by_name($result_uo2, ':p7', $automezzo);
+  oci_bind_by_name($result_uo2, ':p8', $desc);
+  oci_bind_by_name($result_uo2, ':p9', $id_servizio_uo);
+  oci_bind_by_name($result_uo2, ':p10', $sq_ut);
+  oci_bind_by_name($result_uo2, ':p11', $freq_uo);
+  oci_bind_by_name($result_uo2, ':p12', $freq_sett);
+  oci_bind_by_name($result_uo2, ":id_ser_uo", $id_ser_uo, 32);
+
+
+  # commit
+  $ris=oci_execute($result_uo2);
+
+  if (!$ris) {
+    echo "<br>ci sono errori<br>";
+    $e = oci_error($result_uo2);  // For oci_execute errors pass the statement handle
+    echo $e;
+    echo $e['message'];
+    echo htmlentities($e['message']);
+    echo "\n<pre>\n";
+    echo htmlentities($e['sqltext']);
+    echo "\n%".($e['offset']+1)."s", "^";
+    echo  "\n</pre>\n";
+  }
+
+  echo "<br> sono arrivato qua";
+  oci_free_statement($result_uo2);
+
+  if(count($comuni_percent)>0){
+    $insert_uo_comuni = "INSERT INTO UNIOPE.ANAGR_SER_PER_UO_COMUNI 
+        (ID_SER_PER_UO, ID_COMUNE, PERCENTUALE) 
+        VALUES
+        (:p1, :p2, :p3)";
+
+    foreach($comuni_percent as $id_comune => $percentuale){
+      $result_uo_com = oci_parse($oraconn, $insert_uo_comuni);
+      # passo i parametri
+      oci_bind_by_name($result_uo_com, ':p1', $id_ser_uo);
+      oci_bind_by_name($result_uo_com, ':p2', $id_comune);
+      oci_bind_by_name($result_uo_com, ':p3', $percentuale);
+      $risuocom=oci_execute($result_uo_com);
+
+      if (!$risuocom) {
+        echo "<br>ci sono errori<br>";
+        $e = oci_error($result_uo_com);  // For oci_execute errors pass the statement handle
+        echo $e;
+        echo $e['message'];
+        echo htmlentities($e['message']);
+        echo "\n<pre>\n";
+        echo htmlentities($e['sqltext']);
+        echo "\n%".($e['offset']+1)."s", "^";
+        echo  "\n</pre>\n";
+      }
+
+      echo "<br> sono arrivato qua a inserire i comuni";
+      oci_free_statement($result_uo_com);
+    }
+  }// fine if comuni percentuali
+
+  if(count($destinazioni)>0){
+      $insert_uo_destinazioni = "INSERT INTO UNIOPE.ANAGR_SER_PER_UO_DEST 
+        (ID_SER_PER_UO, ID_DESTINAZIONE) 
+        VALUES
+        (:p1, :p2)";
+
+      foreach($destinazioni as $d){
+        $result_uo_dest = oci_parse($oraconn, $insert_uo_destinazioni);
+        # passo i parametri
+        oci_bind_by_name($result_uo_dest, ':p1', $id_ser_uo);
+        oci_bind_by_name($result_uo_dest, ':p2', $d);
+        $risuo=oci_execute($result_uo_dest);
+
+        if (!$risuo) {
+          echo "<br>ci sono errori<br>";
+          $e = oci_error($result_uo_dest);  // For oci_execute errors pass the statement handle
+          echo $e;
+          echo $e['message'];
+          echo htmlentities($e['message']);
+          echo "\n<pre>\n";
+          echo htmlentities($e['sqltext']);
+          echo "\n%".($e['offset']+1)."s", "^";
+          echo  "\n</pre>\n";
+        }
+
+        echo "<br> sono arrivato qua a inserire le destinazioni";
+        oci_free_statement($result_uo_dest);
+      }
+    }// fine if destinazioni
+}else{
+  echo "NON faccio insert su UO in quanto sono in TEST <br>";
+}
+#exit();
+###################### FINE INSERT UO #########################
 
 
 if ($id_servizio_sit!=0 and $check_SIT==1){
@@ -298,11 +391,11 @@ if ($id_servizio_sit!=0 and $check_SIT==1){
   $13,
   $14, 
   $15)";
-  $result_sit = pg_prepare($conn, "insert_sit", $insert_sit);
-  $result_sit = pg_execute($conn, "insert_sit", array($cod_percorso,$desc, $cdaog3, $turno, $id_uso, $_SESSION['username'], $data_att, $data_disatt_sit, $freq_sit, $stag, $sq_ut, $switchON, $switchOFF, $id_servizio_sit, $freq_sett)); 
-}
+  $result_sit = pg_prepare($conn_sit, "insert_sit", $insert_sit);
+  $result_sit = pg_execute($conn_sit, "insert_sit", array($cod_percorso,$desc, $cdaog3, $turno, $id_uso, $_SESSION['username'], $data_att, $data_disatt_sit, $freq_sit, $stag, $sq_ut, $switchON, $switchOFF, $id_servizio_sit, $freq_sett)); 
+}// fine insert sit
 
-echo  pg_last_error($conn);
+echo  pg_last_error($conn_sit);
 # vanno popolate anche le altre tabelle del SIT (anagrafe percorsi)
 echo "<br><br>Insert in elenco percorsi<br>";
 
@@ -327,13 +420,13 @@ $insert_elenco_percorsi= "INSERT INTO anagrafe_percorsi.elenco_percorsi (
 
 
 
-$result_elenco = pg_prepare($conn, "insert2", $insert_elenco_percorsi);
+$result_elenco = pg_prepare($conn_sit, "insert2", $insert_elenco_percorsi);
 echo "<br><br> ERRORI 1: <br>";
-echo  pg_last_error($conn);
+echo  pg_last_error($conn_sit);
 
-$result_elenco = pg_execute($conn, "insert2", array($cod_percorso, $desc, $tipo, $freq_sit, $turno, $durata, $data_att, $data_disatt, $freq_sett, $check_EKO, $stag, $switchON, $switchOFF, $check_refday)); 
+$result_elenco = pg_execute($conn_sit, "insert2", array($cod_percorso, $desc, $tipo, $freq_sit, $turno, $durata, $data_att, $data_disatt, $freq_sett, $check_EKO, $stag, $switchON, $switchOFF, $check_refday)); 
 echo "<br><br> ERRORI 2: <br>";
-echo  pg_last_error($conn);
+echo  pg_last_error($conn_sit);
 
 
 echo "<br><br>Insert in elenco percorsi OLD<br>";
@@ -350,10 +443,10 @@ $insert_elenco_percorsi_old = "INSERT INTO anagrafe_percorsi.elenco_percorsi_old
    1, to_timestamp($5,'DD/MM/YYYY'), to_timestamp($6,'DD/MM/YYYY')
    )";
 
-$result_elenco_old = pg_prepare($conn, "insert_elenco_percorsi_old", $insert_elenco_percorsi_old);
+$result_elenco_old = pg_prepare($conn_sit, "insert_elenco_percorsi_old", $insert_elenco_percorsi_old);
 echo "<br><br> ERRORI 1: <br>";
-echo  pg_last_error($conn);
-$result_elenco_old = pg_execute($conn, "insert_elenco_percorsi_old", array($cod_percorso,$desc, 
+echo  pg_last_error($conn_sit);
+$result_elenco_old = pg_execute($conn_sit, "insert_elenco_percorsi_old", array($cod_percorso,$desc, 
 $tipo, $freq_sit,
 $data_att, $data_disatt
 )); 
@@ -361,7 +454,7 @@ $data_att, $data_disatt
 
 echo  pg_result_error($result_elenco_old);
 echo "<br><br> ERRORI 2: <br>";
-echo  pg_last_error($conn);
+echo  pg_last_error($conn_sit);
 
 
 
@@ -375,7 +468,6 @@ if ($sq_ut==15){
   $vis='N';
   $rim_resp='N';
 }
-
 
 $insert_elenco_percorsi_ut = "INSERT INTO anagrafe_percorsi.percorsi_ut (
   cod_percorso, id_ut,
@@ -391,10 +483,10 @@ $insert_elenco_percorsi_ut = "INSERT INTO anagrafe_percorsi.percorsi_ut (
   to_timestamp($7,'DD/MM/YYYY'), to_timestamp($8,'DD/MM/YYYY'),
   $9)";
 
-$result_percorsi_ut = pg_prepare($conn, "insert_elenco_percorsi_ut", $insert_elenco_percorsi_ut);
+$result_percorsi_ut = pg_prepare($conn_sit, "insert_elenco_percorsi_ut", $insert_elenco_percorsi_ut);
 echo "<br><br> ERRORI 1: <br>";
-echo  pg_last_error($conn);
-$result_percorsi_ut = pg_execute($conn, "insert_elenco_percorsi_ut", 
+echo  pg_last_error($conn_sit);
+$result_percorsi_ut = pg_execute($conn_sit, "insert_elenco_percorsi_ut", 
 array($cod_percorso, $ut_uo, 
 $sq_ut,
 $vis,
@@ -405,7 +497,7 @@ $cdaog3
 
 echo  pg_result_error($result_percorsi_ut);
 
-
+echo "<br><br> CIAO<br>";
 
 if($_POST['rim']){
 
@@ -423,10 +515,10 @@ if($_POST['rim']){
     to_timestamp($7,'DD/MM/YYYY'), to_timestamp($8,'DD/MM/YYYY'),
     $9)";
   
-  $result_percorsi_rim = pg_prepare($conn, "insert_elenco_percorsi_rim", $insert_elenco_percorsi_rim);
+  $result_percorsi_rim = pg_prepare($conn_sit, "insert_elenco_percorsi_rim", $insert_elenco_percorsi_rim);
   echo "<br><br> ERRORI 1: <br>";
-echo  pg_last_error($conn);
-  $result_percorsi_rim = pg_execute($conn, "insert_elenco_percorsi_rim", 
+  echo pg_last_error($conn_sit);
+  $result_percorsi_rim = pg_execute($conn_sit, "insert_elenco_percorsi_rim", 
   array($cod_percorso, $rim_uo, 
   $sq_rim,
   $rim_resp,
@@ -436,6 +528,43 @@ echo  pg_last_error($conn);
   )); 
 
   echo  pg_result_error($result_percorsi_rim);
+}
+
+echo "<br><br>destinazioni: ".count($destinazioni)."<br>";
+if(count($destinazioni)>0){
+  echo "<br><br>Insert in percorsi_destinazione<br>";
+  $dest = explode(",",$destinazioni);
+  $insert_destinazioni = "INSERT INTO anagrafe_percorsi.percorsi_destinazione 
+    (cod_percorso, versione, id_destinazione) 
+    VALUES
+    ($1, 1, $2)";
+  foreach($dest as $d){
+    echo "<br><br> insert di destinazione: ".$d." <br>";
+    $result_destinazioni = pg_prepare($conn_sit, "insert_destinazioni_".$d, $insert_destinazioni);
+    echo "<br><br> ERRORI DESTINAZIONI PREP: <br>";
+    echo  pg_last_error($conn_sit);
+    $result_destinazioni = pg_execute($conn_sit, "insert_destinazioni_".$d, array($cod_percorso, $d)); 
+    echo "<br><br> ERRORI DESTINAZIONI EXEC: <br>";
+    echo  pg_last_error($conn_sit);
+    echo  pg_result_error($result_destinazioni);
+  }
+}
+
+if(count($comuni_percent)>0){
+  echo "<br><br>Insert in percorsi_comuni_percentuali<br>";
+  $insert_comuni_percentuali = "INSERT INTO anagrafe_percorsi.percorsi_comuni
+  (cod_percorso, versione, id_comune, competenza) 
+    VALUES
+    ($1, 1, $2, $3)";
+  foreach($comuni_percent as $id_comune => $percentuale){
+    $result_comuni_percentuali = pg_prepare($conn_sit, "insert_comuni_percentuali_".$id_comune, $insert_comuni_percentuali);
+    echo "<br><br> ERRORI COMUNI PERCENTUALI PREP: <br>";
+    echo  pg_last_error($conn_sit);
+    $result_comuni_percentuali = pg_execute($conn_sit, "insert_comuni_percentuali_".$id_comune, array($cod_percorso, $id_comune, $percentuale)); 
+    echo "<br><br> ERRORI COMUNI PERCENTUALI EXEC: <br>";
+    echo  pg_last_error($conn_sit);
+    echo  pg_result_error($result_comuni_percentuali);
+  }
 }
 
 #exit();

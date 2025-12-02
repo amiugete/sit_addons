@@ -17,7 +17,7 @@ if ($_SESSION['username']){
 }
 
 
-if(!$conn) {
+if(!$conn_sit) {
     die('Connessione fallita !<br />');
 } else {
 
@@ -56,7 +56,8 @@ if(!$conn) {
     end flg_disattivo,
     ep.stagionalita,
     ep.ddmm_switch_on, 
-    ep.ddmm_switch_off
+    ep.ddmm_switch_off,
+    string_agg(ad.destinazione, ' - ') as destinazione
     from anagrafe_percorsi.elenco_percorsi ep 
     left join elem.percorsi p on p.cod_percorso = ep.cod_percorso 
     	and p.id_categoria_uso in (3,6) 
@@ -70,6 +71,8 @@ if(!$conn) {
     left join topo.ut u on u.id_ut  = cmu.id_uo_sit 
     join elem.turni t on t.id_turno = pu.id_turno 
     left join etl.frequenze_ok fo on fo.cod_frequenza::int = ep.freq_testata 
+    left join anagrafe_percorsi.percorsi_destinazione pd on pd.cod_percorso = ep.cod_percorso
+    left join anagrafiche.destinazioni ad on ad.id_destinazione = pd.id_destinazione
     group by ep.cod_percorso, p.id_percorso, 
     ep.descrizione, af.descrizione, at2.descrizione, fo.descrizione_long, ep.versione_testata,  
     ep.data_inizio_validita, ep.data_fine_validita, ep.freq_settimane, ep.stagionalita, ep.ddmm_switch_on, ep.ddmm_switch_off
@@ -109,17 +112,17 @@ if(!$conn) {
 
     $queryF = "select * from (".$query.") b where 1=1 ".$filter ;
 
-    $result = pg_prepare($conn, "my_query", $queryF);
+    $result = pg_prepare($conn_sit, "my_query", $queryF);
     if (pg_last_error($conn_sovr)){
         echo pg_last_error($conn_sovr);
         exit;
     }
 
     if($_GET['ut']) {
-        $result = pg_execute($conn, "my_query", array($_GET['ut']));  
+        $result = pg_execute($conn_sit, "my_query", array($_GET['ut']));  
     } else {
-        $result = pg_execute($conn, "my_query", array($user));
-        //$result = pg_execute($conn, "my_query", array());
+        $result = pg_execute($conn_sit, "my_query", array($user));
+        //$result = pg_execute($conn_sit, "my_query", array());
     }
 
    
@@ -131,7 +134,7 @@ if(!$conn) {
     }
     
     
-    //pg_close($conn);
+    //pg_close($conn_sit);
 	#echo $rows ;
 	if (empty($rows)==FALSE){
 		//print $rows;
