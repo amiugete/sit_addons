@@ -163,7 +163,7 @@ oci_execute($result2);
     <div class="form-check" id="refDay" style=" display: none;">
   <input class="form-check-input" type="checkbox" value="-1" id="check_ref_day" name="check_ref_day" <?php if ($check_superedit == 0) {echo 'disabled';} ?>>
   <label class="form-check-label" for="check_ref_day">
-    Il turno selezionato è a cavallo di due giorni, spuntare la checkbox se l'ora di inizio si riferisce al giorno precedente
+    Il turno selezionato è notturno, spuntare la checkbox se l'ora di inizio si riferisce al giorno precedente (es. turno 00:00-03:00 iniziato il alle 00:00 del martedì ma il servizio fa riferito a lunedì).
   </label>
 </div>           
   </div>
