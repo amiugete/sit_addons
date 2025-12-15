@@ -288,7 +288,7 @@ require('freq_sett_component.php');
       console.log('iniora è '+ val.options[val.selectedIndex].getAttribute('iniora'))
       console.log('finora è '+ val.options[val.selectedIndex].getAttribute('finora'))
       console.log('il turno selezionato è '+ val.value)*/
-      if (iniOra > finOra){
+      if (finOra <= '06'){
         document.getElementById('refDay').style.display = "block";
         //console.log('il turno selezionato è a cavallo di due giorni');
       }else{

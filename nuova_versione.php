@@ -657,7 +657,7 @@ oci_free_statement($result_dd);
     function showReferenceDay(val){
       const iniOra = val.options[val.selectedIndex].getAttribute('iniora')
       const finOra = val.options[val.selectedIndex].getAttribute('finora')
-      if (iniOra > finOra){
+      if (finOra <= '06'){
         document.getElementById('refDay').style.display = "block";
       }else{
         document.getElementById('refDay').style.display = "none";
@@ -673,7 +673,7 @@ oci_free_statement($result_dd);
       const selTurno = document.getElementById('turno');
       const iniOra = selTurno.options[selTurno.selectedIndex].getAttribute('iniora')
       const finOra = selTurno.options[selTurno.selectedIndex].getAttribute('finora')
-      if (iniOra > finOra){
+      if (finOra <= '06'){
         document.getElementById('refDay').style.display = "block";
         console.log('il turno è notturno. Inizia alle '+ iniOra + ' e finisce alle '+ finOra)
       }else{
