@@ -117,7 +117,7 @@ if ((int)$id_role_SIT = 0) {
 <div class="row">
 <h3>Reportistica</h3>
 
-<div class="col-sm-4">
+<div class="col-sm-3">
     <div class="card">
       <div class="card-header">
         <h3><i class="fa-solid fa-chart-line"></i> Reportistica avanzata</h3>
@@ -125,15 +125,28 @@ if ((int)$id_role_SIT = 0) {
       <ul class="list-group list-group-flush">
         <a class="list-group-item" href="./consuntivazione_ekovision.php">Report consuntivazione Ekovision</a>
         <a class="list-group-item" href="./report_contenitori_bilaterali.php">Report contenitori bilaterali</a>
-        <a class="list-group-item" href="./report_indicatori_arera.php">Report indicatori ARERA (uso interno)</a>
+        <!--a class="list-group-item" href="./report_indicatori_arera.php">Report indicatori ARERA (uso interno)</a-->
       </ul>
     </div>
     </div>
 
-
+    <?php if ($check_edit == 1) { ?>
+      <div class="col-sm-3">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-certificate"></i> Reportistica ARERA</h3>
+          </div>
+          <ul class="list-group list-group-flush">
+            <a class="list-group-item" href="./report_indicatori_arera.php.php">Report raccolta e spazzamento</a>
+            <a class="list-group-item" href="./report_pin_arera.php">Report Pronto Intervento</a>
+          </ul>
+        </div>
+    </div>
+    
+  <?php } ?>
 
     <?php if ($check_coge == 't') { ?>
-      <div class="col-sm-4">
+      <div class="col-sm-3">
         <div class="card">
           <div class="card-header">
             <h3><i class="fa-solid fa-magnifying-glass-dollar"></i> Reportistica COGE</h3>
@@ -147,7 +160,7 @@ if ((int)$id_role_SIT = 0) {
   <?php } ?>
 
 
-<div class="col-sm-4">
+<div class="col-sm-3">
     <div class="card" >
       <div class="card-header">
         <h4><i class="fa-solid fa-tablet-screen-button"></i> Report dati in tempo reale da totem (Raccolta)</h4>
@@ -161,6 +174,20 @@ if ((int)$id_role_SIT = 0) {
       </ul>
     </div>
     </div>
+
+    <div class="col-sm-3">
+    <div class="card" >
+      <div class="card-header">
+        <h3><i class="fa-solid fa-scale-balanced"></i> Report pesi</h3>
+      </div>
+      <ul class="list-group list-group-flush">
+        <a class="list-group-item" href="./wip.php">Report dettaglio pesi per percorso </a>
+        <a class="list-group-item" href="./wip.php">Report dettaglio pesi per UT </a>
+        <!--a class="list-group-item" href="./report_fascia_oraria_esecuzione.php">Report fascia oraria consuntivazione</a-->
+      </ul>
+    </div>
+    </div>
+
     </div>
     <hr>
 <div class="row">

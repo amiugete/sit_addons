@@ -2,7 +2,7 @@
 session_start();
 //require_once('./check_utente.php');
 
-// Faccio il controllo su SIT
+// Faccio il controllo su SIT (sempre produzione non test)
 
 $query_role="SELECT  su.id_user, sr.id_role, sr.\"name\" as \"role\",
 coalesce(suse.esternalizzati, 'f') as esternalizzati, 
@@ -148,9 +148,16 @@ if ($check_modal!=1){
             <li><a class="dropdown-item" href="#">Reportistica avanzata &raquo; </a>
             <ul class="submenu dropdown-menu">
               <li><a class="dropdown-item" href="./consuntivazione_ekovision.php">Report consuntivazione Ekovision</a></li>
-              <li><a class="dropdown-item" href="./report_indicatori_arera.php">Report indicatori ARERA (uso interno)</a></li>
+              <!--li><a class="dropdown-item" href="./report_indicatori_arera.php">Report indicatori ARERA (uso interno)</a></li-->
               <li><a class="dropdown-item" href="./report_contenitori_bilaterali.php">Report contenitori bilaterali</a></li>
             </ul>
+            <?php if ($check_edit == 1) { ?>
+              <li><a class="dropdown-item" href="#">Reportistica ARERA &raquo; </a>
+            <ul class="submenu dropdown-menu">
+              <li><a class="dropdown-item" href="./report_indicatori_arera.php">Report raccolta e spazzamento</a></li>
+              <li><a class="dropdown-item" href="./report_pin_arera.php">Report Pronto Intervento</a></li>
+            </ul>
+            <?php } ?>
             <?php if ($check_coge == 't') { ?>
             <li><a class="dropdown-item" href="#">Reportistica COGE &raquo; </a>
             <ul class="submenu dropdown-menu">
@@ -164,7 +171,11 @@ if ($check_modal!=1){
           
         
               </ul>
-          
+              <li><a class="dropdown-item" href="#">Report pesi &raquo; </a>
+            <ul class="submenu dropdown-menu">
+              <li><a class="dropdown-item" href="./wip.php">Report dettaglio pesi per percorso</a></li>
+              <li><a class="dropdown-item" href="./wip.php">Report dettaglio pesi per UT</a></li>
+            </ul>
             </li>
             <!--a class="dropdown-item" href="http://amiupostgres/SIT/downloadTemplateImport()">Template per import</a-->
             </ul>
