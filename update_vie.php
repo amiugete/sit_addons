@@ -54,27 +54,71 @@ Da questa pagina è possibile visualizzare i dati sulle vie e in quanto Super Us
 
 <hr>
 <!--form id="update_elem" method="post" autocomplete="off" action="" onsubmit="return clickButton();"-->
-<?php if ($via ==''){?>
-<form id="view_via" method="GET">
-<div class="row g-3 align-items-center">
-  <div class="form-group col-md-6">
-    <label for="id_elem"> Id via </label> <font color="red">*</font>
-    <input type="text" name="id_via" id="id_via" class="form-control" required="">
-  </div>
-</div>
-<br>
-<div class="row g-3 align-items-center">
-  <?php if ($check_edit==1){?>
-    <div class="form-group col-md-6">
-      <button type="submit" class="btn btn-info">
-      <i class="fa-solid fa-arrows-rotate"></i> Procedi
-      </button>
+<div class="row">
+    <div class="col">
+    <form id="view_via" method="GET">
+      <div class="form-group col-md-6">
+        <label for="id_elem"> Id via </label> <font color="red">*</font>
+        <input type="text" name="id_via" id="id_via" class="form-control" required="">
+      </div>
+    <br>
+    <div class="row g-3 align-items-center">
+        <div class="form-group col-md-12">
+          <button type="submit" class="btn btn-info">
+          <i class="fa-solid fa-arrows-rotate"></i> Cerca via per id
+          </button>
+        </div>
     </div>
-  <?php }?>
-</div>
-</form>
-<?php } else  {?>
-<p><div id="results">
+      </form>
+    </div>
+      
+      <div class="col">
+      <form name="form_cerca_id" id="form_cerca_id" autocomplete="off">
+          <div class="form-group">
+            <label for="id_elem"> Cerca via </label> <font color="red">*</font>
+            <input type="text" name="nome_ilike" id="nome_ilike" maxlength="60" class="form-control" value="<?php echo $r["nome"];?>" required="">
+          </div>
+          <br>
+        <div class="form-group ">
+          <button type="submit" class="btn btn-info">
+          <i class="fa-solid fa-arrow-up-from-bracket"></i> Cerca
+          </button>
+        </div> 
+        </form>
+      
+
+        <p><div id="results_vie"></div></p>
+      </div>
+            <script> 
+            $(document).ready(function () {                 
+                $('#form_cerca_id').submit(function (event) { 
+                    event.preventDefault();                  
+                    console.log('Bottone form form_cerca_id cliccato e finito qua');
+                    var formData = $(this).serialize();
+                    console.log(formData);
+                    $.ajax({ 
+                        url: 'backoffice/cerca_id_via.php', 
+                        method: 'POST', 
+                        data: formData, 
+                        //processData: true, 
+                        //contentType: false, 
+                        success: function (response) {                       
+                            //alert('Your form has been sent successfully.'); 
+                            console.log(response);
+                            $("#results_vie").html(response).fadeIn("slow");
+                        }, 
+                        error: function (jqXHR, textStatus, errorThrown) {                        
+                            alert('Your form was not sent successfully.'); 
+                            console.error(errorThrown); 
+                        } 
+                    }); 
+                }); 
+            }); 
+        </script>
+      </div>
+
+<?php if ($via !=''){?>
+<hr><p><div id="results">
   <h3> 
     Id_via <?php echo $via;?>
   </h3>
