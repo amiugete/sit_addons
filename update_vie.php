@@ -200,6 +200,7 @@ Da questa pagina è possibile visualizzare i dati sulle vie e in quanto Super Us
     } else {
       echo '<i style="color:red" title="Aste non presenti su SIT" class="fa-regular fa-map"></i> Aste non presenti su SIT ';
     }
+    echo '<br><b>Data ultima modifica</b>: '. $r["data_ultima_modifica"];
   }
 
   ?>
