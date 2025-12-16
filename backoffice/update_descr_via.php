@@ -20,6 +20,27 @@ $res_ok=0;
 
 
 
+function accentToApostrophe(string $s): string
+{
+    // forza UTF-8
+    $s = mb_convert_encoding($s, 'UTF-8', 'auto');
+
+    $map = [
+        'à' => "a'", 'À' => "A'",
+        'è' => "e'", 'È' => "E'",
+        'é' => "e'", 'É' => "E'",
+        'ì' => "i'", 'Ì' => "I'",
+        'ò' => "o'", 'Ò' => "O'",
+        'ù' => "u'", 'Ù' => "U'",
+    ];
+
+    return strtr($s, $map);
+}
+
+
+
+
+
 $nome = trim($_POST['nome']);
 //echo $desc."<br>";
 
@@ -77,9 +98,9 @@ if ($_SESSION['test']!=1) {// update data_disattivazione = domani di quanto atti
 
     $result_uo0 = oci_parse($oraconn, $update_uo);
     # passo i parametri
-    oci_bind_by_name($result_uo0, ':c0', $nome1);
-    oci_bind_by_name($result_uo0, ':c1', $nome2);
-    oci_bind_by_name($result_uo0, ':c2', $nome_sit);
+    oci_bind_by_name($result_uo0, ':c0', accentToApostrophe($nome1));
+    oci_bind_by_name($result_uo0, ':c1', accentToApostrophe($nome2));
+    oci_bind_by_name($result_uo0, ':c2', accentToApostrophe($nome_sit));
     oci_bind_by_name($result_uo0, ':c3', $id_via);
 
     oci_execute($result_uo0);
