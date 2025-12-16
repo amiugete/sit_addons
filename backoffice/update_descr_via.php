@@ -73,14 +73,13 @@ if ($_SESSION['test']!=1) {// update data_disattivazione = domani di quanto atti
     SET NOME1 = :c0,
     NOME2 = :c1,
     NOME_STAMPA = :c2
-    WHERE CODICE_VIA = :c3 
-    AND DTA_DISATTIVAZIONE > SYSDATE";
+    WHERE CODICE_VIA = :c3";
 
     $result_uo0 = oci_parse($oraconn, $update_uo);
     # passo i parametri
     oci_bind_by_name($result_uo0, ':c0', $nome1);
     oci_bind_by_name($result_uo0, ':c1', $nome2);
-    oci_bind_by_name($result_uo0, ':c2', $nome_stampa);
+    oci_bind_by_name($result_uo0, ':c2', $nome_sit);
     oci_bind_by_name($result_uo0, ':c3', $id_via);
 
     oci_execute($result_uo0);
