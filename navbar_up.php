@@ -240,6 +240,7 @@ if ($check_modal!=1){
           </a>
           <div class="dropdown-menu" id="navbarDropdown2" aria-labelledby="navbarDropdown2">
             <a class="dropdown-item" href="./update_elementi.php">Forzare update elementi</a>
+            <a class="dropdown-item" href="./update_vie.php">Modifica nome vie</a>
             <!--a class="dropdown-item" href="./nuovo_percorso.php">Nuovo servizio</a-->
           </div>
         </li>

@@ -39,7 +39,7 @@ if ($_SESSION['test']==1) {
 <?php 
 require_once('./navbar_up.php');
 $name=dirname(__FILE__);
-if ((int)$id_role_SIT = 0) {
+if ($check_superedit==1) {
   redirect('no_permessi.php');
   //exit;
 }
