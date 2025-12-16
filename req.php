@@ -214,7 +214,7 @@ function the_page_title()
     $temp = explode('_', $each_page_name[$len_page_dir]);
     $len_temp=count($temp)-1;
     if ($temp[$len_temp]=='addons'){
-        $_SESSION['test']=0;
+        $_SESSION['test']=-1;
         $ambiente="";
     } else if($temp[$len_temp]=='test') {
         ?>
