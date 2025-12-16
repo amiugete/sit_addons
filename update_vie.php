@@ -75,8 +75,12 @@ Da questa pagina è possibile visualizzare i dati sulle vie e in quanto Super Us
       <div class="col">
       <form name="form_cerca_id" id="form_cerca_id" autocomplete="off">
           <div class="form-group">
+            <label for="id__comune"> Id comune (opzionale) </label> 
+            <input type="number" name="id_comune" id="id_comune" class="form-control" value="">
+          </div>
+          <div class="form-group">
             <label for="id_elem"> Cerca via </label> <font color="red">*</font>
-            <input type="text" name="nome_ilike" id="nome_ilike" maxlength="60" class="form-control" value="<?php echo $r["nome"];?>" required="">
+            <input type="text" name="nome_ilike" id="nome_ilike" maxlength="60" class="form-control" value="" required="">
           </div>
           <br>
         <div class="form-group ">

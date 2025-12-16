@@ -26,7 +26,8 @@ $res_ok=0;
 
 
 $nome = '%'.trim($_POST['nome_ilike']).'%';
-//echo $desc."<br>";
+
+$id_comune = intval($_POST['id_comune']) ?? 0;
 
 
 
@@ -38,16 +39,16 @@ $select_sit="select id_via, nome,
 	from topo.vie v 
 	left join topo.comuni c on c.id_comune = v.id_comune 
 	where v.nome ilike $1
-    order by 5";
+    ";
+
+if ($id_comune> 0){
+    $select_sit=$select_sit . ' and v.id_comune = $2 order by 6';
+} else {
+    $select_sit=$select_sit . ' order by 6'; 
+}
+
 
 $result_sit0 = pg_prepare($conn_sit, "select_sit", $select_sit);
-if (!pg_last_error($conn_sit)){
-    #$res_ok=0;
-} else {
-    pg_last_error($conn_si);
-    $res_ok= $res_ok+1;
-}
-$result_sit0 = pg_execute($conn_sit, "select_sit", array($nome)); 
 if (!pg_last_error($conn_sit)){
     #$res_ok=0;
 } else {
@@ -55,8 +56,23 @@ if (!pg_last_error($conn_sit)){
     $res_ok= $res_ok+1;
 }
 
-while($rs = pg_fetch_assoc($result_sit0)) {
-    echo $rs['descr_comune']. ' - <b>'. $rs['id_via'] . '</b> - ' .$rs['nome'].'<br>'; 
+if ($id_comune> 0){
+    $result_sit0 = pg_execute($conn_sit, "select_sit", array($nome, $id_comune)); 
+} else {
+    $result_sit0 = pg_execute($conn_sit, "select_sit", array($nome)); 
 }
-echo "OK";
+
+if (!pg_last_error($conn_sit)){
+    #$res_ok=0;
+} else {
+    pg_last_error($conn_sit);
+    $res_ok= $res_ok+1;
+}
+
+
+
+while($rs = pg_fetch_assoc($result_sit0)) {
+    echo $rs['id_comune'] .' - '. $rs['descr_comune']. ' - <b>'. $rs['id_via'] . '</b> - ' .$rs['nome'].'<br>'; 
+}
+
 ?>
