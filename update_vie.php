@@ -137,7 +137,7 @@ Da questa pagina è possibile visualizzare i dati sulle vie e in quanto Super Us
 	data_ultima_modifica, 
 	c.descr_comune, c.prefisso_utenti, 
 	case 
-		when (select 1 from elem.aste a where a.id_via = v.id_via)=1 then 1
+		when (select distinct 1 from elem.aste a where a.id_via = v.id_via)=1 then 1
 		else 0
 	end sit
 	from topo.vie v 
