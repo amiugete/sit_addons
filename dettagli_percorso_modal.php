@@ -132,7 +132,7 @@ while($r = pg_fetch_assoc($result)) {
     <form class="row row-cols-lg-auto g-3 align-items-center" name="form_nota" id="form_nota" autocomplete="off">
       <input type="hidden" id="id_percorso" name="id_percorso" value="<?php echo $cod_percorso;?>">
       <input type="hidden" id="old_vers" name="old_vers" value="<?php echo $versione;?>">
-      <div class="col-12">
+      <div class="col-12" style="width:50%;">
         <div class="input-group">
           <input type="text" name="nota_vers" id="nota_vers" class="form-control" value="<?php echo $r["nota_versione"];?>" required="">
         </div>
@@ -195,7 +195,7 @@ while($r = pg_fetch_assoc($result)) {
     $tomorrow = new DateTime('tomorrow');
     ?>
     
-    <div class="col-12">
+    <div class="col-12" >
     <div class="input-group">
   
           <input type="text" name="desc" id="desc" maxlength="60" class="form-control" value="<?php echo $desc;?>" required="">
