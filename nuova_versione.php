@@ -334,8 +334,15 @@ while($r3bis = pg_fetch_assoc($result3bis)) {
       <input type="number" placeholder="Mese" name="switchoffm" id="msof" max="12" class="form-control" value="<?php if($stag !=''){echo $switchOffm;}?>">
   </div>
   </div>
+  <hr>
+  <!--div class="row g-3 align-items-center"-->
+  <div class="form-group  col-md-12">
+    <label for="nota_vers">Nota versione:</label>
+    <input type="text" name="nota_vers" id="nota_vers" class="form-control" value="">
+  </div>
+  <!--/div-->
 <!--/div-->
-
+  <hr>
   <div class="form-check">
   <input class="form-check-input" type="checkbox" value="t" <?php 
   if ($eko =="t"){
