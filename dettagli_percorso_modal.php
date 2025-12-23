@@ -84,7 +84,8 @@ ep.stagionalita,
 ep.ddmm_switch_on, 
 ep.ddmm_switch_off,
 ep.giorno_competenza,
-at2.cdr
+at2.cdr,
+ep.nota_versione
 from anagrafe_percorsi.elenco_percorsi ep
 join elem.turni t on t.id_turno = ep.id_turno
 join etl.frequenze_ok fo on fo.cod_frequenza = ep.freq_testata
@@ -123,6 +124,61 @@ while($r = pg_fetch_assoc($result)) {
   if($r["flg_in_attivazione"]==1){
     $check_in_attivazione=1;
   }
+
+  if ($check_versione_successiva==0 and $check_superedit==1 and $check_in_attivazione==1 and $r["flg_disattivo"]==0 and $versione > 1){
+    ?>
+    <li><b> Note versione </b>
+    <!--form class="row row-cols-lg-auto g-3 align-items-center" name="form_cp" method="post" autocomplete="off" action="./backoffice/update_codice_percorso.php"-->
+    <form class="row row-cols-lg-auto g-3 align-items-center" name="form_nota" id="form_nota" autocomplete="off">
+      <input type="hidden" id="id_percorso" name="id_percorso" value="<?php echo $cod_percorso;?>">
+      <input type="hidden" id="old_vers" name="old_vers" value="<?php echo $versione;?>">
+      <div class="col-12">
+        <div class="input-group">
+          <input type="text" name="nota_vers" id="nota_vers" class="form-control" value="<?php echo $r["nota_versione"];?>" required="">
+        </div>
+      </div>
+      <br> 
+      <div class="col-12">
+        <button type="submit" class="btn btn-info">
+          <i class="fa-solid fa-arrow-up-from-bracket"></i> Salva
+        </button>
+      </div> 
+    </form>
+  <!-- lancio il form e scrivo il risultato -->
+    <p><div id="results_nota"></div></p>
+              <script> 
+              $(document).ready(function () {                 
+                  $('#form_nota').submit(function (event) { 
+                      event.preventDefault();                  
+                      console.log('Bottone form nota cliccato e finito qua');
+                      var formData = $(this).serialize();
+                      console.log(formData);
+                      $.ajax({ 
+                          url: 'backoffice/update_nota.php', 
+                          method: 'POST', 
+                          data: formData, 
+                          //processData: true, 
+                          //contentType: false, 
+                          success: function (response) {                       
+                              //alert('Your form has been sent successfully.'); 
+                              console.log(response);
+                              $("#results_nota").html(response).fadeIn("slow");
+                          }, 
+                          error: function (jqXHR, textStatus, errorThrown) {                        
+                              alert('Your form was not sent successfully.'); 
+                              console.error(errorThrown); 
+                          } 
+                      }); 
+                  }); 
+              }); 
+          </script>
+        <?php 
+    } else {
+      if ($r["nota_versione"]!='' and $versione > 1){
+          echo '<li class="mt-1"><b> Nota versione: </b>'.$r["nota_versione"].' ';
+      }
+      
+    }
   
   if($check_versione_successiva==0 and $check_edit==1 and $r["flg_disattivo"]==0){
     ?>
