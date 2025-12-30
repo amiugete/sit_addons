@@ -253,7 +253,7 @@ var comuni_filtro = {
                                       
                         }, 
                         error: function (jqXHR, textStatus, errorThrown) {                        
-                          $("#msg").text("❌ Errore AJAX: " + xhr.statusText);
+                          $("#msg").text("❌ Errore AJAX: " + jqXHR.statusText);
                           console.error(errorThrown); 
                         } 
                     }); 
