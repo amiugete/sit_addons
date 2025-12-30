@@ -284,11 +284,13 @@ require('freq_sett_component.php');
   function showReferenceDay(val){
       const iniOra = parseInt(val.options[val.selectedIndex].getAttribute('iniora'))
       const finOra = parseInt(val.options[val.selectedIndex].getAttribute('finora'))
-      /*console.log('text è '+ val.options[val.selectedIndex].text)
+      /*console.log('val è '+ val.value)
+      console.log('text è '+ val.options[val.selectedIndex].text)
       console.log('iniora è '+ val.options[val.selectedIndex].getAttribute('iniora'))
       console.log('finora è '+ val.options[val.selectedIndex].getAttribute('finora'))
       console.log('il turno selezionato è '+ val.value)*/
-      if (finOra <= '06'){
+      if (finOra <= '06' && val.value!= 997){
+        //escludo il turno 997 che è quello disponibile
         document.getElementById('refDay').style.display = "block";
         //console.log('il turno selezionato è a cavallo di due giorni');
       }else{
