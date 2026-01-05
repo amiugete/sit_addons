@@ -3,12 +3,18 @@ session_start();
 #require('../validate_input.php');
 
 
+
+
+
 if ($_SESSION['test']==1) {
+    echo "CONNESSIONE TEST<br>";
+    $checkTest=1;
     require_once ('../conn_test.php');
 } else {
+    echo "CONNESSIONE ESERCIZIO<br>";
+    $checkTest=0;
     require_once ('../conn.php');
 }
-
 
 $res_ok=0;
 
@@ -36,19 +42,25 @@ $vers = intval($_POST['old_vers']);
 
 
 
-// update data_disattivazione = domani di quanto attivo fino ad ora
+if ($checkTest==0){
+    
+    # mofifico anche su UNIOPE
 
-$update_uo= "UPDATE ANAGR_SER_PER_UO aspu
-SET DESCRIZIONE = :c0
-WHERE ID_PERCORSO = :c1 
-AND DTA_DISATTIVAZIONE > SYSDATE";
+    // update data_disattivazione = domani di quanto attivo fino ad ora
 
-$result_uo0 = oci_parse($oraconn, $update_uo);
-# passo i parametri
-oci_bind_by_name($result_uo0, ':c0', $desc);
-oci_bind_by_name($result_uo0, ':c1', $cod_percorso);
-oci_execute($result_uo0);
-oci_free_statement($result_uo0);
+    $update_uo= "UPDATE ANAGR_SER_PER_UO aspu
+    SET DESCRIZIONE = :c0
+    WHERE ID_PERCORSO = :c1 
+    AND DTA_DISATTIVAZIONE > SYSDATE";
+
+    $result_uo0 = oci_parse($oraconn, $update_uo);
+    # passo i parametri
+    oci_bind_by_name($result_uo0, ':c0', $desc);
+    oci_bind_by_name($result_uo0, ':c1', $cod_percorso);
+    oci_execute($result_uo0);
+    oci_free_statement($result_uo0);
+
+}
 
 
 
@@ -56,18 +68,18 @@ $update_sit0="UPDATE elem.percorsi p
 SET descrizione = $1
 where cod_percorso LIKE $2 and (data_dismissione is null or data_dismissione> now())";
 
-$result_usit0 = pg_prepare($conn, "update_sit0", $update_sit0);
-if (!pg_last_error($conn)){
+$result_usit0 = pg_prepare($conn_sit, "update_sit0", $update_sit0);
+if (!pg_last_error($conn_sit)){
     #$res_ok=0;
 } else {
-    pg_last_error($conn);
+    pg_last_error($conn_sit);
     $res_ok= $res_ok+1;
 }
-$result_usit0 = pg_execute($conn, "update_sit0", array($desc, $cod_percorso)); 
-if (!pg_last_error($conn)){
+$result_usit0 = pg_execute($conn_sit, "update_sit0", array($desc, $cod_percorso)); 
+if (!pg_last_error($conn_sit)){
     #$res_ok=0;
 } else {
-    pg_last_error($conn);
+    pg_last_error($conn_sit);
     $res_ok= $res_ok+1;
 }
 
@@ -85,22 +97,22 @@ $insert_sit0="INSERT INTO util.sys_history (\"type\", \"action\", description, d
  from elem.percorsi 
  WHERE cod_percorso LIKE $3 and (data_dismissione is null or data_dismissione> now())) ;";
 
-$result_isit0 = pg_prepare($conn, "insert_sit0", $insert_sit0);
-if (!pg_last_error($conn)){
+$result_isit0 = pg_prepare($conn_sit, "insert_sit0", $insert_sit0);
+if (!pg_last_error($conn_sit)){
     #$res_ok=0;
 } else {
-    pg_last_error($conn);
+    pg_last_error($conn_sit);
     $res_ok= $res_ok+1;
 }
-$result_isit0 = pg_execute($conn, "insert_sit0", array($descrizione_storico,  $_SESSION['username'], $cod_percorso)); 
-if (!pg_last_error($conn)){
+$result_isit0 = pg_execute($conn_sit, "insert_sit0", array($descrizione_storico,  $_SESSION['username'], $cod_percorso)); 
+if (!pg_last_error($conn_sit)){
     #$res_ok=0;
 } else {
-    //echo pg_last_error($conn);
+    //echo pg_last_error($conn_sit);
     echo $descrizione_storico;
     echo $cod_percorso;
     echo $_SESSION['username'];
-    echo "<br><br>Insert util.sys_history<br>". pg_last_error($conn);
+    echo "<br><br>Insert util.sys_history<br>". pg_last_error($conn_sit);
     $res_ok= $res_ok+1;
 }
 
@@ -111,19 +123,19 @@ $update_sit1="UPDATE anagrafe_percorsi.elenco_percorsi ep
 SET descrizione = $1, data_ultima_modifica=now() 
 where cod_percorso LIKE $2 and data_fine_validita > now()";
 
-$result_usit1 = pg_prepare($conn, "update_sit1", $update_sit1);
-if (!pg_last_error($conn)){
+$result_usit1 = pg_prepare($conn_sit, "update_sit1", $update_sit1);
+if (!pg_last_error($conn_sit)){
     #$res_ok=0;
 } else {
-    echo "<br><br>Update anagrafe_percorsi.elenco_percorsi<br>". pg_last_error($conn);
+    echo "<br><br>Update anagrafe_percorsi.elenco_percorsi<br>". pg_last_error($conn_sit);
     $res_ok= $res_ok+1;
 }
-$result_usit1 = pg_execute($conn, "update_sit1", array($desc, $cod_percorso)); 
+$result_usit1 = pg_execute($conn_sit, "update_sit1", array($desc, $cod_percorso)); 
 
-if (!pg_last_error($conn)){
+if (!pg_last_error($conn_sit)){
     #$res_ok=0;
 } else {
-    echo "<br><br>Update anagrafe_percorsi.elenco_percorsi<br>". pg_last_error($conn);
+    echo "<br><br>Update anagrafe_percorsi.elenco_percorsi<br>". pg_last_error($conn_sit);
     $res_ok= $res_ok+1;
 }
 
@@ -138,42 +150,65 @@ SET descrizione = $1
 where cod_percorso LIKE $2 and data_fine_validita > now()";
 
 
-$result_usit2 = pg_prepare($conn, "update_sit2", $update_sit2);
-if (!pg_last_error($conn)){
+$result_usit2 = pg_prepare($conn_sit, "update_sit2", $update_sit2);
+if (!pg_last_error($conn_sit)){
     #$res_ok=0;
 } else {
-    echo "<br><br>Update anagrafe_percorsi.elenco_percorsi_old<br>". pg_last_error($conn);
+    echo "<br><br>Update anagrafe_percorsi.elenco_percorsi_old<br>". pg_last_error($conn_sit);
     $res_ok= $res_ok+1;
 }
 
 
 
-$result_usit2 = pg_execute($conn, "update_sit2", array($desc, $cod_percorso)); 
-if (!pg_last_error($conn)){
+$result_usit2 = pg_execute($conn_sit, "update_sit2", array($desc, $cod_percorso)); 
+if (!pg_last_error($conn_sit)){
     #$res_ok=0;
 } else {
-    echo "<br><br>Update anagrafe_percorsi.elenco_percorsi_old<br>". pg_last_error($conn);
+    echo "<br><br>Update anagrafe_percorsi.elenco_percorsi_old<br>". pg_last_error($conn_sit);
     $res_ok= $res_ok+1;
 }
 
+
+// Inserisco in una cartella di log per poi far girare script di sincronizzazione python 
+
+$insert_etl_log="INSERT INTO etl.update_descrizioni (cod_percorso, versione, new_desc) VALUES
+($1, $2, $3);";
+
+$result_usit2 = pg_prepare($conn_sit, "insert_etl_log", $insert_etl_log);
+if (!pg_last_error($conn_sit)){
+    #$res_ok=0;
+} else {
+    echo "<br><br>Update anagrafe_percorsi.elenco_percorsi_old<br>". pg_last_error($conn_sit);
+    $res_ok= $res_ok+1;
+}
+
+
+
+$result_usit2 = pg_execute($conn_sit, "insert_etl_log", array($cod_percorso, $vers, $desc)); 
+if (!pg_last_error($conn_sit)){
+    #$res_ok=0;
+} else {
+    echo "<br><br>Update anagrafe_percorsi.elenco_percorsi_old<br>". pg_last_error($conn_sit);
+    $res_ok= $res_ok+1;
+}
 
 
 /*$update_sit3="UPDATE anagrafe_percorsi.percorsi_ut epo
 SET descrizione = $1
 where cod_percorso LIKE $2 and data_disattivazione > now()";
 
-$result_usit3 = pg_prepare($conn, "update_sit3", $update_sit3);
-if (!pg_last_error($conn)){
+$result_usit3 = pg_prepare($conn_sit, "update_sit3", $update_sit3);
+if (!pg_last_error($conn_sit)){
     #$res_ok=0;
 } else {
-    pg_last_error($conn);
+    pg_last_error($conn_sit);
     $res_ok= $res_ok+1;
 }
-$result_usit3 = pg_execute($conn, "update_sit3", array($desc, $cod_percorso)); 
-if (!pg_last_error($conn)){
+$result_usit3 = pg_execute($conn_sit, "update_sit3", array($desc, $cod_percorso)); 
+if (!pg_last_error($conn_sit)){
     #$res_ok=0;
 } else {
-    pg_last_error($conn);
+    pg_last_error($conn_sit);
     $res_ok= $res_ok+1;
 }
 
