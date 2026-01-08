@@ -424,12 +424,12 @@ $query_rimessa=$query0 ." and rimessa = 'S' and responsabile = 'N'";
 $result1 = pg_prepare($conn_sit, "query_rimessa", $query_rimessa);
 
 if (pg_last_error($conn_sit)){
-  echo pg_last_error($conn_sovr);
+  echo pg_last_error($conn_sit);
 }
 
 $result1 = pg_execute($conn_sit, "query_rimessa", array($cod_percorso, $data_disattivazione_testata));
 if (pg_last_error($conn_sit)){
-  echo pg_last_error($conn_sovr);
+  echo pg_last_error($conn_sit);
 }
 /*echo $cod_percorso;
 echo '<br>';

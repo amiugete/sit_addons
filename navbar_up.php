@@ -2,7 +2,143 @@
 session_start();
 //require_once('./check_utente.php');
 
+if ($_SESSION['test']==1) {
+  //echo 'Ambiente di TEST attivo';
+require_once ('./conn_test.php');
+} else {
+  //echo 'Ambiente di PRODUZIONE attivo';
+  require_once ('./conn.php');
+}
+
 // Faccio il controllo su SIT (sempre produzione non test)
+
+//echo "<script type='text/javascript'>alert('$check_SIT');</script>";
+$check_user_ns="SELECT * from util_ns.sys_users where \"name\" ilike $1;";
+$result_ns = pg_prepare($conn_sit, "my_query_navbar_ns", $check_user_ns);
+$result_ns = pg_execute($conn_sit, "my_query_navbar_ns", array($_SESSION['username']));
+if (pg_num_rows($result_ns) > 0) {
+    // L'utente esiste già in util_ns, faccio update last_access
+    $update_ns = "UPDATE util_ns.sys_users SET last_access = NOW()
+        WHERE \"name\" ilike $1;";
+    pg_prepare($conn_sit, "update_user_ns", $update_ns);
+    pg_execute($conn_sit, "update_user_ns", array($_SESSION['username']));
+}else{
+  // L'utente non esiste in util_ns, verifico se invece esiste in util
+  $check_user="SELECT * from util.sys_users where \"name\" ilike $1;";
+  $result_u = pg_prepare($conn_sit, "my_query_u", $check_user);
+  $result_u = pg_execute($conn_sit, "my_query_u", array($_SESSION['username']));
+  if (pg_num_rows($result_u) > 0) {
+    while($ru = pg_fetch_assoc($result_u)) {
+      $domain_name=$ru['domain_name'];
+      $user_name=$ru['name'];
+      $id_role_SIT=$ru['id_role'];
+      $id_user_SIT=$ru['id_user'];
+      $email=$ru['email'];
+    }
+    // L'utente non esiste in util_ns ma in util si, faccio insert con dati di util 
+    $insert_user_ns = "INSERT INTO util_ns.sys_users (domain_name, \"name\", id_role, last_access, id_user, email)
+      VALUES($1, $2, $3, NOW(), $4, $5);";
+    $result_user_ns = pg_prepare($conn_sit, "insert_user_ns", $insert_user_ns);
+    if (pg_last_error($conn_sit)){
+      echo pg_last_error($conn_sit);
+    }
+    $result_user_ns = pg_execute($conn_sit, "insert_user_ns", array($domain_name, $user_name, $id_role_SIT, $id_user_SIT, $email));
+    if (pg_last_error($conn_sit)){
+      echo pg_last_error($conn_sit);
+    }
+
+    $insert_comune_ns = "INSERT INTO util_ns.sys_users_comuni (id_user, id_comune) VALUES($1, -1);";
+    $result_comune_ns = pg_prepare($conn_sit, "insert_comune_ns", $insert_comune_ns);
+    if (pg_last_error($conn_sit)){
+      echo pg_last_error($conn_sit);
+    }
+    $result_comune_ns = pg_execute($conn_sit, "insert_comune_ns", array($id_user_SIT));
+    if (pg_last_error($conn_sit)){
+      echo pg_last_error($conn_sit);
+    }
+
+    $insert_ut_ns = "INSERT INTO util_ns.sys_users_ut (id_user, id_ut) VALUES($1, -1);";
+    $result_ut_ns = pg_prepare($conn_sit, "insert_ut_ns", $insert_ut_ns);
+    if (pg_last_error($conn_sit)){
+      echo pg_last_error($conn_sit);
+    }
+    $result_ut_ns = pg_execute($conn_sit, "insert_ut_ns", array($id_user_SIT));
+    if (pg_last_error($conn_sit)){
+      echo pg_last_error($conn_sit);
+    }
+  }else{
+    // L'utente non esiste nè in util_ns nè in util, faccio insert in entrambi
+    // Insert in util_ns
+    $insert_user_ns = "INSERT INTO util_ns.sys_users (domain_name, \"name\", id_role, last_access, id_user, email)
+      VALUES('DSI', $1, 0, NOW(), (select max(id_user)+1 from util_ns.sys_users), '')
+      RETURNING id_user;";
+    $result_user_ns = pg_prepare($conn_sit, "insert_user_ns", $insert_user_ns);
+    if (pg_last_error($conn_sit)){
+      echo pg_last_error($conn_sit);
+    }
+    $result_user_ns = pg_execute($conn_sit, "insert_user_ns", array($_SESSION['username']));
+    if (pg_last_error($conn_sit)){
+      echo pg_last_error($conn_sit);
+    }
+    $added_user = pg_fetch_assoc($result_user_ns);
+    $id_added_user = $added_user['id_user'];
+
+    $insert_comune_ns = "INSERT INTO util_ns.sys_users_comuni (id_user, id_comune) VALUES($1, -1);";
+    $result_comune_ns = pg_prepare($conn_sit, "insert_comune_ns", $insert_comune_ns);
+    if (pg_last_error($conn_sit)){
+      echo pg_last_error($conn_sit);
+    }
+    $result_comune_ns = pg_execute($conn_sit, "insert_comune_ns", array($id_added_user));
+    if (pg_last_error($conn_sit)){
+      echo pg_last_error($conn_sit);
+    }
+
+    $insert_ut_ns = "INSERT INTO util_ns.sys_users_ut (id_user, id_ut) VALUES($1, -1);";
+    $result_ut_ns = pg_prepare($conn_sit, "insert_ut_ns", $insert_ut_ns);
+    if (pg_last_error($conn_sit)){
+      echo pg_last_error($conn_sit);
+    }
+    $result_ut_ns = pg_execute($conn_sit, "insert_ut_ns", array($id_added_user));
+    if (pg_last_error($conn_sit)){
+      echo pg_last_error($conn_sit);
+    }
+
+    // Insert in util
+    $insert_user_util = "INSERT INTO util.sys_users (domain_name, \"name\", id_role, last_access, id_user, email)
+      VALUES('DSI', $1, 0, NOW(), (select max(id_user)+1 from util.sys_users), '')
+      RETURNING id_user;";
+    $result_user_util = pg_prepare($conn_sit, "insert_user_util", $insert_user_util);
+    if (pg_last_error($conn_sit)){
+      echo pg_last_error($conn_sit);
+    }
+    $result_user_util = pg_execute($conn_sit, "insert_user_util", array($_SESSION['username']));
+    if (pg_last_error($conn_sit)){
+      echo pg_last_error($conn_sit);
+    }
+    $added_user_util = pg_fetch_assoc($result_user_util);
+    $id_added_user_util = $added_user_util['id_user'];
+
+    $insert_comune_util = "INSERT INTO util.sys_users_comuni (id_user, id_comune) VALUES($1, -1);";
+    $result_comune_util = pg_prepare($conn_sit, "insert_comune_util", $insert_comune_util);
+    if (pg_last_error($conn_sit)){
+      echo pg_last_error($conn_sit);
+    }
+    $result_comune_util = pg_execute($conn_sit, "insert_comune_util", array($id_added_user_util));
+    if (pg_last_error($conn_sit)){
+      echo pg_last_error($conn_sit);
+    }
+
+    $insert_ut_util = "INSERT INTO util.sys_users_ut (id_user, id_ut) VALUES($1, -1);";
+    $result_ut_util = pg_prepare($conn_sit, "insert_ut_util", $insert_ut_util);
+    if (pg_last_error($conn_sit)){
+      echo pg_last_error($conn_sit);
+    }
+    $result_ut_util = pg_execute($conn_sit, "insert_ut_util", array($id_added_user_util));
+    if (pg_last_error($conn_sit)){
+      echo pg_last_error($conn_sit);
+    }
+  }
+}
 
 $query_role="SELECT  su.id_user, sr.id_role, sr.\"name\" as \"role\",
 coalesce(suse.esternalizzati, 'f') as esternalizzati, 
@@ -12,10 +148,10 @@ coalesce(suse.coge, 'f') as coge,
 coalesce(suse.utenze, 'f') as utenze
 FROM util.sys_users su
 join util.sys_roles sr on sr.id_role = su.id_role  
-left join etl.sys_users_addons suse on suse.id_user = su.id_user 
+left join util_ns.sys_users_addons suse on suse.id_user = su.id_user 
 where su.\"name\" ilike $1 and su.id_user>0;";
-$result_n = pg_prepare($conn, "my_query_navbar1", $query_role);
-$result_n = pg_execute($conn, "my_query_navbar1", array($_SESSION['username']));
+$result_n = pg_prepare($conn_sit, "my_query_navbar1", $query_role);
+$result_n = pg_execute($conn_sit, "my_query_navbar1", array($_SESSION['username']));
 
 $check_SIT=0;
 while($r = pg_fetch_assoc($result_n)) {
@@ -30,8 +166,6 @@ while($r = pg_fetch_assoc($result_n)) {
   $check_utenze=$r['utenze'];
   $check_SIT=1;
 }
-//echo "<script type='text/javascript'>alert('$check_SIT');</script>";
-
 
 if ($check_SIT==0){
   if ($check_modal!=1){
@@ -325,8 +459,8 @@ if ($check_modal!=1){
           group by su.\"name\", su.email, sr.name, sr.description";
 
           //echo $query_utente;
-          $result1 = pg_prepare($conn, "my_queryUser", $query_utente);
-          $result1 = pg_execute($conn, "my_queryUser", array($_SESSION['username']));
+          $result1 = pg_prepare($conn_sit, "my_queryUser", $query_utente);
+          $result1 = pg_execute($conn_sit, "my_queryUser", array($_SESSION['username']));
 
 
           while($r1 = pg_fetch_assoc($result1)) {
@@ -382,7 +516,11 @@ if ($check_modal!=1){
             </ul>
           </ul>
         <hr>
-          In caso di modifiche fare scrivere dal proprio responsabile a assterritorio@amiu.genova.it    
+          In caso di modifiche fare scrivere dal proprio responsabile a assterritorio@amiu.genova.it 
+          <hr>
+          <a class="dropdown-item" href="./logout.php">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </a>  
         </div>
 
 

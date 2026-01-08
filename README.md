@@ -77,12 +77,13 @@ Per fare update di versione è sufficiente un `composer update`
 
 Ci sono alcune pagine che sono visibili solo a determinati utenti del SIT. 
 
-Il tutto è controllato dalla tabella etl.sys_users_addons dove per ora (aprile 2025) ci sono 4 gruppi:
+Il tutto è controllato dalla tabella util_ns.sys_users_addons dove per ora (gennaio 2026) ci sono 5 gruppi:
 
 - esternalizzati
 - sovrariempimenti
 - sovrariempimenti_admin
 - coge: controllo gestione
+- utenze: estrazione utenze per via ed area
 
 
 
