@@ -4,8 +4,12 @@ session_start();
 
 
 if ($_SESSION['test']==1) {
+    //echo "CONNESSIONE TEST<br>";
+    $checkTest=1;
     require_once ('../conn_test.php');
 } else {
+    //echo "CONNESSIONE ESERCIZIO<br>";
+    $checkTest=0;
     require_once ('../conn.php');
 }
 
@@ -45,21 +49,20 @@ $vers = intval($_POST['old_vers']);
 //echo "versione: ".$vers."<br>";
 
 //exit();
+if ($checkTest == 0){
+    // update turno su UO
+    $update_uo= "UPDATE ANAGR_SER_PER_UO aspu
+    SET ID_TURNO = :c0
+    WHERE ID_PERCORSO = :c1 
+    AND DTA_ATTIVAZIONE > SYSDATE or DTA_ATTIVAZIONE is null ";
 
-// update turno su UO
-$update_uo= "UPDATE ANAGR_SER_PER_UO aspu
-SET ID_TURNO = :c0
-WHERE ID_PERCORSO = :c1 
-AND DTA_ATTIVAZIONE > SYSDATE or DTA_ATTIVAZIONE is null ";
-
-$result_uo0 = oci_parse($oraconn, $update_uo);
-# passo i parametri
-oci_bind_by_name($result_uo0, ':c0', $turno);
-oci_bind_by_name($result_uo0, ':c1', $cod_percorso);
-oci_execute($result_uo0);
-oci_free_statement($result_uo0);
-
-
+    $result_uo0 = oci_parse($oraconn, $update_uo);
+    # passo i parametri
+    oci_bind_by_name($result_uo0, ':c0', $turno);
+    oci_bind_by_name($result_uo0, ':c1', $cod_percorso);
+    oci_execute($result_uo0);
+    oci_free_statement($result_uo0);
+}
 
 
 // update turno su SIT elem.percorsi

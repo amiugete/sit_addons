@@ -40,22 +40,22 @@ $insert_sit0="INSERT INTO util.sys_history (\"type\", \"action\", description, d
  from elem.percorsi 
  WHERE cod_percorso LIKE $3 and (data_dismissione is null or data_dismissione> now())) ;";
 
-$result_isit0 = pg_prepare($conn, "insert_sit0", $insert_sit0);
-if (!pg_last_error($conn)){
+$result_isit0 = pg_prepare($conn_sit, "insert_sit0", $insert_sit0);
+if (!pg_last_error($conn_sit)){
     #$res_ok=0;
 } else {
-    pg_last_error($conn);
+    pg_last_error($conn_sit);
     $res_ok= $res_ok+1;
 }
-$result_isit0 = pg_execute($conn, "insert_sit0", array($nota_storico,  $_SESSION['username'], $cod_percorso)); 
-if (!pg_last_error($conn)){
+$result_isit0 = pg_execute($conn_sit, "insert_sit0", array($nota_storico,  $_SESSION['username'], $cod_percorso)); 
+if (!pg_last_error($conn_sit)){
     #$res_ok=0;
 } else {
-    //echo pg_last_error($conn);
+    //echo pg_last_error($conn_sit);
     echo $nota_storico;
     echo $cod_percorso;
     echo $_SESSION['username'];
-    echo "<br><br>Insert util.sys_history<br>". pg_last_error($conn);
+    echo "<br><br>Insert util.sys_history<br>". pg_last_error($conn_sit);
     $res_ok= $res_ok+1;
 }
 
@@ -66,19 +66,19 @@ $update_sit1="UPDATE anagrafe_percorsi.elenco_percorsi ep
 SET nota_versione = $1, data_ultima_modifica=now() 
 where cod_percorso LIKE $2 and data_fine_validita > now() and versione_testata = $3";
 
-$result_usit1 = pg_prepare($conn, "update_sit1", $update_sit1);
-if (!pg_last_error($conn)){
+$result_usit1 = pg_prepare($conn_sit, "update_sit1", $update_sit1);
+if (!pg_last_error($conn_sit)){
     #$res_ok=0;
 } else {
-    echo "<br><br>Update anagrafe_percorsi.elenco_percorsi<br>". pg_last_error($conn);
+    echo "<br><br>Update anagrafe_percorsi.elenco_percorsi<br>". pg_last_error($conn_sit);
     $res_ok= $res_ok+1;
 }
-$result_usit1 = pg_execute($conn, "update_sit1", array($nota, $cod_percorso, $vers)); 
+$result_usit1 = pg_execute($conn_sit, "update_sit1", array($nota, $cod_percorso, $vers)); 
 
-if (!pg_last_error($conn)){
+if (!pg_last_error($conn_sit)){
     #$res_ok=0;
 } else {
-    echo "<br><br>Update anagrafe_percorsi.elenco_percorsi<br>". pg_last_error($conn);
+    echo "<br><br>Update anagrafe_percorsi.elenco_percorsi<br>". pg_last_error($conn_sit);
     $res_ok= $res_ok+1;
 }
 
