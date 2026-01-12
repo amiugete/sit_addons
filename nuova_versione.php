@@ -365,7 +365,7 @@ while($r3bis = pg_fetch_assoc($result3bis)) {
       <?php if (!$_POST["gc"]){?>
         <option name="ut" value="">Nessun GC selezionato</option>
         <?php
-        $query11="SELECT u.id_ut, tu.descrizione  from anagrafe_percorsi.percorsi_ut u
+        $query11="SELECT tu.id_ut, tu.descrizione  from anagrafe_percorsi.percorsi_ut u
           left join anagrafe_percorsi.cons_mapping_uo cmu on u.id_ut = cmu.id_uo 
           left join topo.ut tu on cmu.id_uo_sit  = tu.id_ut  
           where cod_percorso = $1;";

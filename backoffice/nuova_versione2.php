@@ -253,6 +253,9 @@ foreach($_POST['percentuali'] as $key => $value){
   echo "Comune: ".$key." - Percentuale: ".$value."<br>";
 }
 
+echo "UT SELEZIONATA COM GC: ".$_POST['ut']."<br>";
+echo "SQUADRA UT SELEZIONATA COM GC: ".$_POST['sq_ut']."<br>";
+
 
 #exit();
 
