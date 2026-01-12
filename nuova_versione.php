@@ -399,6 +399,17 @@ while($r3bis = pg_fetch_assoc($result3bis)) {
       <?php if (!$_POST["gc"]){?>
         <select name="sq_ut" id="sq_ut" class="selectpicker show-tick form-control" data-size="5"  data-live-search="false" required="">
           <option name="ut" value="">Nessun GC selezionato</option>
+          <?php            
+        $query0_1="select id_squadra, 
+        concat(cod_squadra, ' - ', desc_squadra) as descr 
+        from elem.squadre s order by desc_squadra ;";
+        $result0_1 = pg_prepare($conn_sit, "query0_1", $query0_1); 
+        $result0_1 = pg_execute($conn_sit, "query0_1", array()); 
+        while($r0_1 = pg_fetch_assoc($result0_1)) { 
+            //$valore=  $r2['id_via']. ";".$r2['desvia'];            
+      ?>
+        <option name="sq_ut" value="<?php echo $r0_1['id_squadra']?>" ><?php echo $r0_1['descr'] ?></option>
+      <?php } ?>
         </select>
       <?php } else{?>
         <select name="sq_ut" id="sq_ut" class="selectpicker show-tick form-control" data-size="5"  data-live-search="true" required="">
