@@ -364,8 +364,21 @@ while($r3bis = pg_fetch_assoc($result3bis)) {
     <select name="ut" id="ut" class="selectpicker show-tick form-control" data-live-search="false" data-size="5" required="" >
       <?php if (!$_POST["gc"]){?>
         <option name="ut" value="">Nessun GC selezionato</option>
+        <?php
+        $query11="SELECT u.id_ut, tu.descrizione  from anagrafe_percorsi.percorsi_ut u
+          left join anagrafe_percorsi.cons_mapping_uo cmu on u.id_ut = cmu.id_uo 
+          left join topo.ut tu on cmu.id_uo_sit  = tu.id_ut  
+          where cod_percorso = $1;";
+        $result11 = pg_prepare($conn_sit, "query11", $query11);
+        $result11 = pg_execute($conn_sit, "query11", array($codice_percorso));
+        //echo $query1;    
+        while($r11 = pg_fetch_assoc($result11)) {
+            $id_ut_sel = $r11['id_ut'];
+            //$valore=  $r2['id_via']. ";".$r2['desvia'];            
+      ?>
+      <option name="ut" value="<?php echo $r11['id_ut']?>" ><?php echo $r11['descrizione'] ?></option>
       <?php }
-      else{          
+      }else{          
         $query1="SELECT id_ut, descrizione from topo.ut 
         where id_ut = $1;";
         $result1 = pg_prepare($conn_sit, "query1", $query1);
