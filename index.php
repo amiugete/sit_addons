@@ -130,20 +130,24 @@ if ((int)$id_role_SIT = 0) {
     </div>
     </div>
 
-    <?php if ($check_edit == 1) { ?>
+    
       <div class="col-sm-3">
         <div class="card">
           <div class="card-header">
             <h3><i class="fa-solid fa-certificate"></i> Reportistica ARERA</h3>
           </div>
           <ul class="list-group list-group-flush">
+            <a class="list-group-item" href="https://tamer.amiu.genova.it/xtreg" target="_blank">Accesso a TREG 
+              <small>(link esterno per utenti autorizzati)</small></a>
+          <?php if ($check_edit == 1) { ?>
             <a class="list-group-item" href="./report_indicatori_arera.php.php">Report raccolta e spazzamento</a>
             <a class="list-group-item" href="./report_pin_arera.php">Report Pronto Intervento</a>
+          <?php } ?>
           </ul>
         </div>
     </div>
     
-  <?php } ?>
+
 
     <?php if ($check_coge == 't') { ?>
       <div class="col-sm-3">

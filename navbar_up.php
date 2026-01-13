@@ -285,13 +285,15 @@ if ($check_modal!=1){
               <!--li><a class="dropdown-item" href="./report_indicatori_arera.php">Report indicatori ARERA (uso interno)</a></li-->
               <li><a class="dropdown-item" href="./report_contenitori_bilaterali.php">Report contenitori bilaterali</a></li>
             </ul>
-            <?php if ($check_edit == 1) { ?>
+            
               <li><a class="dropdown-item" href="#">Reportistica ARERA &raquo; </a>
             <ul class="submenu dropdown-menu">
-              <li><a class="dropdown-item" href="./report_indicatori_arera.php">Report raccolta e spazzamento</a></li>
-              <li><a class="dropdown-item" href="./report_pin_arera.php">Report Pronto Intervento</a></li>
+              <li><a class="dropdown-item" href="https://tamer.amiu.genova.it/xtreg" target="_blank">Accesso a TREG</a></li>
+              <?php if ($check_edit == 1) { ?>
+                <li><a class="dropdown-item" href="./report_indicatori_arera.php">Report raccolta e spazzamento</a></li>
+                <li><a class="dropdown-item" href="./report_pin_arera.php">Report Pronto Intervento</a></li>
+                <?php } ?>
             </ul>
-            <?php } ?>
             <?php if ($check_coge == 't') { ?>
             <li><a class="dropdown-item" href="#">Reportistica COGE &raquo; </a>
             <ul class="submenu dropdown-menu">
