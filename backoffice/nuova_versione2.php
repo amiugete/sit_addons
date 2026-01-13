@@ -734,18 +734,24 @@ echo "<br><br>Insert in elenco percorsi<br>";
 $insert_elenco_percorsi= "INSERT INTO anagrafe_percorsi.elenco_percorsi (
   cod_percorso, descrizione,
   id_tipo, freq_testata, 
-  id_turno, durata, codice_cer,
+  id_turno, durata, 
   versione_testata, 
   data_inizio_validita, data_fine_validita, data_ultima_modifica, freq_settimane, ekovision,
-  stagionalita, ddmm_switch_on, ddmm_switch_off, giorno_competenza, nota_versione ) 
+  stagionalita, ddmm_switch_on, ddmm_switch_off, giorno_competenza, nota_versione, 
+  codice_cer ) 
   VALUES
   (
     $1, $2,
     $3, $4,
-    $5, $6, NULL, 
+    $5, $6,  
     $7,
     to_timestamp($8,'DD/MM/YYYY'), to_timestamp($9,'DD/MM/YYYY'), now()
-    ,$10, $11, $12, $13, $14, $15, $16
+    ,$10, $11, $12, $13, $14, $15, $16,
+    (select codice_cer from anagrafe_percorsi.elenco_percorsi ep  
+  where ep.cod_percorso = $17 
+  and ep.versione_testata  = (select max(ep1.versione_testata) from anagrafe_percorsi.elenco_percorsi ep1  
+  where ep1.cod_percorso = $18)
+  )
   )";
 
 
@@ -758,7 +764,7 @@ if (pg_last_error($conn_sit)){
   $res_ok=$res_ok+1;
 }
 
-$result_elenco = pg_execute($conn_sit, "insert2", array($cod_percorso, $desc, $tipo, $freq_sit, $turno, $durata, $new_vers, $data_att, $data_disatt, $freq_sett, $check_EKO, $stag, $switchON, $switchOFF, $check_refday, $nota_vers)); 
+$result_elenco = pg_execute($conn_sit, "insert2", array($cod_percorso, $desc, $tipo, $freq_sit, $turno, $durata, $new_vers, $data_att, $data_disatt, $freq_sett, $check_EKO, $stag, $switchON, $switchOFF, $check_refday, $nota_vers, $cod_percorso, $cod_percorso)); 
 if (pg_last_error($conn_sit)){
   echo pg_last_error($conn_sit).'<br>';
   $res_ok=$res_ok+1;
