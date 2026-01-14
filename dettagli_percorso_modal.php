@@ -121,7 +121,7 @@ while($r = pg_fetch_assoc($result)) {
   echo '<li class="mt-1"><b> Versione percorso </b>'.$versione.'</li>';
   $desc=$r["descrizione"];
 
-  if($r["flg_in_attivazione"]==1){
+  if(intval($r["flg_in_attivazione"])==1){
     $check_in_attivazione=1;
   }
 
@@ -1154,13 +1154,17 @@ if($check_versione_successiva==0){
 </button>
 </div>
 <?php } else {
+  //echo 'Check in attivazione '. $check_in_attivazione;
+  if ($check_in_attivazione==1){
     echo '<i class="fa-solid fa-ghost"></i> Percorso non ancora attivo. Per modifiche contattare <a href="mailto:assterritorio@amiu.genova.it">AssTerritorio</a>.';
+  }
 }?>
 </form>
 
 
 <hr>
 
+<?php if ($check_superedit==1){?>
 <!--form id="vis" name="vis" method="post" autocomplete="off" action="./backoffice/nuova_visualizzazione.php"-->
 <form id="vis" name="vis" autocomplete="off" >
 
@@ -1215,17 +1219,18 @@ where cod_percorso = $1 and data_disattivazione  =to_date($2, 'DD/MM/YYYY'))
 </div>
 </div> 
 
-<?php if ($check_superedit==1){?>
+
 <div class="row g-3 align-items-center">
 <button type="submit" class="btn btn-info">
 <i class="fa-solid fa-plus"></i> <i class="fa-solid fa-eye"></i> Aggiungi in visualizzazione
 </button>
 </div>
 
-<?php }?>
 
 
 </form>
+
+<?php }?>
 <!-- lancio il form e scrivo il risultato -->
 <p><div id="results_vis"></div></p>
             <script> 

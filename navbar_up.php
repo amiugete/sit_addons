@@ -442,7 +442,7 @@ if ($check_modal!=1){
           }
 
 
-          $query_utente="select su.\"name\", su.email, 
+          $query_utente="select su.name, su.email, 
           concat(sr.name, ' - ', sr.description) as ruolo, 
           case
             when min(suu.id_ut) = -1 then 'Tutte le UT/Rimesse'
@@ -457,8 +457,8 @@ if ($check_modal!=1){
           left join util.sys_users_ut suu on suu.id_user = su.id_user 
           left join topo.ut u on u.id_ut = suu.id_ut 
           left join anagrafe_percorsi.cons_mapping_uo cmu on cmu.id_uo_sit = u.id_ut
-          where  su.\"name\" ilike $1 and su.id_user > 0
-          group by su.\"name\", su.email, sr.name, sr.description";
+          where  su.name ilike $1 and su.id_user > 0
+          group by su.name, su.email, sr.name, sr.description";
 
           //echo $query_utente;
           $result1 = pg_prepare($conn_sit, "my_queryUser", $query_utente);

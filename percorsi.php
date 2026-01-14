@@ -121,7 +121,7 @@ require_once("select_ut.php");
         data-filter-control="select" data-filter-control-multiple-search="true" data-filter-control-multiple-search-delimiter=","
 data-filter-options="{ filterAlgorithm: 'or' }"></th>
         <th data-field="cp_report" data-sortable="false" data-formatter="nameFormatterReport" data-visible="true" >Report</th>
-        <?php if ($check_superedit == 1) { ?>
+        <?php if ($check_edit_piazzola== 1) { ?>
           <th data-field="cp_edit" data-sortable="true"  data-visible="true"  data-events="dpEvents" data-formatter="nameFormatterEdit_ok">Edit</th>
         <?php } ?>
           <!--th data-field="quartiere" data-sortable="true" data-visible="true" data-filter-control="select">Quartiere<br>/Comune</th>
