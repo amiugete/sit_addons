@@ -238,7 +238,7 @@ if ($check_modal!=1){
           Anagrafica servizi
           </a>
           <div class="dropdown-menu" id="navbarDropdown1" aria-labelledby="navbarDropdown1">
-            <a class="dropdown-item" href="./percorsi.php">Elenco servizi UO/SIT</a>
+            <a class="dropdown-item" href="./percorsi.php">Elenco servizi</a>
             <?php if ($check_superedit == 1) { ?>
             <a class="dropdown-item" href="./nuovo_percorso.php">Nuovo servizio</a>
             <?php } ?>

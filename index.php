@@ -77,7 +77,7 @@ if ((int)$id_role_SIT = 0) {
         <h3> <i class="fa-solid fa-table-list"></i> Anagrafica percorsi</h3>
       </div>
       <ul class="list-group list-group-flush">
-        <a class="list-group-item" href="./percorsi.php">Elenco servizi UO/SIT</a>
+        <a class="list-group-item" href="./percorsi.php">Elenco servizi <small>(Ekovision e Totem)</small></a>
         <?php if ($check_superedit == 1) { ?>
             <a class="list-group-item" href="./nuovo_percorso.php">Nuovo servizio</a>
         <?php } ?>
