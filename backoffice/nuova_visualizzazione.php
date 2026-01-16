@@ -33,7 +33,7 @@ while($r3 = oci_fetch_assoc($result3)) {
 oci_free_statement($result3);
 
 
-echo $durata;
+//echo $durata;
 
 
 
@@ -95,7 +95,7 @@ $data_att = $_POST['data_attivazione'];
 $id_ut_sit = $_POST['ut'];
 
 
-exit();
+#exit();
 
 
 
