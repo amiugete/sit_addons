@@ -70,18 +70,18 @@ $update_sit0="UPDATE elem.percorsi p
 SET id_turno = $1
 where cod_percorso LIKE $2 and (data_attivazione > now() or data_dismissione is null or data_attivazione is null )";
 
-$result_usit0 = pg_prepare($conn, "update_sit0", $update_sit0);
-if (!pg_last_error($conn)){
+$result_usit0 = pg_prepare($conn_sit, "update_sit0", $update_sit0);
+if (!pg_last_error($conn_sit)){
     #$res_ok=0;
 } else {
-    pg_last_error($conn);
+    pg_last_error($conn_sit);
     $res_ok= $res_ok+1;
 }
-$result_usit0 = pg_execute($conn, "update_sit0", array($turno, $cod_percorso)); 
-if (!pg_last_error($conn)){
+$result_usit0 = pg_execute($conn_sit, "update_sit0", array($turno, $cod_percorso)); 
+if (!pg_last_error($conn_sit)){
     #$res_ok=0;
 } else {
-    pg_last_error($conn);
+    pg_last_error($conn_sit);
     $res_ok= $res_ok+1;
 }
 
@@ -94,20 +94,20 @@ SET id_turno = $1, data_ultima_modifica=now()
 where cod_percorso LIKE $2 and data_inizio_validita > now()";
 
 
-$result_usit1 = pg_prepare($conn, "update_sit1", $update_sit1);
-if (!pg_last_error($conn)){
+$result_usit1 = pg_prepare($conn_sit, "update_sit1", $update_sit1);
+if (!pg_last_error($conn_sit)){
     #$res_ok=0;
 } else {
-    echo "<br><br>Update anagrafe_percorsi.elenco_percorsi<br>". pg_last_error($conn);
+    echo "<br><br>Update anagrafe_percorsi.elenco_percorsi<br>". pg_last_error($conn_sit);
     $res_ok= $res_ok+1;
 }
 
 
-$result_usit1 = pg_execute($conn, "update_sit1", array($turno, $cod_percorso)); 
-if (!pg_last_error($conn)){
+$result_usit1 = pg_execute($conn_sit, "update_sit1", array($turno, $cod_percorso)); 
+if (!pg_last_error($conn_sit)){
     #$res_ok=0;
 } else {
-    echo "<br><br>Update anagrafe_percorsi.elenco_percorsi<br>". pg_last_error($conn);
+    echo "<br><br>Update anagrafe_percorsi.elenco_percorsi<br>". pg_last_error($conn_sit);
     $res_ok= $res_ok+1;
 }
 
@@ -118,20 +118,20 @@ SET id_turno = $1
 where cod_percorso LIKE $2 and data_attivazione > now()";
 
 
-$result_usit3 = pg_prepare($conn, "update_sit3", $update_sit3);
-if (!pg_last_error($conn)){
+$result_usit3 = pg_prepare($conn_sit, "update_sit3", $update_sit3);
+if (!pg_last_error($conn_sit)){
     #$res_ok=0;
 } else {
-    pg_last_error($conn);
+    pg_last_error($conn_sit);
     $res_ok= $res_ok+1;
 }
 
 
-$result_usit3 = pg_execute($conn, "update_sit3", array($turno, $cod_percorso)); 
-if (!pg_last_error($conn)){
+$result_usit3 = pg_execute($conn_sit, "update_sit3", array($turno, $cod_percorso)); 
+if (!pg_last_error($conn_sit)){
     #$res_ok=0;
 } else {
-    pg_last_error($conn);
+    pg_last_error($conn_sit);
     $res_ok= $res_ok+1;
 }
 
