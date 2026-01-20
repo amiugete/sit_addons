@@ -146,6 +146,7 @@ if ((int)$id_role_SIT = 0) {
         <th data-field="data_rim_rif"   data-sortable="true" data-visible="true" data-formatter="dateTimeFormatRR" data-filter-control="input">Rimozione<br>rifiuti</th>
         <!--th data-field="ora_rim_rif" data-sortable="true" data-visible="false" data-filter-control="input">ora rimozione rifiuti</th-->
         <th data-field="mot_rit" data-sortable="true" data-visible="true" data-filter-control="input">Motivazione<br>ritardo</th>
+        <th data-field="inviato_treg" data-sortable="true" data-visible="false" data-filter-control="input">Inviato<br>TREG</th>
     </tr>
 </thead>
 </table>
@@ -276,14 +277,20 @@ function realFormat_pc(value, row, index) {
 };
 
 function rowStyle(row, index) {
-  console.log(row.data_chius_segn)
-    if (row.data_chius_segn == null) {
+  console.log(row.inviato_treg)
+    if (row.inviato_treg == 0) {
+      return {
+        css: {
+          '--bs-table-bg': 'lightcoral'
+        }
+      }
+    } else if (row.data_chius_segn == null) {
       return {
         css: {
           '--bs-table-bg': 'orange'
         }
       }
-    }  
+    } 
 }
 
 function escapeHtml(text) {
