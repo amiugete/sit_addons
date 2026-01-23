@@ -7,11 +7,11 @@ session_start();
 
 
 if ($_SESSION['test']==1) {
-    echo "CONNESSIONE TEST<br>";
+    //echo "CONNESSIONE TEST<br>";
     $checkTest=1;
     require_once ('../conn_test.php');
 } else {
-    echo "CONNESSIONE ESERCIZIO<br>";
+    //echo "CONNESSIONE ESERCIZIO<br>";
     $checkTest=0;
     require_once ('../conn.php');
 }
