@@ -393,6 +393,8 @@ ON v.id_via::integer = be.cod_strada::integer'''.format(codici_via)
     logger.info("Versione ORACLE: {}".format(con.version))
 
     nome_file = f"{giorno_file}_utenze_domestiche.xlsx"
+    nome_file1="{0}_abitanti_x_via.xlsx".format(giorno_file)
+
     nome_file2 = f"{giorno_file}_utenze_nondomestiche.xlsx"
     nome_file3 = f"{giorno_file}_civici_utenze_domestiche.xlsx"
     nome_file4 = f"{giorno_file}_civici_utenze_nondomestiche.xlsx"
@@ -402,6 +404,7 @@ ON v.id_via::integer = be.cod_strada::integer'''.format(codici_via)
         nome_file6 = f"{giorno_file}_file_portale_utenze.xlsx"
 
     file_domestiche = f"/tmp/utenze_via/{nome_file}"
+    file_abitanti = f"/tmp/utenze_via/{nome_file1}"
     file_nondomestiche = f"/tmp/utenze_via/{nome_file2}"
     file_civdomestiche = f"/tmp/utenze_via/{nome_file3}"
     file_civnondomestiche = f"/tmp/utenze_via/{nome_file4}"
@@ -412,8 +415,8 @@ ON v.id_via::integer = be.cod_strada::integer'''.format(codici_via)
 
     # --- CASE: utenze domestiche ---
     if utenze == 'uted':
-        nomi_files += [nome_file, nome_file3]
-        files += [file_domestiche, file_civdomestiche]
+        nomi_files += [nome_file, nome_file3, nome_file1]
+        files += [file_domestiche, file_civdomestiche, file_abitanti]
 
         logger.info("Utenze domestiche su strade")
         write_excel_from_query(con, file_domestiche,
@@ -427,6 +430,8 @@ ON v.id_via::integer = be.cod_strada::integer'''.format(codici_via)
                 FROM STRADE.UTENZE_TIA_DOMESTICHE
                 WHERE COD_VIA in ({codici_via})''', logger)
 
+
+
         logger.info("Civici Utenze domestiche")
         write_excel_from_query(con, file_civdomestiche,
             ['COD_VIA','DESCR_VIA','CIVICO','LETTERA_CIVICO','COLORE'],
@@ -435,6 +440,20 @@ ON v.id_via::integer = be.cod_strada::integer'''.format(codici_via)
                 FROM STRADE.UTENZE_TIA_DOMESTICHE
                 WHERE COD_VIA in ({codici_via}) ORDER BY DESCR_VIA''', logger)
 
+
+
+        logger.info("Abitanti strade")
+        write_excel_from_query(con, file_abitanti,
+            ['COD_VIA','DESCR_VIA','UTENZE_DOM','OCCUPANTI'],
+            f'''SELECT COD_VIA, DESCR_VIA,
+                count(DISTINCT id_utente) as  UTENZE_DOM , sum(num_occupanti) AS OCCUPANTI
+                FROM STRADE.UTENZE_TIA_DOMESTICHE
+                WHERE COD_VIA in ({codici_via})
+                GROUP BY COD_VIA, DESCR_VIA
+                ORDER BY DESCR_VIA
+                ''', logger)
+        
+        
     # --- CASE: utenze non domestiche ---
     elif utenze == 'utend':
         nomi_files += [nome_file2, nome_file4]
@@ -462,8 +481,20 @@ ON v.id_via::integer = be.cod_strada::integer'''.format(codici_via)
 
     # --- CASE: entrambi ---
     else:
-        nomi_files += [nome_file, nome_file2, nome_file3, nome_file4]
-        files += [file_domestiche, file_nondomestiche, file_civdomestiche, file_civnondomestiche]
+        nomi_files += [nome_file1, nome_file, nome_file2, nome_file3, nome_file4]
+        files += [file_abitanti, file_domestiche, file_nondomestiche, file_civdomestiche, file_civnondomestiche]
+
+
+        logger.info("Abitanti strade")
+        write_excel_from_query(con, file_abitanti,
+            ['COD_VIA','DESCR_VIA','UTENZE_DOM','OCCUPANTI'],
+            f'''SELECT COD_VIA, DESCR_VIA,
+                count(DISTINCT id_utente) UTENZE_DOM , sum(num_occupanti) AS OCCUPANTI
+                FROM STRADE.UTENZE_TIA_DOMESTICHE
+                WHERE COD_VIA in ({codici_via})
+                GROUP BY COD_VIA, DESCR_VIA
+                ORDER BY DESCR_VIA
+                ''', logger)
 
         # Domestiche
         logger.info("Utenze domestiche")

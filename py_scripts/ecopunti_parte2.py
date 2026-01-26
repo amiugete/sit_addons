@@ -146,6 +146,11 @@ HEADERS = {
             "DESCR_CATEGORIA", "DESCR_UTILIZZO", "COD_INTERNO", 
             "Presenza dato su Saltax?", "Chiave consegnata?"
         ]
+    }, 
+    "ab_vie":{
+        "1": [
+            "id", "Nome via", "Num utenze dom", "Occupanti (dati TARI)"
+        ]
     }
 }
 
@@ -382,11 +387,13 @@ and object_name = 'CIV_TMP' '''
     cur.close()
 
 
-
+    nome_file1="{0}_{1}_abitanti_x_via.xlsx".format(giorno_file, nome_area)
     nome_file="{0}_{1}_utenze_domestiche.xlsx".format(giorno_file, nome_area)
     nome_file2="{0}_{1}_utenze_nondomestiche.xlsx".format(giorno_file,nome_area)
     nome_file3="{0}_{1}_civici_utenze_domestiche.xlsx".format(giorno_file, nome_area)
     nome_file4="{0}_{1}_civici_utenze_nondomestiche.xlsx".format(giorno_file, nome_area)
+    
+    file_abitanti="/tmp/utenze_area/{0}".format(nome_file1)
     file_domestiche="/tmp/utenze_area/{0}".format(nome_file)
     file_nondomestiche="/tmp/utenze_area/{0}".format(nome_file2)
     file_civdomestiche="/tmp/utenze_area/{0}".format(nome_file3)
@@ -402,6 +409,9 @@ and object_name = 'CIV_TMP' '''
     if utenze == 'uted':
         nomi_files.append(nome_file0)
         files.append(file_civici)
+
+        nomi_files.append(nome_file1)
+        files.append(file_abitanti)
 
         nomi_files.append(nome_file)
         files.append(file_domestiche)
@@ -421,6 +431,9 @@ and object_name = 'CIV_TMP' '''
         nomi_files.append(nome_file0)
         files.append(file_civici)
 
+        nomi_files.append(nome_file1)
+        files.append(file_abitanti)
+
         nomi_files.append(nome_file)
         files.append(file_domestiche)
 
@@ -434,6 +447,38 @@ and object_name = 'CIV_TMP' '''
         files.append(file_civnondomestiche)
 
 
+
+
+    # utenze domestiche
+    workbook1 = xlsxwriter.Workbook(file_abitanti)
+    w1 = workbook1.add_worksheet()
+    
+    
+    cur1 = con.cursor()
+    query=''' SELECT COD_VIA, DESCR_VIA,
+        count(DISTINCT id_utente) UTENZE_DOM , sum(num_occupanti) AS OCCUPANTI
+        FROM STRADE.UTENZE_TIA_DOMESTICHE
+        WHERE COD_CIVICO in (SELECT COD_CIVICO FROM STRADE.CIV_TMP) 
+ GROUP BY COD_VIA, DESCR_VIA
+        ORDER BY DESCR_VIA
+        '''
+    #logging.debug(query)
+    lista_abvia = cur1.execute(query)
+
+    write_headers(w1, "ab_vie", "1", "")
+    i=1
+    for rr in lista_abvia:
+        j=0
+        #logging.debug(len(rr))
+        while j<len(rr):
+            w1.write(i, j, rr[j])
+            j+=1
+        i+=1
+
+    cur1.close()
+    workbook1.close()
+
+    # utenze domestiche
     workbook = xlsxwriter.Workbook(file_domestiche)
     w = workbook.add_worksheet()
 
