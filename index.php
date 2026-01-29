@@ -141,6 +141,9 @@ if ((int)$id_role_SIT = 0) {
               <small>(link esterno per utenti autorizzati)</small></a>
           <?php if ($check_edit == 1) { ?>
             <a class="list-group-item" href="./report_indicatori_arera.php.php">Report raccolta e spazzamento</a>
+          <?php } 
+          if ($check_pi == 't') {
+          ?>
             <a class="list-group-item" href="./report_pin_arera.php">Report Pronto Intervento</a>
           <?php } ?>
           </ul>

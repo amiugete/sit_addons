@@ -145,7 +145,8 @@ coalesce(suse.esternalizzati, 'f') as esternalizzati,
 coalesce(suse.sovrariempimenti, 'f') as sovrariempimenti, 
 coalesce(suse.sovrariempimenti_admin, 'f') as sovrariempimenti_admin, 
 coalesce(suse.coge, 'f') as coge,
-coalesce(suse.utenze, 'f') as utenze
+coalesce(suse.utenze, 'f') as utenze, 
+coalesce(suse.pronto_intervento, 'f') as pronto_intervento
 FROM util.sys_users su
 join util.sys_roles sr on sr.id_role = su.id_role  
 left join util_ns.sys_users_addons suse on suse.id_user = su.id_user 
@@ -164,6 +165,7 @@ while($r = pg_fetch_assoc($result_n)) {
   $check_sovr_admin=$r['sovrariempimenti_admin'];
   $check_coge=$r['coge'];
   $check_utenze=$r['utenze'];
+  $check_pi=$r['pronto_intervento'];
   $check_SIT=1;
 }
 
@@ -291,6 +293,9 @@ if ($check_modal!=1){
               <li><a class="dropdown-item" href="https://tamer.amiu.genova.it/xtreg" target="_blank">Accesso a TREG</a></li>
               <?php if ($check_edit == 1) { ?>
                 <li><a class="dropdown-item" href="./report_indicatori_arera.php">Report raccolta e spazzamento</a></li>
+                <?php } 
+                if ($check_pi == 't') {
+                ?> 
                 <li><a class="dropdown-item" href="./report_pin_arera.php">Report Pronto Intervento</a></li>
                 <?php } ?>
             </ul>
@@ -509,7 +514,14 @@ if ($check_modal!=1){
               <?php } ?>
             </li>
             <li><b>Estrazione utenze: </b>
-              <?php if ($check_utenze =='t'){?>
+              <?php if ($check_pi =='t'){?>
+                <i class="fa-solid fa-check" style="color: #00c217;"></i>
+              <?php } else {?>
+                <i class="fa-solid fa-xmark" style="color: #ff0000;"></i>
+              <?php } ?>
+            </li>
+            <li><b>Pronto intervento </b>
+              <?php if ($check_pi =='t'){?>
                 <i class="fa-solid fa-check" style="color: #00c217;"></i>
               <?php } else {?>
                 <i class="fa-solid fa-xmark" style="color: #ff0000;"></i>
