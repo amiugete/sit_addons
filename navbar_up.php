@@ -291,7 +291,7 @@ if ($check_modal!=1){
               <li><a class="dropdown-item" href="#">Reportistica ARERA &raquo; </a>
             <ul class="submenu dropdown-menu">
               <li><a class="dropdown-item" href="https://tamer.amiu.genova.it/xtreg" target="_blank">Accesso a TREG</a></li>
-              <?php if ($check_edit == 1) { ?>
+              <?php if ($check_edit == 1 || $check_coge == 't') { ?>
                 <li><a class="dropdown-item" href="./report_indicatori_arera.php">Report raccolta e spazzamento</a></li>
                 <?php } 
                 if ($check_pi == 't') {
