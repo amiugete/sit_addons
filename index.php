@@ -139,8 +139,8 @@ if ((int)$id_role_SIT = 0) {
           <ul class="list-group list-group-flush">
             <a class="list-group-item" href="https://tamer.amiu.genova.it/xtreg" target="_blank">Accesso a TREG 
               <small>(link esterno per utenti autorizzati)</small></a>
-          <?php if ($check_edit == 1) { ?>
-            <a class="list-group-item" href="./report_indicatori_arera.php.php">Report raccolta e spazzamento</a>
+          <?php if ($check_edit == 1  || $check_coge == 't') { ?>
+            <a class="list-group-item" href="./report_indicatori_arera.php">Report raccolta e spazzamento</a>
           <?php } 
           if ($check_pi == 't') {
           ?>
