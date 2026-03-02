@@ -118,12 +118,12 @@ if ((int)$id_role_SIT = 0) {
 							
  	<tr>
         <!--th data-checkbox="true" data-field="id"></th-->  
-        <th data-field="id" data-sortable="true" data-visible="true" data-filter-control="input">ID</th>  
+        <th data-field="id" data-sortable="true" data-visible="false" data-filter-control="input">ID</th>
+        <th data-field="cod_ident_segn"  data-sortable="true" data-visible="true" data-filter-control="input">ID GAP</th>  
         <!--th data-field="scopo" data-sortable="true" data-visible="true" data-filter-control="select">Scopo</th-->
         <th data-field="sottoscopo" data-sortable="true" data-visible="true" data-filter-control="select">Sottoscopo</th>
         <th data-field="esito" data-sortable="true" data-visible="true" data-filter-control="select">Esito</th>
         <th data-field="data_telefonata" data-sortable="true" data-visible="true" data-formatter="dateTimeFormat0" data-filter-control="select" >Data/ora<br>telefonata</th>
-        <th data-field="cod_ident_segn"  data-sortable="true" data-visible="false" data-filter-control="input">ID GAP</th>
         <th data-field="tipo_apertura_guasto"  data-sortable="true" data-visible="true" data-filter-control="input">Tipo segnalazione</th>
         <th data-field="data_apert_segn"   data-sortable="true" data-visible="true" data-formatter="dateTimeFormatA" data-filter-control="input">Apertura segn.</th>
         <!--th data-field="ora_apert_segn"   data-sortable="true" data-visible="true" data-filter-control="input">Ora apertura</th-->
@@ -145,7 +145,8 @@ if ((int)$id_role_SIT = 0) {
         <!--th data-field="ora_messa_sic" data-sortable="true" data-visible="false" data-filter-control="input">ora messa in sicurezza</th-->
         <th data-field="data_rim_rif"   data-sortable="true" data-visible="true" data-formatter="dateTimeFormatRR" data-filter-control="input">Rimozione<br>rifiuti</th>
         <!--th data-field="ora_rim_rif" data-sortable="true" data-visible="false" data-filter-control="input">ora rimozione rifiuti</th-->
-        <th data-field="mot_rit" data-sortable="true" data-visible="true" data-filter-control="input">Motivazione<br>ritardo</th>
+        <th data-field="descr_amiu" data-sortable="true" data-visible="true" data-filter-control="input">Motivazione<br>ritardo</th>
+        <th data-field="descr_arera" data-sortable="true" data-visible="true" data-filter-control="input">Causale<br> ARERA</th>
         <th data-field="inviato_treg" data-sortable="true" data-visible="false" data-filter-control="input">Inviato<br>TREG</th>
     </tr>
 </thead>
