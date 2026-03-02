@@ -19,7 +19,7 @@ if(!$oraconn) {
  
     
 $query0="select * from treg_gap.richieste r 
-        where scopo ilike '%pronto intervento%' and sottoscopo not ilike 'Chiusura%' and r.data_ins = (
+        where scopo ilike '%pronto intervento%' and sottoscopo not ilike 'Chiusura%' and r.rimosso_treg = 0 and r.data_ins = (
             select max(r1.data_ins) from treg_gap.richieste r1 
             where r1.scopo ilike '%pronto intervento%' and r1.sottoscopo not ilike 'Chiusura%' 
             and (r1.cod_ident_segn  = r.cod_ident_segn OR (r1.cod_ident_segn IS NULL AND r.cod_ident_segn IS NULL))
