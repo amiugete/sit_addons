@@ -319,10 +319,10 @@ if ($check_modal!=1){
             </ul>
             </li>
             <?php if ($check_superedit == 1) { ?>
-            <li><a class="dropdown-item" href="#">Quadrature &raquo; </a>
-            <ul class="submenu dropdown-menu">
+            <li><a class="dropdown-item" href="./quadrature.php"><!--i class="fa-solid fa-business-time"></i-->Quadrature</a>
+            <!--ul class="submenu dropdown-menu">
               <li><a class="dropdown-item" href="./quadrature.php">Report quadrature</a></li>
-            </ul>
+            </ul-->
             </li>
             <?php } ?>
             <!--a class="dropdown-item" href="http://amiupostgres/SIT/downloadTemplateImport()">Template per import</a-->
