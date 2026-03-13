@@ -194,7 +194,18 @@ if ((int)$id_role_SIT = 0) {
       </ul>
     </div>
     </div>
-
+    <?php if ($check_edit == 1) { ?>
+      <div class="col-sm-3">
+      <div class="card" >
+        <div class="card-header">
+          <h3><i class="fa-solid fa-business-time"></i> Quadrature</h3>
+        </div>
+        <ul class="list-group list-group-flush">
+              <a class="list-group-item" href="./quadrature.php">Report quadrature</a>
+        </ul>
+      </div>
+      </div>
+    <?php } ?>
     </div>
     <hr>
 <div class="row">

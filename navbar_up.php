@@ -318,6 +318,13 @@ if ($check_modal!=1){
               <li><a class="dropdown-item" href="./wip.php">Report dettaglio pesi per UT</a></li>
             </ul>
             </li>
+            <?php if ($check_superedit == 1) { ?>
+            <li><a class="dropdown-item" href="#">Quadrature &raquo; </a>
+            <ul class="submenu dropdown-menu">
+              <li><a class="dropdown-item" href="./quadrature.php">Report quadrature</a></li>
+            </ul>
+            </li>
+            <?php } ?>
             <!--a class="dropdown-item" href="http://amiupostgres/SIT/downloadTemplateImport()">Template per import</a-->
             </ul>
             
