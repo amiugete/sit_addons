@@ -50,7 +50,15 @@ require_once("./filter_tables/filter_consuntivazione_ekovision.php");
 ?-->
 
 <div class="container-fluid">
-  <h4 style="margin-bottom: 1%; display:inline;">Quadrature</h4>
+  
+  <h4 style="margin-bottom: 1%; display:inline;"> <i class="fa-solid fa-business-time"></i> 
+  Quadrature </h4>
+  
+  <button type="button" class="btn btn-sm" data-bs-container="body" 
+  data-bs-toggle="popover" data-bs-placement="right">
+  <i class="fa-regular fa-circle-question"></i>
+</button>
+
   <!--?php 
 
 require_once("./last_update_ekovision.php");
@@ -186,7 +194,7 @@ $last_month = $dt->modify("-1 month");
 
 <div class="col-4 d-flex align-items-center justify-content-end" style="align-content: center; ">
    <!--div class="col-md-6 d-flex align-items-center justify-content-end"-->
-      <div class="form-check form-switch" style="padding-right: 5rem;"">
+      <div class="form-check form-switch" style="padding-right: 5rem;">
           <input class="form-check-input" type="checkbox" id="flag_quad" name="flag_quad" onchange="flagCambiato(this)">
           <label class="form-check-label fw-bold ms-2" for="flag_quad">Mostra anche le quadrature</label>
       </div>
@@ -249,6 +257,7 @@ $last_month = $dt->modify("-1 month");
         <table  id="quad" class="table-hover table-sm" 
         data-locale="it-IT"
         idfield="ID" 
+        data-escape="false"
         data-show-columns="true"
         data-group-by="false"
         data-group-by-field='["indirizzo", "frazione"]'
@@ -284,10 +293,10 @@ $last_month = $dt->modify("-1 month");
         <th data-field="DESC_UO" data-sortable="true" data-visible="true" data-filter-control="input">UT</th>
         <th data-field="NOMINATIVO" data-sortable="true" data-visible="true" data-filter-control="input">Nominativo</th> 
         <th data-field="MATRICOLA" data-sortable="true" data-visible="true" data-filter-control="input">Matricola</th>
-        <th data-field="DURATA_SERVIZIO_EKOVISION" data-sortable="true" data-visible="true" data-filter-control="false">Durata<br>servizio</th>
+        <th data-field="DURATA_SERVIZIO_EKOVISION" data-sortable="true" data-visible="true" data-filter-control="false">Minuti<br>Ekovision</th>
         <th data-field="MINUTI_LAVORATI_ESIPERT" data-sortable="true" data-visible="true" data-filter-control="false">Minuti<br>lavorati</th>
         <th data-field="MINUTI_ASSENZE" data-sortable="true" data-visible="true" data-filter-control="input">Minuti<br>assenza</th>
-        <th data-field="SERVIZI" data-sortable="false" data-visible="true" data-filter-control="input">Servizi</th>
+        <th data-field="SERVIZI" data-sortable="false" data-visible="true" data-formatter="formatterServizi" data-filter-control="input">Servizi<br>Ekovision</th>
         <th data-field="ANOMALIA_MIN" data-sortable="true" data-visible="true" data-filter-control="input">Anomalia (min)</th>
     </tr>
 </thead>
@@ -361,6 +370,11 @@ $(function() {
 });
 
 
+function formatterServizi(value) {
+  if (!value) return '';
+  return value.split(';').join(';<br>');
+}
+
 </script>
 
 
@@ -384,6 +398,29 @@ require('./footer.php');
 
 
 <script type="text/javascript">
+
+
+
+
+//Inizializzazione popover Bootstrap
+
+  var popoverContent = `La pagina mostra le quadrature del personale in servizio, confrontando i 
+  <i>minuti di servizio</i> rilevati da Ekovision con i <i>minuti lavorati</i> registrati su Esipert. 
+  <br>Per ogni operatore, se sono presenti anomalie, viene evidenziata la differenza in minuti. 
+  <br>Selezionando <i>Mostra anche le quadrature</i>, vengono visualizzati anche gli operatori senza anomalie.`;
+
+
+  var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+  var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+    return new bootstrap.Popover(popoverTriggerEl, {
+      html: true,
+      content: popoverContent
+    })
+  })
+
+
+
+  // Inizializzazione datepicker
  var today = new Date();
  var eko_birthday=new Date('2023-11-19');
 $('#data_query').datepicker({
