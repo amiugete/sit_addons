@@ -196,7 +196,7 @@ $last_month = $dt->modify("-1 month");
    <!--div class="col-md-6 d-flex align-items-center justify-content-end"-->
       <div class="form-check form-switch" style="padding-right: 5rem;">
           <input class="form-check-input" type="checkbox" id="flag_quad" name="flag_quad" onchange="flagCambiato(this)">
-          <label class="form-check-label fw-bold ms-2" for="flag_quad">Mostra anche le quadrature</label>
+          <label class="form-check-label fw-bold ms-2" for="flag_quad">Mostra anche OK</label>
       </div>
 
     </div>
@@ -407,7 +407,7 @@ require('./footer.php');
   var popoverContent = `La pagina mostra le quadrature del personale in servizio, confrontando i 
   <i>minuti di servizio</i> rilevati da Ekovision con i <i>minuti lavorati</i> registrati su Esipert. 
   <br>Per ogni operatore, se sono presenti anomalie, viene evidenziata la differenza in minuti. 
-  <br>Selezionando <i>Mostra anche le quadrature</i>, vengono visualizzati anche gli operatori senza anomalie.`;
+  <br>Selezionando <i>Mostra anche OK</i>, vengono visualizzati anche gli operatori senza anomalie.`;
 
 
   var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
