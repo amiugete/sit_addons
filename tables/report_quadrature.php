@@ -41,7 +41,7 @@ if ($_GET['filter']){
 
 if ($_GET['solo_squadrati']=='t') {
     $query1= " GROUP BY au.id_uo_gest, au.desc_uo, per.nominativo, per.cod_MATLIBROMAT
-    HAVING  COALESCE(sum(hs.durata),0) - COALESCE(sum(vo.MINUTI_LAV),0) <> 0
+    HAVING  COALESCE(sum(hs.durata),0) - COALESCE(max(vo.MINUTI_LAV),0) <> 0
     ORDER BY 1, 3";
 } else if ($_GET['solo_squadrati']=='f') {
 	$query1= " GROUP BY au.id_uo_gest, au.desc_uo, per.nominativo, per.cod_MATLIBROMAT

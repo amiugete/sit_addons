@@ -7,8 +7,8 @@ au.desc_uo,
 per.NOMINATIVO,
 per.cod_MATLIBROMAT AS MATRICOLA,
 sum(hs.durata) as DURATA_SERVIZIO_EKOVISION, 
-sum(vo.MINUTI_LAV) AS minuti_lavorati_esipert,
-sum(va.MINUTI_ASS) AS minuti_assenze,
+max(vo.MINUTI_LAV) AS minuti_lavorati_esipert,
+max(va.MINUTI_ASS) AS minuti_assenze,
 listagg( 
 	CASE 
 		WHEN  aspu.descrizione IS NOT NULL
@@ -19,7 +19,7 @@ listagg(
 	, 
 	'; '
 	) WITHIN GROUP (ORDER BY nominativo) SERVIZI,
-	COALESCE(sum(hs.durata),0) - COALESCE(sum(vo.MINUTI_LAV),0) AS anomalia_min
+	COALESCE(sum(hs.durata),0) - COALESCE(max(vo.MINUTI_LAV),0) AS anomalia_min
 FROM T_ANAGR_PERS_EKOVISION per
 LEFT JOIN V_anagr_ut au 
 	ON per.COD_CDC = au.CDC 
