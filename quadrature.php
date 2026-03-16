@@ -148,7 +148,8 @@ require_once("./last_update_ekovision.php");
 <?php 
 $dt= new DateTime();
 $today = new DateTime();
-$last_month = $dt->modify("-1 month");
+$yesterday = $dt->modify("-1 day");
+//$last_month = $dt->modify("-1 month");
 ?>
 
 
@@ -159,7 +160,7 @@ $last_month = $dt->modify("-1 month");
       <button type="button" class="btn btn-outline-secondary" id="prevDay" title="Giorno precedente">
         <i class="fa-solid fa-chevron-left"></i>
       </button>
-      <input type="text" class="form-control" id="data_query" name="data_percorsi" onchange="cambiata_data(this.value);" value="<?php echo $today->format('d/m/Y');?>" required>
+      <input type="text" class="form-control" id="data_query" name="data_percorsi" onchange="cambiata_data(this.value);" value="<?php echo $yesterday->format('d/m/Y');?>" required>
        <button type="button" class="btn btn-outline-secondary" id="nextDay" title="Giorno successivo">
         <i class="fa-solid fa-chevron-right"></i>
       </button>   
@@ -224,7 +225,7 @@ $last_month = $dt->modify("-1 month");
       console.log("Flag mostra anche quadrature ON");
       $(function() {    // Faccio refres della data-url
       $table.bootstrapTable('refresh', {
-        url: "./tables/report_quadrature.php?ut=<?php echo $_POST['ut'];?>&data=<?php echo $today->format('Ymd');?>&solo_squadrati=f"
+        url: "./tables/report_quadrature.php?ut=<?php echo $_POST['ut'];?>&data=<?php echo $yesterday->format('Ymd');?>&solo_squadrati=f"
       }); 
 
     });
@@ -234,7 +235,7 @@ $last_month = $dt->modify("-1 month");
       console.log("Flag mostra anche quadrature OFF");
       $(function() {    // Faccio refres della data-url
       $table.bootstrapTable('refresh', {
-        url: "./tables/report_quadrature.php?ut=<?php echo $_POST['ut'];?>&data=<?php echo $today->format('Ymd');?>&solo_squadrati=t"
+        url: "./tables/report_quadrature.php?ut=<?php echo $_POST['ut'];?>&data=<?php echo $yesterday->format('Ymd');?>&solo_squadrati=t"
       }); 
 
     });
@@ -275,7 +276,7 @@ $last_month = $dt->modify("-1 month");
 				data-filter-control="true"
         data-sort-select-options = "true"
         data-export-data-type="all"
-        data-url="./tables/report_quadrature.php?ut=<?php echo $_POST['ut'];?>&data=<?php echo $today->format('Ymd');?>&solo_squadrati=t"
+        data-url="./tables/report_quadrature.php?ut=<?php echo $_POST['ut'];?>&data=<?php echo $yesterday->format('Ymd');?>&solo_squadrati=t"
         data-toolbar="#toolbar"
         data-show-footer="false"
         data-query-params="queryParams"
@@ -422,11 +423,16 @@ require('./footer.php');
 
   // Inizializzazione datepicker
  var today = new Date();
- var eko_birthday=new Date('2023-11-19');
+ var yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+ //var eko_birthday=new Date('2023-11-20');
+ // prima del 2024 la query andrebbe fatta con id_persona 
+ var eko_birthday=new Date('2025-01-01');
+
 $('#data_query').datepicker({
       format: 'dd/mm/yyyy',
       todayBtn: "linked", // in conflitto con startDate
-      endDate:today,
+      endDate:yesterday,
       startDate:eko_birthday,
       language:'it', 
       autoclose: true
@@ -440,23 +446,25 @@ function aggiornaBottoniNavigazione() {
   console.log('Sono dentro la funzione aggiornaBottoniNavigazione');
   var current = $('#data_query').datepicker('getDate');
   var today = new Date();
-
+  var yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
 
   var week_before=new Date();
   week_before.setDate(week_before.getDate() - 7);
   // azzera ore per confronto solo giorno/mese/anno
   current.setHours(0, 0, 0, 0);
   today.setHours(0, 0, 0, 0);
+  yesterday.setHours(0, 0, 0, 0);
   week_before.setHours(0, 0, 0, 0);
 
 
   console.log(current.getTime());
-  console.log(today.getTime());
+  console.log(yesterday.getTime());
   console.log(week_before.getTime());
   
 
-  // Disabilita next se la data corrente è oggi
-  if (current.getTime() === today.getTime()) {
+  // Disabilita next se la data corrente è yesterday o oggi
+  if (current.getTime() === yesterday.getTime()) {
     $('#nextDay').prop('disabled', true);
   } else {
     $('#nextDay').prop('disabled', false);
