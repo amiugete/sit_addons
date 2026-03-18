@@ -188,8 +188,8 @@ if ((int)$id_role_SIT = 0) {
         <h3><i class="fa-solid fa-scale-balanced"></i> Report pesi</h3>
       </div>
       <ul class="list-group list-group-flush">
-        <a class="list-group-item" href="./wip.php">Report dettaglio pesi per percorso </a>
-        <a class="list-group-item" href="./wip.php">Report dettaglio pesi per UT </a>
+        <a class="list-group-item" href="./report_pesi_percorso.php">Report dettaglio pesi per percorso </a>
+        <a class="list-group-item" href="./report_pesi_ut.php">Report dettaglio pesi per UT </a>
         <!--a class="list-group-item" href="./report_fascia_oraria_esecuzione.php">Report fascia oraria consuntivazione</a-->
       </ul>
     </div>

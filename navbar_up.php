@@ -314,8 +314,8 @@ if ($check_modal!=1){
               </ul>
               <li><a class="dropdown-item" href="#">Report pesi &raquo; </a>
             <ul class="submenu dropdown-menu">
-              <li><a class="dropdown-item" href="./wip.php">Report dettaglio pesi per percorso</a></li>
-              <li><a class="dropdown-item" href="./wip.php">Report dettaglio pesi per UT</a></li>
+              <li><a class="dropdown-item" href="./report_pesi_percorso.php">Report dettaglio pesi per percorso</a></li>
+              <li><a class="dropdown-item" href="./report_pesi_ut.php">Report pesi aggregato per UT</a></li>
             </ul>
             </li>
             <?php if ($check_superedit == 1) { ?>
