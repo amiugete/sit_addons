@@ -8,10 +8,10 @@ cod_percorso, descrizione,
 servizio, cod_cer, descr_rifiuto,
 turno, orario, 
 data_percorso, dataoraconf, 
-mezzopercorso, targa, sportello,
-mezzopertarga, portataprev, 
+mezzopercorso, targa, sportelli,
+mezzipertarga, portataprev, 
 portataeff, percentualeportata, 
-autista, provenienza, 
+personale, provenienza, 
 destinazione, peso
 FROM consunt.v_dettaglio_pesi_percorso";
 

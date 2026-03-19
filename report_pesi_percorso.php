@@ -275,29 +275,29 @@ $(function() {
         <!--th data-field="state" data-checkbox="true" ></th-->  
         <th data-field="id" data-sortable="true" data-visible="false"  data-filter-control="select">ID</th>
         <th data-field="zona" data-sortable="true" data-visible="false"  data-filter-control="input">Zona</th>
-        <th data-field="rimessa" data-sortable="true" data-visible="true" data-filter-control="false">UT titolare</th>
-        <th data-field="ut" data-sortable="true" data-visible="true" data-filter-control="false">UT esecutrice</th> 
+        <th data-field="rimessa" data-sortable="true" data-visible="true" data-filter-control="false">UT<br>titolare</th>
+        <th data-field="ut" data-sortable="true" data-visible="true" data-filter-control="false">UT<br>esecutrice</th> 
         <th data-field="cod_percorso" data-sortable="true" data-visible="true" data-filter-control="false">Codice</th>
         <th data-field="descrizione" data-sortable="true" data-visible="true" data-filter-control="input">Percorso</th>
         <th data-field="servizio" data-sortable="true" data-visible="true" data-filter-control="select">Servizio</th>
         <th data-field="cod_cer" data-sortable="true" data-visible="false" data-filter-control="false">CER</th>
         <th data-field="descr_rifiuto" data-sortable="true" data-visible="true" data-filter-data="var:rifiuto_filtro" data-filter-control="select">Rifiuto</th>
         <th data-field="turno" data-sortable="true" data-visible="true" data-filter-data="var:descrizione_filtro" data-filter-control="select">Turno</th>
-        <th data-field="orario"  data-sortable="true" data-visible="true" data-filter-control="input">Orario</th>
+        <th data-field="orario"  data-sortable="true" data-visible="false" data-filter-control="input">Orario</th>
         <!--th data-field="data_percorso" data-formatter="dateFormat" data-sortable="true" data-visible="true" data-filter-data="var:data_filtro" data-filter-control="select">Data</th-->
         <th data-field="data_percorso" data-formatter="dateFormat" data-sortable="true" data-visible="true" data-filter-control="false">Data</th>
         <th data-field="dataoraconf" data-formatter="dateFormatter" data-sortable="true" data-visible="true" data-filter-control="false">Data/Ora conf.</th>
-        <th data-field="mezzopercorso" data-sortable="true" data-visible="false" data-filter-control="false">Mezzo da percorso</th>
-        <th data-field="targa" data-sortable="true" data-visible="false" data-filter-control="false">Targa</th>
-        <th data-field="sportello" data-sortable="true" data-visible="true" data-filter-data="var:sportello_filtro" data-filter-control="select">Sportello</th>
-        <th data-field="mezzopertarga" data-sortable="true" data-visible="true" data-filter-control="false">Mezzo da targa</th>
-        <th data-field="portataprev" data-sortable="true" data-visible="true" data-filter-control="false">Portata<br>prevista</th>
-        <th data-field="portataeff" data-sortable="true" data-visible="false" data-filter-control="false">Portata<br>effettiva</th>
-        <th data-field="percentualeportata" data-sortable="true" data-visible="true" data-filter-control="false" data-formatter="percentualeAlta"> % Portata</th>
-        <th data-field="autista" data-sortable="true" data-visible="true" data-filter-control="input">Autista</th>
+        <th data-field="mezzopercorso" data-sortable="true" data-visible="false" data-filter-control="false">Mezzi<br>previsto</th>
+        <th data-field="targa" data-sortable="true" data-visible="false" data-filter-control="false">Targa<br>ECOS</th>
+        <th data-field="sportelli" data-sortable="true" data-visible="true" data-filter-data="var:sportello_filtro" data-filter-control="select">Sportelli<br>Ekovision</th>
+        <th data-field="mezzipertarga" data-sortable="true" data-visible="true" data-filter-control="false">Mezzi<br>Ekovision</th>
+        <th data-field="portataprev" data-sortable="true" data-visible="false" data-filter-control="false">Portata<br>prevista</th>
+        <th data-field="portataeff" data-sortable="true" data-visible="true" data-formatter="roundPortata" data-filter-control="false">Portata<br>effettiva</th>
+        <th data-field="percentualeportata" data-sortable="true" data-visible="false" data-filter-control="false" data-formatter="percentualeAlta">%<br>Portata</th>
+        <th data-field="personale" data-sortable="true" data-visible="true" data-filter-control="input">Personale<br>Ekovision</th>
         <th data-field="provenienza" data-sortable="true" data-visible="true" data-formatter="provFormat" data-filter-strict-search="true" data-search-formatter="false" 
-        data-filter-data="var:opzioni_prov" data-filter-control="select">Provenienza</th>
-        <th data-field="destinazione" data-sortable="true" data-visible="true" data-filter-control="select">Destinazione</th>
+        data-filter-data="var:opzioni_prov" data-filter-control="select">Fonte<br>dato</th>
+        <th data-field="destinazione" data-sortable="true" data-visible="true" data-filter-control="select">Impianto</th>
         <th data-field="peso" data-sortable="true" data-visible="true" data-filter-control="false">Peso</th>
     </tr>
 </thead>
@@ -373,7 +373,9 @@ function idFormatter() {
 
 
 
-  
+  function roundPortata(value) {
+    return value ? parseFloat(value).toFixed(0) : '-';
+  };
 
 
   function queryParams(params) {
