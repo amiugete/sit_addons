@@ -478,7 +478,8 @@ require('./footer.php');
 <script>
   var popoverContent = `La pagina mostra il peso conferito per ogni servizio. Di default vengono mostrati tutti i dati, 
   ma è possibile filtrare per intervallo di date e per UT. La colonna "% Portata" indica la percentuale tra il peso conferito e la portata prevista del mezzo. 
-  Se la percentuale è superiore al 120% viene evidenziata in arancione. Se vioene registrato un peso maggiore di 40 tonnellate viene evidenziato in rosso.`;
+  Se la percentuale è superiore al 120% viene evidenziata in arancione. Se vioene registrato un peso maggiore di 40 tonnellate viene evidenziato in rosso.<br> <br>
+  <b>I dati dei pesisono estratti da Ekovision in caso di scarico in impianto terzo, mentre per scarichi in impianti AMIU sono estratti da ECOS per i pesi registrati utilizzando il foglio pesata scaricato da Ekovision.</b><br>`;
 
 
   var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))

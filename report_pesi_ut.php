@@ -389,7 +389,8 @@ require('./footer.php');
 
 <script>
   var popoverContent = `La pagina mostra il peso totale di un determinato rifiuto conferito dai servizi svolti in una determinata data dall'UT. Di default vengono mostrati tutti i dati, 
-  ma è possibile filtrare per intervallo di date e per UT.`;
+  ma è possibile filtrare per intervallo di date e per UT.<br><br>
+  <b>I dati dei pesisono estratti da Ekovision in caso di scarico in impianto terzo, mentre per scarichi in impianti AMIU sono estratti da ECOS per i pesi registrati utilizzando il foglio pesata scaricato da Ekovision.</b><br>`;
 
 
   var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
