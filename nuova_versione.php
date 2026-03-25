@@ -362,25 +362,7 @@ while($r3bis = pg_fetch_assoc($result3bis)) {
   <div class="form-group  col-md-6">
     <label for="ut">UT (o Rimessa) <!--?php echo $_POST["gc"]; ?-->:</label> <font color="red">*</font>
     <select name="ut" id="ut" class="selectpicker show-tick form-control" data-live-search="false" data-size="5" required="" >
-      <?php if ($check_superedit == 1) {
-        $query_ut_admin = "select distinct id_ut, u.descrizione from topo.ut  u
-          join anagrafe_percorsi.cons_mapping_uo cmu on cmu.id_uo_sit = u.id_ut
-          join topo.zone_amiu za on za.id_zona = u.id_zona
-          where (u.data_disattivazione is null or u.data_disattivazione> now())
-          order by descrizione ;";
-        $result_ut_admin = pg_query($conn_sit, $query_ut_admin);
-        while ($r_admin = pg_fetch_assoc($result_ut_admin)) {
-              //$id_ut_sel = $r_admin['id_ut'];
-        ?>
-        <option name="ut" <?php
-        if ($r_admin['id_ut']==$_POST["gc"]) {
-        echo 'selected ';
-        }?>
-        value="<?php echo $r_admin['id_ut'] ?>"><?php echo $r_admin['descrizione'] ?></option>
-
-      <?php }
-      } else {
-        if (!$_POST["gc"]) {?>
+      <?php if (!$_POST["gc"]) {?>
           <option name="ut" value="">Nessun GC selezionato</option>
           <?php
           $query11="SELECT tu.id_ut, tu.descrizione  from anagrafe_percorsi.percorsi_ut u
@@ -407,7 +389,7 @@ while($r3bis = pg_fetch_assoc($result3bis)) {
               //$valore=  $r2['id_via']. ";".$r2['desvia'];            
         ?>
         <option name="ut" value="<?php echo $r1['id_ut']?>" ><?php echo $r1['descrizione'] ?></option>
-        <?php }} }?>
+        <?php }}?>
     </select>
   </div>
 
