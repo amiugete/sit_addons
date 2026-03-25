@@ -307,7 +307,7 @@ if ($id_servizio_sit){
 <div class="form-check">
   <input class="form-check-input" type="checkbox" value="1" id="check_SIT" name="check_SIT" checked>
   <label class="form-check-label" for="check_SIT">
-    Creo il percorso anche su SIT <i class="fa-solid fa-map-location-dot"></i> (disabilitare nel caso in cui si voglia clonare il percorso su SIT ad esempio per un cambio servizio)
+    Creo il percorso anche su SIT <i class="fa-solid fa-map-location-dot"></i> <font color="red">(disabilitare nel caso in cui si voglia clonare il percorso su SIT ad esempio per un cambio servizio)</font>
   </label>
 </div>
 <?php
