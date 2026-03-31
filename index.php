@@ -194,7 +194,7 @@ if ((int)$id_role_SIT = 0) {
       </ul>
     </div>
     </div>
-    <?php if ($check_edit == 1) { ?>
+    <?php if ($check_edit_piazzola == 1) { ?>
       <div class="col-sm-3">
       <div class="card" >
         <div class="card-header">
