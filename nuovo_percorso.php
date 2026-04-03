@@ -139,7 +139,7 @@ $versione= $_GET['v'];
                 <select name="turno" id="turno" class="selectpicker show-tick form-control" data-live-search="true"  required=""  onchange="showReferenceDay(this)">
                 <option name="turno" value="">Seleziona il turno</option>
   <?php            
-  $query2="SELECT ID_TURNO, INIZIO_ORA, FINE_ORA,
+  $query2="SELECT ID_TURNO, INIZIO_ORA, FINE_ORA, FINE_MINUTI,
   concat(concat(codice_turno, ' --> '), DESCR_ORARIO) AS DESCR
   FROM ANAGR_TURNI at2 
   WHERE DTA_DISATTIVAZIONE > SYSDATE 
@@ -154,7 +154,7 @@ oci_execute($result2);
       //$valore=  $r2['id_via']. ";".$r2['desvia'];            
   ?>
             
-        <option name="turno" iniora="<?php echo $r2['INIZIO_ORA']?>" finora="<?php echo $r2['FINE_ORA']?>" value="<?php echo $r2['ID_TURNO']?>" ><?php echo $r2['DESCR'];?></option>
+        <option name="turno" iniora="<?php echo $r2['INIZIO_ORA']?>" finora="<?php echo $r2['FINE_ORA'].':'.$r2['FINE_MINUTI']?>" value="<?php echo $r2['ID_TURNO']?>" ><?php echo $r2['DESCR'];?></option>
   <?php } 
    oci_free_statement($result2);
   ?>
@@ -283,13 +283,16 @@ require('freq_sett_component.php');
 
   function showReferenceDay(val){
       const iniOra = parseInt(val.options[val.selectedIndex].getAttribute('iniora'))
-      const finOra = parseInt(val.options[val.selectedIndex].getAttribute('finora'))
+      const finOra = parseInt(val.options[val.selectedIndex].getAttribute('finora').split(':')[0])
+      const finMin = parseInt(val.options[val.selectedIndex].getAttribute('finora').split(':')[1])
+      const finOraMinuti = parseInt(finOra) * 60 + parseInt(finMin);
       /*console.log('val è '+ val.value)
       console.log('text è '+ val.options[val.selectedIndex].text)
       console.log('iniora è '+ val.options[val.selectedIndex].getAttribute('iniora'))
       console.log('finora è '+ val.options[val.selectedIndex].getAttribute('finora'))
+      console.log('finOraMinuti è '+ finOraMinuti)
       console.log('il turno selezionato è '+ val.value)*/
-      if (finOra <= '06' && val.value!= 997){
+      if (finOraMinuti <= 360 && val.value!= 997){
         //escludo il turno 997 che è quello disponibile
         document.getElementById('refDay').style.display = "block";
         //console.log('il turno selezionato è a cavallo di due giorni');
