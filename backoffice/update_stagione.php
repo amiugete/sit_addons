@@ -70,7 +70,7 @@ if (!pg_last_error($conn_sit)){
 $update_sit1="UPDATE anagrafe_percorsi.elenco_percorsi ep
 SET stagionalita = $1,
 ddmm_switch_on = $2,
-ddmm_switch_off = $3 
+ddmm_switch_off = $3,
 data_ultima_modifica=now() 
 where cod_percorso LIKE $4 and data_inizio_validita > now()";
 
