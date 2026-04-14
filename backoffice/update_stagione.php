@@ -12,7 +12,7 @@ if ($_SESSION['test']==1) {
 
 $res_ok=0;
 
-echo "Per ora il pulsante salva non fa nulla se non mostrare la stagione selezionata e il percorso<br>"; 
+//echo "Per ora il pulsante salva non fa nulla se non mostrare la stagione selezionata e il percorso<br>"; 
 
 
 // stagione
