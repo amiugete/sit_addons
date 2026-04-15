@@ -25,10 +25,21 @@ LEFT JOIN V_anagr_ut au
 	ON per.COD_CDC = au.CDC 
 	AND per.cod_SEDE = au.cod_SEDE 
 	AND per.cod_unitaorg = au.cod_unitaorg
-LEFT JOIN esipertbo.v_orelav@sipedb vo 
+/*LEFT JOIN esipertbo.v_orelav@sipedb vo 
 	ON vo.CDAZIEND = per.ID_AZIENDA 
 	AND vo.cdDIPEND = per.cod_MATLIBROMAT 
-	AND vo.DTA_COMPETENZA = to_date(:datav, 'YYYYMMDD')
+	AND vo.DTA_COMPETENZA = to_date(:datav, 'YYYYMMDD')*/
+LEFT JOIN (SELECT 
+		cdaziend, 
+		cddipend, 
+		sum(qta_minuti) AS MINUTI_LAV 
+		FROM esipertbo.v_orelav_eko_ok@sipedb
+		WHERE DTA_COMPETENZA = to_date(:datav, 'YYYYMMDD')
+		GROUP BY cdaziend, 
+		cddipend
+		) vo
+	ON vo.CDAZIEND = per.ID_AZIENDA 
+	AND vo.cdDIPEND = per.cod_MATLIBROMAT 
 LEFT JOIN esipertbo.v_oreass@sipedb va 
 	ON va.CDAZIEND = per.ID_AZIENDA 
 	AND va.cdDIPEND = per.cod_MATLIBROMAT 
