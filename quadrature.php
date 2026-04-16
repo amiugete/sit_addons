@@ -291,6 +291,7 @@ $yesterday = $dt->modify("-1 day");
         <!--th data-field="state" data-checkbox="true" ></th--> 
         <th data-field="ID" data-sortable="true" data-visible="false" data-filter-control="false">ID</th> 
         <th data-field="ID_UO_GEST" data-sortable="true" data-visible="false"  data-filter-control="input">ID UT</th>
+        <th data-field="COD_POSTO_ORG" data-sortable="true" data-visible="false" data-filter-control="input">Mansione</th>
         <th data-field="DESC_UO" data-sortable="true" data-visible="true" data-filter-control="input">UT</th>
         <th data-field="NOMINATIVO" data-sortable="true" data-visible="true" data-filter-control="input">Nominativo</th> 
         <th data-field="MATRICOLA" data-sortable="true" data-visible="true" data-filter-control="input">Matricola</th>

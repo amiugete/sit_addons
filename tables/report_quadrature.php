@@ -52,7 +52,7 @@ if ($_GET['solo_squadrati']=='t') {
 // giorno selezionato
 if($_GET['data']) {
     $query_temp= $query0 ." WHERE to_date(:datav, 'YYYYMMDD') BETWEEN per.dta_inizio AND per.dta_fine 
-    AND per.cod_postoorg NOT IN ('GRIM', 'RUTT')". $query1;
+    AND per.cod_postoorg NOT IN ('GRIM', 'RUTT', 'RRIM')". $query1;
 }
 
 

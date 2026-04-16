@@ -6,13 +6,14 @@ au.ID_UO_GEST,
 au.desc_uo,
 per.NOMINATIVO,
 per.cod_MATLIBROMAT AS MATRICOLA,
+max(per.cod_postoorg) as COD_POSTO_ORG,
 sum(hs.durata) as DURATA_SERVIZIO_EKOVISION, 
 max(vo.MINUTI_LAV) AS minuti_lavorati_esipert,
 max(va.MINUTI_ASS) AS minuti_assenze,
 listagg( 
 	CASE 
 		WHEN  aspu.descrizione IS NOT NULL
-		THEN au1.desc_uo || ' - ' || aspu.descrizione
+		THEN au1.desc_uo || ' - ' || aspu.descrizione || ' ('||hs.durata||''')'
 		ELSE 
 		NULL
 	END
