@@ -34,7 +34,7 @@ LEFT JOIN (SELECT
 		cddipend, 
 		sum(qta_minuti) AS MINUTI_LAV 
 		FROM esipertbo.v_orelav_eko_ok@sipedb
-		WHERE DTA_COMPETENZA = to_date(:datav, 'YYYYMMDD')
+		WHERE DTA_RIFERIMENTO = to_date(:datav, 'YYYYMMDD')
 		GROUP BY cdaziend, 
 		cddipend
 		) vo
