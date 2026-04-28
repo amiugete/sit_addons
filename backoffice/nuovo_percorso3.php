@@ -109,12 +109,40 @@ echo $stag."<br>";
 echo $switchON."<br>";
 echo $switchOFF."<br>";
 
-#mezzo
+#MEZZI
 
-$cdaog3 = $_POST['cdaog3'];
-echo $cdaog3."<br>";
+#$cdaog3 = $_POST['cdaog3'];
+#echo $cdaog3."<br>";
 
+//$text = $_POST["lista_mezzi"];
+//echo 'mezzi selezionati: '.$text."<br>";
 
+$codici_mezzi = explode(',', $_POST['lista_mezzi_valori']);
+/*foreach($codici_mezzi as $key ){
+  echo "Codice: ".$key."<br>";
+}*/
+// su sit passo il codice mezzo, in caso di più mezzi scrivo solo il primo
+if (count($codici_mezzi)>1){
+  $cdaog3 = $codici_mezzi[0];
+} else {
+  $cdaog3 = $codici_mezzi[0];
+}
+
+$nomi_mezzi = explode(',', $_POST['lista_mezzi_nomi']);
+/*foreach($nomi_mezzi as $key ){
+  //echo "Nome mezzi: ".strtoupper(trim(explode('(', $key)[1], ')'))."<br>";
+  echo "Nome mezzi: ".strtoupper($key)."<br>";
+}*/
+// alla UO passo il nome del mezzo, in caso di più mezzi faccio concat di nome1 + nome2
+if (count($nomi_mezzi)>1){
+  $automezzo = implode(' + ', array_map('strtoupper', $nomi_mezzi));
+} else {
+  $automezzo = strtoupper($nomi_mezzi[0]);
+}
+
+ echo "mezzo per uo: ".strtoupper($automezzo)."<br>";
+ echo "mezzo per sit: ".strtoupper($cdaog3)."<br>";
+/*
 $query0="select cdaog3,
 categoria  
 from elem.automezzi a 
@@ -126,6 +154,7 @@ while($r0 = pg_fetch_assoc($result0)) {
   $automezzo=$r0['categoria'];
 }
 echo $automezzo."<br>";
+*/
 
 if (!empty($_POST['destinazioni'])) {
   $destinazioni= $_POST['destinazioni'];
@@ -148,7 +177,7 @@ foreach($_POST['percentuali'] as $key => $value){
 $ut_sit = intval($_POST['ut']);
 $sq_ut = intval($_POST['sq_ut']);
 
-#exit();
+//exit();
 
 
 # cerco id ut UO
@@ -182,7 +211,7 @@ if($_POST['rim']){
 if ($checkTest == 0){
   echo "faccio insert su UO <br>";
 
-
+// nella UO va inserito il nome del mezzo (in maiuscolo), in caso di più mezzzi faccio concat di nome1 + nome2
   $insert_uo = "INSERT INTO UNIOPE.ANAGR_SER_PER_UO 
       (ID_SER_PER_UO,
       ID_UO, ID_PERCORSO,
@@ -351,6 +380,7 @@ if ($checkTest == 0){
 #exit();
 ###################### FINE INSERT UO #########################
 
+// nel SIT va inserito il codice del primo mezzo selezionato 
 
 if ($id_servizio_sit!=0 and $check_SIT==1){
   # INSERT SIT
@@ -497,7 +527,19 @@ $cdaog3
 
 echo  pg_result_error($result_percorsi_ut);
 
-echo "<br><br> CIAO<br>";
+//echo "<br><br> CIAO<br>";
+$insert_mezzi_percorso = "INSERT INTO anagrafe_percorsi.percorsi_mezzi (cod_percorso, versione, id_mezzo) VALUES ($1, 1, $2)";
+foreach($codici_mezzi as $id_mezzo){
+  $result_mezzi_percorso = pg_prepare($conn_sit, "insert_mezzi_percorso_".$id_mezzo, $insert_mezzi_percorso);
+  echo "<br><br> ERRORI MEZZI PERCORSO PREP: <br>";
+  echo  pg_last_error($conn_sit);
+
+  $result_mezzi_percorso = pg_execute($conn_sit, "insert_mezzi_percorso_".$id_mezzo, array($cod_percorso, $id_mezzo)); 
+  echo "<br><br> ERRORI MEZZI PERCORSO EXEC: <br>";
+  echo  pg_last_error($conn_sit);
+  echo  pg_result_error($result_mezzi_percorso);
+}
+
 
 if($_POST['rim']){
 

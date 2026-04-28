@@ -474,27 +474,71 @@ if ($id_servizio_sit){
 
 <div class="form-group  col-md-6">
   <label for="cdaog3">Mezzo:</label> <font color="red">*</font>
-    <select name="cdaog3" id="cdaog3" class="selectpicker show-tick form-control" data-live-search="true" data-size="5" required="">
+    <select name="cdaog3" id="cdaog3" class="selectpicker show-tick form-control" data-live-search="true" data-size="5" onchange="writelist();" required="">
     <option name="cdaog3" value="">Seleziona la tipologia di mezzo</option>
   <?php            
   $query2="select cdaog3,
-  concat(categoria, ' (', nome, ')') as cat_estesa  from elem.automezzi a 
-  order by categoria ;";
-  $result2 = pg_query($conn, $query2);
-  //echo $query1;    
-  while($r2 = pg_fetch_assoc($result2)) { 
-      //$valore=  $r2['id_via']. ";".$r2['desvia'];            
+  concat(categoria, ' (', trim(nome), ')') as cat_estesa  from elem.automezzi a 
+  where a.cdaog3 not in ('9998' , '9997', '9996', '9994','9993')
+  order by categoria ";
+  $result2 = pg_query($conn, $query2); 
+  while($r2 = pg_fetch_assoc($result2)) {            
   ?>
             
         <option name="cdaog3" value="<?php echo $r2['cdaog3']?>" ><?php echo $r2['cat_estesa'] ?></option>
   <?php } ?>
 
-  </select>            
-</div>
+  </select>
+
+</div>            
+            <div class="form-group  col-md-6">
+            <label for="lista_mezzi">Elenco mezzi selezionati:</label>
+            <textarea readonly id="lista_mezzi" name="lista_mezzi" rows="4"  class="form-control" required></textarea>
+            <input type="hidden" id="lista_mezzi_valori" name="lista_mezzi_valori" value="">
+            <input type="hidden" id="lista_mezzi_nomi" name="lista_mezzi_nomi" value="">
+            <div class="form-group" style="display: flex; margin-top:2%;">
+            <small class="text-muted" ><!--Anteprima del file con l'elenco mezzi usato dall'applicativo per generare i file con le utenze. 
+                In caso di errori con i mezzi clicca sul bottone per rimuovere l'ultima linea.<br-->
+                <a href="#" class="btn btn-warning btn-sm" id="removeline" ><i class="far fa-trash-alt"></i>Elimina ultimo mezzo</a>
+                <!--br> o riparti dall'inizio<br-->
+                <a href="#" class="btn btn-danger btn-sm" id="aggiorna" ><i class="fas fa-redo"></i>Elimina intero elenco</a></small>
+            </div>
+            <script>
+                $(document).ready(function() {
+                    $('#removeline').click(function() {
+                        // pulisco tutto
+                        //$('#lista_vie').val('cod_via, nome_via');
+                        // solo ultima riga
+                        var txt = $('#lista_mezzi');
+                        var text = txt.val().trim("\n");
+                        var valuelist = text.split("\n");
+                        //var string_to_replace = "";
+                        //valuelist[valuelist.length-1] = string_to_replace;
+                        console.log(valuelist);
+                        console.log(valuelist.length);
+                        var last = valuelist[valuelist.length - 1];
+                        console.log(last);
+                        pippo=text.replace(last, "").replace(/\n$/, "")
+                        console.log(pippo)
+                        txt.val(pippo)
+                        //pippo=valuelist.pop()
+                        //console.log(pippo)
+                        //last.removeChild(last);
+                        //console.log(valuelist);
+                        //txt.val(pippo.join("\n"));
+                    })
+                });
+                $(document).ready(function() {
+                    $('#aggiorna').click(function() {
+                        // pulisco tutto
+                        $('#lista_mezzi').val('');
+                    })
+                });
+
+            </script>            
 
 </div>
-
-
+</div>
 <!--div class="alert alert-error collapse" role="alert" id="alert_UT">
   <span>
   <p>ATTENZIONE. Non posso selezionare la rimessa se il gruppo di coordinamento è già la rimessa!</p>
@@ -652,6 +696,58 @@ if(res){
 
 </script>
 
+<script type="text/javascript" >
+
+$(document).on("keydown", ":input:not(textarea)", function(event) {
+    if (event.key == "Enter") {
+        event.preventDefault();
+    }
+});
+
+
+
+
+</script>
+
+
+
+
+
+
+
+
+
+<script>
+	function writelist(){
+		var mezzo_value=$("#cdaog3 option:selected").val(); //get the value of the current selected option.
+        console.log(mezzo_value);
+        var mezzo_text=$("#cdaog3 option:selected").text();
+		  console.log(mezzo_text);
+      document.getElementById("lista_mezzi").value += mezzo_value+ ' - '+mezzo_text+ "\n";
+
+      // creo una lista con i soli codici mezzo, li salvo in un campo nascosto del form in modo da inviarli al submit
+      var codici_list = document.getElementById("lista_mezzi_valori");
+      if (codici_list.value != "") {
+          // il campo ha già dei valori → aggiungo la virgola e il nuovo valore
+          codici_list.value = codici_list.value + ',' + mezzo_value;
+      } else {
+          // il campo è ancora vuoto → scrivo solo il valore, senza virgola iniziale
+          codici_list.value = mezzo_value;
+      }
+
+      // creo una lista con i soli nomi mezzo, li salvo in un campo nascosto del form in modo da inviarli al submit
+      var nomi_list = document.getElementById("lista_mezzi_nomi");
+      if (nomi_list.value != "") {
+          // il campo ha già dei valori → aggiungo la virgola e il nuovo valore
+          nomi_list.value = nomi_list.value + ',' + mezzo_text.split('(')[1].replace(/\)$/, '');
+      } else {
+          // il campo è ancora vuoto → scrivo solo il valore, senza virgola iniziale
+          nomi_list.value = mezzo_text.split('(')[1].replace(/\)$/, '');
+      }
+      //codici_list.value = codici_list.value ? codici_list.value + ',' + mezzo_value : mezzo_value;
+	} 
+
+</script>
 
 
 </body>

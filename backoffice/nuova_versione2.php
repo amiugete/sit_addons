@@ -207,10 +207,33 @@ $data_disatt = $_POST['data_disatt'];
 #exit();
 #mezzo
 
-$cdaog3 = $_POST['cdaog3'];
-echo $cdaog3."<br>";
+/*$text = $_POST["lista_mezzi"];
+echo 'mezzi selezionati: '.$text."<br>";*/
 
+$codici_mezzi = explode(',', $_POST['lista_mezzi_valori']);
+/*foreach($codici as $key ){
+  echo "Codice: ".$key."<br>";
+}*/
+if (count($codici_mezzi)>1){
+  $cdaog3 = $codici_mezzi[0];
+} else {
+  $cdaog3 = $codici_mezzi[0];
+}
 
+$nomi_mezzi = explode(',', $_POST['lista_mezzi_nomi']);
+/*foreach($nomi_mezzi as $key ){
+  //echo "Nome mezzi: ".strtoupper(trim(explode('(', $key)[1], ')'))."<br>";
+  echo "Nome mezzi: ".strtoupper($key)."<br>";
+}*/
+if (count($nomi_mezzi)>1){
+  $automezzo = implode(' + ', array_map('strtoupper', $nomi_mezzi));
+} else {
+  $automezzo = strtoupper($nomi_mezzi[0]);
+}
+
+ echo "mezzo per uo: ".strtoupper($automezzo)."<br>";
+ echo "mezzo per sit: ".strtoupper($cdaog3)."<br>";
+/*
 $query0="select cdaog3,
 categoria  
 from elem.automezzi a 
@@ -230,7 +253,7 @@ while($r0 = pg_fetch_assoc($result0)) {
   $automezzo=$r0['categoria'];
 }
 echo $automezzo."<br>";
-
+*/
 
 echo $data_att."<br>";
 
@@ -257,7 +280,7 @@ echo "UT SELEZIONATA COM GC: ".$_POST['ut']."<br>";
 echo "SQUADRA UT SELEZIONATA COM GC: ".$_POST['sq_ut']."<br>";
 
 
-#exit();
+//exit();
 
 
 
@@ -415,6 +438,7 @@ echo $data_disatt."<br>";
 echo $insert_uo."<br>";
 
 if ($checkTest == 0){
+  // nella UO va inserito il nome del mezzo (in maiuscolo), in caso di più mezzzi faccio concat di nome1 + nome2
   $insert_uo = "INSERT INTO UNIOPE.ANAGR_SER_PER_UO 
     (ID_SER_PER_UO,
     ID_UO, ID_PERCORSO,
@@ -806,6 +830,23 @@ if (pg_last_error($conn_sit)){
 }
 
 
+echo "<br><br>Insert in percorsi_mezzi<br>";
+$insert_mezzi_percorso = "INSERT INTO anagrafe_percorsi.percorsi_mezzi (cod_percorso, versione, id_mezzo) VALUES ($1, $2, $3)";
+foreach($codici_mezzi as $id_mezzo){
+  $result_mezzi_percorso = pg_prepare($conn_sit, "insert_mezzi_percorso_".$id_mezzo, $insert_mezzi_percorso);
+  if (pg_last_error($conn_sit)){
+    echo pg_last_error($conn_sit).'<br>';
+    $res_ok=$res_ok+1;
+  }
+
+  $result_mezzi_percorso = pg_execute($conn_sit, "insert_mezzi_percorso_".$id_mezzo, array($cod_percorso, $new_vers, $id_mezzo)); 
+  if (pg_last_error($conn_sit)){
+    echo pg_last_error($conn_sit).'<br>';
+    $res_ok=$res_ok+1;
+  }
+}
+
+
 
   echo "<br><br>Insert in date_percorsi_sit_uo<br>";
   $insert_date_percorsi_sit_uo = "INSERT INTO anagrafe_percorsi.date_percorsi_sit_uo 
@@ -884,6 +925,8 @@ if (pg_last_error($conn_sit)){
   echo pg_last_error($conn_sit).'<br>';
   $res_ok=$res_ok+1;
 }
+
+
 
 
 
