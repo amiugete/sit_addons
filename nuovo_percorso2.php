@@ -505,35 +505,41 @@ if ($id_servizio_sit){
             </div>
             <script>
                 $(document).ready(function() {
-                    $('#removeline').click(function() {
-                        // pulisco tutto
-                        //$('#lista_vie').val('cod_via, nome_via');
-                        // solo ultima riga
-                        var txt = $('#lista_mezzi');
-                        var text = txt.val().trim("\n");
-                        var valuelist = text.split("\n");
-                        //var string_to_replace = "";
-                        //valuelist[valuelist.length-1] = string_to_replace;
-                        console.log(valuelist);
-                        console.log(valuelist.length);
-                        var last = valuelist[valuelist.length - 1];
-                        console.log(last);
-                        pippo=text.replace(last, "").replace(/\n$/, "")
-                        console.log(pippo)
-                        txt.val(pippo)
-                        //pippo=valuelist.pop()
-                        //console.log(pippo)
-                        //last.removeChild(last);
-                        //console.log(valuelist);
-                        //txt.val(pippo.join("\n"));
-                    })
-                });
-                $(document).ready(function() {
-                    $('#aggiorna').click(function() {
-                        // pulisco tutto
-                        $('#lista_mezzi').val('');
-                    })
-                });
+                  $('#removeline').click(function() {
+                    //cancello ulrima riga del textarea
+                    var lm = $('#lista_mezzi');
+                    var text_lm = lm.val().trim("\n");
+                    var valuelist_lm = text_lm.split("\n");
+                    var last_lm = valuelist_lm[valuelist_lm.length - 1];
+                    replace_lm=text_lm.replace(last_lm, "").replace(/\n$/, "")
+                    lm.val(replace_lm)
+
+                    
+                    // stessa cosa per i campi nascosti
+                    var lm_valori = $('#lista_mezzi_valori');
+                    var text_lm_valori = lm_valori.val().split(",");
+                    text_lm_valori.pop();
+                    lm_valori.val(text_lm_valori)
+
+                    var lm_nomi = $('#lista_mezzi_nomi');
+                    console.log('lista nomi prima: '+lm_nomi.val())
+                    var text_lm_nomi = lm_nomi.val().split(",");
+                    text_lm_nomi.pop();
+                    lm_nomi.val(text_lm_nomi)
+
+                    console.log('lista mezzi: '+lm.val())
+                    console.log('lista nomi dopo: '+lm_nomi.val())
+                    console.log('lista valori dopo: '+lm_valori.val())
+                  })
+              });
+              $(document).ready(function() {
+                  $('#aggiorna').click(function() {
+                      // pulisco tutto
+                      $('#lista_mezzi').val('');
+                      $('#lista_mezzi_valori').val('');
+                      $('#lista_mezzi_nomi').val('');
+                  })
+              });
 
             </script>            
 

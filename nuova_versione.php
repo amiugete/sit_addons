@@ -613,7 +613,7 @@ oci_free_statement($result_dd);
 <hr>
 <div class="form-group  col-md-6">
   <label for="cdaog3">Mezzo:</label> <font color="red">*</font>
-                <select name="cdaog3" id="cdaog3" class="selectpicker show-tick form-control" data-live-search="true" data-size="5" onchange="writelist();" required="">
+                <select name="cdaog3" id="cdaog3" class="selectpicker show-tick form-control" data-live-search="true" data-size="5" onchange="writelist();">
                 <!--?php if ($_POST["mezzo"]=='') { ?-->
                 <option name="cdaog3" value="">Seleziona la tipologia di mezzo</option>
                 <!--?php } ?-->
@@ -665,32 +665,38 @@ oci_free_statement($result_dd);
     <script>
         $(document).ready(function() {
             $('#removeline').click(function() {
-                // pulisco tutto
-                //$('#lista_vie').val('cod_via, nome_via');
-                // solo ultima riga
-                var txt = $('#lista_mezzi');
-                var text = txt.val().trim("\n");
-                var valuelist = text.split("\n");
-                //var string_to_replace = "";
-                //valuelist[valuelist.length-1] = string_to_replace;
-                console.log(valuelist);
-                console.log(valuelist.length);
-                var last = valuelist[valuelist.length - 1];
-                console.log(last);
-                pippo=text.replace(last, "").replace(/\n$/, "")
-                console.log(pippo)
-                txt.val(pippo)
-                //pippo=valuelist.pop()
-                //console.log(pippo)
-                //last.removeChild(last);
-                //console.log(valuelist);
-                //txt.val(pippo.join("\n"));
+              //cancello ulrima riga del textarea
+              var lm = $('#lista_mezzi');
+              var text_lm = lm.val().trim("\n");
+              var valuelist_lm = text_lm.split("\n");
+              var last_lm = valuelist_lm[valuelist_lm.length - 1];
+              replace_lm=text_lm.replace(last_lm, "").replace(/\n$/, "")
+              lm.val(replace_lm)
+
+              
+              // stessa cosa per i campi nascosti
+              var lm_valori = $('#lista_mezzi_valori');
+              var text_lm_valori = lm_valori.val().split(",");
+              text_lm_valori.pop();
+              lm_valori.val(text_lm_valori)
+
+              var lm_nomi = $('#lista_mezzi_nomi');
+              console.log('lista nomi prima: '+lm_nomi.val())
+              var text_lm_nomi = lm_nomi.val().split(",");
+              text_lm_nomi.pop();
+              lm_nomi.val(text_lm_nomi)
+
+              console.log('lista mezzi: '+lm.val())
+              console.log('lista nomi dopo: '+lm_nomi.val())
+              console.log('lista valori dopo: '+lm_valori.val())
             })
         });
         $(document).ready(function() {
             $('#aggiorna').click(function() {
                 // pulisco tutto
                 $('#lista_mezzi').val('');
+                $('#lista_mezzi_valori').val('');
+                $('#lista_mezzi_nomi').val('');
             })
         });
 
@@ -881,6 +887,20 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// al caricamento della pagina, popola i campi hidden con i valori già presenti nella textarea
+document.addEventListener('DOMContentLoaded', function() {
+    var lista = document.getElementById("lista_mezzi").value.trim();
+    if (lista === '') return;
+
+    var righe = lista.split('\n').filter(r => r.trim() !== '');
+    
+    var codici = righe.map(r => r.split(' - ')[0].trim());
+    var nomi   = righe.map(r => r.split('(')[1].replace(/\)$/, '').trim());
+
+    document.getElementById("lista_mezzi_valori").value = codici.join(',');
+    document.getElementById("lista_mezzi_nomi").value   = nomi.join(',');
+});
+
 </script>
 
 </div>
@@ -921,7 +941,19 @@ $(document).on("keydown", ":input:not(textarea)", function(event) {
     console.log(mezzo_value);
     var mezzo_text=$("#cdaog3 option:selected").text();
 		console.log(mezzo_text);
-    document.getElementById("lista_mezzi").value += mezzo_value+ ' - '+mezzo_text+ "\n";
+
+    if (mezzo_value === '') return;
+
+    //document.getElementById("lista_mezzi").value += mezzo_value+ ' - '+mezzo_text+ "\n";
+
+    var lista_mezzi = document.getElementById("lista_mezzi");
+    lista_mezzi.value = lista_mezzi.value.trim();
+
+    if (lista_mezzi.value != '') {
+        lista_mezzi.value = lista_mezzi.value + '\n' + mezzo_value + ' - ' + mezzo_text;
+    } else {
+        lista_mezzi.value = mezzo_value + ' - ' + mezzo_text;
+    }
 
     // creo una lista con i soli codici mezzo, li salvo in un campo nascosto del form in modo da inviarli al submit
     var codici_list = document.getElementById("lista_mezzi_valori");
@@ -942,7 +974,8 @@ $(document).on("keydown", ":input:not(textarea)", function(event) {
         // il campo è ancora vuoto → scrivo solo il valore, senza virgola iniziale
         nomi_list.value = mezzo_text.split('(')[1].replace(/\)$/, '');
     }
-      //codici_list.value = codici_list.value ? codici_list.value + ',' + mezzo_value : mezzo_value;
+
+    $("#cdaog3").selectpicker('val', '');
 	} 
 
 </script>

@@ -207,11 +207,11 @@ $data_disatt = $_POST['data_disatt'];
 #exit();
 #mezzo
 
-/*$text = $_POST["lista_mezzi"];
-echo 'mezzi selezionati: '.$text."<br>";*/
+$text = $_POST["lista_mezzi"];
+echo 'mezzi selezionati: '.$text."<br>";
 
 $codici_mezzi = explode(',', $_POST['lista_mezzi_valori']);
-/*foreach($codici as $key ){
+/*foreach($codici_mezzi as $key ){
   echo "Codice: ".$key."<br>";
 }*/
 if (count($codici_mezzi)>1){
@@ -232,7 +232,7 @@ if (count($nomi_mezzi)>1){
 }
 
  echo "mezzo per uo: ".strtoupper($automezzo)."<br>";
- echo "mezzo per sit: ".strtoupper($cdaog3)."<br>";
+ echo "mezzo per percorsi_ut: ".strtoupper($cdaog3)."<br>";
 /*
 $query0="select cdaog3,
 categoria  
