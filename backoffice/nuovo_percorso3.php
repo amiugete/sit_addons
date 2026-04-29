@@ -114,8 +114,8 @@ echo $switchOFF."<br>";
 #$cdaog3 = $_POST['cdaog3'];
 #echo $cdaog3."<br>";
 
-//$text = $_POST["lista_mezzi"];
-//echo 'mezzi selezionati: '.$text."<br>";
+$text = $_POST["lista_mezzi"];
+echo 'mezzi selezionati: '.$text."<br>";
 
 $codici_mezzi = explode(',', $_POST['lista_mezzi_valori']);
 /*foreach($codici_mezzi as $key ){
@@ -141,7 +141,7 @@ if (count($nomi_mezzi)>1){
 }
 
  echo "mezzo per uo: ".strtoupper($automezzo)."<br>";
- echo "mezzo per sit: ".strtoupper($cdaog3)."<br>";
+ echo "mezzo per percorsi_ut: ".strtoupper($cdaog3)."<br>";
 /*
 $query0="select cdaog3,
 categoria  
@@ -529,12 +529,12 @@ echo  pg_result_error($result_percorsi_ut);
 
 //echo "<br><br> CIAO<br>";
 $insert_mezzi_percorso = "INSERT INTO anagrafe_percorsi.percorsi_mezzi (cod_percorso, versione, id_mezzo) VALUES ($1, 1, $2)";
-foreach($codici_mezzi as $id_mezzo){
-  $result_mezzi_percorso = pg_prepare($conn_sit, "insert_mezzi_percorso_".$id_mezzo, $insert_mezzi_percorso);
+foreach($codici_mezzi as $i => $id_mezzo){
+  $result_mezzi_percorso = pg_prepare($conn_sit, "insert_mezzi_percorso_".$id_mezzo."_".$i, $insert_mezzi_percorso);
   echo "<br><br> ERRORI MEZZI PERCORSO PREP: <br>";
   echo  pg_last_error($conn_sit);
 
-  $result_mezzi_percorso = pg_execute($conn_sit, "insert_mezzi_percorso_".$id_mezzo, array($cod_percorso, $id_mezzo)); 
+  $result_mezzi_percorso = pg_execute($conn_sit, "insert_mezzi_percorso_".$id_mezzo."_".$i, array($cod_percorso, $id_mezzo)); 
   echo "<br><br> ERRORI MEZZI PERCORSO EXEC: <br>";
   echo  pg_last_error($conn_sit);
   echo  pg_result_error($result_mezzi_percorso);
