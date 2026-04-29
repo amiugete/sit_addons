@@ -832,14 +832,14 @@ if (pg_last_error($conn_sit)){
 
 echo "<br><br>Insert in percorsi_mezzi<br>";
 $insert_mezzi_percorso = "INSERT INTO anagrafe_percorsi.percorsi_mezzi (cod_percorso, versione, id_mezzo) VALUES ($1, $2, $3)";
-foreach($codici_mezzi as $id_mezzo){
-  $result_mezzi_percorso = pg_prepare($conn_sit, "insert_mezzi_percorso_".$id_mezzo, $insert_mezzi_percorso);
+foreach($codici_mezzi as $i => $id_mezzo){
+  $result_mezzi_percorso = pg_prepare($conn_sit, "insert_mezzi_percorso_".$id_mezzo."_".$i, $insert_mezzi_percorso);
   if (pg_last_error($conn_sit)){
     echo pg_last_error($conn_sit).'<br>';
     $res_ok=$res_ok+1;
   }
 
-  $result_mezzi_percorso = pg_execute($conn_sit, "insert_mezzi_percorso_".$id_mezzo, array($cod_percorso, $new_vers, $id_mezzo)); 
+  $result_mezzi_percorso = pg_execute($conn_sit, "insert_mezzi_percorso_".$id_mezzo."_".$i, array($cod_percorso, $new_vers, $id_mezzo)); 
   if (pg_last_error($conn_sit)){
     echo pg_last_error($conn_sit).'<br>';
     $res_ok=$res_ok+1;
