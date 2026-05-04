@@ -73,6 +73,9 @@ require_once("./last_update_ekovision.php");
 
 <script>
   function utScelta(val) {
+    // Salva la data corrente nel form prima di fare POST
+    var data_corrente = $('#data_query').val();
+    $('#hidden_data').val(data_corrente);
     document.getElementById('open_ut').submit();
   }
 </script>
@@ -81,6 +84,8 @@ require_once("./last_update_ekovision.php");
 
 
 <form class="row" name="open_ut" method="post" id="open_ut" autocomplete="off" action="quadrature.php" >
+
+<input type="hidden" name="data_percorsi_saved" id="hidden_data" value="">
 
 <?php //echo $username; 
 //echo $_POST['ut'].'<br>';?>
@@ -128,7 +133,10 @@ require_once("./last_update_ekovision.php");
 
   while($r1 = pg_fetch_assoc($result1)) { 
 ?>    
-        <option name="ut0" value="<?php echo $r1['id_uo'];?>" ><?php echo $r1['descrizione']?></option>
+        <option name="ut0" value="<?php echo $r1['id_uo'];?>" 
+            <?php echo ($r1['id_uo'] == $_POST['ut']) ? 'selected' : ''; ?>>
+            <?php echo $r1['descrizione']?>
+        </option>
 <?php 
   }
   pg_free_result($result1); 
@@ -160,7 +168,8 @@ $yesterday = $dt->modify("-1 day");
       <button type="button" class="btn btn-outline-secondary" id="prevDay" title="Giorno precedente">
         <i class="fa-solid fa-chevron-left"></i>
       </button>
-      <input type="text" class="form-control" id="data_query" name="data_percorsi" onchange="cambiata_data(this.value);" value="<?php echo $yesterday->format('d/m/Y');?>" required>
+      <input type="text" class="form-control" id="data_query" name="data_percorsi" onchange="cambiata_data(this.value);" 
+      value="<?php echo $_POST['data_percorsi_saved'] ?? $yesterday->format('d/m/Y'); ?>" required>
        <button type="button" class="btn btn-outline-secondary" id="nextDay" title="Giorno successivo">
         <i class="fa-solid fa-chevron-right"></i>
       </button>   
@@ -174,7 +183,8 @@ $yesterday = $dt->modify("-1 day");
     console.log("Bottone cambiata_data  cliccato");
     var data_percorsi=val.split('/').reverse().join('');
     console.log(data_percorsi);
-    var uos="<?php echo $_POST['ut']?>";
+    /*var uos="<?php echo $_POST['ut']?>";*/
+    var uos = $("#ut").val(); // ← leggi dinamicamente
     console.log(uos);
     if ($('#check_id').is(":checked"))
     {
@@ -186,7 +196,8 @@ $yesterday = $dt->modify("-1 day");
     $("#nota_data").html("").fadeIn("slow");
     $(function() {    // Faccio refres della data-url
     $table.bootstrapTable('refresh', {
-      url: "./tables/report_quadrature.php?ut="+uos+"&data="+data_percorsi+"&solo_squadrati="+getQuadrature()
+      //url: "./tables/report_quadrature.php?ut="+uos+"&data="+data_percorsi+"&solo_squadrati="+getQuadrature()
+      url: "./tables/report_quadrature.php?ut=" + uos + "&data=" + data_percorsi + "&solo_squadrati=" + getQuadrature()
     }); 
 
   });
@@ -219,33 +230,43 @@ $yesterday = $dt->modify("-1 day");
   }
 
   function flagCambiato(el) {
+    
+    var data_anomalia = $('#data_query').val().split('/').reverse().join('');
+      console.log(data_anomalia);
+      var uos = $("#ut").val();
+      console.log(uos);
+  
     if (el.checked) {
-      setQuadrature('f');
-      console.log(quadrature)
-      console.log("Flag mostra anche quadrature ON");
-      $(function() {    // Faccio refres della data-url
-      $table.bootstrapTable('refresh', {
-        url: "./tables/report_quadrature.php?ut=<?php echo $_POST['ut'];?>&data=<?php echo $yesterday->format('Ymd');?>&solo_squadrati=f"
-      }); 
+        setQuadrature('f');
+        console.log(quadrature)
+        console.log("Flag mostra anche quadrature ON");
+        
+        $(function() {    // Faccio refres della data-url
+        $table.bootstrapTable('refresh', {
+          url: "./tables/report_quadrature.php?ut=" + uos + "&data=" + data_anomalia + "&solo_squadrati=f"  
+        }); 
 
-    });
-    } else {
-      setQuadrature('t');
-      console.log(quadrature)
-      console.log("Flag mostra anche quadrature OFF");
-      $(function() {    // Faccio refres della data-url
-      $table.bootstrapTable('refresh', {
-        url: "./tables/report_quadrature.php?ut=<?php echo $_POST['ut'];?>&data=<?php echo $yesterday->format('Ymd');?>&solo_squadrati=t"
-      }); 
+      });
+      } else {
+        setQuadrature('t');
+        console.log(quadrature)
+        console.log("Flag mostra anche quadrature OFF");
+        $(function() {    // Faccio refres della data-url
+        $table.bootstrapTable('refresh', {
+          url: "./tables/report_quadrature.php?ut=" + uos + "&data=" + data_anomalia + "&solo_squadrati=t"
+        }); 
 
-    });
-    }
+      });
+      }
   }
 </script>
 <!--hr-->
 
 
-
+<?php
+$data_input = $_POST['data_percorsi_saved'] ?? $yesterday->format('d/m/Y');
+$data_tabella = DateTime::createFromFormat('d/m/Y', $data_input)->format('Ymd');
+?>
 
 <div id="tabella">
 
@@ -276,7 +297,7 @@ $yesterday = $dt->modify("-1 day");
 				data-filter-control="true"
         data-sort-select-options = "true"
         data-export-data-type="all"
-        data-url="./tables/report_quadrature.php?ut=<?php echo $_POST['ut'];?>&data=<?php echo $yesterday->format('Ymd');?>&solo_squadrati=t"
+        data-url="./tables/report_quadrature.php?ut=<?php echo $_POST['ut'];?>&data=<?php echo $data_tabella;?>&solo_squadrati=t"  
         data-toolbar="#toolbar"
         data-show-footer="false"
         data-query-params="queryParams"
