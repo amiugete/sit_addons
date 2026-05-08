@@ -781,9 +781,11 @@ oci_free_statement($result_dd);
       const iniOra = selTurno.options[selTurno.selectedIndex].getAttribute('iniora')
       const finOra = selTurno.options[selTurno.selectedIndex].getAttribute('finora')
       const turnoText = selTurno.options[selTurno.selectedIndex].text;
-      console.log('text è '+ turnoText)
+      const turnoValue = selTurno.options[selTurno.selectedIndex].value;
+      /*console.log('qui text è '+ turnoText)
+      console.log('qui value turno è '+selTurno.options[selTurno.selectedIndex].value)*/
       //if (finOra <= '06'){
-      if (turnoText.startsWith("N") && val.value!= 997){
+      if (turnoText.startsWith("N") && turnoValue != 997){
         document.getElementById('refDay').style.display = "block";
         console.log('il turno è notturno. Inizia alle '+ iniOra + ' e finisce alle '+ finOra)
       }else{
