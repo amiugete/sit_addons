@@ -229,7 +229,7 @@ oci_execute($result2bis);
   }
   ?> id="check_ref_day" name="check_ref_day" <?php if ($check_superedit == 0) {echo 'disabled';} ?>>
   <label class="form-check-label" for="check_ref_day">
-     Il turno selezionato è notturno, spuntare la checkbox se l'ora di inizio si riferisce al giorno precedente (es. turno 00:00-03:00 iniziato il alle 00:00 del martedì ma il servizio fa riferito a lunedì).
+     Il turno selezionato è notturno, spuntare la checkbox se l'ora di inizio si riferisce al giorno precedente (es. turno 23:50-03:00 iniziato alle 23:50 della domenica ma il servizio fa riferimento a lunedì).
   </label>
   </label>
 </div>
@@ -757,13 +757,15 @@ oci_free_statement($result_dd);
       const finOra = parseInt(val.options[val.selectedIndex].getAttribute('finora').split(':')[0])
       const finMin = parseInt(val.options[val.selectedIndex].getAttribute('finora').split(':')[1])
       const finOraMinuti = parseInt(finOra) * 60 + parseInt(finMin);
+      const turnoText = val.options[val.selectedIndex].text;
       /*console.log('val è '+ val.value)
       console.log('text è '+ val.options[val.selectedIndex].text)
       console.log('iniora è '+ val.options[val.selectedIndex].getAttribute('iniora'))
       console.log('finora è '+ val.options[val.selectedIndex].getAttribute('finora'))
       console.log('finOraMinuti è '+ finOraMinuti)
       console.log('il turno selezionato è '+ val.value)*/
-      if (finOraMinuti <= 360 && val.value!= 997){
+      //if (finOraMinuti <= 360 && val.value!= 997){
+      if (turnoText.startsWith("N") && val.value!= 997){
         //escludo il turno 997 che è quello disponibile
         document.getElementById('refDay').style.display = "block";
         //console.log('il turno selezionato è a cavallo di due giorni');
@@ -778,7 +780,10 @@ oci_free_statement($result_dd);
       const selTurno = document.getElementById('turno');
       const iniOra = selTurno.options[selTurno.selectedIndex].getAttribute('iniora')
       const finOra = selTurno.options[selTurno.selectedIndex].getAttribute('finora')
-      if (finOra <= '06'){
+      const turnoText = selTurno.options[selTurno.selectedIndex].text;
+      console.log('text è '+ turnoText)
+      //if (finOra <= '06'){
+      if (turnoText.startsWith("N") && val.value!= 997){
         document.getElementById('refDay').style.display = "block";
         console.log('il turno è notturno. Inizia alle '+ iniOra + ' e finisce alle '+ finOra)
       }else{
