@@ -613,10 +613,10 @@ oci_free_statement($result_dd);
 <hr>
 <div class="form-group  col-md-6">
   <label for="cdaog3">Mezzo:</label> <font color="red">*</font>
-                <select name="cdaog3" id="cdaog3" class="selectpicker show-tick form-control" data-live-search="true" data-size="5" onchange="writelist();">
-                <!--?php if ($_POST["mezzo"]=='') { ?-->
-                <option name="cdaog3" value="">Seleziona la tipologia di mezzo</option>
-                <!--?php } ?-->
+  <select name="cdaog3" id="cdaog3" class="selectpicker show-tick form-control" data-live-search="true" data-size="5" onchange="writelist();">
+    <!--?php if ($_POST["mezzo"]=='') { ?-->
+    <option name="cdaog3" value="">Seleziona la tipologia di mezzo</option>
+    <!--?php } ?-->
   <?php            
   $query2="select cdaog3,
   concat(categoria, ' (', trim(nome), ')') as cat_estesa  from elem.automezzi a 

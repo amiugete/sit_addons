@@ -195,10 +195,10 @@ while($r = pg_fetch_assoc($result)) {
     $tomorrow = new DateTime('tomorrow');
     ?>
     
-    <div class="col-12" >
+    <div class="col-lg-8" >
     <div class="input-group">
   
-          <input type="text" name="desc" id="desc" maxlength="60" class="form-control" value="<?php echo $desc;?>" required="">
+          <input type="text" name="desc" id="desc" maxlength="auto" class="form-control" value="<?php echo $desc;?>" required="">
           
 
     </div>
@@ -208,7 +208,7 @@ while($r = pg_fetch_assoc($result)) {
 
     <br>
     
-    <div class="col-12">
+    <div class="col-lg-4">
     
     <button type="submit" class="btn btn-info">
     <i class="fa-solid fa-arrow-up-from-bracket"></i> Salva
@@ -742,7 +742,7 @@ if ($check_anomalie==1){
 
 ?>
 <hr>
-<h3> Risorse umane e risorse tecniche </h3>
+<h3> Risorse umane</h3>
 <?php
 $mezzo='';
 $query0_modal="select 
@@ -754,7 +754,8 @@ a.categoria as mezzo,
 pu.responsabile, 
 pu.solo_visualizzazione, 
 pu.rimessa, 
-pu.data_attivazione, 
+pu.data_attivazione,
+to_char(pu.data_attivazione, 'DD/MM/YYYY') as data_attivazione_print, 
 pu.data_disattivazione, 
 u.id_ut
 from anagrafe_percorsi.percorsi_ut pu 
@@ -771,16 +772,16 @@ $result1 = pg_execute($conn_sit, "query_rimessa", array($cod_percorso, $data_dis
 echo '<ul>';
 while($r1 = pg_fetch_assoc($result1)) {
   echo '<h4><li class="mt-1"><b> Sede operativa </b>'.$r1["ut"].'</li></h4>';
-  echo '<li class="mt-1"><b> Id Squadra </b>'.$r1["squadra"].'</li>'; 
+  echo '<li class="mt-1"><b> Squadra </b>'.$r1["squadra"].'</li>'; 
 
   // inserire composizione squadra con funzioncina da recuperare anche sotto 
 
 
-  echo '<li class="mt-1"><b> Mezzo </b>'.$r1["mezzo"].'</li>';
-  echo '<li class="mt-1"><b> Responsabile </b>'.$r1["responsabile"].'</li>';
-  echo '<li class="mt-1"><b> Solo visualizzazione </b>'.$r1["solo_visualizzazione"].'</li>';
-  echo '<li class="mt-1"><b> Data attivazione </b>'.$r1["data_attivazione"].'</li>';
-  echo '<li class="mt-1"><b> Data disattivazione  </b>'.$r1["data_disattivazione"].'</li>';
+  //echo '<li class="mt-1"><b> Mezzo </b>'.$r1["mezzo"].'</li>';
+  //echo '<li class="mt-1"><b> Responsabile </b>'.$r1["responsabile"].'</li>';
+  //echo '<li class="mt-1"><b> Solo visualizzazione </b>'.$r1["solo_visualizzazione"].'</li>';
+  echo '<li class="mt-1"><b> Data attivazione </b>'.$r1["data_attivazione_print"].'</li>';
+  //echo '<li class="mt-1"><b> Data disattivazione  </b>'.$r1["data_disattivazione"].'</li>';
   $rimessa=$r1["id_ut"];
   $sq_rimessa=$r1["id_squadra"];
   $mezzo=$r1["cdaog3"];
@@ -941,7 +942,7 @@ while($r2 = pg_fetch_assoc($result2)) {
   //rendo la squadra modificabile se percorso non è ancor attivo
   if ($check_versione_successiva==0 and $check_superedit==1 and $check_in_attivazione==1 and $r["flg_disattivo"]==0){
     ?>
-    <li class="mt-1"><b>Id Squadra</b>
+    <li class="mt-1"><b>Squadra</b>
     <!--form class="row row-cols-lg-auto g-3 align-items-center" name="form_dd" method="post" autocomplete="off" action="./backoffice/update_data_attivazione.php"-->
     <form class="row row-cols-lg-auto g-3 align-items-center" name="form_squadra" id="form_squadra" autocomplete="off" >
       <input type="hidden" id="id_percorso" name="id_percorso" value="<?php echo $cod_percorso;?>">
@@ -1002,41 +1003,152 @@ while($r2 = pg_fetch_assoc($result2)) {
       </script>
   <?php
   }else{
-    echo '<li class="mt-1"><b> Id Squadra </b>'.$r2["squadra"].'</li>';
+    echo '<li class="mt-1"><b> Squadra </b>'.$r2["squadra"].'</li>';
   }
 
   // inserire composizione squadra con funzioncina da recuperare anche sotto 
 
+
+  //echo '<li class="mt-1"><b> Responsabile </b>'.$r2["responsabile"].'</li>';
+  if ($r2["responsabile"]=='S'){
+    $gc=$r2["id_ut"];
+    $sq_gc=$r2["id_squadra"];
+    if ($mezzo==''){
+      $mezzo=$r2["cdaog3"];
+    }
+  }
+  //echo '<li class="mt-1"><b> Solo visualizzazione </b>'.$r2["solo_visualizzazione"].'</li>';
+  echo '<li class="mt-1"><b> Data attivazione </b>'.$r2["data_attivazione_print"].'</li>';
+  //echo '<li class="mt-1"><b> Data disattivazione  </b>'.$r2["data_disattivazione"].'</li>';
+}
+echo '</ul>';
+
+
+// ALtre UT Visualizzazione
+
+$query_ut2=$query0_modal ." and pu.id_squadra= 15 and rimessa = 'N' order by responsabile desc";
+$result2 = pg_prepare($conn_sit, "query_ut2", $query_ut2);
+$result2 = pg_execute($conn_sit, "query_ut2", array($cod_percorso, $data_disattivazione_testata));
+//echo '<hr>';
+
+if (pg_num_rows($result2) > 0){
+  echo '<h4> <b>UT visualizzazione</b></h4>';
+}
+
+echo '<ul>';
+while($r2 = pg_fetch_assoc($result2)) {
+  echo '<h4><li class="mt-1">'.$r2["ut"].'</li></h4>';
+  //echo '<li class="mt-1"><b> Squadra </b>'.$r2["id_squadra"].'</li>'; 
+
+  // inserire composizione squadra con funzioncina da recuperare anche sotto 
+
+
+  //echo '<li class="mt-1"><b> Mezzo </b>'.$r2["mezzo"].'</li>';
+  //echo '<li class="mt-1"><b> Responsabile </b>'.$r2["responsabile"].'</li>';
+  echo '<li class="mt-1"><b> Data attivazione </b>'.$r2["data_attivazione_print"].'</li>';
+  //echo '<li class="mt-1"><b> Data disattivazione  </b>'.$r2["data_disattivazione"].'</li>';
+}
+echo '</ul>';
+?>
+<hr>
+<h3> Risorse tecniche</h3>
+<h5>Mezzi</h5>
+<?php
+$query_mezzi="select cdaog3,
+        concat(categoria, ' (', trim(nome), ')') as cat_estesa  
+        from elem.automezzi a 
+        join anagrafe_percorsi.percorsi_mezzi pm on pm.id_mezzo = a.cdaog3 
+        where pm.cod_percorso = $1 and pm.versione = $2
+        order by categoria ";
+$result_mezzi = pg_prepare($conn_sit, "query_mezzi", $query_mezzi);
+$result_mezzi = pg_execute($conn_sit, "query_mezzi", array($cod_percorso, $versione));
+
+?>
+
+<?php
   if ($check_versione_successiva==0 and $check_superedit==1 and $check_in_attivazione==1 and $r["flg_disattivo"]==0){
     ?>
-    <li class="mt-1"><b>Mezzo</b>
+    
     <!--form class="row row-cols-lg-auto g-3 align-items-center" name="form_dd" method="post" autocomplete="off" action="./backoffice/update_data_attivazione.php"-->
-    <form class="row row-cols-lg-auto g-3 align-items-center" name="form_mezzo" id="form_mezzo" autocomplete="off" >
+    <form class="row g-3 align-items-center" name="form_mezzo" id="form_mezzo" autocomplete="off" >
       <input type="hidden" id="id_percorso" name="id_percorso" value="<?php echo $cod_percorso;?>">
       <input type="hidden" id="old_vers" name="old_vers" value="<?php echo $versione;?>">
       <input type="hidden" id="id_ut_sit" name="id_ut_sit" value="<?php echo $r2["id_ut"];?>">
-      <div class="col-12">
-        <select name="mezzo_ut" id="mezzo_ut" class="form-select" data-size="5"  data-live-search="true" required="">
+      <div class="form-group col-6">
+        <select name="mezzo_ut" id="mezzo_ut" class="selectpicker show-tick form-control" data-size="5"  data-live-search="true" onchange="writelist();" title="Seleziona la tipologia di mezzo">
+          <!--option name="cdaog3" value="">Seleziona la tipologia di mezzo</option-->
           <?php
           ## da cambiare la query per lista mezzi
           $querymezzo="select cdaog3,
           concat(categoria, ' (', nome, ')') as cat_estesa  from elem.automezzi a 
+          where a.cdaog3 not in ('9998' , '9997', '9996', '9994','9993')
           order by categoria ;";
           $resultmezzo = pg_query($conn_sit, $querymezzo);
           //echo $query1;    
           while($rm = pg_fetch_assoc($resultmezzo)) { 
           ?>   
-            <option name="cdaog3" 
-            <?php
-            if ($rm['cdaog3']==$r2['cdaog3']){
-              echo ' selected ';
-            } ?>
-            value="<?php echo $rm['cdaog3']?>" ><?php echo $rm['cat_estesa'] ?></option>
+            <option name="cdaog3" value="<?php echo $rm['cdaog3']?>" ><?php echo $rm['cat_estesa'] ?></option>
           <?php } ?>
         </select>
       </div>
-      <br>
-      <div class="col-12">
+      <div class="col-4">
+        <label for="lista_mezzi">Elenco mezzi selezionati:</label>
+        <textarea readonly id="lista_mezzi" name="lista_mezzi" rows="4"  class="form-control" required><?php
+          while($rm = pg_fetch_assoc($result_mezzi)) {
+              echo $rm['cdaog3'].' - '.$rm['cat_estesa']."\n";
+            }?>
+        </textarea>
+        <input type="hidden" id="lista_mezzi_valori" name="lista_mezzi_valori" value="">
+        <input type="hidden" id="lista_mezzi_nomi" name="lista_mezzi_nomi" value="">
+        <div class="form-group" style="display: flex; margin-top:2%;">
+        <small class="text-muted" ><!--Anteprima del file con l'elenco mezzi usato dall'applicativo per generare i file con le utenze. 
+        In caso di errori con i mezzi clicca sul bottone per rimuovere l'ultima linea.<br-->
+        <a href="#" class="btn btn-warning btn-sm" id="removeline" ><i class="far fa-trash-alt"></i>Elimina ultimo mezzo</a>
+        <!--br> o riparti dall'inizio<br-->
+        <a href="#" class="btn btn-danger btn-sm" id="aggiorna" ><i class="fas fa-redo"></i>Elimina intero elenco</a></small>
+        </div>
+        <script>
+            $(document).ready(function() {
+                $('#removeline').click(function() {
+                  //cancello ulrima riga del textarea
+                  var lm = $('#lista_mezzi');
+                  var text_lm = lm.val().trim("\n");
+                  var valuelist_lm = text_lm.split("\n");
+                  var last_lm = valuelist_lm[valuelist_lm.length - 1];
+                  replace_lm=text_lm.replace(last_lm, "").replace(/\n$/, "")
+                  lm.val(replace_lm)
+
+                  
+                  // stessa cosa per i campi nascosti
+                  var lm_valori = $('#lista_mezzi_valori');
+                  var text_lm_valori = lm_valori.val().split(",");
+                  text_lm_valori.pop();
+                  lm_valori.val(text_lm_valori)
+
+                  var lm_nomi = $('#lista_mezzi_nomi');
+                  console.log('lista nomi prima: '+lm_nomi.val())
+                  var text_lm_nomi = lm_nomi.val().split(",");
+                  text_lm_nomi.pop();
+                  lm_nomi.val(text_lm_nomi)
+
+                  console.log('lista mezzi: '+lm.val())
+                  console.log('lista nomi dopo: '+lm_nomi.val())
+                  console.log('lista valori dopo: '+lm_valori.val())
+                })
+            });
+            $(document).ready(function() {
+                $('#aggiorna').click(function() {
+                    // pulisco tutto
+                    $('#lista_mezzi').val('');
+                    $('#lista_mezzi_valori').val('');
+                    $('#lista_mezzi_nomi').val('');
+                })
+            });
+
+        </script>            
+      </div>
+
+      <div class="col-2 d-flex justify-content-center align-items-center">
         <button type="submit" class="btn btn-info">
           <i class="fa-solid fa-arrow-up-from-bracket"></i> Salva
         </button>
@@ -1071,50 +1183,15 @@ while($r2 = pg_fetch_assoc($result2)) {
       </script>
   <?php
   }else{
-    echo '<li class="mt-1"><b> Mezzo </b>'.$r2["mezzo"].'</li>';
-  }
-  echo '<li class="mt-1"><b> Responsabile </b>'.$r2["responsabile"].'</li>';
-  if ($r2["responsabile"]=='S'){
-    $gc=$r2["id_ut"];
-    $sq_gc=$r2["id_squadra"];
-    if ($mezzo==''){
-      $mezzo=$r2["cdaog3"];
-    }
-  }
-  echo '<li class="mt-1"><b> Solo visualizzazione </b>'.$r2["solo_visualizzazione"].'</li>';
-  echo '<li class="mt-1"><b> Data attivazione </b>'.$r2["data_attivazione"].'</li>';
-  echo '<li class="mt-1"><b> Data disattivazione  </b>'.$r2["data_disattivazione"].'</li>';
+    echo '<ul>';
+while($rm = pg_fetch_assoc($result_mezzi)) {
+    echo '<li class="mt-1">'.$rm["cat_estesa"].'</li>';
 }
 echo '</ul>';
-
-
-// ALtre UT Visualizzazione
-
-$query_ut2=$query0_modal ." and pu.id_squadra= 15 and rimessa = 'N' order by responsabile desc";
-$result2 = pg_prepare($conn_sit, "query_ut2", $query_ut2);
-$result2 = pg_execute($conn_sit, "query_ut2", array($cod_percorso, $data_disattivazione_testata));
-//echo '<hr>';
-
-if (pg_num_rows($result2) > 0){
-  echo '<h4> <b>UT visualizzazione</b></h4>';
-}
-
-echo '<ul>';
-while($r2 = pg_fetch_assoc($result2)) {
-  echo '<h4><li class="mt-1">'.$r2["ut"].'</li></h4>';
-  //echo '<li class="mt-1"><b> Id Squadra </b>'.$r2["id_squadra"].'</li>'; 
-
-  // inserire composizione squadra con funzioncina da recuperare anche sotto 
-
-
-  echo '<li class="mt-1"><b> Mezzo </b>'.$r2["mezzo"].'</li>';
-  echo '<li class="mt-1"><b> Responsabile </b>'.$r2["responsabile"].'</li>';
-  echo '<li class="mt-1"><b> Data attivazione </b>'.$r2["data_attivazione"].'</li>';
-  echo '<li class="mt-1"><b> Data disattivazione  </b>'.$r2["data_disattivazione"].'</li>';
-}
-echo '</ul>';
-
-
+  }
+echo '<hr>';
+?>
+<?php
 
 if($check_versione_successiva==0){
 ?>
@@ -1156,7 +1233,7 @@ if($check_versione_successiva==0){
 <?php } else {
   //echo 'Check in attivazione '. $check_in_attivazione;
   if ($check_in_attivazione==1){
-    echo '<i class="fa-solid fa-ghost"></i> Percorso non ancora attivo. Per modifiche contattare <a href="mailto:assterritorio@amiu.genova.it">AssTerritorio</a>.';
+    echo '<div style=" text-align-last: center;"><h6><i class="fa-solid fa-ban"></i> Percorso non ancora attivo. Per modifiche contattare <a href="mailto:assterritorio@amiu.genova.it">AssTerritorio</a>.</h6></div>';
   }
 }?>
 </form>
@@ -1366,17 +1443,80 @@ document.addEventListener("change", function(e) {
     }
 });
 
+// al caricamento della pagina, popola i campi hidden con i valori già presenti nella textarea
+$(document).ready(function() {
+    var lista = document.getElementById("lista_mezzi").value.trim();
+    if (lista === '') return;
 
+    var righe = lista.split('\n').filter(r => r.trim() !== '');
+    
+    var codici = righe.map(r => r.split(' - ')[0].trim());
+    var nomi   = righe.map(r => r.split('(')[1].replace(/\)$/, '').trim());
+
+    document.getElementById("lista_mezzi_valori").value = codici.join(',');
+    document.getElementById("lista_mezzi_nomi").value   = nomi.join(',');
+});
 
 </script>
 
 
+<script type="text/javascript" >
 
+$(document).on("keydown", ":input:not(textarea)", function(event) {
+    if (event.key == "Enter") {
+        event.preventDefault();
+    }
+});
+
+</script>
 
 <script>
 
+  $(function () {
+    $('#mezzo_ut').selectpicker();
+  });
 
+	function writelist(){
+		var mezzo_value=$("#mezzo_ut option:selected").val(); //get the value of the current selected option.
+    console.log(mezzo_value);
+    var mezzo_text=$("#mezzo_ut option:selected").text();
+		console.log(mezzo_text);
 
+    if (mezzo_value === '') return;
+
+    //document.getElementById("lista_mezzi").value += mezzo_value+ ' - '+mezzo_text+ "\n";
+
+    var lista_mezzi = document.getElementById("lista_mezzi");
+    lista_mezzi.value = lista_mezzi.value.trim();
+
+    if (lista_mezzi.value != '') {
+        lista_mezzi.value = lista_mezzi.value + '\n' + mezzo_value + ' - ' + mezzo_text;
+    } else {
+        lista_mezzi.value = mezzo_value + ' - ' + mezzo_text;
+    }
+
+    // creo una lista con i soli codici mezzo, li salvo in un campo nascosto del form in modo da inviarli al submit
+    var codici_list = document.getElementById("lista_mezzi_valori");
+    if (codici_list.value != "") {
+        // il campo ha già dei valori → aggiungo la virgola e il nuovo valore
+        codici_list.value = codici_list.value + ',' + mezzo_value;
+    } else {
+        // il campo è ancora vuoto → scrivo solo il valore, senza virgola iniziale
+        codici_list.value = mezzo_value;
+    }
+    
+    // creo una lista con i soli nomi mezzo, li salvo in un campo nascosto del form in modo da inviarli al submit
+    var nomi_list = document.getElementById("lista_mezzi_nomi");
+    if (nomi_list.value != "") {
+        // il campo ha già dei valori → aggiungo la virgola e il nuovo valore
+        nomi_list.value = nomi_list.value + ',' + mezzo_text.split('(')[1].replace(/\)$/, '');
+    } else {
+        // il campo è ancora vuoto → scrivo solo il valore, senza virgola iniziale
+        nomi_list.value = mezzo_text.split('(')[1].replace(/\)$/, '');
+    }
+
+    $("#mezzo_ut").selectpicker('val', '');
+	} 
 
 </script>
 

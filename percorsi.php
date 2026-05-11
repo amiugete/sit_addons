@@ -361,8 +361,10 @@ $(function() {
 
 
 <?php
-require_once('req_bottom.php');
-require_once('./footer.php');
+if (!isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+  require_once('req_bottom.php');
+  require('./footer.php');
+}
 ?>
 
 

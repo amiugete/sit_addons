@@ -1154,7 +1154,8 @@ if ($res_ok ==0){
   exec($comando, $output, $retval);
   echo "retval = ". $retval ."<br>";
   if ($retval == 0) {
-    header("location: ../dettagli_percorso.php?cp=".$cod_percorso."&v=".$new_vers."");
+    //header("location: ../dettagli_percorso.php?cp=".$cod_percorso."&v=".$new_vers."");
+    header("location: ../percorsi.php?cp=".$cod_percorso."&v=".$new_vers."");
   }
 }
 ?>
