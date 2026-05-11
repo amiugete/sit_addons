@@ -197,6 +197,42 @@ $(function() {
 .highcharts-data-table tr:hover {
     background: #f1f7ff;
 }
+
+/* STILI PER I TOAST che al momento uso nell'index_aree.php*/
+.toast {
+    /*position: fixed;
+    bottom: 20px;
+    right: 20px;*/
+    width: auto;
+    box-shadow: none !important;
+    background: #333;
+    color: #fff;
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+    z-index: 9999;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast.success {
+    background: #28a745;
+}
+
+.toast.error {
+    background: #dc3545;
+}
+
+.toast.warning {
+    background: #ffc107;
+    color: #212529;
+}
 </style>
 
 

@@ -19,6 +19,25 @@ $res_ok=0;
     //$ecopoint = $_POST['ecop'];
     //echo "Utenze : " . $utenze."<br>";
     //echo "Id area: " . $eco."<br>";
+    /*echo "ecopunto: " . $ecopoint."<br>";
+    if ($ecopoint == '1') {
+        echo "L'area è un ecopunto<br>";
+        $query_eco= "UPDATE etl.aree_4326
+            SET ecopunto=true
+            WHERE id=$1;";
+        $resulteco =pg_prepare($conn, "my_query_eco", $query_eco);
+        if (pg_last_error($conn)){
+            echo pg_last_error($conn);
+            $res_ok=$res_ok+1;
+        }
+        $resulteco = pg_execute($conn, "my_query_eco", array($eco));
+        if (pg_last_error($conn)){
+            echo pg_last_error($conn);
+            $res_ok=$res_ok+1;
+        }
+    } else {
+        echo "L'area non è un ecopunto<br>";
+    }*/
     //exit;
 
 

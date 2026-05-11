@@ -14,7 +14,7 @@ session_start();
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <meta name="author" content="roberto" >
+    <meta name="author" content="roberta" >
 
     <title>Ricerca utenze</title>
 <?php 
@@ -28,6 +28,7 @@ if ($_SESSION['test']==1) {
   require_once ('./conn.php');
 }
 ?> 
+
 
 </head>
 
@@ -145,10 +146,10 @@ $(window).bind ("beforeunload",  function (zEvent) {
             
             
 
-            <div class="col-md-4"> 
+            <div class="col-md-3"> 
             <div class="form-group">
             <label for="id_area">Area:</label> <font color="red">*</font>
-            <select class="selectpicker show-tick form-control" name="id_area" id="id_area" data-live-search="true">
+            <select class="selectpicker show-tick form-control" name="id_area" id="id_area" data-live-search="true" required="" onchange="enableButtons(this)">
             <option value="" > Scegli un'area </option>
             <?php            
             //$query2="SELECT * From etl.aree_4326 where data_disegno::date>=(NOW() - INTERVAL '30' DAY) order by data_disegno desc;";
@@ -157,14 +158,15 @@ $(window).bind ("beforeunload",  function (zEvent) {
                         WHEN ecopunto = true THEN 'ecopunto_' || nome
                         ELSE nome
                       END AS nome,
-                      to_char(data_disegno, 'dd/mm/yyyy - HH24:MI:SS') as data_disegno2
+                      to_char(data_disegno, 'dd/mm/yyyy - HH24:MI:SS') as data_disegno2,
+                      ecopunto
                       from etl.aree_4326 where (data_disegno::date>=(NOW() - INTERVAL '30' DAY) and ecopunto is not true) or 
                       ecopunto = true order by data_disegno desc;";
 	          $result2 = pg_query($conn, $query2);
             //echo $query1;    
             while($r2 = pg_fetch_assoc($result2)) { 
             ?>    
-                    <option name="id_area" value="<?php echo $r2['id'];?>" ><?php echo $r2['nome']. "(".$r2['data_disegno2']. ")";?></option>
+                    <option name="id_area" eco="<?php echo $r2['ecopunto']?>" value="<?php echo $r2['id'];?>" ><?php echo $r2['nome']. "(".$r2['data_disegno2']. ")";?></option>
              <?php } ?>
              </select>
                 
@@ -172,7 +174,7 @@ $(window).bind ("beforeunload",  function (zEvent) {
             </div>
 
             
-            <div class="col-md-4"> 
+            <div class="col-md-3"> 
             <div class="form-group">
                 <label for="via">Utenze:</label> <font color="red">*</font>
                 <!--select name="via-list" id="via-list" class="selectpicker show-tick form-control" 
@@ -189,7 +191,13 @@ $(window).bind ("beforeunload",  function (zEvent) {
             </div>
             </div>
 
-
+            <div class="col-md-3 d-flex justify-content-center align-items-end"> 
+            <div class="form-group">
+              <button type="submit" name="submit" id=submit value="invia_utenze" class="btn btn-success"><i class="fa-solid fa-file-arrow-down"></i>Scarica utenze</button>
+              <!--label for="ecopunto">Inviare area ad applicativo per consegna schede?</label>
+            <input class="form-check-input" type="checkbox" value="1" name="ecop" id="ecop"-->
+             </div>
+            </div>
             <!--div class="col-md-2 d-flex justify-content-center align-items-center">
 
             <div class="form-group  ">
@@ -199,13 +207,24 @@ $(window).bind ("beforeunload",  function (zEvent) {
             </div-->
 
             
-            <div class="col-md-4 d-flex justify-content-center align-items-end">
+            <div class="col-md-3 d-flex justify-content-center align-items-end">
 
             <div class="form-group  ">
-            <button type="submit" name="submit" id=submit value="invia_utenze" class="btn btn-success"><i class="fa-solid fa-file-arrow-down"></i>Scarica utenze</button>
+                <button type="button" class="btn btn-danger" id="delete_area" disabled><i class="fa-solid fa-trash"></i> Elimina area</button>
+                <button type="button" class="btn btn-primary" id="send_area" disabled><i class="fa-solid fa-paper-plane"></i> Invia a Saltax </button>
             </div>
             </div>
             </div>
+            </form>
+
+            <form id="form_delete_area" method="post" action="">
+              <input type="hidden" name="delete_area_id" id="delete_area_id" value="">
+              <input type="hidden" name="submit" value="elimina_area">
+            </form>
+
+            <form id="form_send_area" method="post" action="">
+              <input type="hidden" name="send_area_id" id="send_area_id" value="">
+              <input type="hidden" name="submit_area" value="invia_area">
             </form>
 
         <div class="row justify-content-center" style="margin-top:2%; display:none;" id="output_message">
@@ -213,6 +232,7 @@ $(window).bind ("beforeunload",  function (zEvent) {
           L'operazione potrebbe impiegare un po' di tempo. Attendere, il file sarà presto disponibile per il download. 
           <img src="./img/loading.gif" alt="loader1" style="height:30px; width:auto;" class="img-fluid" id="loaderImg">
         </div>
+        <div id="toast" class="toast hidden"></div>
             </div>
       </div>
 
@@ -296,6 +316,7 @@ document.getElementById('open_file').addEventListener('submit', function (e) {
   .then(res => {
   console.log(res);
   console.log(res.status); 
+  console.log(new FormData(this));
   if (!res.ok) throw new Error("Errore server: " + res.status);
   
   // leggo l'header Content-Disposition
@@ -327,9 +348,109 @@ document.getElementById('open_file').addEventListener('submit', function (e) {
 </script>
 
 <script>
+
+  function enableButtons(val){
+    const eco = val.options[val.selectedIndex].getAttribute('eco')
+    if (eco == 't' || val.value == '') {
+      document.getElementById('delete_area').disabled = true;
+      document.getElementById('send_area').disabled = true;
+    }else{
+      document.getElementById('delete_area').disabled = false;
+      document.getElementById('send_area').disabled = false;
+    }
+    /*console.log('eco è '+ val.options[val.selectedIndex].getAttribute('eco'))
+    console.log('val è '+ val.value)
+    console.log('text è '+ val.options[val.selectedIndex].text)*/
+    /*console.log('finora è '+ val.options[val.selectedIndex].getAttribute('finora'))
+    console.log('il turno selezionato è '+ val.value)*/
+  }
+
+
+
+  document.getElementById('delete_area').addEventListener('click', function (e) {
+    e.preventDefault();
+    const areaSelect = document.getElementById('id_area');
+    const areaId    = areaSelect.value;
+    const areaNome  = areaSelect.options[areaSelect.selectedIndex].text;
+
+    if (!areaId) {
+        showToast('Devi selezionare l\'area da eliminare.', 'warning');
+        return;
+    }
+
+    /*if (confirm('Sei sicuro di voler eliminare l\'area:\n"' + areaNome + '"?\nL\'operazione non è reversibile.')) {
+      return;
+
+    }*/
+    fetch('./backoffice/delete_area_utenze.php', {
+      method: 'POST',
+      body: JSON.stringify({
+            area_id: areaId,
+            area_nome: areaNome
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast(data.message, 'success');
+
+            areaSelect.remove(areaSelect.selectedIndex);
+        } else {
+            showToast(data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error(error);
+        showToast('Errore durante la richiesta', 'error');
+    });
+});
+</script>
+
+<script>
+
+  document.getElementById('send_area').addEventListener('click', function (e) {
+    e.preventDefault();
+    const areaSelect = document.getElementById('id_area');
+    const areaId    = areaSelect.value;
+    const areaNome  = areaSelect.options[areaSelect.selectedIndex].text;
+
+    if (!areaId) {
+        showToast('Devi selezionare l\'area da inviare a Saltax.', 'warning');
+        return;
+    }
+
+    if (!confirm('Sei sicuro di voler inviare l\'area \n"' + areaNome + '" all\'applicazione per la consegna delle tessere di accesso all\'ecopunto?\nL\'operazione non è reversibile.')) {
+      return;
+    }
+    console.log('Invio area ' + areaId + ' a Saltax');
+    fetch('./backoffice/send_area_utenze.php', {
+      method: 'POST',
+      body: JSON.stringify({
+            area_id: areaId,
+            area_nome: areaNome
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast(data.message, 'success');
+
+            areaSelect.remove(areaSelect.selectedIndex);
+        } else {
+            showToast(data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error(error);
+        showToast('Errore durante la richiesta', 'error');
+    });
+});
+</script>
+
+<script>
 function refreshSelect() {
-  const $select = $('#eco');
-  const select = document.getElementById('eco');
+  const $select = $('#id_area');
+  const select = document.getElementById('id_area');
   if (!select) return;
 
   // Se il menu è aperto, non aggiorniamo
@@ -363,13 +484,25 @@ function refreshSelect() {
 }
 
 // refresh ogni 5 secondi
-setInterval(refreshSelect, 5000);
+setInterval(refreshSelect, 3000);
 </script>
 
 
 
 
 
+<script>
+  function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+
+      toast.textContent = message;
+      toast.className = 'toast show ' + type;
+
+      setTimeout(() => {
+          toast.className = 'toast';
+      }, 5000);
+  }
+</script>
 </body>
 
 </html>

@@ -95,7 +95,7 @@ if (trim($check_utenze) != 't') {
             </div>
             </div>
 
-            <div class="row" style="padding-top: 2%;">
+        <div class="row" style="padding-top: 2%;">
 
 			<div class="col-md-6"> 
                 <div class="form-group  ">
