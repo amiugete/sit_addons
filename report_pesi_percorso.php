@@ -442,11 +442,20 @@ $(function() {
     baseUrl: "./tables/data_report_pesi_percorso.php",
     extraParams: () => {
       // parametri extra della pagina
-      const range = $('input[name="daterange"]').val().split(" - ");
+      const val = $('input[name="daterange"]').val();
+
+      let data_inizio = "<?php echo $min_data->format("Y-m-d"); ?>";
+      let data_fine = "<?php echo $today->format("Y-m-d"); ?>";
+
+      if (val && val.includes(" - ")) {
+        const range = val.split(" - ");
+        data_inizio = range[0].split('/').reverse().join('-');
+        data_fine = range[1].split('/').reverse().join('-');
+      }
       return {
         ut: $("#ut").val() == 0 ? "" : $("#ut").val(),
-        data_inizio: range[0].split('/').reverse().join('-'),
-        data_fine: range[1].split('/').reverse().join('-')
+        data_inizio,
+        data_fine
       };
     }
   });
