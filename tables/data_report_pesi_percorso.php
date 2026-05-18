@@ -55,7 +55,8 @@ if($_GET['data_inizio']) {
             where COALESCE(id_ut, id_rimessa) IN (select x.id_uo from (".$query_ut.") x )".$filter;
 }
 
-//echo $query;
+
+$query = $query . " order by data_percorso desc, dataoraconf desc";
 //echo "<br><br>";
 //echo $_GET['ut'];
 //echo "<br><br>".$_SESSION["id_uos"];
