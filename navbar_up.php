@@ -248,16 +248,16 @@ if ($check_modal!=1){
           </div>
         </li>
         <?php } ?>
-        <!--?php if ($check_superedit == 1) { ?>
+        <?php if ($check_edit_piazzola == 1) { ?>
           <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#"  role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="navbarDropdown2">
-          Funzionalità amministratori SIT
+          Piazzole
           </a>
           <div class="dropdown-menu" id="navbarDropdown2" aria-labelledby="navbarDropdown2">
-            <a class="dropdown-item" href="./update_elementi.php">Forzare update elementi</a>
+            <a class="dropdown-item" href="./piazzola_pap.php"><!--i class="fa-solid fa-location-pin-lock"></i-->Aggiungi piazzola PAP</a>
           </div>
-        </li-->
-        <!--?php } ?-->
+        </li>
+        <?php } ?>
               
 
 

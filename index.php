@@ -227,7 +227,7 @@ if ((int)$id_role_SIT = 0) {
     </div>
     </div>
     <?php } ?>
-    <?php if ($check_superedit == 1 OR $check_utenze=='t') { ?>
+<?php if ($check_superedit == 1 OR $check_utenze=='t') { ?>
 <div class="col-sm-4">
     <div class="card">
       <div class="card-header">
@@ -239,7 +239,19 @@ if ((int)$id_role_SIT = 0) {
       </ul>
     </div>
     </div>
-    <?php } ?>
+<?php } ?>
+<?php if ($check_edit_piazzola == 1) { ?>
+<div class="col-sm-4">
+    <div class="card">
+      <div class="card-header">
+        <h3><i class="fa-solid fa-location-dot"></i></i>Piazzole</h3>
+      </div>
+      <ul class="list-group list-group-flush">
+        <a class="list-group-item" href="./piazzola_pap.php">Aggiungi piazzola PAP</a>
+      </ul>
+    </div>
+    </div>
+<?php } ?>
 
     </div>
     </div>
