@@ -33,7 +33,6 @@ if ($_POST['suolo_privato'] == 'true'){
     $suolo_privato = 0;
 }
 
-
 $tcliente = $_POST['tcliente'];
 $desc = $_POST['desc'];
 $query_macrocategoria = "select descrizione from utenze.macro_categorie where id_macro_categoria = $1";
@@ -130,6 +129,60 @@ while($ra = pg_fetch_assoc($result_asta)) {
 //echo "tipo geom: ".gettype($geom)."<br>";
 //echo "geom_text: ".$geom_text."<br>";
 //echo "tipo geom_text: ".gettype($geom_text)."<br>";
+
+if (isset($_POST['piazzola_esistente'])){
+    $id_piazzola_esistente = $_POST['piazzola_esistente'];
+    //verifico se la geom della piazzola esistente ricade in un buffer di 4m dalla geom del civico 
+    $select_geom_esistente = "select 
+        case when st_intersects(p.geoloc, st_buffer(c.geoloc, 4)) then ST_AsText(ST_LineInterpolatePoint( g.geoloc, ST_LineLocatePoint(g.geoloc, p.geoloc)))
+        else 'NO'
+        end as coincidono
+        from elem.piazzole vp 
+        join geo.v_civici c on  c.cod_strada = vp.id_via::text and c.testo ilike vp.numero_civico||coalesce(vp.lettera_civico,'')||coalesce(vp.colore_civico,'')
+        join elem.v_piazzole_dwh p on p.id_piazzola  = vp.id_piazzola
+        join geo.grafostradale g on g.id = vp.id_asta  
+        where vp.id_piazzola = $1";
+    $result_geom_esistente = pg_prepare($conn_sit, "select_geom_esistente", $select_geom_esistente);
+    if (!pg_last_error($conn_sit)){
+        #$res_ok=0;
+    } else {          
+        pg_last_error($conn_sit);
+        $res_ok= $res_ok+1;
+    }
+    $result_geom_esistente = pg_execute($conn_sit, "select_geom_esistente", array($id_piazzola_esistente)); 
+    if (!pg_last_error($conn_sit)){
+        #$res_ok=0;
+    } else { 
+        //echo pg_last_error($conn_sit);
+        echo $_SESSION['username'];
+        echo "<br><br>ERRORE su select geom piazzola esistente<br>". pg_last_error($conn_sit);
+        $res_ok= $res_ok+1;
+    }
+    while($rge = pg_fetch_assoc($result_geom_esistente)) { 
+        $geom_esistente = $rge['coincidono'];
+    }
+    //echo "geom_esistente: ".$geom_esistente."<br>";
+    if ($geom_esistente !== 'NO'){
+        //se coincide faccio un update della geom della piazzola esistente spostandola sul punto più vicino dell'asta
+        $update_geom_esistente = "update geo.piazzola set geoloc = $1, data_ultima_modifica = CURRENT_TIMESTAMP where id = $2";
+        $result_update_geom_esistente = pg_prepare($conn_sit, "update_geom_esistente", $update_geom_esistente);
+        if (!pg_last_error($conn_sit)){
+            #$res_ok=0;
+        } else {
+            pg_last_error($conn_sit);
+            $res_ok= $res_ok+1; 
+        }
+        $result_update_geom_esistente = pg_execute($conn_sit, "update_geom_esistente", array($geom_esistente, $id_piazzola_esistente)); 
+        if (!pg_last_error($conn_sit)){
+            #$res_ok=0;
+        } else { 
+            //echo pg_last_error($conn_sit);
+            echo $_SESSION['username'];
+            echo "<br><br>ERRORE su update geom piazzola esistente<br>". pg_last_error($conn_sit);
+            $res_ok= $res_ok+1;
+        }
+    }
+}
 
 
 $query_user = "select id_user from util.sys_users su where \"name\" ilike $1";

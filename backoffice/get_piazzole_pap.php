@@ -20,7 +20,7 @@ $id_civico = $_GET['civico'];
 
 
 $query_piazzola = "with piazzole as(
-select vp.id_piazzola, vp.riferimento, 
+select vp.id_piazzola, vp.riferimento, p.via,
 vp.numero_civico, vp.numero_civico||coalesce(vp.lettera_civico,'')||coalesce(vp.colore_civico,'') as civico_testo,  
 vp.id_asta, p.elementi, p.is_pap, p.geoloc 
 from elem.piazzole vp 
