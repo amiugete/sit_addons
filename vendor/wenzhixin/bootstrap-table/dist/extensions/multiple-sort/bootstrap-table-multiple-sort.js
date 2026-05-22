@@ -86,7 +86,7 @@
 
   	functionBindNative = !fails(function () {
   	  // eslint-disable-next-line es/no-function-prototype-bind -- safe
-  	  var test = (function () { /* empty */ }).bind();
+  	  var test = function () { /* empty */ }.bind();
   	  // eslint-disable-next-line no-prototype-builtins -- safe
   	  return typeof test != 'function' || test.hasOwnProperty('prototype');
   	});
@@ -102,7 +102,7 @@
   	var NATIVE_BIND = requireFunctionBindNative();
 
   	var call = Function.prototype.call;
-
+  	// eslint-disable-next-line es/no-function-prototype-bind -- safe
   	functionCall = NATIVE_BIND ? call.bind(call) : function () {
   	  return call.apply(call, arguments);
   	};
@@ -159,6 +159,7 @@
 
   	var FunctionPrototype = Function.prototype;
   	var call = FunctionPrototype.call;
+  	// eslint-disable-next-line es/no-function-prototype-bind -- safe
   	var uncurryThisWithBind = NATIVE_BIND && FunctionPrototype.bind.bind(call, call);
 
   	functionUncurryThis = NATIVE_BIND ? uncurryThisWithBind : function (fn) {
@@ -564,10 +565,10 @@
   	var store = sharedStore.exports = globalThis[SHARED] || defineGlobalProperty(SHARED, {});
 
   	(store.versions || (store.versions = [])).push({
-  	  version: '3.39.0',
+  	  version: '3.49.0',
   	  mode: IS_PURE ? 'pure' : 'global',
-  	  copyright: '© 2014-2024 Denis Pushkarev (zloirock.ru)',
-  	  license: 'https://github.com/zloirock/core-js/blob/v3.39.0/LICENSE',
+  	  copyright: '© 2013–2025 Denis Pushkarev (zloirock.ru), 2025–2026 CoreJS Company (core-js.io). All rights reserved.',
+  	  license: 'https://github.com/zloirock/core-js/blob/v3.49.0/LICENSE',
   	  source: 'https://github.com/zloirock/core-js'
   	});
   	return sharedStore.exports;
@@ -635,7 +636,7 @@
 
   	var id = 0;
   	var postfix = Math.random();
-  	var toString = uncurryThis(1.0.toString);
+  	var toString = uncurryThis(1.1.toString);
 
   	uid = function (key) {
   	  return 'Symbol(' + (key === undefined ? '' : key) + ')_' + toString(++id + postfix, 36);
@@ -920,7 +921,7 @@
 
   	var EXISTS = hasOwn(FunctionPrototype, 'name');
   	// additional protection from minified / mangled / dropped function names
-  	var PROPER = EXISTS && (function something() { /* empty */ }).name === 'something';
+  	var PROPER = EXISTS && function something() { /* empty */ }.name === 'something';
   	var CONFIGURABLE = EXISTS && (!DESCRIPTORS || (DESCRIPTORS && getDescriptor(FunctionPrototype, 'name').configurable));
 
   	functionName = {
@@ -943,7 +944,7 @@
 
   	var functionToString = uncurryThis(Function.toString);
 
-  	// this helper broken in `core-js@3.4.1-3.4.4`, so we can't use `shared` helper
+  	// this helper broken in `core-js [at] 3.4.1-3.4.4`, so we can't use `shared` helper
   	if (!isCallable(store.inspectSource)) {
   	  store.inspectSource = function (it) {
   	    return functionToString(it);
@@ -1558,7 +1559,7 @@
   	var MAX_SAFE_INTEGER = 0x1FFFFFFFFFFFFF; // 2 ** 53 - 1 == 9007199254740991
 
   	doesNotExceedSafeInteger = function (it) {
-  	  if (it > MAX_SAFE_INTEGER) throw $TypeError('Maximum allowed index exceeded');
+  	  if (it > MAX_SAFE_INTEGER) throw new $TypeError('Maximum allowed index exceeded');
   	  return it;
   	};
   	return doesNotExceedSafeInteger;
@@ -1581,6 +1582,41 @@
   	return createProperty;
   }
 
+  var arraySetLength;
+  var hasRequiredArraySetLength;
+
+  function requireArraySetLength () {
+  	if (hasRequiredArraySetLength) return arraySetLength;
+  	hasRequiredArraySetLength = 1;
+  	var DESCRIPTORS = requireDescriptors();
+  	var isArray = requireIsArray();
+
+  	var $TypeError = TypeError;
+  	// eslint-disable-next-line es/no-object-getownpropertydescriptor -- safe
+  	var getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+
+  	// Safari < 13 does not throw an error in this case
+  	var SILENT_ON_NON_WRITABLE_LENGTH_SET = DESCRIPTORS && !function () {
+  	  // makes no sense without proper strict mode support
+  	  if (this !== undefined) return true;
+  	  try {
+  	    // eslint-disable-next-line es/no-object-defineproperty -- safe
+  	    Object.defineProperty([], 'length', { writable: false }).length = 1;
+  	  } catch (error) {
+  	    return error instanceof TypeError;
+  	  }
+  	}();
+
+  	arraySetLength = SILENT_ON_NON_WRITABLE_LENGTH_SET ? function (O, length) {
+  	  if (isArray(O) && !getOwnPropertyDescriptor(O, 'length').writable) {
+  	    throw new $TypeError('Cannot set read only .length');
+  	  } return O.length = length;
+  	} : function (O, length) {
+  	  return O.length = length;
+  	};
+  	return arraySetLength;
+  }
+
   var toStringTagSupport;
   var hasRequiredToStringTagSupport;
 
@@ -1591,7 +1627,7 @@
 
   	var TO_STRING_TAG = wellKnownSymbol('toStringTag');
   	var test = {};
-
+  	// eslint-disable-next-line unicorn/no-immediate-mutation -- ES3 syntax limitation
   	test[TO_STRING_TAG] = 'z';
 
   	toStringTagSupport = String(test) === '[object z]';
@@ -1784,6 +1820,7 @@
   	var lengthOfArrayLike = requireLengthOfArrayLike();
   	var doesNotExceedSafeInteger = requireDoesNotExceedSafeInteger();
   	var createProperty = requireCreateProperty();
+  	var setArrayLength = requireArraySetLength();
   	var arraySpeciesCreate = requireArraySpeciesCreate();
   	var arrayMethodHasSpeciesSupport = requireArrayMethodHasSpeciesSupport();
   	var wellKnownSymbol = requireWellKnownSymbol();
@@ -1829,7 +1866,7 @@
   	        createProperty(A, n++, E);
   	      }
   	    }
-  	    A.length = n;
+  	    setArrayLength(A, n);
   	    return A;
   	  }
   	});
@@ -1887,13 +1924,11 @@
   	if (hasRequiredArrayIteration) return arrayIteration;
   	hasRequiredArrayIteration = 1;
   	var bind = requireFunctionBindContext();
-  	var uncurryThis = requireFunctionUncurryThis();
   	var IndexedObject = requireIndexedObject();
   	var toObject = requireToObject();
   	var lengthOfArrayLike = requireLengthOfArrayLike();
   	var arraySpeciesCreate = requireArraySpeciesCreate();
-
-  	var push = uncurryThis([].push);
+  	var createProperty = requireCreateProperty();
 
   	// `Array.prototype.{ forEach, map, filter, some, every, find, findIndex, filterReject }` methods implementation
   	var createMethod = function (TYPE) {
@@ -1904,28 +1939,28 @@
   	  var IS_FIND_INDEX = TYPE === 6;
   	  var IS_FILTER_REJECT = TYPE === 7;
   	  var NO_HOLES = TYPE === 5 || IS_FIND_INDEX;
-  	  return function ($this, callbackfn, that, specificCreate) {
+  	  return function ($this, callbackfn, that) {
   	    var O = toObject($this);
   	    var self = IndexedObject(O);
   	    var length = lengthOfArrayLike(self);
   	    var boundFunction = bind(callbackfn, that);
   	    var index = 0;
-  	    var create = specificCreate || arraySpeciesCreate;
-  	    var target = IS_MAP ? create($this, length) : IS_FILTER || IS_FILTER_REJECT ? create($this, 0) : undefined;
+  	    var resIndex = 0;
+  	    var target = IS_MAP ? arraySpeciesCreate($this, length) : IS_FILTER || IS_FILTER_REJECT ? arraySpeciesCreate($this, 0) : undefined;
   	    var value, result;
   	    for (;length > index; index++) if (NO_HOLES || index in self) {
   	      value = self[index];
   	      result = boundFunction(value, index, O);
   	      if (TYPE) {
-  	        if (IS_MAP) target[index] = result; // map
+  	        if (IS_MAP) createProperty(target, index, result);    // map
   	        else if (result) switch (TYPE) {
-  	          case 3: return true;              // some
-  	          case 5: return value;             // find
-  	          case 6: return index;             // findIndex
-  	          case 2: push(target, value);      // filter
+  	          case 3: return true;                                // some
+  	          case 5: return value;                               // find
+  	          case 6: return index;                               // findIndex
+  	          case 2: createProperty(target, resIndex++, value);  // filter
   	        } else switch (TYPE) {
-  	          case 4: return false;             // every
-  	          case 7: push(target, value);      // filterReject
+  	          case 4: return false;                               // every
+  	          case 7: createProperty(target, resIndex++, value);  // filterReject
   	        }
   	      }
   	    }
@@ -2193,9 +2228,15 @@
   	  return !Array(1).includes();
   	});
 
+  	// Safari 26.4- bug
+  	var BROKEN_ON_SPARSE_WITH_FROM_INDEX = fails(function () {
+  	  // eslint-disable-next-line no-sparse-arrays, es/no-array-prototype-includes -- detection
+  	  return [, 1].includes(undefined, 1);
+  	});
+
   	// `Array.prototype.includes` method
   	// https://tc39.es/ecma262/#sec-array.prototype.includes
-  	$({ target: 'Array', proto: true, forced: BROKEN_ON_SPARSE }, {
+  	$({ target: 'Array', proto: true, forced: BROKEN_ON_SPARSE || BROKEN_ON_SPARSE_WITH_FROM_INDEX }, {
   	  includes: function includes(el /* , fromIndex = 0 */) {
   	    return $includes(this, el, arguments.length > 1 ? arguments[1] : undefined);
   	  }
@@ -2313,6 +2354,7 @@
   	var lengthOfArrayLike = requireLengthOfArrayLike();
   	var toIndexedObject = requireToIndexedObject();
   	var createProperty = requireCreateProperty();
+  	var setArrayLength = requireArraySetLength();
   	var wellKnownSymbol = requireWellKnownSymbol();
   	var arrayMethodHasSpeciesSupport = requireArrayMethodHasSpeciesSupport();
   	var nativeSlice = requireArraySlice();
@@ -2349,7 +2391,7 @@
   	    }
   	    result = new (Constructor === undefined ? $Array : Constructor)(max(fin - k, 0));
   	    for (n = 0; k < fin; k++, n++) if (k in O) createProperty(result, n, O[k]);
-  	    result.length = n;
+  	    setArrayLength(result, n);
   	    return result;
   	  }
   	});
@@ -2560,7 +2602,9 @@
   	    if (y === undefined) return -1;
   	    if (x === undefined) return 1;
   	    if (comparefn !== undefined) return +comparefn(x, y) || 0;
-  	    return toString(x) > toString(y) ? 1 : -1;
+  	    var xString = toString(x);
+  	    var yString = toString(y);
+  	    return xString === yString ? 0 : xString > yString ? 1 : -1;
   	  };
   	};
 
@@ -2599,41 +2643,6 @@
   requireEs_array_sort();
 
   var es_array_splice = {};
-
-  var arraySetLength;
-  var hasRequiredArraySetLength;
-
-  function requireArraySetLength () {
-  	if (hasRequiredArraySetLength) return arraySetLength;
-  	hasRequiredArraySetLength = 1;
-  	var DESCRIPTORS = requireDescriptors();
-  	var isArray = requireIsArray();
-
-  	var $TypeError = TypeError;
-  	// eslint-disable-next-line es/no-object-getownpropertydescriptor -- safe
-  	var getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
-
-  	// Safari < 13 does not throw an error in this case
-  	var SILENT_ON_NON_WRITABLE_LENGTH_SET = DESCRIPTORS && !function () {
-  	  // makes no sense without proper strict mode support
-  	  if (this !== undefined) return true;
-  	  try {
-  	    // eslint-disable-next-line es/no-object-defineproperty -- safe
-  	    Object.defineProperty([], 'length', { writable: false }).length = 1;
-  	  } catch (error) {
-  	    return error instanceof TypeError;
-  	  }
-  	}();
-
-  	arraySetLength = SILENT_ON_NON_WRITABLE_LENGTH_SET ? function (O, length) {
-  	  if (isArray(O) && !getOwnPropertyDescriptor(O, 'length').writable) {
-  	    throw new $TypeError('Cannot set read only .length');
-  	  } return O.length = length;
-  	} : function (O, length) {
-  	  return O.length = length;
-  	};
-  	return arraySetLength;
-  }
 
   var hasRequiredEs_array_splice;
 
@@ -2682,7 +2691,7 @@
   	      from = actualStart + k;
   	      if (from in O) createProperty(A, k, O[from]);
   	    }
-  	    A.length = actualDeleteCount;
+  	    setArrayLength(A, actualDeleteCount);
   	    if (insertCount < actualDeleteCount) {
   	      for (k = actualStart; k < len - actualDeleteCount; k++) {
   	        from = k + actualDeleteCount;
@@ -2755,6 +2764,7 @@
   	  var symbol = Symbol('assign detection');
   	  var alphabet = 'abcdefghijklmnopqrst';
   	  A[symbol] = 7;
+  	  // eslint-disable-next-line es/no-array-prototype-foreach -- safe
   	  alphabet.split('').forEach(function (chr) { B[chr] = chr; });
   	  return $assign({}, A)[symbol] !== 7 || objectKeys($assign({}, B)).join('') !== alphabet;
   	}) ? function assign(target, source) { // eslint-disable-line no-unused-vars -- required for `.length`
@@ -2835,109 +2845,62 @@
 
   requireEs_object_toString();
 
-  var es_parseFloat = {};
+  var es_regexp_toString = {};
 
-  var whitespaces;
-  var hasRequiredWhitespaces;
+  var regexpFlagsDetection;
+  var hasRequiredRegexpFlagsDetection;
 
-  function requireWhitespaces () {
-  	if (hasRequiredWhitespaces) return whitespaces;
-  	hasRequiredWhitespaces = 1;
-  	// a string of all valid unicode whitespaces
-  	whitespaces = '\u0009\u000A\u000B\u000C\u000D\u0020\u00A0\u1680\u2000\u2001\u2002' +
-  	  '\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\u2028\u2029\uFEFF';
-  	return whitespaces;
-  }
-
-  var stringTrim;
-  var hasRequiredStringTrim;
-
-  function requireStringTrim () {
-  	if (hasRequiredStringTrim) return stringTrim;
-  	hasRequiredStringTrim = 1;
-  	var uncurryThis = requireFunctionUncurryThis();
-  	var requireObjectCoercible = requireRequireObjectCoercible();
-  	var toString = requireToString();
-  	var whitespaces = requireWhitespaces();
-
-  	var replace = uncurryThis(''.replace);
-  	var ltrim = RegExp('^[' + whitespaces + ']+');
-  	var rtrim = RegExp('(^|[^' + whitespaces + '])[' + whitespaces + ']+$');
-
-  	// `String.prototype.{ trim, trimStart, trimEnd, trimLeft, trimRight }` methods implementation
-  	var createMethod = function (TYPE) {
-  	  return function ($this) {
-  	    var string = toString(requireObjectCoercible($this));
-  	    if (TYPE & 1) string = replace(string, ltrim, '');
-  	    if (TYPE & 2) string = replace(string, rtrim, '$1');
-  	    return string;
-  	  };
-  	};
-
-  	stringTrim = {
-  	  // `String.prototype.{ trimLeft, trimStart }` methods
-  	  // https://tc39.es/ecma262/#sec-string.prototype.trimstart
-  	  start: createMethod(1),
-  	  // `String.prototype.{ trimRight, trimEnd }` methods
-  	  // https://tc39.es/ecma262/#sec-string.prototype.trimend
-  	  end: createMethod(2),
-  	  // `String.prototype.trim` method
-  	  // https://tc39.es/ecma262/#sec-string.prototype.trim
-  	  trim: createMethod(3)
-  	};
-  	return stringTrim;
-  }
-
-  var numberParseFloat;
-  var hasRequiredNumberParseFloat;
-
-  function requireNumberParseFloat () {
-  	if (hasRequiredNumberParseFloat) return numberParseFloat;
-  	hasRequiredNumberParseFloat = 1;
+  function requireRegexpFlagsDetection () {
+  	if (hasRequiredRegexpFlagsDetection) return regexpFlagsDetection;
+  	hasRequiredRegexpFlagsDetection = 1;
   	var globalThis = requireGlobalThis();
   	var fails = requireFails();
-  	var uncurryThis = requireFunctionUncurryThis();
-  	var toString = requireToString();
-  	var trim = requireStringTrim().trim;
-  	var whitespaces = requireWhitespaces();
 
-  	var charAt = uncurryThis(''.charAt);
-  	var $parseFloat = globalThis.parseFloat;
-  	var Symbol = globalThis.Symbol;
-  	var ITERATOR = Symbol && Symbol.iterator;
-  	var FORCED = 1 / $parseFloat(whitespaces + '-0') !== -Infinity
-  	  // MS Edge 18- broken with boxed symbols
-  	  || (ITERATOR && !fails(function () { $parseFloat(Object(ITERATOR)); }));
+  	// babel-minify and Closure Compiler transpiles RegExp('.', 'd') -> /./d and it causes SyntaxError
+  	var RegExp = globalThis.RegExp;
 
-  	// `parseFloat` method
-  	// https://tc39.es/ecma262/#sec-parsefloat-string
-  	numberParseFloat = FORCED ? function parseFloat(string) {
-  	  var trimmedString = trim(toString(string));
-  	  var result = $parseFloat(trimmedString);
-  	  return result === 0 && charAt(trimmedString, 0) === '-' ? -0 : result;
-  	} : $parseFloat;
-  	return numberParseFloat;
-  }
+  	var FLAGS_GETTER_IS_CORRECT = !fails(function () {
+  	  var INDICES_SUPPORT = true;
+  	  try {
+  	    RegExp('.', 'd');
+  	  } catch (error) {
+  	    INDICES_SUPPORT = false;
+  	  }
 
-  var hasRequiredEs_parseFloat;
+  	  var O = {};
+  	  // modern V8 bug
+  	  var calls = '';
+  	  var expected = INDICES_SUPPORT ? 'dgimsy' : 'gimsy';
 
-  function requireEs_parseFloat () {
-  	if (hasRequiredEs_parseFloat) return es_parseFloat;
-  	hasRequiredEs_parseFloat = 1;
-  	var $ = require_export();
-  	var $parseFloat = requireNumberParseFloat();
+  	  var addGetter = function (key, chr) {
+  	    // eslint-disable-next-line es/no-object-defineproperty -- safe
+  	    Object.defineProperty(O, key, { get: function () {
+  	      calls += chr;
+  	      return true;
+  	    } });
+  	  };
 
-  	// `parseFloat` method
-  	// https://tc39.es/ecma262/#sec-parsefloat-string
-  	$({ global: true, forced: parseFloat !== $parseFloat }, {
-  	  parseFloat: $parseFloat
+  	  var pairs = {
+  	    dotAll: 's',
+  	    global: 'g',
+  	    ignoreCase: 'i',
+  	    multiline: 'm',
+  	    sticky: 'y'
+  	  };
+
+  	  if (INDICES_SUPPORT) pairs.hasIndices = 'd';
+
+  	  for (var key in pairs) addGetter(key, pairs[key]);
+
+  	  // eslint-disable-next-line es/no-object-getownpropertydescriptor -- safe
+  	  var result = Object.getOwnPropertyDescriptor(RegExp.prototype, 'flags').get.call(O);
+
+  	  return result !== expected || calls !== expected;
   	});
-  	return es_parseFloat;
+
+  	regexpFlagsDetection = { correct: FLAGS_GETTER_IS_CORRECT };
+  	return regexpFlagsDetection;
   }
-
-  requireEs_parseFloat();
-
-  var es_regexp_toString = {};
 
   var regexpFlags;
   var hasRequiredRegexpFlags;
@@ -2974,14 +2937,17 @@
   	var call = requireFunctionCall();
   	var hasOwn = requireHasOwnProperty();
   	var isPrototypeOf = requireObjectIsPrototypeOf();
-  	var regExpFlags = requireRegexpFlags();
+  	var regExpFlagsDetection = requireRegexpFlagsDetection();
+  	var regExpFlagsGetterImplementation = requireRegexpFlags();
 
   	var RegExpPrototype = RegExp.prototype;
 
-  	regexpGetFlags = function (R) {
-  	  var flags = R.flags;
-  	  return flags === undefined && !('flags' in RegExpPrototype) && !hasOwn(R, 'flags') && isPrototypeOf(RegExpPrototype, R)
-  	    ? call(regExpFlags, R) : flags;
+  	regexpGetFlags = regExpFlagsDetection.correct ? function (it) {
+  	  return it.flags;
+  	} : function (it) {
+  	  return (!regExpFlagsDetection.correct && isPrototypeOf(RegExpPrototype, it) && !hasOwn(it, 'flags'))
+  	    ? call(regExpFlagsGetterImplementation, it)
+  	    : it.flags;
   	};
   	return regexpGetFlags;
   }
@@ -3053,56 +3019,56 @@
   var theme = {
     bootstrap3: {
       html: {
-        multipleSortModal: "\n        <div class=\"modal fade\" id=\"%s\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"%sLabel\" aria-hidden=\"true\">\n          <div class=\"modal-dialog\">\n            <div class=\"modal-content\">\n              <div class=\"modal-header\">\n                <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n                <h4 class=\"modal-title\" id=\"%sLabel\">%s</h4>\n              </div>\n              <div class=\"modal-body\">\n                <div class=\"bootstrap-table\">\n                  <div class=\"fixed-table-toolbar\">\n                    <div class=\"bars\">\n                      <button type=\"button\" class=\"toolbar-btn-add btn btn-default\">%s %s</button>\n                      <button type=\"button\" class=\"toolbar-btn-delete btn btn-default\" disabled>%s %s</button>\n                    </div>\n                  </div>\n                  <div class=\"fixed-table-container\">\n                    <table class=\"table\">\n                      <thead>\n                        <tr>\n                          <th></th>\n                          <th><div class=\"th-inner\">%s</div></th>\n                          <th><div class=\"th-inner\">%s</div></th>\n                        </tr>\n                      </thead>\n                      <tbody></tbody>\n                    </table>\n                  </div>\n                </div>\n              </div>\n              <div class=\"modal-footer\">\n                <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">%s</button>\n                <button type=\"button\" class=\"btn btn-primary multi-sort-order-button\">%s</button>\n              </div>\n            </div>\n          </div>\n        </div>\n      ",
+        multipleSortModal: "\n        <div class=\"modal fade modal-multiple-sort\" id=\"%s\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"%sLabel\" aria-hidden=\"true\">\n          <div class=\"modal-dialog\">\n            <div class=\"modal-content\">\n              <div class=\"modal-header\">\n                <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n                <h4 class=\"modal-title\" id=\"%sLabel\">%s</h4>\n              </div>\n              <div class=\"modal-body\">\n                <div class=\"bootstrap-table\">\n                  <div class=\"fixed-table-toolbar\">\n                    <div class=\"bars\">\n                      <button type=\"button\" class=\"toolbar-btn-add btn btn-default\">%s %s</button>\n                      <button type=\"button\" class=\"toolbar-btn-delete btn btn-default\" disabled>%s %s</button>\n                    </div>\n                  </div>\n                  <div class=\"fixed-table-container\">\n                    <table class=\"table\">\n                      <thead>\n                        <tr>\n                          <th></th>\n                          <th><div class=\"th-inner\">%s</div></th>\n                          <th><div class=\"th-inner\">%s</div></th>\n                        </tr>\n                      </thead>\n                      <tbody></tbody>\n                    </table>\n                  </div>\n                </div>\n              </div>\n              <div class=\"modal-footer\">\n                <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">%s</button>\n                <button type=\"button\" class=\"btn btn-primary multi-sort-order-button\">%s</button>\n              </div>\n            </div>\n          </div>\n        </div>\n      ",
         multipleSortButton: '<button class="multi-sort %s" type="button" data-toggle="modal" data-target="#%s" title="%s">%s</button>',
         multipleSortSelect: '<select class="%s %s form-control">'
       }
     },
     bootstrap4: {
       html: {
-        multipleSortModal: "\n        <div class=\"modal fade\" id=\"%s\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"%sLabel\" aria-hidden=\"true\">\n          <div class=\"modal-dialog\" role=\"document\">\n            <div class=\"modal-content\">\n              <div class=\"modal-header\">\n                <h5 class=\"modal-title\" id=\"%sLabel\">%s</h5>\n                <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">\n                  <span aria-hidden=\"true\">&times;</span>\n                </button>\n              </div>\n              <div class=\"modal-body\">\n                <div class=\"bootstrap-table\">\n                  <div class=\"fixed-table-toolbar\">\n                    <div class=\"bars pb-3\">\n                      <button type=\"button\" class=\"toolbar-btn-add btn btn-secondary\">%s %s</button>\n                      <button type=\"button\" class=\"toolbar-btn-delete btn btn-secondary\" disabled>%s %s</button>\n                    </div>\n                  </div>\n                  <div class=\"fixed-table-container\">\n                    <table class=\"table\">\n                      <thead>\n                        <tr>\n                          <th></th>\n                          <th><div class=\"th-inner\">%s</div></th>\n                          <th><div class=\"th-inner\">%s</div></th>\n                        </tr>\n                      </thead>\n                      <tbody></tbody>\n                    </table>\n                  </div>\n              </div>\n              </div>\n              <div class=\"modal-footer\">\n                <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">%s</button>\n                <button type=\"button\" class=\"btn btn-primary multi-sort-order-button\">%s</button>\n              </div>\n            </div>\n          </div>\n        </div>\n      ",
+        multipleSortModal: "\n        <div class=\"modal fade modal-multiple-sort\" id=\"%s\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"%sLabel\" aria-hidden=\"true\">\n          <div class=\"modal-dialog\" role=\"document\">\n            <div class=\"modal-content\">\n              <div class=\"modal-header\">\n                <h5 class=\"modal-title\" id=\"%sLabel\">%s</h5>\n                <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">\n                  <span aria-hidden=\"true\">&times;</span>\n                </button>\n              </div>\n              <div class=\"modal-body\">\n                <div class=\"bootstrap-table\">\n                  <div class=\"fixed-table-toolbar\">\n                    <div class=\"bars pb-3\">\n                      <button type=\"button\" class=\"toolbar-btn-add btn btn-secondary\">%s %s</button>\n                      <button type=\"button\" class=\"toolbar-btn-delete btn btn-secondary\" disabled>%s %s</button>\n                    </div>\n                  </div>\n                  <div class=\"fixed-table-container\">\n                    <table class=\"table\">\n                      <thead>\n                        <tr>\n                          <th></th>\n                          <th><div class=\"th-inner\">%s</div></th>\n                          <th><div class=\"th-inner\">%s</div></th>\n                        </tr>\n                      </thead>\n                      <tbody></tbody>\n                    </table>\n                  </div>\n              </div>\n              </div>\n              <div class=\"modal-footer\">\n                <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">%s</button>\n                <button type=\"button\" class=\"btn btn-primary multi-sort-order-button\">%s</button>\n              </div>\n            </div>\n          </div>\n        </div>\n      ",
         multipleSortButton: '<button class="multi-sort %s" type="button" data-toggle="modal" data-target="#%s" title="%s">%s</button>',
         multipleSortSelect: '<select class="%s %s form-control">'
       }
     },
     bootstrap5: {
       html: {
-        multipleSortModal: "\n        <div class=\"modal fade\" id=\"%s\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"%sLabel\" aria-hidden=\"true\">\n          <div class=\"modal-dialog\" role=\"document\">\n            <div class=\"modal-content\">\n              <div class=\"modal-header\">\n                <h5 class=\"modal-title\" id=\"%sLabel\">%s</h5>\n                <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\" aria-label=\"Close\"></button>\n              </div>\n              <div class=\"modal-body\">\n                <div class=\"bootstrap-table\">\n                  <div class=\"fixed-table-toolbar\">\n                    <div class=\"bars pb-3\">\n                      <button type=\"button\" class=\"toolbar-btn-add btn btn-secondary\">%s %s</button>\n                      <button type=\"button\" class=\"toolbar-btn-delete btn btn-secondary\" disabled>%s %s</button>\n                    </div>\n                  </div>\n                  <div class=\"fixed-table-container\">\n                    <table class=\"table\">\n                      <thead>\n                        <tr>\n                          <th></th>\n                          <th><div class=\"th-inner\">%s</div></th>\n                          <th><div class=\"th-inner\">%s</div></th>\n                        </tr>\n                      </thead>\n                      <tbody></tbody>\n                    </table>\n                  </div>\n                </div>\n              </div>\n              <div class=\"modal-footer\">\n                <button type=\"button\" class=\"btn btn-secondary\" data-bs-dismiss=\"modal\">%s</button>\n                <button type=\"button\" class=\"btn btn-primary multi-sort-order-button\">%s</button>\n              </div>\n            </div>\n          </div>\n        </div>\n      ",
+        multipleSortModal: "\n        <div class=\"modal fade modal-multiple-sort\" id=\"%s\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"%sLabel\" aria-hidden=\"true\">\n          <div class=\"modal-dialog\" role=\"document\">\n            <div class=\"modal-content\">\n              <div class=\"modal-header\">\n                <h5 class=\"modal-title\" id=\"%sLabel\">%s</h5>\n                <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\" aria-label=\"Close\"></button>\n              </div>\n              <div class=\"modal-body\">\n                <div class=\"bootstrap-table\">\n                  <div class=\"fixed-table-toolbar\">\n                    <div class=\"bars pb-3\">\n                      <button type=\"button\" class=\"toolbar-btn-add btn btn-secondary\">%s %s</button>\n                      <button type=\"button\" class=\"toolbar-btn-delete btn btn-secondary\" disabled>%s %s</button>\n                    </div>\n                  </div>\n                  <div class=\"fixed-table-container\">\n                    <table class=\"table\">\n                      <thead>\n                        <tr>\n                          <th></th>\n                          <th><div class=\"th-inner\">%s</div></th>\n                          <th><div class=\"th-inner\">%s</div></th>\n                        </tr>\n                      </thead>\n                      <tbody></tbody>\n                    </table>\n                  </div>\n                </div>\n              </div>\n              <div class=\"modal-footer\">\n                <button type=\"button\" class=\"btn btn-secondary\" data-bs-dismiss=\"modal\">%s</button>\n                <button type=\"button\" class=\"btn btn-primary multi-sort-order-button\">%s</button>\n              </div>\n            </div>\n          </div>\n        </div>\n      ",
         multipleSortButton: '<button class="multi-sort %s" type="button" data-bs-toggle="modal" data-bs-target="#%s" title="%s">%s</button>',
         multipleSortSelect: '<select class="%s %s form-control">'
       }
     },
     semantic: {
       html: {
-        multipleSortModal: "\n        <div class=\"ui modal tiny\" id=\"%s\" aria-labelledby=\"%sLabel\" aria-hidden=\"true\">\n          <i class=\"close icon\"></i>\n          <div class=\"header\" id=\"%sLabel\">\n            %s\n          </div>\n          <div class=\"image content\">\n            <div class=\"bootstrap-table\">\n              <div class=\"fixed-table-toolbar\">\n                <div class=\"bars pb-3\">\n                  <button type=\"button\" class=\"toolbar-btn-add ui button\">%s %s</button>\n                  <button type=\"button\" class=\"toolbar-btn-delete ui button\" disabled>%s %s</button>\n                </div>\n              </div>\n              <div class=\"fixed-table-container\">\n                <table class=\"table\">\n                  <thead>\n                    <tr>\n                      <th></th>\n                      <th><div class=\"th-inner\">%s</div></th>\n                      <th><div class=\"th-inner\">%s</div></th>\n                    </tr>\n                  </thead>\n                  <tbody></tbody>\n                </table>\n              </div>\n            </div>\n          </div>\n          <div class=\"actions\">\n            <div class=\"ui button deny\">%s</div>\n            <div class=\"ui button approve multi-sort-order-button\">%s</div>\n          </div>\n        </div>\n      ",
+        multipleSortModal: "\n        <div class=\"ui modal tiny modal-multiple-sort\" id=\"%s\" aria-labelledby=\"%sLabel\" aria-hidden=\"true\">\n          <i class=\"close icon\"></i>\n          <div class=\"header\" id=\"%sLabel\">\n            %s\n          </div>\n          <div class=\"image content\">\n            <div class=\"bootstrap-table\">\n              <div class=\"fixed-table-toolbar\">\n                <div class=\"bars pb-3\">\n                  <button type=\"button\" class=\"toolbar-btn-add ui button\">%s %s</button>\n                  <button type=\"button\" class=\"toolbar-btn-delete ui button\" disabled>%s %s</button>\n                </div>\n              </div>\n              <div class=\"fixed-table-container\">\n                <table class=\"table\">\n                  <thead>\n                    <tr>\n                      <th></th>\n                      <th><div class=\"th-inner\">%s</div></th>\n                      <th><div class=\"th-inner\">%s</div></th>\n                    </tr>\n                  </thead>\n                  <tbody></tbody>\n                </table>\n              </div>\n            </div>\n          </div>\n          <div class=\"actions\">\n            <div class=\"ui button deny\">%s</div>\n            <div class=\"ui button approve multi-sort-order-button\">%s</div>\n          </div>\n        </div>\n      ",
         multipleSortButton: '<button class="multi-sort %s" type="button" data-toggle="modal" data-target="#%s" title="%s">%s</button>',
         multipleSortSelect: '<select class="%s %s">'
       }
     },
     materialize: {
       html: {
-        multipleSortModal: "\n        <div id=\"%s\" class=\"modal\" aria-labelledby=\"%sLabel\" aria-hidden=\"true\">\n          <div class=\"modal-content\" id=\"%sLabel\">\n            <h4>%s</h4>\n            <div class=\"bootstrap-table\">\n              <div class=\"fixed-table-toolbar\">\n                <div class=\"bars pb-3\">\n                  <button type=\"button\" class=\"toolbar-btn-add waves-effect waves-light btn\">%s %s</button>\n                  <button type=\"button\" class=\"toolbar-btn-delete waves-effect waves-light btn\" disabled>%s %s</button>\n                </div>\n              </div>\n              <div class=\"fixed-table-container\">\n                <table class=\"table\">\n                  <thead>\n                    <tr>\n                      <th></th>\n                      <th><div class=\"th-inner\">%s</div></th>\n                      <th><div class=\"th-inner\">%s</div></th>\n                    </tr>\n                  </thead>\n                  <tbody></tbody>\n                </table>\n              </div>\n            </div>\n            <div class=\"modal-footer\">\n              <a href=\"javascript:void(0)\" class=\"modal-close waves-effect waves-light btn\">%s</a>\n              <a href=\"javascript:void(0)\" class=\"modal-close waves-effect waves-light btn multi-sort-order-button\">%s</a>\n            </div>\n          </div>\n        </div>\n      ",
+        multipleSortModal: "\n        <div id=\"%s\" class=\"modal modal-multiple-sort\" aria-labelledby=\"%sLabel\" aria-hidden=\"true\">\n          <div class=\"modal-content\" id=\"%sLabel\">\n            <h4>%s</h4>\n            <div class=\"bootstrap-table\">\n              <div class=\"fixed-table-toolbar\">\n                <div class=\"bars pb-3\">\n                  <button type=\"button\" class=\"toolbar-btn-add waves-effect waves-light btn\">%s %s</button>\n                  <button type=\"button\" class=\"toolbar-btn-delete waves-effect waves-light btn\" disabled>%s %s</button>\n                </div>\n              </div>\n              <div class=\"fixed-table-container\">\n                <table class=\"table\">\n                  <thead>\n                    <tr>\n                      <th></th>\n                      <th><div class=\"th-inner\">%s</div></th>\n                      <th><div class=\"th-inner\">%s</div></th>\n                    </tr>\n                  </thead>\n                  <tbody></tbody>\n                </table>\n              </div>\n            </div>\n            <div class=\"modal-footer\">\n              <a href=\"javascript:void(0)\" class=\"modal-close waves-effect waves-light btn\">%s</a>\n              <a href=\"javascript:void(0)\" class=\"modal-close waves-effect waves-light btn multi-sort-order-button\">%s</a>\n            </div>\n          </div>\n        </div>\n      ",
         multipleSortButton: '<a class="multi-sort %s modal-trigger" href="#%s" type="button" data-toggle="modal" title="%s">%s</a>',
         multipleSortSelect: '<select class="%s %s browser-default">'
       }
     },
     foundation: {
       html: {
-        multipleSortModal: "\n        <div class=\"reveal\" id=\"%s\" data-reveal aria-labelledby=\"%sLabel\" aria-hidden=\"true\">\n          <div id=\"%sLabel\">\n            <h1>%s</h1>\n            <div class=\"bootstrap-table\">\n              <div class=\"fixed-table-toolbar\">\n                  <div class=\"bars padding-bottom-2\">\n                    <button type=\"button\" class=\"toolbar-btn-add waves-effect waves-light button\">%s %s</button>\n                    <button type=\"button\" class=\"toolbar-btn-delete waves-effect waves-light button\" disabled>%s %s</button>\n                  </div>\n              </div>\n              <div class=\"fixed-table-container\">\n                <table class=\"table\">\n                  <thead>\n                    <tr>\n                      <th></th>\n                      <th><div class=\"th-inner\">%s</div></th>\n                      <th><div class=\"th-inner\">%s</div></th>\n                    </tr>\n                  </thead>\n                  <tbody></tbody>\n                </table>\n              </div>\n            </div>\n\n            <button class=\"waves-effect waves-light button\" data-close aria-label=\"Close modal\" type=\"button\">\n              <span aria-hidden=\"true\">%s</span>\n            </button>\n            <button class=\"waves-effect waves-light button multi-sort-order-button\" data-close aria-label=\"Order\" type=\"button\">\n              <span aria-hidden=\"true\">%s</span>\n            </button>\n          </div>\n        </div>\n      ",
+        multipleSortModal: "\n        <div class=\"reveal modal-multiple-sort\" id=\"%s\" data-reveal aria-labelledby=\"%sLabel\" aria-hidden=\"true\">\n          <div id=\"%sLabel\">\n            <h1>%s</h1>\n            <div class=\"bootstrap-table\">\n              <div class=\"fixed-table-toolbar\">\n                  <div class=\"bars padding-bottom-2\">\n                    <button type=\"button\" class=\"toolbar-btn-add waves-effect waves-light button\">%s %s</button>\n                    <button type=\"button\" class=\"toolbar-btn-delete waves-effect waves-light button\" disabled>%s %s</button>\n                  </div>\n              </div>\n              <div class=\"fixed-table-container\">\n                <table class=\"table\">\n                  <thead>\n                    <tr>\n                      <th></th>\n                      <th><div class=\"th-inner\">%s</div></th>\n                      <th><div class=\"th-inner\">%s</div></th>\n                    </tr>\n                  </thead>\n                  <tbody></tbody>\n                </table>\n              </div>\n            </div>\n\n            <button class=\"waves-effect waves-light button\" data-close aria-label=\"Close modal\" type=\"button\">\n              <span aria-hidden=\"true\">%s</span>\n            </button>\n            <button class=\"waves-effect waves-light button multi-sort-order-button\" data-close aria-label=\"Order\" type=\"button\">\n              <span aria-hidden=\"true\">%s</span>\n            </button>\n          </div>\n        </div>\n      ",
         multipleSortButton: '<button class="multi-sort %s" data-open="%s" title="%s">%s</button>',
         multipleSortSelect: '<select class="%s %s browser-default">'
       }
     },
     bulma: {
       html: {
-        multipleSortModal: "\n        <div class=\"modal\" id=\"%s\" aria-labelledby=\"%sLabel\" aria-hidden=\"true\">\n          <div class=\"modal-background\"></div>\n          <div class=\"modal-content\" id=\"%sLabel\">\n            <div class=\"box\">\n              <h2>%s</h2>\n              <div class=\"bootstrap-table\">\n                <div class=\"fixed-table-toolbar\">\n                  <div class=\"bars padding-bottom-2\">\n                    <button type=\"button\" class=\"toolbar-btn-add waves-effect waves-light button\">%s %s</button>\n                    <button type=\"button\" class=\"toolbar-btn-delete waves-effect waves-light button\" disabled>%s %s</button>\n                  </div>\n                </div>\n                <div class=\"fixed-table-container\">\n                  <table class=\"table\">\n                    <thead>\n                      <tr>\n                        <th></th>\n                        <th><div class=\"th-inner\">%s</div></th>\n                        <th><div class=\"th-inner\">%s</div></th>\n                      </tr>\n                    </thead>\n                    <tbody></tbody>\n                  </table>\n                </div>\n              </div>\n              <button type=\"button\" class=\"waves-effect waves-light button\" data-close>%s</button>\n              <button type=\"button\" class=\"waves-effect waves-light button multi-sort-order-button\" data-close>%s</button>\n            </div>\n          </div>\n        </div>\n      ",
+        multipleSortModal: "\n        <div class=\"modal modal-multiple-sort\" id=\"%s\" aria-labelledby=\"%sLabel\" aria-hidden=\"true\">\n          <div class=\"modal-background\"></div>\n          <div class=\"modal-content\" id=\"%sLabel\">\n            <div class=\"box\">\n              <h2>%s</h2>\n              <div class=\"bootstrap-table\">\n                <div class=\"fixed-table-toolbar\">\n                  <div class=\"bars padding-bottom-2\">\n                    <button type=\"button\" class=\"toolbar-btn-add waves-effect waves-light button\">%s %s</button>\n                    <button type=\"button\" class=\"toolbar-btn-delete waves-effect waves-light button\" disabled>%s %s</button>\n                  </div>\n                </div>\n                <div class=\"fixed-table-container\">\n                  <table class=\"table\">\n                    <thead>\n                      <tr>\n                        <th></th>\n                        <th><div class=\"th-inner\">%s</div></th>\n                        <th><div class=\"th-inner\">%s</div></th>\n                      </tr>\n                    </thead>\n                    <tbody></tbody>\n                  </table>\n                </div>\n              </div>\n              <button type=\"button\" class=\"waves-effect waves-light button\" data-close>%s</button>\n              <button type=\"button\" class=\"waves-effect waves-light button multi-sort-order-button\" data-close>%s</button>\n            </div>\n          </div>\n        </div>\n      ",
         multipleSortButton: '<button class="multi-sort %s" data-target="%s" title="%s">%s</button>',
         multipleSortSelect: '<select class="%s %s browser-default">'
       }
     },
     'bootstrap-table': {
       html: {
-        multipleSortModal: "\n        <div class=\"modal\" id=\"%s\" aria-labelledby=\"%sLabel\" aria-hidden=\"true\">\n          <div class=\"modal-background\"></div>\n          <div class=\"modal-content\" id=\"%sLabel\">\n            <div class=\"box\">\n              <h2>%s</h2>\n              <div class=\"bootstrap-table\">\n                <div class=\"fixed-table-toolbar\">\n                  <div class=\"bars padding-bottom-2\">\n                    <button type=\"button\" class=\"toolbar-btn-add btn\">%s %s</button>\n                    <button type=\"button\" class=\"toolbar-btn-delete btn\" disabled>%s %s</button>\n                  </div>\n                </div>\n                <div class=\"fixed-table-container\">\n                  <table class=\"table\">\n                    <thead>\n                      <tr>\n                        <th></th>\n                        <th><div class=\"th-inner\">%s</div></th>\n                        <th><div class=\"th-inner\">%s</div></th>\n                      </tr>\n                    </thead>\n                    <tbody></tbody>\n                  </table>\n                </div>\n              </div>\n              <div class=\"mt-30\">\n                <button type=\"button\" class=\"btn\" data-close>%s</button>\n                <button type=\"button\" class=\"btn multi-sort-order-button\" data-close>%s</button>\n              </div>\n            </div>\n          </div>\n        </div>\n      ",
+        multipleSortModal: "\n        <div class=\"modal modal-multiple-sort\" id=\"%s\" aria-labelledby=\"%sLabel\" aria-hidden=\"true\">\n          <div class=\"modal-background\"></div>\n          <div class=\"modal-content\" id=\"%sLabel\">\n            <div class=\"box\">\n              <h2>%s</h2>\n              <div class=\"bootstrap-table\">\n                <div class=\"fixed-table-toolbar\">\n                  <div class=\"bars padding-bottom-2\">\n                    <button type=\"button\" class=\"toolbar-btn-add btn\">%s %s</button>\n                    <button type=\"button\" class=\"toolbar-btn-delete btn\" disabled>%s %s</button>\n                  </div>\n                </div>\n                <div class=\"fixed-table-container\">\n                  <table class=\"table\">\n                    <thead>\n                      <tr>\n                        <th></th>\n                        <th><div class=\"th-inner\">%s</div></th>\n                        <th><div class=\"th-inner\">%s</div></th>\n                      </tr>\n                    </thead>\n                    <tbody></tbody>\n                  </table>\n                </div>\n              </div>\n              <div class=\"mt-30\">\n                <button type=\"button\" class=\"btn\" data-close>%s</button>\n                <button type=\"button\" class=\"btn multi-sort-order-button\" data-close>%s</button>\n              </div>\n            </div>\n          </div>\n        </div>\n      ",
         multipleSortButton: '<button class="multi-sort %s" data-target="%s" title="%s">%s</button>',
         multipleSortSelect: '<select class="%s %s browser-default">'
       }
@@ -3121,7 +3087,6 @@
         var total = that.$sortModal.find('.multi-sort-name:first option').length;
         var current = that.$sortModal.find('tbody tr').length;
         if (current < total) {
-          current++;
           that.addLevel();
           that.setButtonStates();
         }
@@ -3130,7 +3095,6 @@
         var total = that.$sortModal.find('.multi-sort-name:first option').length;
         var current = that.$sortModal.find('tbody tr').length;
         if (current > 1 && current <= total) {
-          current--;
           that.$sortModal.find('tbody tr:last').remove();
           that.setButtonStates();
         }

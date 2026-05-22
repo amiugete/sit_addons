@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import Utils from '../utils/index.js'
 
-const VERSION = '1.24.1'
+const VERSION = '1.27.3'
 
 const bootstrapVersion = Utils.getBootstrapVersion()
 
@@ -81,6 +81,8 @@ const CONSTANTS = {
       buttonsPrefix: 'btn',
       dropdownActive: 'active',
       dropup: 'dropup',
+      formCheck: 'form-check',
+      formCheckInput: 'form-check-input',
       input: 'form-control',
       inputGroup: 'btn-group',
       inputPrefix: 'form-control-',
@@ -106,7 +108,7 @@ const CONSTANTS = {
       toolbarDropdownSeparator: '<div class="dropdown-divider"></div>'
     }
   }
-}[bootstrapVersion]
+}[bootstrapVersion || 5]
 
 const ICONS = {
   glyphicon: {
@@ -338,36 +340,26 @@ const DEFAULTS = {
 }
 
 const EN = {
-  formatLoadingMessage () {
-    return 'Loading, please wait'
+  formatAllRows () {
+    return 'All'
   },
-  formatRecordsPerPage (pageNumber) {
-    return `${pageNumber} rows per page`
+  formatClearSearch () {
+    return 'Clear Search'
   },
-  formatShowingRows (pageFrom, pageTo, totalRows, totalNotFiltered) {
-    if (totalNotFiltered !== undefined && totalNotFiltered > 0 && totalNotFiltered > totalRows) {
-      return `Showing ${pageFrom} to ${pageTo} of ${totalRows} rows (filtered from ${totalNotFiltered} total rows)`
-    }
-
-    return `Showing ${pageFrom} to ${pageTo} of ${totalRows} rows`
+  formatColumns () {
+    return 'Columns'
   },
-  formatSRPaginationPreText () {
-    return 'previous page'
-  },
-  formatSRPaginationPageText (page) {
-    return `to page ${page}`
-  },
-  formatSRPaginationNextText () {
-    return 'next page'
+  formatColumnsToggleAll () {
+    return 'Toggle all'
   },
   formatDetailPagination (totalRows) {
     return `Showing ${totalRows} rows`
   },
-  formatSearch () {
-    return 'Search'
+  formatFullscreen () {
+    return 'Fullscreen'
   },
-  formatClearSearch () {
-    return 'Clear Search'
+  formatLoadingMessage () {
+    return 'Loading, please wait'
   },
   formatNoMatches () {
     return 'No matching records found'
@@ -381,26 +373,36 @@ const EN = {
   formatPaginationSwitchUp () {
     return 'Hide pagination'
   },
+  formatRecordsPerPage (pageNumber) {
+    return `${pageNumber} rows per page`
+  },
   formatRefresh () {
     return 'Refresh'
   },
-  formatToggleOn () {
-    return 'Show card view'
+  formatSearch () {
+    return 'Search'
+  },
+  formatShowingRows (pageFrom, pageTo, totalRows, totalNotFiltered) {
+    if (totalNotFiltered !== undefined && totalNotFiltered > 0 && totalNotFiltered > totalRows) {
+      return `Showing ${pageFrom} to ${pageTo} of ${totalRows} rows (filtered from ${totalNotFiltered} total rows)`
+    }
+
+    return `Showing ${pageFrom} to ${pageTo} of ${totalRows} rows`
+  },
+  formatSRPaginationNextText () {
+    return 'next page'
+  },
+  formatSRPaginationPageText (page) {
+    return `to page ${page}`
+  },
+  formatSRPaginationPreText () {
+    return 'previous page'
   },
   formatToggleOff () {
     return 'Hide card view'
   },
-  formatColumns () {
-    return 'Columns'
-  },
-  formatColumnsToggleAll () {
-    return 'Toggle all'
-  },
-  formatFullscreen () {
-    return 'Fullscreen'
-  },
-  formatAllRows () {
-    return 'All'
+  formatToggleOn () {
+    return 'Show card view'
   }
 }
 

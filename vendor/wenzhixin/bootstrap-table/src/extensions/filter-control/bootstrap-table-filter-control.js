@@ -418,7 +418,6 @@ $.BootstrapTable = class extends $.BootstrapTable {
     const controls = UtilsFilterControl.getSearchControls(that)
     // const search = Utils.getSearchInput(this)
     let hasValues = false
-    let timeoutId = 0
 
     // Clear cache values
     $.each(that._valuesFilterControl, (i, item) => {
@@ -435,8 +434,7 @@ $.BootstrapTable = class extends $.BootstrapTable {
     UtilsFilterControl.setValues(that)
 
     // clear cookies once the filters are clean
-    clearTimeout(timeoutId)
-    timeoutId = setTimeout(() => {
+    setTimeout(() => {
       if (cookies && cookies.length > 0) {
         $.each(cookies, (i, item) => {
           if (that.deleteCookie !== undefined) {
@@ -486,9 +484,13 @@ $.BootstrapTable = class extends $.BootstrapTable {
     }
     UtilsFilterControl.cacheValues(this)
 
+    const isInitialRender = !this._initialized
+
     // Cookie extension support
     if (!this.options.cookie) {
-      this.options.pageNumber = 1
+      if (!isInitialRender) {
+        this.options.pageNumber = 1
+      }
     } else {
       // Force call the initServer method in Cookie extension
       this._filterControlValuesLoaded = true
@@ -516,7 +518,7 @@ $.BootstrapTable = class extends $.BootstrapTable {
       }
     })
 
-    this.onSearch({ currentTarget }, false)
+    this.onSearch({ currentTarget, firedByInitSearchText: isInitialRender }, false)
   }
 
   toggleFilterControl () {
@@ -560,9 +562,11 @@ $.BootstrapTable = class extends $.BootstrapTable {
     })
   }
 
-  _toggleColumn (index, checked, needUpdate) {
-    this._initialized = false
-    super._toggleColumn(index, checked, needUpdate)
+  _toggleColumns (fields, checked, needUpdate) {
+    if (fields.length) {
+      this._initialized = false
+    }
+    super._toggleColumns(fields, checked, needUpdate)
     UtilsFilterControl.syncHeaders(this)
   }
 }

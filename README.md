@@ -67,9 +67,9 @@ composer require moment/moment
 composer require hhurz/tableexport.jquery.plugin
 ```
 
-Per installare l'applicazione è sufficiente lanciare un `composer install` nella cartella principale dlel'applicazione dove è contenuto il file `composer.json`.
+Per installare l'applicazione è sufficiente lanciare un `composer require *directory/nome-libreria*` nella cartella principale dlel'applicazione dove è contenuto il file `composer.json`.
 
-Per fare update di versione è sufficiente un `composer update`
+Per fare update di versione è sufficiente un `composer update *directory/nome-libreria*` es. composer update wenzhixin/bootstrap-table
 
 
 

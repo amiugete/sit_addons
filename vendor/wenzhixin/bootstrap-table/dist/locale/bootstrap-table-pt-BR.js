@@ -76,7 +76,7 @@
 
 		functionBindNative = !fails(function () {
 		  // eslint-disable-next-line es/no-function-prototype-bind -- safe
-		  var test = (function () { /* empty */ }).bind();
+		  var test = function () { /* empty */ }.bind();
 		  // eslint-disable-next-line no-prototype-builtins -- safe
 		  return typeof test != 'function' || test.hasOwnProperty('prototype');
 		});
@@ -92,7 +92,7 @@
 		var NATIVE_BIND = requireFunctionBindNative();
 
 		var call = Function.prototype.call;
-
+		// eslint-disable-next-line es/no-function-prototype-bind -- safe
 		functionCall = NATIVE_BIND ? call.bind(call) : function () {
 		  return call.apply(call, arguments);
 		};
@@ -149,6 +149,7 @@
 
 		var FunctionPrototype = Function.prototype;
 		var call = FunctionPrototype.call;
+		// eslint-disable-next-line es/no-function-prototype-bind -- safe
 		var uncurryThisWithBind = NATIVE_BIND && FunctionPrototype.bind.bind(call, call);
 
 		functionUncurryThis = NATIVE_BIND ? uncurryThisWithBind : function (fn) {
@@ -554,10 +555,10 @@
 		var store = sharedStore.exports = globalThis[SHARED] || defineGlobalProperty(SHARED, {});
 
 		(store.versions || (store.versions = [])).push({
-		  version: '3.39.0',
+		  version: '3.49.0',
 		  mode: IS_PURE ? 'pure' : 'global',
-		  copyright: '© 2014-2024 Denis Pushkarev (zloirock.ru)',
-		  license: 'https://github.com/zloirock/core-js/blob/v3.39.0/LICENSE',
+		  copyright: '© 2013–2025 Denis Pushkarev (zloirock.ru), 2025–2026 CoreJS Company (core-js.io). All rights reserved.',
+		  license: 'https://github.com/zloirock/core-js/blob/v3.49.0/LICENSE',
 		  source: 'https://github.com/zloirock/core-js'
 		});
 		return sharedStore.exports;
@@ -625,7 +626,7 @@
 
 		var id = 0;
 		var postfix = Math.random();
-		var toString = uncurryThis(1.0.toString);
+		var toString = uncurryThis(1.1.toString);
 
 		uid = function (key) {
 		  return 'Symbol(' + (key === undefined ? '' : key) + ')_' + toString(++id + postfix, 36);
@@ -910,7 +911,7 @@
 
 		var EXISTS = hasOwn(FunctionPrototype, 'name');
 		// additional protection from minified / mangled / dropped function names
-		var PROPER = EXISTS && (function something() { /* empty */ }).name === 'something';
+		var PROPER = EXISTS && function something() { /* empty */ }.name === 'something';
 		var CONFIGURABLE = EXISTS && (!DESCRIPTORS || (DESCRIPTORS && getDescriptor(FunctionPrototype, 'name').configurable));
 
 		functionName = {
@@ -933,7 +934,7 @@
 
 		var functionToString = uncurryThis(Function.toString);
 
-		// this helper broken in `core-js@3.4.1-3.4.4`, so we can't use `shared` helper
+		// this helper broken in `core-js [at] 3.4.1-3.4.4`, so we can't use `shared` helper
 		if (!isCallable(store.inspectSource)) {
 		  store.inspectSource = function (it) {
 		    return functionToString(it);
@@ -1548,7 +1549,7 @@
 		var MAX_SAFE_INTEGER = 0x1FFFFFFFFFFFFF; // 2 ** 53 - 1 == 9007199254740991
 
 		doesNotExceedSafeInteger = function (it) {
-		  if (it > MAX_SAFE_INTEGER) throw $TypeError('Maximum allowed index exceeded');
+		  if (it > MAX_SAFE_INTEGER) throw new $TypeError('Maximum allowed index exceeded');
 		  return it;
 		};
 		return doesNotExceedSafeInteger;
@@ -1571,6 +1572,41 @@
 		return createProperty;
 	}
 
+	var arraySetLength;
+	var hasRequiredArraySetLength;
+
+	function requireArraySetLength () {
+		if (hasRequiredArraySetLength) return arraySetLength;
+		hasRequiredArraySetLength = 1;
+		var DESCRIPTORS = requireDescriptors();
+		var isArray = requireIsArray();
+
+		var $TypeError = TypeError;
+		// eslint-disable-next-line es/no-object-getownpropertydescriptor -- safe
+		var getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+
+		// Safari < 13 does not throw an error in this case
+		var SILENT_ON_NON_WRITABLE_LENGTH_SET = DESCRIPTORS && !function () {
+		  // makes no sense without proper strict mode support
+		  if (this !== undefined) return true;
+		  try {
+		    // eslint-disable-next-line es/no-object-defineproperty -- safe
+		    Object.defineProperty([], 'length', { writable: false }).length = 1;
+		  } catch (error) {
+		    return error instanceof TypeError;
+		  }
+		}();
+
+		arraySetLength = SILENT_ON_NON_WRITABLE_LENGTH_SET ? function (O, length) {
+		  if (isArray(O) && !getOwnPropertyDescriptor(O, 'length').writable) {
+		    throw new $TypeError('Cannot set read only .length');
+		  } return O.length = length;
+		} : function (O, length) {
+		  return O.length = length;
+		};
+		return arraySetLength;
+	}
+
 	var toStringTagSupport;
 	var hasRequiredToStringTagSupport;
 
@@ -1581,7 +1617,7 @@
 
 		var TO_STRING_TAG = wellKnownSymbol('toStringTag');
 		var test = {};
-
+		// eslint-disable-next-line unicorn/no-immediate-mutation -- ES3 syntax limitation
 		test[TO_STRING_TAG] = 'z';
 
 		toStringTagSupport = String(test) === '[object z]';
@@ -1774,6 +1810,7 @@
 		var lengthOfArrayLike = requireLengthOfArrayLike();
 		var doesNotExceedSafeInteger = requireDoesNotExceedSafeInteger();
 		var createProperty = requireCreateProperty();
+		var setArrayLength = requireArraySetLength();
 		var arraySpeciesCreate = requireArraySpeciesCreate();
 		var arrayMethodHasSpeciesSupport = requireArrayMethodHasSpeciesSupport();
 		var wellKnownSymbol = requireWellKnownSymbol();
@@ -1819,7 +1856,7 @@
 		        createProperty(A, n++, E);
 		      }
 		    }
-		    A.length = n;
+		    setArrayLength(A, n);
 		    return A;
 		  }
 		});
@@ -1890,6 +1927,7 @@
 		  var symbol = Symbol('assign detection');
 		  var alphabet = 'abcdefghijklmnopqrst';
 		  A[symbol] = 7;
+		  // eslint-disable-next-line es/no-array-prototype-foreach -- safe
 		  alphabet.split('').forEach(function (chr) { B[chr] = chr; });
 		  return $assign({}, A)[symbol] !== 7 || objectKeys($assign({}, B)).join('') !== alphabet;
 		}) ? function assign(target, source) { // eslint-disable-line no-unused-vars -- required for `.length`
@@ -1942,72 +1980,14 @@
 	 */
 
 	$.fn.bootstrapTable.locales['pt-BR'] = $.fn.bootstrapTable.locales['br'] = {
-	  formatCopyRows: function formatCopyRows() {
-	    return 'Copiar linhas';
+	  formatAddLevel: function formatAddLevel() {
+	    return 'Adicionar nível';
 	  },
-	  formatPrint: function formatPrint() {
-	    return 'Imprimir';
+	  formatAdvancedCloseButton: function formatAdvancedCloseButton() {
+	    return 'Fechar';
 	  },
-	  formatLoadingMessage: function formatLoadingMessage() {
-	    return 'Carregando, aguarde';
-	  },
-	  formatRecordsPerPage: function formatRecordsPerPage(pageNumber) {
-	    return "".concat(pageNumber, " registros por p\xE1gina");
-	  },
-	  formatShowingRows: function formatShowingRows(pageFrom, pageTo, totalRows, totalNotFiltered) {
-	    var plural = totalRows > 1 ? 's' : '';
-	    if (totalNotFiltered !== undefined && totalNotFiltered > 0 && totalNotFiltered > totalRows) {
-	      return "Exibindo ".concat(pageFrom, " at\xE9 ").concat(pageTo, " de ").concat(totalRows, " linha").concat(plural, " (filtrado de um total de ").concat(totalNotFiltered, " linha").concat(plural, ")");
-	    }
-	    return "Exibindo ".concat(pageFrom, " at\xE9 ").concat(pageTo, " de ").concat(totalRows, " linha").concat(plural);
-	  },
-	  formatSRPaginationPreText: function formatSRPaginationPreText() {
-	    return 'página anterior';
-	  },
-	  formatSRPaginationPageText: function formatSRPaginationPageText(page) {
-	    return "ir para a p\xE1gina ".concat(page);
-	  },
-	  formatSRPaginationNextText: function formatSRPaginationNextText() {
-	    return 'próxima página';
-	  },
-	  formatDetailPagination: function formatDetailPagination(totalRows) {
-	    return "Mostrando ".concat(totalRows, " linha").concat(totalRows > 1 ? 's' : '');
-	  },
-	  formatClearSearch: function formatClearSearch() {
-	    return 'Limpar Pesquisa';
-	  },
-	  formatSearch: function formatSearch() {
-	    return 'Pesquisar';
-	  },
-	  formatNoMatches: function formatNoMatches() {
-	    return 'Nenhum registro encontrado';
-	  },
-	  formatPaginationSwitch: function formatPaginationSwitch() {
-	    return 'Ocultar/Exibir paginação';
-	  },
-	  formatPaginationSwitchDown: function formatPaginationSwitchDown() {
-	    return 'Mostrar Paginação';
-	  },
-	  formatPaginationSwitchUp: function formatPaginationSwitchUp() {
-	    return 'Esconder Paginação';
-	  },
-	  formatRefresh: function formatRefresh() {
-	    return 'Recarregar';
-	  },
-	  formatToggleOn: function formatToggleOn() {
-	    return 'Mostrar visualização de cartão';
-	  },
-	  formatToggleOff: function formatToggleOff() {
-	    return 'Hide card view';
-	  },
-	  formatColumns: function formatColumns() {
-	    return 'Colunas';
-	  },
-	  formatColumnsToggleAll: function formatColumnsToggleAll() {
-	    return 'Alternar tudo';
-	  },
-	  formatFullscreen: function formatFullscreen() {
-	    return 'Tela cheia';
+	  formatAdvancedSearch: function formatAdvancedSearch() {
+	    return 'Pesquisa Avançada';
 	  },
 	  formatAllRows: function formatAllRows() {
 	    return 'Tudo';
@@ -2015,17 +1995,38 @@
 	  formatAutoRefresh: function formatAutoRefresh() {
 	    return 'Atualização Automática';
 	  },
+	  formatCancel: function formatCancel() {
+	    return 'Cancelar';
+	  },
+	  formatClearSearch: function formatClearSearch() {
+	    return 'Limpar Pesquisa';
+	  },
+	  formatColumn: function formatColumn() {
+	    return 'Coluna';
+	  },
+	  formatColumns: function formatColumns() {
+	    return 'Colunas';
+	  },
+	  formatColumnsToggleAll: function formatColumnsToggleAll() {
+	    return 'Alternar tudo';
+	  },
+	  formatCopyRows: function formatCopyRows() {
+	    return 'Copiar linhas';
+	  },
+	  formatDeleteLevel: function formatDeleteLevel() {
+	    return 'Remover nível';
+	  },
+	  formatDetailPagination: function formatDetailPagination(totalRows) {
+	    return "Mostrando ".concat(totalRows, " linha").concat(totalRows > 1 ? 's' : '');
+	  },
+	  formatDuplicateAlertDescription: function formatDuplicateAlertDescription() {
+	    return 'Por favor, remova ou altere as colunas duplicadas';
+	  },
+	  formatDuplicateAlertTitle: function formatDuplicateAlertTitle() {
+	    return 'Encontradas entradas duplicadas!';
+	  },
 	  formatExport: function formatExport() {
 	    return 'Exportar dados';
-	  },
-	  formatJumpTo: function formatJumpTo() {
-	    return 'Ir';
-	  },
-	  formatAdvancedSearch: function formatAdvancedSearch() {
-	    return 'Pesquisa Avançada';
-	  },
-	  formatAdvancedCloseButton: function formatAdvancedCloseButton() {
-	    return 'Fechar';
 	  },
 	  formatFilterControlSwitch: function formatFilterControlSwitch() {
 	    return 'Ocultar/Exibir controles';
@@ -2036,29 +2037,60 @@
 	  formatFilterControlSwitchShow: function formatFilterControlSwitchShow() {
 	    return 'Exibir controles';
 	  },
-	  formatAddLevel: function formatAddLevel() {
-	    return 'Adicionar nível';
+	  formatFullscreen: function formatFullscreen() {
+	    return 'Tela cheia';
 	  },
-	  formatCancel: function formatCancel() {
-	    return 'Cancelar';
+	  formatJumpTo: function formatJumpTo() {
+	    return 'Ir';
 	  },
-	  formatColumn: function formatColumn() {
-	    return 'Coluna';
-	  },
-	  formatDeleteLevel: function formatDeleteLevel() {
-	    return 'Remover nível';
-	  },
-	  formatDuplicateAlertTitle: function formatDuplicateAlertTitle() {
-	    return 'Encontradas entradas duplicadas!';
-	  },
-	  formatDuplicateAlertDescription: function formatDuplicateAlertDescription() {
-	    return 'Por favor, remova ou altere as colunas duplicadas';
+	  formatLoadingMessage: function formatLoadingMessage() {
+	    return 'Carregando, aguarde';
 	  },
 	  formatMultipleSort: function formatMultipleSort() {
 	    return 'Ordenação múltipla';
 	  },
+	  formatNoMatches: function formatNoMatches() {
+	    return 'Nenhum registro encontrado';
+	  },
 	  formatOrder: function formatOrder() {
 	    return 'Ordem';
+	  },
+	  formatPaginationSwitch: function formatPaginationSwitch() {
+	    return 'Ocultar/Exibir paginação';
+	  },
+	  formatPaginationSwitchDown: function formatPaginationSwitchDown() {
+	    return 'Mostrar Paginação';
+	  },
+	  formatPaginationSwitchUp: function formatPaginationSwitchUp() {
+	    return 'Esconder Paginação';
+	  },
+	  formatPrint: function formatPrint() {
+	    return 'Imprimir';
+	  },
+	  formatRecordsPerPage: function formatRecordsPerPage(pageNumber) {
+	    return "".concat(pageNumber, " registros por p\xE1gina");
+	  },
+	  formatRefresh: function formatRefresh() {
+	    return 'Recarregar';
+	  },
+	  formatSRPaginationNextText: function formatSRPaginationNextText() {
+	    return 'próxima página';
+	  },
+	  formatSRPaginationPageText: function formatSRPaginationPageText(page) {
+	    return "ir para a p\xE1gina ".concat(page);
+	  },
+	  formatSRPaginationPreText: function formatSRPaginationPreText() {
+	    return 'página anterior';
+	  },
+	  formatSearch: function formatSearch() {
+	    return 'Pesquisar';
+	  },
+	  formatShowingRows: function formatShowingRows(pageFrom, pageTo, totalRows, totalNotFiltered) {
+	    var plural = totalRows > 1 ? 's' : '';
+	    if (totalNotFiltered !== undefined && totalNotFiltered > 0 && totalNotFiltered > totalRows) {
+	      return "Exibindo ".concat(pageFrom, " at\xE9 ").concat(pageTo, " de ").concat(totalRows, " linha").concat(plural, " (filtrado de um total de ").concat(totalNotFiltered, " linha").concat(plural, ")");
+	    }
+	    return "Exibindo ".concat(pageFrom, " at\xE9 ").concat(pageTo, " de ").concat(totalRows, " linha").concat(plural);
 	  },
 	  formatSort: function formatSort() {
 	    return 'Ordenar';
@@ -2066,14 +2098,26 @@
 	  formatSortBy: function formatSortBy() {
 	    return 'Ordenar por';
 	  },
-	  formatThenBy: function formatThenBy() {
-	    return 'em seguida';
-	  },
 	  formatSortOrders: function formatSortOrders() {
 	    return {
 	      asc: 'Crescente',
 	      desc: 'Decrescente'
 	    };
+	  },
+	  formatThenBy: function formatThenBy() {
+	    return 'em seguida';
+	  },
+	  formatToggleCustomViewOff: function formatToggleCustomViewOff() {
+	    return 'Hide custom view';
+	  },
+	  formatToggleCustomViewOn: function formatToggleCustomViewOn() {
+	    return 'Show custom view';
+	  },
+	  formatToggleOff: function formatToggleOff() {
+	    return 'Hide card view';
+	  },
+	  formatToggleOn: function formatToggleOn() {
+	    return 'Mostrar visualização de cartão';
 	  }
 	};
 	Object.assign($.fn.bootstrapTable.defaults, $.fn.bootstrapTable.locales['pt-BR']);

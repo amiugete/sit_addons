@@ -1,0 +1,15 @@
+{
+  "extends": [
+    "stylelint-config-standard-scss",
+    "stylelint-config-prettier-scss"
+  ],
+
+  "rules": {
+    "color-function-notation": "legacy",
+    "selector-class-pattern": null,
+    "shorthand-property-no-redundant-values": null,
+    "scss/dollar-variable-pattern": null,
+    "scss/load-partial-extension": null,
+    "scss/no-global-function-names": null
+  }
+}

@@ -17,20 +17,20 @@
   function _defineProperties(e, r) {
     for (var t = 0; t < r.length; t++) {
       var o = r[t];
-      o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o);
+      o.enumerable = o.enumerable || false, o.configurable = true, "value" in o && (o.writable = true), Object.defineProperty(e, _toPropertyKey(o.key), o);
     }
   }
   function _createClass(e, r, t) {
-    return _defineProperties(e.prototype, r), Object.defineProperty(e, "prototype", {
-      writable: !1
+    return r && _defineProperties(e.prototype, r), Object.defineProperty(e, "prototype", {
+      writable: false
     }), e;
   }
   function _defineProperty(e, r, t) {
     return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
       value: t,
-      enumerable: !0,
-      configurable: !0,
-      writable: !0
+      enumerable: true,
+      configurable: true,
+      writable: true
     }) : e[r] = t, e;
   }
   function _get() {
@@ -52,11 +52,11 @@
     t.prototype = Object.create(e && e.prototype, {
       constructor: {
         value: t,
-        writable: !0,
-        configurable: !0
+        writable: true,
+        configurable: true
       }
     }), Object.defineProperty(t, "prototype", {
-      writable: !1
+      writable: false
     }), e && _setPrototypeOf(t, e);
   }
   function _isNativeReflectConstruct() {
@@ -80,7 +80,7 @@
   function _objectSpread2(e) {
     for (var r = 1; r < arguments.length; r++) {
       var t = null != arguments[r] ? arguments[r] : {};
-      r % 2 ? ownKeys$1(Object(t), !0).forEach(function (r) {
+      r % 2 ? ownKeys$1(Object(t), true).forEach(function (r) {
         _defineProperty(e, r, t[r]);
       }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$1(Object(t)).forEach(function (r) {
         Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r));
@@ -103,7 +103,7 @@
     return t;
   }
   function _superPropGet(t, o, e, r) {
-    var p = _get(_getPrototypeOf(1 & r ? t.prototype : t), o, e);
+    var p = _get(_getPrototypeOf(t.prototype ), o, e);
     return 2 & r && "function" == typeof p ? function (t) {
       return p.apply(e, t);
     } : p;
@@ -195,7 +195,7 @@
 
   	functionBindNative = !fails(function () {
   	  // eslint-disable-next-line es/no-function-prototype-bind -- safe
-  	  var test = (function () { /* empty */ }).bind();
+  	  var test = function () { /* empty */ }.bind();
   	  // eslint-disable-next-line no-prototype-builtins -- safe
   	  return typeof test != 'function' || test.hasOwnProperty('prototype');
   	});
@@ -211,7 +211,7 @@
   	var NATIVE_BIND = requireFunctionBindNative();
 
   	var call = Function.prototype.call;
-
+  	// eslint-disable-next-line es/no-function-prototype-bind -- safe
   	functionCall = NATIVE_BIND ? call.bind(call) : function () {
   	  return call.apply(call, arguments);
   	};
@@ -268,6 +268,7 @@
 
   	var FunctionPrototype = Function.prototype;
   	var call = FunctionPrototype.call;
+  	// eslint-disable-next-line es/no-function-prototype-bind -- safe
   	var uncurryThisWithBind = NATIVE_BIND && FunctionPrototype.bind.bind(call, call);
 
   	functionUncurryThis = NATIVE_BIND ? uncurryThisWithBind : function (fn) {
@@ -673,10 +674,10 @@
   	var store = sharedStore.exports = globalThis[SHARED] || defineGlobalProperty(SHARED, {});
 
   	(store.versions || (store.versions = [])).push({
-  	  version: '3.39.0',
+  	  version: '3.49.0',
   	  mode: IS_PURE ? 'pure' : 'global',
-  	  copyright: '© 2014-2024 Denis Pushkarev (zloirock.ru)',
-  	  license: 'https://github.com/zloirock/core-js/blob/v3.39.0/LICENSE',
+  	  copyright: '© 2013–2025 Denis Pushkarev (zloirock.ru), 2025–2026 CoreJS Company (core-js.io). All rights reserved.',
+  	  license: 'https://github.com/zloirock/core-js/blob/v3.49.0/LICENSE',
   	  source: 'https://github.com/zloirock/core-js'
   	});
   	return sharedStore.exports;
@@ -744,7 +745,7 @@
 
   	var id = 0;
   	var postfix = Math.random();
-  	var toString = uncurryThis(1.0.toString);
+  	var toString = uncurryThis(1.1.toString);
 
   	uid = function (key) {
   	  return 'Symbol(' + (key === undefined ? '' : key) + ')_' + toString(++id + postfix, 36);
@@ -1029,7 +1030,7 @@
 
   	var EXISTS = hasOwn(FunctionPrototype, 'name');
   	// additional protection from minified / mangled / dropped function names
-  	var PROPER = EXISTS && (function something() { /* empty */ }).name === 'something';
+  	var PROPER = EXISTS && function something() { /* empty */ }.name === 'something';
   	var CONFIGURABLE = EXISTS && (!DESCRIPTORS || (DESCRIPTORS && getDescriptor(FunctionPrototype, 'name').configurable));
 
   	functionName = {
@@ -1052,7 +1053,7 @@
 
   	var functionToString = uncurryThis(Function.toString);
 
-  	// this helper broken in `core-js@3.4.1-3.4.4`, so we can't use `shared` helper
+  	// this helper broken in `core-js [at] 3.4.1-3.4.4`, so we can't use `shared` helper
   	if (!isCallable(store.inspectSource)) {
   	  store.inspectSource = function (it) {
   	    return functionToString(it);
@@ -1667,7 +1668,7 @@
 
   	var TO_STRING_TAG = wellKnownSymbol('toStringTag');
   	var test = {};
-
+  	// eslint-disable-next-line unicorn/no-immediate-mutation -- ES3 syntax limitation
   	test[TO_STRING_TAG] = 'z';
 
   	toStringTagSupport = String(test) === '[object z]';
@@ -1789,6 +1790,41 @@
   	return createProperty;
   }
 
+  var arraySetLength;
+  var hasRequiredArraySetLength;
+
+  function requireArraySetLength () {
+  	if (hasRequiredArraySetLength) return arraySetLength;
+  	hasRequiredArraySetLength = 1;
+  	var DESCRIPTORS = requireDescriptors();
+  	var isArray = requireIsArray();
+
+  	var $TypeError = TypeError;
+  	// eslint-disable-next-line es/no-object-getownpropertydescriptor -- safe
+  	var getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+
+  	// Safari < 13 does not throw an error in this case
+  	var SILENT_ON_NON_WRITABLE_LENGTH_SET = DESCRIPTORS && !function () {
+  	  // makes no sense without proper strict mode support
+  	  if (this !== undefined) return true;
+  	  try {
+  	    // eslint-disable-next-line es/no-object-defineproperty -- safe
+  	    Object.defineProperty([], 'length', { writable: false }).length = 1;
+  	  } catch (error) {
+  	    return error instanceof TypeError;
+  	  }
+  	}();
+
+  	arraySetLength = SILENT_ON_NON_WRITABLE_LENGTH_SET ? function (O, length) {
+  	  if (isArray(O) && !getOwnPropertyDescriptor(O, 'length').writable) {
+  	    throw new $TypeError('Cannot set read only .length');
+  	  } return O.length = length;
+  	} : function (O, length) {
+  	  return O.length = length;
+  	};
+  	return arraySetLength;
+  }
+
   var arrayMethodHasSpeciesSupport;
   var hasRequiredArrayMethodHasSpeciesSupport;
 
@@ -1842,6 +1878,7 @@
   	var lengthOfArrayLike = requireLengthOfArrayLike();
   	var toIndexedObject = requireToIndexedObject();
   	var createProperty = requireCreateProperty();
+  	var setArrayLength = requireArraySetLength();
   	var wellKnownSymbol = requireWellKnownSymbol();
   	var arrayMethodHasSpeciesSupport = requireArrayMethodHasSpeciesSupport();
   	var nativeSlice = requireArraySlice();
@@ -1878,7 +1915,7 @@
   	    }
   	    result = new (Constructor === undefined ? $Array : Constructor)(max(fin - k, 0));
   	    for (n = 0; k < fin; k++, n++) if (k in O) createProperty(result, n, O[k]);
-  	    result.length = n;
+  	    setArrayLength(result, n);
   	    return result;
   	  }
   	});
@@ -1949,6 +1986,7 @@
   	  var symbol = Symbol('assign detection');
   	  var alphabet = 'abcdefghijklmnopqrst';
   	  A[symbol] = 7;
+  	  // eslint-disable-next-line es/no-array-prototype-foreach -- safe
   	  alphabet.split('').forEach(function (chr) { B[chr] = chr; });
   	  return $assign({}, A)[symbol] !== 7 || objectKeys($assign({}, B)).join('') !== alphabet;
   	}) ? function assign(target, source) { // eslint-disable-line no-unused-vars -- required for `.length`
@@ -1990,125 +2028,6 @@
   }
 
   requireEs_object_assign();
-
-  var es_parseInt = {};
-
-  var toString;
-  var hasRequiredToString;
-
-  function requireToString () {
-  	if (hasRequiredToString) return toString;
-  	hasRequiredToString = 1;
-  	var classof = requireClassof();
-
-  	var $String = String;
-
-  	toString = function (argument) {
-  	  if (classof(argument) === 'Symbol') throw new TypeError('Cannot convert a Symbol value to a string');
-  	  return $String(argument);
-  	};
-  	return toString;
-  }
-
-  var whitespaces;
-  var hasRequiredWhitespaces;
-
-  function requireWhitespaces () {
-  	if (hasRequiredWhitespaces) return whitespaces;
-  	hasRequiredWhitespaces = 1;
-  	// a string of all valid unicode whitespaces
-  	whitespaces = '\u0009\u000A\u000B\u000C\u000D\u0020\u00A0\u1680\u2000\u2001\u2002' +
-  	  '\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\u2028\u2029\uFEFF';
-  	return whitespaces;
-  }
-
-  var stringTrim;
-  var hasRequiredStringTrim;
-
-  function requireStringTrim () {
-  	if (hasRequiredStringTrim) return stringTrim;
-  	hasRequiredStringTrim = 1;
-  	var uncurryThis = requireFunctionUncurryThis();
-  	var requireObjectCoercible = requireRequireObjectCoercible();
-  	var toString = requireToString();
-  	var whitespaces = requireWhitespaces();
-
-  	var replace = uncurryThis(''.replace);
-  	var ltrim = RegExp('^[' + whitespaces + ']+');
-  	var rtrim = RegExp('(^|[^' + whitespaces + '])[' + whitespaces + ']+$');
-
-  	// `String.prototype.{ trim, trimStart, trimEnd, trimLeft, trimRight }` methods implementation
-  	var createMethod = function (TYPE) {
-  	  return function ($this) {
-  	    var string = toString(requireObjectCoercible($this));
-  	    if (TYPE & 1) string = replace(string, ltrim, '');
-  	    if (TYPE & 2) string = replace(string, rtrim, '$1');
-  	    return string;
-  	  };
-  	};
-
-  	stringTrim = {
-  	  // `String.prototype.{ trimLeft, trimStart }` methods
-  	  // https://tc39.es/ecma262/#sec-string.prototype.trimstart
-  	  start: createMethod(1),
-  	  // `String.prototype.{ trimRight, trimEnd }` methods
-  	  // https://tc39.es/ecma262/#sec-string.prototype.trimend
-  	  end: createMethod(2),
-  	  // `String.prototype.trim` method
-  	  // https://tc39.es/ecma262/#sec-string.prototype.trim
-  	  trim: createMethod(3)
-  	};
-  	return stringTrim;
-  }
-
-  var numberParseInt;
-  var hasRequiredNumberParseInt;
-
-  function requireNumberParseInt () {
-  	if (hasRequiredNumberParseInt) return numberParseInt;
-  	hasRequiredNumberParseInt = 1;
-  	var globalThis = requireGlobalThis();
-  	var fails = requireFails();
-  	var uncurryThis = requireFunctionUncurryThis();
-  	var toString = requireToString();
-  	var trim = requireStringTrim().trim;
-  	var whitespaces = requireWhitespaces();
-
-  	var $parseInt = globalThis.parseInt;
-  	var Symbol = globalThis.Symbol;
-  	var ITERATOR = Symbol && Symbol.iterator;
-  	var hex = /^[+-]?0x/i;
-  	var exec = uncurryThis(hex.exec);
-  	var FORCED = $parseInt(whitespaces + '08') !== 8 || $parseInt(whitespaces + '0x16') !== 22
-  	  // MS Edge 18- broken with boxed symbols
-  	  || (ITERATOR && !fails(function () { $parseInt(Object(ITERATOR)); }));
-
-  	// `parseInt` method
-  	// https://tc39.es/ecma262/#sec-parseint-string-radix
-  	numberParseInt = FORCED ? function parseInt(string, radix) {
-  	  var S = trim(toString(string));
-  	  return $parseInt(S, (radix >>> 0) || (exec(hex, S) ? 16 : 10));
-  	} : $parseInt;
-  	return numberParseInt;
-  }
-
-  var hasRequiredEs_parseInt;
-
-  function requireEs_parseInt () {
-  	if (hasRequiredEs_parseInt) return es_parseInt;
-  	hasRequiredEs_parseInt = 1;
-  	var $ = require_export();
-  	var $parseInt = requireNumberParseInt();
-
-  	// `parseInt` method
-  	// https://tc39.es/ecma262/#sec-parseint-string-radix
-  	$({ global: true, forced: parseInt !== $parseInt }, {
-  	  parseInt: $parseInt
-  	});
-  	return es_parseInt;
-  }
-
-  requireEs_parseInt();
 
   /**
    * @author doug-the-guy
@@ -2176,6 +2095,7 @@
     'cached-data-hit.bs.table': 'onCachedDataHit',
     'cached-data-reset.bs.table': 'onCachedDataReset'
   });
+  $.fn.bootstrapTable.methods.push('resetPipelineCache');
   $.BootstrapTable = /*#__PURE__*/function (_$$BootstrapTable) {
     function _class() {
       _classCallCheck(this, _class);
@@ -2391,6 +2311,13 @@
           args[_key4] = arguments[_key4];
         }
         _superPropGet(_class, "destroy", this, 3)(args);
+      }
+
+      // Public method to reset the pipeline cache
+    }, {
+      key: "resetPipelineCache",
+      value: function resetPipelineCache() {
+        this.resetCache = true;
       }
     }]);
   }($.BootstrapTable);

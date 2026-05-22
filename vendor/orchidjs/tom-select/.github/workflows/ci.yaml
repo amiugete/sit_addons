@@ -1,0 +1,34 @@
+name: Node.js CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ['18.x', '20.x', '22.x']
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      # This is needed to run headless Chrome on Ubuntu 24.04.
+      - name: Disable AppArmor
+        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
+      - run: npm ci
+      - run: npm run build
+      - run: npm run build:docs
+      # Use `--ignore-scripts` to avoid running the `pretest` script. We already
+      # built the project in a previous step, no need to build it again.
+      - run: npm run test --ignore-scripts
+      - run: npm run test:types
+      - run: npm run stylelint

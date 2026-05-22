@@ -25,12 +25,12 @@
   function _defineProperties(e, r) {
     for (var t = 0; t < r.length; t++) {
       var o = r[t];
-      o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o);
+      o.enumerable = o.enumerable || false, o.configurable = true, "value" in o && (o.writable = true), Object.defineProperty(e, _toPropertyKey(o.key), o);
     }
   }
   function _createClass(e, r, t) {
-    return _defineProperties(e.prototype, r), Object.defineProperty(e, "prototype", {
-      writable: !1
+    return r && _defineProperties(e.prototype, r), Object.defineProperty(e, "prototype", {
+      writable: false
     }), e;
   }
   function _get() {
@@ -52,11 +52,11 @@
     t.prototype = Object.create(e && e.prototype, {
       constructor: {
         value: t,
-        writable: !0,
-        configurable: !0
+        writable: true,
+        configurable: true
       }
     }), Object.defineProperty(t, "prototype", {
-      writable: !1
+      writable: false
     }), e && _setPrototypeOf(t, e);
   }
   function _isNativeReflectConstruct() {
@@ -75,12 +75,12 @@
         i,
         u,
         a = [],
-        f = !0,
-        o = !1;
+        f = true,
+        o = false;
       try {
         if (i = (t = t.call(r)).next, 0 === l) ; else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0);
       } catch (r) {
-        o = !0, n = r;
+        o = true, n = r;
       } finally {
         try {
           if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return;
@@ -211,7 +211,7 @@
 
   	functionBindNative = !fails(function () {
   	  // eslint-disable-next-line es/no-function-prototype-bind -- safe
-  	  var test = (function () { /* empty */ }).bind();
+  	  var test = function () { /* empty */ }.bind();
   	  // eslint-disable-next-line no-prototype-builtins -- safe
   	  return typeof test != 'function' || test.hasOwnProperty('prototype');
   	});
@@ -227,7 +227,7 @@
   	var NATIVE_BIND = requireFunctionBindNative();
 
   	var call = Function.prototype.call;
-
+  	// eslint-disable-next-line es/no-function-prototype-bind -- safe
   	functionCall = NATIVE_BIND ? call.bind(call) : function () {
   	  return call.apply(call, arguments);
   	};
@@ -284,6 +284,7 @@
 
   	var FunctionPrototype = Function.prototype;
   	var call = FunctionPrototype.call;
+  	// eslint-disable-next-line es/no-function-prototype-bind -- safe
   	var uncurryThisWithBind = NATIVE_BIND && FunctionPrototype.bind.bind(call, call);
 
   	functionUncurryThis = NATIVE_BIND ? uncurryThisWithBind : function (fn) {
@@ -689,10 +690,10 @@
   	var store = sharedStore.exports = globalThis[SHARED] || defineGlobalProperty(SHARED, {});
 
   	(store.versions || (store.versions = [])).push({
-  	  version: '3.39.0',
+  	  version: '3.49.0',
   	  mode: IS_PURE ? 'pure' : 'global',
-  	  copyright: '© 2014-2024 Denis Pushkarev (zloirock.ru)',
-  	  license: 'https://github.com/zloirock/core-js/blob/v3.39.0/LICENSE',
+  	  copyright: '© 2013–2025 Denis Pushkarev (zloirock.ru), 2025–2026 CoreJS Company (core-js.io). All rights reserved.',
+  	  license: 'https://github.com/zloirock/core-js/blob/v3.49.0/LICENSE',
   	  source: 'https://github.com/zloirock/core-js'
   	});
   	return sharedStore.exports;
@@ -760,7 +761,7 @@
 
   	var id = 0;
   	var postfix = Math.random();
-  	var toString = uncurryThis(1.0.toString);
+  	var toString = uncurryThis(1.1.toString);
 
   	uid = function (key) {
   	  return 'Symbol(' + (key === undefined ? '' : key) + ')_' + toString(++id + postfix, 36);
@@ -1045,7 +1046,7 @@
 
   	var EXISTS = hasOwn(FunctionPrototype, 'name');
   	// additional protection from minified / mangled / dropped function names
-  	var PROPER = EXISTS && (function something() { /* empty */ }).name === 'something';
+  	var PROPER = EXISTS && function something() { /* empty */ }.name === 'something';
   	var CONFIGURABLE = EXISTS && (!DESCRIPTORS || (DESCRIPTORS && getDescriptor(FunctionPrototype, 'name').configurable));
 
   	functionName = {
@@ -1068,7 +1069,7 @@
 
   	var functionToString = uncurryThis(Function.toString);
 
-  	// this helper broken in `core-js@3.4.1-3.4.4`, so we can't use `shared` helper
+  	// this helper broken in `core-js [at] 3.4.1-3.4.4`, so we can't use `shared` helper
   	if (!isCallable(store.inspectSource)) {
   	  store.inspectSource = function (it) {
   	    return functionToString(it);
@@ -1683,7 +1684,7 @@
   	var MAX_SAFE_INTEGER = 0x1FFFFFFFFFFFFF; // 2 ** 53 - 1 == 9007199254740991
 
   	doesNotExceedSafeInteger = function (it) {
-  	  if (it > MAX_SAFE_INTEGER) throw $TypeError('Maximum allowed index exceeded');
+  	  if (it > MAX_SAFE_INTEGER) throw new $TypeError('Maximum allowed index exceeded');
   	  return it;
   	};
   	return doesNotExceedSafeInteger;
@@ -1706,6 +1707,41 @@
   	return createProperty;
   }
 
+  var arraySetLength;
+  var hasRequiredArraySetLength;
+
+  function requireArraySetLength () {
+  	if (hasRequiredArraySetLength) return arraySetLength;
+  	hasRequiredArraySetLength = 1;
+  	var DESCRIPTORS = requireDescriptors();
+  	var isArray = requireIsArray();
+
+  	var $TypeError = TypeError;
+  	// eslint-disable-next-line es/no-object-getownpropertydescriptor -- safe
+  	var getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+
+  	// Safari < 13 does not throw an error in this case
+  	var SILENT_ON_NON_WRITABLE_LENGTH_SET = DESCRIPTORS && !function () {
+  	  // makes no sense without proper strict mode support
+  	  if (this !== undefined) return true;
+  	  try {
+  	    // eslint-disable-next-line es/no-object-defineproperty -- safe
+  	    Object.defineProperty([], 'length', { writable: false }).length = 1;
+  	  } catch (error) {
+  	    return error instanceof TypeError;
+  	  }
+  	}();
+
+  	arraySetLength = SILENT_ON_NON_WRITABLE_LENGTH_SET ? function (O, length) {
+  	  if (isArray(O) && !getOwnPropertyDescriptor(O, 'length').writable) {
+  	    throw new $TypeError('Cannot set read only .length');
+  	  } return O.length = length;
+  	} : function (O, length) {
+  	  return O.length = length;
+  	};
+  	return arraySetLength;
+  }
+
   var toStringTagSupport;
   var hasRequiredToStringTagSupport;
 
@@ -1716,7 +1752,7 @@
 
   	var TO_STRING_TAG = wellKnownSymbol('toStringTag');
   	var test = {};
-
+  	// eslint-disable-next-line unicorn/no-immediate-mutation -- ES3 syntax limitation
   	test[TO_STRING_TAG] = 'z';
 
   	toStringTagSupport = String(test) === '[object z]';
@@ -1909,6 +1945,7 @@
   	var lengthOfArrayLike = requireLengthOfArrayLike();
   	var doesNotExceedSafeInteger = requireDoesNotExceedSafeInteger();
   	var createProperty = requireCreateProperty();
+  	var setArrayLength = requireArraySetLength();
   	var arraySpeciesCreate = requireArraySpeciesCreate();
   	var arrayMethodHasSpeciesSupport = requireArrayMethodHasSpeciesSupport();
   	var wellKnownSymbol = requireWellKnownSymbol();
@@ -1954,7 +1991,7 @@
   	        createProperty(A, n++, E);
   	      }
   	    }
-  	    A.length = n;
+  	    setArrayLength(A, n);
   	    return A;
   	  }
   	});
@@ -2631,6 +2668,7 @@
   	  var symbol = Symbol('assign detection');
   	  var alphabet = 'abcdefghijklmnopqrst';
   	  A[symbol] = 7;
+  	  // eslint-disable-next-line es/no-array-prototype-foreach -- safe
   	  alphabet.split('').forEach(function (chr) { B[chr] = chr; });
   	  return $assign({}, A)[symbol] !== 7 || objectKeys($assign({}, B)).join('') !== alphabet;
   	}) ? function assign(target, source) { // eslint-disable-line no-unused-vars -- required for `.length`
@@ -2955,18 +2993,29 @@
 
   	var PATCH = UPDATES_LAST_INDEX_WRONG || NPCG_INCLUDED || UNSUPPORTED_Y || UNSUPPORTED_DOT_ALL || UNSUPPORTED_NCG;
 
+  	var setGroups = function (re, groups) {
+  	  var object = re.groups = create(null);
+  	  for (var i = 0; i < groups.length; i++) {
+  	    var group = groups[i];
+  	    object[group[0]] = re[group[1]];
+  	  }
+  	};
+
   	if (PATCH) {
   	  patchedExec = function exec(string) {
   	    var re = this;
   	    var state = getInternalState(re);
   	    var str = toString(string);
   	    var raw = state.raw;
-  	    var result, reCopy, lastIndex, match, i, object, group;
+  	    var result, reCopy, lastIndex;
 
   	    if (raw) {
   	      raw.lastIndex = re.lastIndex;
   	      result = call(patchedExec, raw, str);
   	      re.lastIndex = raw.lastIndex;
+
+  	      if (result && state.groups) setGroups(result, state.groups);
+
   	      return result;
   	    }
 
@@ -2985,8 +3034,10 @@
 
   	      strCopy = stringSlice(str, re.lastIndex);
   	      // Support anchored sticky behavior.
-  	      if (re.lastIndex > 0 && (!re.multiline || re.multiline && charAt(str, re.lastIndex - 1) !== '\n')) {
-  	        source = '(?: ' + source + ')';
+  	      var prevChar = re.lastIndex > 0 && charAt(str, re.lastIndex - 1);
+  	      if (re.lastIndex > 0 &&
+  	        (!re.multiline || re.multiline && prevChar !== '\n' && prevChar !== '\r' && prevChar !== '\u2028' && prevChar !== '\u2029')) {
+  	        source = '(?: (?:' + source + '))';
   	        strCopy = ' ' + strCopy;
   	        charsAdded++;
   	      }
@@ -3000,11 +3051,11 @@
   	    }
   	    if (UPDATES_LAST_INDEX_WRONG) lastIndex = re.lastIndex;
 
-  	    match = call(nativeExec, sticky ? reCopy : re, strCopy);
+  	    var match = call(nativeExec, sticky ? reCopy : re, strCopy);
 
   	    if (sticky) {
   	      if (match) {
-  	        match.input = stringSlice(match.input, charsAdded);
+  	        match.input = str;
   	        match[0] = stringSlice(match[0], charsAdded);
   	        match.index = re.lastIndex;
   	        re.lastIndex += match[0].length;
@@ -3016,19 +3067,13 @@
   	      // Fix browsers whose `exec` methods don't consistently return `undefined`
   	      // for NPCG, like IE8. NOTE: This doesn't work for /(.?)?/
   	      call(nativeReplace, match[0], reCopy, function () {
-  	        for (i = 1; i < arguments.length - 2; i++) {
+  	        for (var i = 1; i < arguments.length - 2; i++) {
   	          if (arguments[i] === undefined) match[i] = undefined;
   	        }
   	      });
   	    }
 
-  	    if (match && groups) {
-  	      match.groups = object = create(null);
-  	      for (i = 0; i < groups.length; i++) {
-  	        group = groups[i];
-  	        object[group[0]] = match[group[1]];
-  	      }
-  	    }
+  	    if (match && groups) setGroups(match, groups);
 
   	    return match;
   	  };
@@ -3058,6 +3103,61 @@
 
   var es_regexp_toString = {};
 
+  var regexpFlagsDetection;
+  var hasRequiredRegexpFlagsDetection;
+
+  function requireRegexpFlagsDetection () {
+  	if (hasRequiredRegexpFlagsDetection) return regexpFlagsDetection;
+  	hasRequiredRegexpFlagsDetection = 1;
+  	var globalThis = requireGlobalThis();
+  	var fails = requireFails();
+
+  	// babel-minify and Closure Compiler transpiles RegExp('.', 'd') -> /./d and it causes SyntaxError
+  	var RegExp = globalThis.RegExp;
+
+  	var FLAGS_GETTER_IS_CORRECT = !fails(function () {
+  	  var INDICES_SUPPORT = true;
+  	  try {
+  	    RegExp('.', 'd');
+  	  } catch (error) {
+  	    INDICES_SUPPORT = false;
+  	  }
+
+  	  var O = {};
+  	  // modern V8 bug
+  	  var calls = '';
+  	  var expected = INDICES_SUPPORT ? 'dgimsy' : 'gimsy';
+
+  	  var addGetter = function (key, chr) {
+  	    // eslint-disable-next-line es/no-object-defineproperty -- safe
+  	    Object.defineProperty(O, key, { get: function () {
+  	      calls += chr;
+  	      return true;
+  	    } });
+  	  };
+
+  	  var pairs = {
+  	    dotAll: 's',
+  	    global: 'g',
+  	    ignoreCase: 'i',
+  	    multiline: 'm',
+  	    sticky: 'y'
+  	  };
+
+  	  if (INDICES_SUPPORT) pairs.hasIndices = 'd';
+
+  	  for (var key in pairs) addGetter(key, pairs[key]);
+
+  	  // eslint-disable-next-line es/no-object-getownpropertydescriptor -- safe
+  	  var result = Object.getOwnPropertyDescriptor(RegExp.prototype, 'flags').get.call(O);
+
+  	  return result !== expected || calls !== expected;
+  	});
+
+  	regexpFlagsDetection = { correct: FLAGS_GETTER_IS_CORRECT };
+  	return regexpFlagsDetection;
+  }
+
   var regexpGetFlags;
   var hasRequiredRegexpGetFlags;
 
@@ -3067,14 +3167,17 @@
   	var call = requireFunctionCall();
   	var hasOwn = requireHasOwnProperty();
   	var isPrototypeOf = requireObjectIsPrototypeOf();
-  	var regExpFlags = requireRegexpFlags();
+  	var regExpFlagsDetection = requireRegexpFlagsDetection();
+  	var regExpFlagsGetterImplementation = requireRegexpFlags();
 
   	var RegExpPrototype = RegExp.prototype;
 
-  	regexpGetFlags = function (R) {
-  	  var flags = R.flags;
-  	  return flags === undefined && !('flags' in RegExpPrototype) && !hasOwn(R, 'flags') && isPrototypeOf(RegExpPrototype, R)
-  	    ? call(regExpFlags, R) : flags;
+  	regexpGetFlags = regExpFlagsDetection.correct ? function (it) {
+  	  return it.flags;
+  	} : function (it) {
+  	  return (!regExpFlagsDetection.correct && isPrototypeOf(RegExpPrototype, it) && !hasOwn(it, 'flags'))
+  	    ? call(regExpFlagsGetterImplementation, it)
+  	    : it.flags;
   	};
   	return regexpGetFlags;
   }
@@ -3209,7 +3312,7 @@
   function requireFixRegexpWellKnownSymbolLogic () {
   	if (hasRequiredFixRegexpWellKnownSymbolLogic) return fixRegexpWellKnownSymbolLogic;
   	hasRequiredFixRegexpWellKnownSymbolLogic = 1;
-  	// TODO: Remove from `core-js@4` since it's moved to entry points
+  	// TODO: Remove from `core-js [at] 4` since it's moved to entry points
   	requireEs_regexp_exec();
   	var call = requireFunctionCall();
   	var defineBuiltIn = requireDefineBuiltIn();
@@ -3227,6 +3330,7 @@
   	  var DELEGATES_TO_SYMBOL = !fails(function () {
   	    // String methods call symbol-named RegExp methods
   	    var O = {};
+  	    // eslint-disable-next-line unicorn/no-immediate-mutation -- ES3 syntax limitation
   	    O[SYMBOL] = function () { return 7; };
   	    return ''[KEY](O) !== 7;
   	  });
@@ -3240,12 +3344,13 @@
   	      // We can't use real regex here since it causes deoptimization
   	      // and serious performance degradation in V8
   	      // https://github.com/zloirock/core-js/issues/306
-  	      re = {};
   	      // RegExp[@@split] doesn't call the regex's exec method, but first creates
   	      // a new one. We need to return the patched regex when creating the new one.
-  	      re.constructor = {};
-  	      re.constructor[SPECIES] = function () { return re; };
-  	      re.flags = '';
+  	      var constructor = {};
+  	      // eslint-disable-next-line unicorn/no-immediate-mutation -- ES3 syntax limitation
+  	      constructor[SPECIES] = function () { return re; };
+  	      re = { constructor: constructor, flags: '' };
+  	      // eslint-disable-next-line unicorn/no-immediate-mutation -- ES3 syntax limitation
   	      re[SYMBOL] = /./[SYMBOL];
   	    }
 
@@ -3340,7 +3445,7 @@
   	var call = requireFunctionCall();
   	var fixRegExpWellKnownSymbolLogic = requireFixRegexpWellKnownSymbolLogic();
   	var anObject = requireAnObject();
-  	var isNullOrUndefined = requireIsNullOrUndefined();
+  	var isObject = requireIsObject();
   	var requireObjectCoercible = requireRequireObjectCoercible();
   	var sameValue = requireSameValue();
   	var toString = requireToString();
@@ -3354,7 +3459,7 @@
   	    // https://tc39.es/ecma262/#sec-string.prototype.search
   	    function search(regexp) {
   	      var O = requireObjectCoercible(this);
-  	      var searcher = isNullOrUndefined(regexp) ? undefined : getMethod(regexp, SEARCH);
+  	      var searcher = isObject(regexp) ? getMethod(regexp, SEARCH) : undefined;
   	      return searcher ? call(searcher, regexp, O) : new RegExp(regexp)[SEARCH](toString(O));
   	    },
   	    // `RegExp.prototype[@@search]` method
@@ -3519,9 +3624,9 @@
   	    var i = 0;
   	    var code;
   	    while (length > i) {
-  	      code = +arguments[i++];
+  	      code = +arguments[i];
   	      if (toAbsoluteIndex(code, 0x10FFFF) !== code) throw new $RangeError(code + ' is not a valid code point');
-  	      elements[i] = code < 0x10000
+  	      elements[i++] = code < 0x10000
   	        ? fromCharCode(code)
   	        : fromCharCode(((code -= 0x10000) >> 10) + 0xD800, code % 0x400 + 0xDC00);
   	    } return join(elements, '');
@@ -3817,7 +3922,7 @@
   function requireWeb_urlSearchParams_constructor () {
   	if (hasRequiredWeb_urlSearchParams_constructor) return web_urlSearchParams_constructor;
   	hasRequiredWeb_urlSearchParams_constructor = 1;
-  	// TODO: in core-js@4, move /modules/ dependencies to public entries for better optimization by tools like `preset-env`
+  	// TODO: in core-js [at] 4, move /modules/ dependencies to public entries for better optimization by tools like `preset-env`
   	requireEs_array_iterator();
   	requireEs_string_fromCodePoint();
   	var $ = require_export();
@@ -3899,8 +4004,9 @@
 
   	var utf8Decode = function (octets) {
   	  var codePoint = null;
+  	  var length = octets.length;
 
-  	  switch (octets.length) {
+  	  switch (length) {
   	    case 1:
   	      codePoint = octets[0];
   	      break;
@@ -3915,9 +4021,17 @@
   	      break;
   	  }
 
-  	  return codePoint > 0x10FFFF ? null : codePoint;
+  	  // reject surrogates, overlong encodings, and out-of-range codepoints
+  	  if (codePoint === null
+  	    || codePoint > 0x10FFFF
+  	    || (codePoint >= 0xD800 && codePoint <= 0xDFFF)
+  	    || codePoint < (length > 3 ? 0x10000 : length > 2 ? 0x800 : length > 1 ? 0x80 : 0)
+  	  ) return null;
+
+  	  return codePoint;
   	};
 
+  	/* eslint-disable max-statements, max-depth -- ok */
   	var decode = function (input) {
   	  input = replace(input, plus, ' ');
   	  var length = input.length;
@@ -3965,11 +4079,15 @@
   	          var nextByte = parseHexOctet(input, i + 1);
 
   	          // eslint-disable-next-line no-self-compare -- NaN check
-  	          if (nextByte !== nextByte) {
-  	            i += 3;
-  	            break;
+  	          if (nextByte !== nextByte || nextByte > 191 || nextByte < 128) break;
+
+  	          // https://encoding.spec.whatwg.org/#utf-8-decoder - position-specific byte ranges
+  	          if (sequenceIndex === 1) {
+  	            if (octet === 0xE0 && nextByte < 0xA0) break;
+  	            if (octet === 0xED && nextByte > 0x9F) break;
+  	            if (octet === 0xF0 && nextByte < 0x90) break;
+  	            if (octet === 0xF4 && nextByte > 0x8F) break;
   	          }
-  	          if (nextByte > 191 || nextByte < 128) break;
 
   	          push(octets, nextByte);
   	          i += 2;
@@ -3983,7 +4101,9 @@
 
   	        var codePoint = utf8Decode(octets);
   	        if (codePoint === null) {
-  	          result += FALLBACK_REPLACER;
+  	          for (var replacement = 0; replacement < byteSequenceLength; replacement++) result += FALLBACK_REPLACER;
+  	          i++;
+  	          continue;
   	        } else {
   	          decodedChar = fromCodePoint(codePoint);
   	        }
@@ -3996,6 +4116,7 @@
 
   	  return result;
   	};
+  	/* eslint-enable max-statements, max-depth -- ok */
 
   	var find = /[!'()~]|%20/g;
 
@@ -4131,7 +4252,7 @@
   	    var state = getInternalParamsState(this);
   	    validateArgumentsLength(arguments.length, 2);
   	    push(state.entries, { key: $toString(name), value: $toString(value) });
-  	    if (!DESCRIPTORS) this.length++;
+  	    if (!DESCRIPTORS) this.size++;
   	    state.updateURL();
   	  },
   	  // `URLSearchParams.prototype.delete` method
@@ -4148,7 +4269,6 @@
   	      var entry = entries[index];
   	      if (entry.key === key && (value === undefined || entry.value === value)) {
   	        splice(entries, index, 1);
-  	        if (value !== undefined) break;
   	      } else index++;
   	    }
   	    if (!DESCRIPTORS) this.size = entries.length;
@@ -4198,7 +4318,7 @@
   	  // https://url.spec.whatwg.org/#dom-urlsearchparams-set
   	  set: function set(name, value) {
   	    var state = getInternalParamsState(this);
-  	    validateArgumentsLength(arguments.length, 1);
+  	    validateArgumentsLength(arguments.length, 2);
   	    var entries = state.entries;
   	    var found = false;
   	    var key = $toString(name);
@@ -4263,7 +4383,7 @@
   	}, { enumerable: true });
 
   	// `URLSearchParams.prototype.size` getter
-  	// https://github.com/whatwg/url/pull/734
+  	// https://url.spec.whatwg.org/#dom-urlsearchparams-size
   	if (DESCRIPTORS) defineBuiltInAccessor(URLSearchParamsPrototype, 'size', {
   	  get: function size() {
   	    return getInternalParamsState(this).entries.length;
@@ -4335,7 +4455,7 @@
   function requireWeb_urlSearchParams () {
   	if (hasRequiredWeb_urlSearchParams) return web_urlSearchParams;
   	hasRequiredWeb_urlSearchParams = 1;
-  	// TODO: Remove this module from `core-js@4` since it's replaced to module below
+  	// TODO: Remove this module from `core-js [at] 4` since it's replaced to module below
   	requireWeb_urlSearchParams_constructor();
   	return web_urlSearchParams;
   }

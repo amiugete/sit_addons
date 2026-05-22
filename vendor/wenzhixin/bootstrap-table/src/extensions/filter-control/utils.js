@@ -146,7 +146,7 @@ export function cacheValues (that) {
     const fieldClass = escapeID(getElementClass($field))
 
     if (that.options.height && !that.options.filterControlContainer) {
-      $field = that.$el.find(`.fixed-table-header .${fieldClass}`)
+      $field = that.$tableContainer.find(`.fixed-table-header .${fieldClass}`)
     } else if (that.options.filterControlContainer) {
       $field = $(`${that.options.filterControlContainer} .${fieldClass}`)
     } else {
@@ -170,7 +170,7 @@ export function setCaretPosition (elem, caretPos) {
 
         range.move('character', caretPos)
         range.select()
-      } else {
+      } else if (elem.setSelectionRange) {
         elem.setSelectionRange(caretPos, caretPos)
       }
     }
@@ -474,18 +474,11 @@ export function createControls (that, header) {
       const $selectControl = $(currentTarget)
       const value = $selectControl.val()
 
-      if (Array.isArray(value)) {
-        for (let i = 0; i < value.length; i++) {
-          if (value[i] && value[i].length > 0 && value[i].trim()) {
-            $selectControl.find(`option[value="${value[i]}"]`).attr('selected', true)
-          }
-        }
-      } else if (value && value.length > 0 && value.trim()) {
-        $selectControl.find('option[selected]').removeAttr('selected')
-        $selectControl.find(`option[value="${value}"]`).attr('selected', true)
-      } else {
-        $selectControl.find('option[selected]').removeAttr('selected')
-      }
+      const normalizedValue = value === null ?
+        $selectControl.prop('multiple') ? [] : null :
+        value
+
+      $selectControl.val(normalizedValue)
 
       clearTimeout(currentTarget.timeoutId || 0)
       currentTarget.timeoutId = setTimeout(() => {
@@ -641,7 +634,7 @@ const filterDataMethods = {
 
     // eslint-disable-next-line guard-for-in
     for (const key in variableValues) {
-      addOptionToSelectControl(selectControl, key, variableValues[key], selected)
+      addOptionToSelectControl(selectControl, variableValues[key], variableValues[key], selected)
     }
 
     if (that.options.sortSelectOptions) {

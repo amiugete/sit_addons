@@ -1,0 +1,15 @@
+.DS_Store
+.vscode
+.DAV
+node_modules
+*.log
+*.tmp.*
+*.lock
+build-docs/*
+.sass-cache
+x-*
+*.err
+coverage/
+stats/
+src/tom-select.custom.ts
+dist

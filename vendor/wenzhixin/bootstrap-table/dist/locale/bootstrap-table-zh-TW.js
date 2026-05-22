@@ -76,7 +76,7 @@
 
 		functionBindNative = !fails(function () {
 		  // eslint-disable-next-line es/no-function-prototype-bind -- safe
-		  var test = (function () { /* empty */ }).bind();
+		  var test = function () { /* empty */ }.bind();
 		  // eslint-disable-next-line no-prototype-builtins -- safe
 		  return typeof test != 'function' || test.hasOwnProperty('prototype');
 		});
@@ -92,7 +92,7 @@
 		var NATIVE_BIND = requireFunctionBindNative();
 
 		var call = Function.prototype.call;
-
+		// eslint-disable-next-line es/no-function-prototype-bind -- safe
 		functionCall = NATIVE_BIND ? call.bind(call) : function () {
 		  return call.apply(call, arguments);
 		};
@@ -149,6 +149,7 @@
 
 		var FunctionPrototype = Function.prototype;
 		var call = FunctionPrototype.call;
+		// eslint-disable-next-line es/no-function-prototype-bind -- safe
 		var uncurryThisWithBind = NATIVE_BIND && FunctionPrototype.bind.bind(call, call);
 
 		functionUncurryThis = NATIVE_BIND ? uncurryThisWithBind : function (fn) {
@@ -554,10 +555,10 @@
 		var store = sharedStore.exports = globalThis[SHARED] || defineGlobalProperty(SHARED, {});
 
 		(store.versions || (store.versions = [])).push({
-		  version: '3.39.0',
+		  version: '3.49.0',
 		  mode: IS_PURE ? 'pure' : 'global',
-		  copyright: '© 2014-2024 Denis Pushkarev (zloirock.ru)',
-		  license: 'https://github.com/zloirock/core-js/blob/v3.39.0/LICENSE',
+		  copyright: '© 2013–2025 Denis Pushkarev (zloirock.ru), 2025–2026 CoreJS Company (core-js.io). All rights reserved.',
+		  license: 'https://github.com/zloirock/core-js/blob/v3.49.0/LICENSE',
 		  source: 'https://github.com/zloirock/core-js'
 		});
 		return sharedStore.exports;
@@ -625,7 +626,7 @@
 
 		var id = 0;
 		var postfix = Math.random();
-		var toString = uncurryThis(1.0.toString);
+		var toString = uncurryThis(1.1.toString);
 
 		uid = function (key) {
 		  return 'Symbol(' + (key === undefined ? '' : key) + ')_' + toString(++id + postfix, 36);
@@ -910,7 +911,7 @@
 
 		var EXISTS = hasOwn(FunctionPrototype, 'name');
 		// additional protection from minified / mangled / dropped function names
-		var PROPER = EXISTS && (function something() { /* empty */ }).name === 'something';
+		var PROPER = EXISTS && function something() { /* empty */ }.name === 'something';
 		var CONFIGURABLE = EXISTS && (!DESCRIPTORS || (DESCRIPTORS && getDescriptor(FunctionPrototype, 'name').configurable));
 
 		functionName = {
@@ -933,7 +934,7 @@
 
 		var functionToString = uncurryThis(Function.toString);
 
-		// this helper broken in `core-js@3.4.1-3.4.4`, so we can't use `shared` helper
+		// this helper broken in `core-js [at] 3.4.1-3.4.4`, so we can't use `shared` helper
 		if (!isCallable(store.inspectSource)) {
 		  store.inspectSource = function (it) {
 		    return functionToString(it);
@@ -1548,7 +1549,7 @@
 		var MAX_SAFE_INTEGER = 0x1FFFFFFFFFFFFF; // 2 ** 53 - 1 == 9007199254740991
 
 		doesNotExceedSafeInteger = function (it) {
-		  if (it > MAX_SAFE_INTEGER) throw $TypeError('Maximum allowed index exceeded');
+		  if (it > MAX_SAFE_INTEGER) throw new $TypeError('Maximum allowed index exceeded');
 		  return it;
 		};
 		return doesNotExceedSafeInteger;
@@ -1571,6 +1572,41 @@
 		return createProperty;
 	}
 
+	var arraySetLength;
+	var hasRequiredArraySetLength;
+
+	function requireArraySetLength () {
+		if (hasRequiredArraySetLength) return arraySetLength;
+		hasRequiredArraySetLength = 1;
+		var DESCRIPTORS = requireDescriptors();
+		var isArray = requireIsArray();
+
+		var $TypeError = TypeError;
+		// eslint-disable-next-line es/no-object-getownpropertydescriptor -- safe
+		var getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+
+		// Safari < 13 does not throw an error in this case
+		var SILENT_ON_NON_WRITABLE_LENGTH_SET = DESCRIPTORS && !function () {
+		  // makes no sense without proper strict mode support
+		  if (this !== undefined) return true;
+		  try {
+		    // eslint-disable-next-line es/no-object-defineproperty -- safe
+		    Object.defineProperty([], 'length', { writable: false }).length = 1;
+		  } catch (error) {
+		    return error instanceof TypeError;
+		  }
+		}();
+
+		arraySetLength = SILENT_ON_NON_WRITABLE_LENGTH_SET ? function (O, length) {
+		  if (isArray(O) && !getOwnPropertyDescriptor(O, 'length').writable) {
+		    throw new $TypeError('Cannot set read only .length');
+		  } return O.length = length;
+		} : function (O, length) {
+		  return O.length = length;
+		};
+		return arraySetLength;
+	}
+
 	var toStringTagSupport;
 	var hasRequiredToStringTagSupport;
 
@@ -1581,7 +1617,7 @@
 
 		var TO_STRING_TAG = wellKnownSymbol('toStringTag');
 		var test = {};
-
+		// eslint-disable-next-line unicorn/no-immediate-mutation -- ES3 syntax limitation
 		test[TO_STRING_TAG] = 'z';
 
 		toStringTagSupport = String(test) === '[object z]';
@@ -1774,6 +1810,7 @@
 		var lengthOfArrayLike = requireLengthOfArrayLike();
 		var doesNotExceedSafeInteger = requireDoesNotExceedSafeInteger();
 		var createProperty = requireCreateProperty();
+		var setArrayLength = requireArraySetLength();
 		var arraySpeciesCreate = requireArraySpeciesCreate();
 		var arrayMethodHasSpeciesSupport = requireArrayMethodHasSpeciesSupport();
 		var wellKnownSymbol = requireWellKnownSymbol();
@@ -1819,7 +1856,7 @@
 		        createProperty(A, n++, E);
 		      }
 		    }
-		    A.length = n;
+		    setArrayLength(A, n);
 		    return A;
 		  }
 		});
@@ -1890,6 +1927,7 @@
 		  var symbol = Symbol('assign detection');
 		  var alphabet = 'abcdefghijklmnopqrst';
 		  A[symbol] = 7;
+		  // eslint-disable-next-line es/no-array-prototype-foreach -- safe
 		  alphabet.split('').forEach(function (chr) { B[chr] = chr; });
 		  return $assign({}, A)[symbol] !== 7 || objectKeys($assign({}, B)).join('') !== alphabet;
 		}) ? function assign(target, source) { // eslint-disable-line no-unused-vars -- required for `.length`
@@ -1938,44 +1976,80 @@
 	 */
 
 	$.fn.bootstrapTable.locales['zh-TW'] = {
-	  formatCopyRows: function formatCopyRows() {
-	    return '複製行';
+	  formatAddLevel: function formatAddLevel() {
+	    return '增加層級';
 	  },
-	  formatPrint: function formatPrint() {
-	    return '列印';
+	  formatAdvancedCloseButton: function formatAdvancedCloseButton() {
+	    return '關閉';
 	  },
-	  formatLoadingMessage: function formatLoadingMessage() {
-	    return '正在努力地載入資料，請稍候';
+	  formatAdvancedSearch: function formatAdvancedSearch() {
+	    return '高級搜尋';
 	  },
-	  formatRecordsPerPage: function formatRecordsPerPage(pageNumber) {
-	    return "\u6BCF\u9801\u986F\u793A ".concat(pageNumber, " \u9805\u8A18\u9304");
+	  formatAllRows: function formatAllRows() {
+	    return '所有';
 	  },
-	  formatShowingRows: function formatShowingRows(pageFrom, pageTo, totalRows, totalNotFiltered) {
-	    if (totalNotFiltered !== undefined && totalNotFiltered > 0 && totalNotFiltered > totalRows) {
-	      return "\u986F\u793A\u7B2C ".concat(pageFrom, " \u5230\u7B2C ").concat(pageTo, " \u9805\u8A18\u9304\uFF0C\u7E3D\u5171 ").concat(totalRows, " \u9805\u8A18\u9304\uFF08\u5F9E ").concat(totalNotFiltered, " \u7E3D\u8A18\u9304\u4E2D\u904E\u6FFE\uFF09");
-	    }
-	    return "\u986F\u793A\u7B2C ".concat(pageFrom, " \u5230\u7B2C ").concat(pageTo, " \u9805\u8A18\u9304\uFF0C\u7E3D\u5171 ").concat(totalRows, " \u9805\u8A18\u9304");
+	  formatAutoRefresh: function formatAutoRefresh() {
+	    return '自動刷新';
 	  },
-	  formatSRPaginationPreText: function formatSRPaginationPreText() {
-	    return '上一頁';
-	  },
-	  formatSRPaginationPageText: function formatSRPaginationPageText(page) {
-	    return "\u7B2C".concat(page, "\u9801");
-	  },
-	  formatSRPaginationNextText: function formatSRPaginationNextText() {
-	    return '下一頁';
-	  },
-	  formatDetailPagination: function formatDetailPagination(totalRows) {
-	    return "\u7E3D\u5171 ".concat(totalRows, " \u9805\u8A18\u9304");
+	  formatCancel: function formatCancel() {
+	    return '取消';
 	  },
 	  formatClearSearch: function formatClearSearch() {
 	    return '清空過濾';
 	  },
-	  formatSearch: function formatSearch() {
-	    return '搜尋';
+	  formatColumn: function formatColumn() {
+	    return '列';
+	  },
+	  formatColumns: function formatColumns() {
+	    return '列';
+	  },
+	  formatColumnsToggleAll: function formatColumnsToggleAll() {
+	    return '切換所有';
+	  },
+	  formatCopyRows: function formatCopyRows() {
+	    return '複製行';
+	  },
+	  formatDeleteLevel: function formatDeleteLevel() {
+	    return '刪除層級';
+	  },
+	  formatDetailPagination: function formatDetailPagination(totalRows) {
+	    return "\u7E3D\u5171 ".concat(totalRows, " \u9805\u8A18\u9304");
+	  },
+	  formatDuplicateAlertDescription: function formatDuplicateAlertDescription() {
+	    return '請刪除或修改重複的列。';
+	  },
+	  formatDuplicateAlertTitle: function formatDuplicateAlertTitle() {
+	    return '檢測到重複項！';
+	  },
+	  formatExport: function formatExport() {
+	    return '導出數據';
+	  },
+	  formatFilterControlSwitch: function formatFilterControlSwitch() {
+	    return '隱藏/顯示過濾控制';
+	  },
+	  formatFilterControlSwitchHide: function formatFilterControlSwitchHide() {
+	    return '隱藏過濾控制';
+	  },
+	  formatFilterControlSwitchShow: function formatFilterControlSwitchShow() {
+	    return '顯示過濾控制';
+	  },
+	  formatFullscreen: function formatFullscreen() {
+	    return '全屏';
+	  },
+	  formatJumpTo: function formatJumpTo() {
+	    return '跳轉';
+	  },
+	  formatLoadingMessage: function formatLoadingMessage() {
+	    return '正在努力地載入資料，請稍候';
+	  },
+	  formatMultipleSort: function formatMultipleSort() {
+	    return '多重排序';
 	  },
 	  formatNoMatches: function formatNoMatches() {
 	    return '沒有找到符合的結果';
+	  },
+	  formatOrder: function formatOrder() {
+	    return '排序';
 	  },
 	  formatPaginationSwitch: function formatPaginationSwitch() {
 	    return '隱藏/顯示分頁';
@@ -1986,50 +2060,59 @@
 	  formatPaginationSwitchUp: function formatPaginationSwitchUp() {
 	    return '隱藏分頁';
 	  },
+	  formatPrint: function formatPrint() {
+	    return '列印';
+	  },
+	  formatRecordsPerPage: function formatRecordsPerPage(pageNumber) {
+	    return "\u6BCF\u9801\u986F\u793A ".concat(pageNumber, " \u9805\u8A18\u9304");
+	  },
 	  formatRefresh: function formatRefresh() {
 	    return '重新整理';
 	  },
-	  formatToggleOn: function formatToggleOn() {
-	    return '顯示卡片視圖';
+	  formatSRPaginationNextText: function formatSRPaginationNextText() {
+	    return '下一頁';
+	  },
+	  formatSRPaginationPageText: function formatSRPaginationPageText(page) {
+	    return "\u7B2C".concat(page, "\u9801");
+	  },
+	  formatSRPaginationPreText: function formatSRPaginationPreText() {
+	    return '上一頁';
+	  },
+	  formatSearch: function formatSearch() {
+	    return '搜尋';
+	  },
+	  formatShowingRows: function formatShowingRows(pageFrom, pageTo, totalRows, totalNotFiltered) {
+	    if (totalNotFiltered !== undefined && totalNotFiltered > 0 && totalNotFiltered > totalRows) {
+	      return "\u986F\u793A\u7B2C ".concat(pageFrom, " \u5230\u7B2C ").concat(pageTo, " \u9805\u8A18\u9304\uFF0C\u7E3D\u5171 ").concat(totalRows, " \u9805\u8A18\u9304\uFF08\u5F9E ").concat(totalNotFiltered, " \u7E3D\u8A18\u9304\u4E2D\u904E\u6FFE\uFF09");
+	    }
+	    return "\u986F\u793A\u7B2C ".concat(pageFrom, " \u5230\u7B2C ").concat(pageTo, " \u9805\u8A18\u9304\uFF0C\u7E3D\u5171 ").concat(totalRows, " \u9805\u8A18\u9304");
+	  },
+	  formatSort: function formatSort() {
+	    return '排序';
+	  },
+	  formatSortBy: function formatSortBy() {
+	    return '排序依據';
+	  },
+	  formatSortOrders: function formatSortOrders() {
+	    return {
+	      asc: '升序',
+	      desc: '降序'
+	    };
+	  },
+	  formatThenBy: function formatThenBy() {
+	    return '然後按';
+	  },
+	  formatToggleCustomViewOff: function formatToggleCustomViewOff() {
+	    return '隱藏自定義視圖';
+	  },
+	  formatToggleCustomViewOn: function formatToggleCustomViewOn() {
+	    return '顯示自定義視圖';
 	  },
 	  formatToggleOff: function formatToggleOff() {
 	    return '隱藏卡片視圖';
 	  },
-	  formatColumns: function formatColumns() {
-	    return '列';
-	  },
-	  formatColumnsToggleAll: function formatColumnsToggleAll() {
-	    return '切換所有';
-	  },
-	  formatFullscreen: function formatFullscreen() {
-	    return '全屏';
-	  },
-	  formatAllRows: function formatAllRows() {
-	    return '所有';
-	  },
-	  formatAutoRefresh: function formatAutoRefresh() {
-	    return '自動刷新';
-	  },
-	  formatExport: function formatExport() {
-	    return '導出數據';
-	  },
-	  formatJumpTo: function formatJumpTo() {
-	    return '跳轉';
-	  },
-	  formatAdvancedSearch: function formatAdvancedSearch() {
-	    return '高級搜尋';
-	  },
-	  formatAdvancedCloseButton: function formatAdvancedCloseButton() {
-	    return '關閉';
-	  },
-	  formatFilterControlSwitch: function formatFilterControlSwitch() {
-	    return '隱藏/顯示過濾控制';
-	  },
-	  formatFilterControlSwitchHide: function formatFilterControlSwitchHide() {
-	    return '隱藏過濾控制';
-	  },
-	  formatFilterControlSwitchShow: function formatFilterControlSwitchShow() {
-	    return '顯示過濾控制';
+	  formatToggleOn: function formatToggleOn() {
+	    return '顯示卡片視圖';
 	  }
 	};
 	Object.assign($.fn.bootstrapTable.defaults, $.fn.bootstrapTable.locales['zh-TW']);

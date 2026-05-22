@@ -1334,6 +1334,56 @@
             "install-path": "../oomphinc/composer-installers-extender"
         },
         {
+            "name": "orchidjs/tom-select",
+            "version": "2.6.1",
+            "version_normalized": "2.6.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/orchidjs/tom-select.git",
+                "reference": "173b239a276ec4e4dc806658d1dc83676bb823ab"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/orchidjs/tom-select/zipball/173b239a276ec4e4dc806658d1dc83676bb823ab",
+                "reference": "173b239a276ec4e4dc806658d1dc83676bb823ab",
+                "shasum": ""
+            },
+            "time": "2026-05-11T07:20:06+00:00",
+            "type": "component",
+            "extra": {
+                "component": {
+                    "files": [
+                        "dist/js/tom-select.complete.min.js",
+                        "dist/css/tom-select.default.min.css"
+                    ],
+                    "styles": [
+                        "dist/css/tom-select.default.min.css"
+                    ],
+                    "scripts": [
+                        "dist/js/tom-select.complete.min.js"
+                    ]
+                }
+            },
+            "installation-source": "dist",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "description": "Tom Select is a dynamic, framework agnostic, and lightweight (~16kb gzipped) <select> UI control. With autocomplete and native-feeling keyboard navigation, it's useful for tagging, contact lists, country selectors, and so on.",
+            "homepage": "https://tom-select.js.org/",
+            "support": {
+                "issues": "https://github.com/orchidjs/tom-select/issues",
+                "source": "https://github.com/orchidjs/tom-select/tree/2.6.1"
+            },
+            "funding": [
+                {
+                    "url": "https://opencollective.com/tom-select",
+                    "type": "open_collective"
+                }
+            ],
+            "install-path": "../orchidjs/tom-select"
+        },
+        {
             "name": "phpmailer/phpmailer",
             "version": "v7.0.0",
             "version_normalized": "7.0.0.0",
@@ -2221,23 +2271,23 @@
         },
         {
             "name": "wenzhixin/bootstrap-table",
-            "version": "1.24.1",
-            "version_normalized": "1.24.1.0",
+            "version": "1.27.3",
+            "version_normalized": "1.27.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wenzhixin/bootstrap-table.git",
-                "reference": "933c804fee7edb22e4efd35de255b431dbab99bc"
+                "reference": "fdbc948054c24bf0131af5b9b7fd94fd2ea64b4a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wenzhixin/bootstrap-table/zipball/933c804fee7edb22e4efd35de255b431dbab99bc",
-                "reference": "933c804fee7edb22e4efd35de255b431dbab99bc",
+                "url": "https://api.github.com/repos/wenzhixin/bootstrap-table/zipball/fdbc948054c24bf0131af5b9b7fd94fd2ea64b4a",
+                "reference": "fdbc948054c24bf0131af5b9b7fd94fd2ea64b4a",
                 "shasum": ""
             },
             "require": {
                 "twitter/bootstrap": ">=2.3.0"
             },
-            "time": "2025-03-02T12:04:23+00:00",
+            "time": "2026-04-23T23:51:34+00:00",
             "type": "component",
             "installation-source": "dist",
             "notification-url": "https://packagist.org/downloads/",
@@ -2271,7 +2321,7 @@
             ],
             "support": {
                 "issues": "https://github.com/wenzhixin/bootstrap-table/issues",
-                "source": "https://github.com/wenzhixin/bootstrap-table/tree/1.24.1"
+                "source": "https://github.com/wenzhixin/bootstrap-table/tree/1.27.3"
             },
             "funding": [
                 {
