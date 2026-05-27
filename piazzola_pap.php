@@ -212,7 +212,7 @@ $versione= $_GET['v'];
                 <div class="col-12">
                     <div class="card shadow-sm border-warning" id="card_piazzola">
                         <div class="card-body">
-                            <div id="dettagli_piazzola_content" style="display: flex; justify-content: center; align-items: center;"></div>
+                            <div id="dettagli_piazzola_content" style="display: flex; align-items: center;"></div>
                         </div>
                     </div>
                 </div>
@@ -726,6 +726,11 @@ require('./footer.php');
             console.log('non è stata selezionata alcuna piazzola, disabilito entrambi i bottoni');
             $('#bottone_crea').prop("disabled",true);
             $('#bottone_aggiungi').prop("disabled", true);
+            //tolgo eventuali background-color da selezione precedente
+            $('[id^="dettagli_piazzola_"]').css('background-color','');
+            $('[id^="dettagli_piazzola_"]').css('padding','');
+            // nascondo il blocco sulla scelta del cliente se non è stata selezionata alcuna piazzola
+            $('#spazio_blocco_cliente').html('');
 
         }else{
             if (is_pap === 't') {
@@ -740,6 +745,7 @@ require('./footer.php');
             
             //tolgo eventuali background-color da selezione precedente
             $('[id^="dettagli_piazzola_"]').css('background-color','');
+            $('[id^="dettagli_piazzola_"]').css('padding','');
 
             // aggiungo background-color al div della piazzola selezionata con un po' di margine
             $('#dettagli_piazzola_' + piazzola_sel).css('background-color', 'rgb(255, 229, 144)');
