@@ -22,7 +22,7 @@ $id_civico = $_GET['civico'];
 $query_piazzola = "with piazzole as(
 select vp.id_piazzola, vp.riferimento, p.via,
 vp.numero_civico, vp.numero_civico||coalesce(vp.lettera_civico,'')||coalesce(vp.colore_civico,'') as civico_testo,  
-vp.id_asta, p.elementi, p.is_pap, p.geoloc 
+vp.id_asta, p.elementi, p.is_pap, p.geoloc, vp.suolo_privato
 from elem.piazzole vp 
 join elem.v_piazzole_dwh p on p.id_piazzola  = vp.id_piazzola 
 where vp.id_asta in (select id_asta from elem.aste tv where tv.id_via = $1 )

@@ -198,7 +198,7 @@ $(function() {
     background: #f1f7ff;
 }
 
-/* STILI PER I TOAST che al momento uso nell'index_aree.php*/
+/* STILI PER I TOAST */
 .toast {
     /*position: fixed;
     bottom: 20px;
@@ -232,6 +232,10 @@ $(function() {
 .toast.warning {
     background: #ffc107;
     color: #212529;
+}
+
+.toast.info {
+    background: #17a2b8;
 }
 </style>
 
