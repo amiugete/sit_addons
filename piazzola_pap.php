@@ -196,7 +196,7 @@ $versione= $_GET['v'];
                             </div>
                             <div class="form-group col-md-2">
                                 <i class="bi bi-geo-fill"></i><label for="civ_list">Civico:</label>
-                                <select name="civ_list" id="civ_list" class="selectpicker show-tick form-control" data-live-search="true" required="" disabled>
+                                <select name="civ_list" id="civ_list" class="selectpicker show-tick form-control" data-dropup-auto="false" data-live-search="true" required="" disabled>
                                 <option name="civ_list" value="">Seleziona il civico</option>
                                 </select>
                             </div>
@@ -206,7 +206,30 @@ $versione= $_GET['v'];
             </div>
 
             <div class="row g-3 align-items-center" id="dettagli_piazzola" style="display:none;">
-                <div class="card shadow-sm p-3" id="card_piazzola">
+                <div class="form-group">
+                    <div id="toast" class="toast hidden" style="text-align: center; margin-top: 1%; margin-bottom: 1%;"></div>
+                </div>
+                <div class="col-12">
+                    <div class="card shadow-sm border-warning" id="card_piazzola">
+                        <div class="card-body">
+                            <div id="dettagli_piazzola_content" style="display: flex; justify-content: center; align-items: center;"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- CARD AZIONI -->
+                <div class="col-12">
+                    <div class="card shadow-sm" id="card_azioni_piazzola">
+                        <div class="card-body">
+                            <div class="row g-3 align-items-end" id="azioni_piazzola_content">
+                            
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div id="toast_end" class="toast hidden" style="text-align: center; margin-top: 1%; margin-bottom: 1%;"></div>
+                </div>
+                <!--div class="card shadow-sm p-3" id="card_piazzola">
                     <div class ="card-body">
                         <div class="row">
                             <div class="form-group">
@@ -222,12 +245,8 @@ $versione= $_GET['v'];
                             </div>
                         </div>
                     </div>
-                </div>
+                </div-->
             </div>
-            <!-- RIPARTIRE DA QUI   
-            In questo caso deve anche comparire un bottone per modificare i dettagli della piazzola trovata. Per una soluzione veloce, il bottone apre link a sit in altra scheda,
-            a regime dovrà aprire un modal con dettagli editabili della piazzola.
-            -->
         </form>
     </div>
 </div>
@@ -318,15 +337,14 @@ require('./footer.php');
             civicoSelect.disabled = true;
             viaSelect.disabled = true;
             showToast('Hai selezionato un comune del genovesato, al momento i dati relativi ai numeri civici non sono disponibili', 'error', 'top');
-            //verifico se ho già una classe border-* e in caso la rimuovo per evitare conflitti di stile
-            if (/\bborder\S*/.test($('#card_piazzola')[0].className)) {
-                $('#card_piazzola')[0].className = $('#card_piazzola')[0].className.replace(/\bborder\S*\s?/g, '');                    
-            }
-            $('#card_piazzola').addClass('border-danger');
-            $('#card_piazzola').css({"border-width": "medium"});
+            
             document.getElementById('dettagli_piazzola').style.display = "flex";
-            if ($('#card_piazzola').is(':hidden')) {
-                $('#card_piazzola').show();
+            if ($('#card_azioni_piazzola').is(':visible')) {
+                $('#card_azioni_piazzola').hide();
+            }
+
+            if ($('#card_piazzola').is(':visible')) {
+                $('#card_piazzola').hide();
             }
             return;     
         }
@@ -408,7 +426,52 @@ require('./footer.php');
 
     });
 
-    civicoSelect.addEventListener('change', function () {
+    function addBloccoClienti(clienti, idPiazzola, hidden = false) {
+        // questa funzione aggiunge un blocco di html con i clienti associati alla piazzola, 
+        // con un bottone per allineare il cliente selezionato alla piazzola
+        let html = hidden ? `<div class="form-group" id="blocco_cliente" style="display:none;">` : `<div class="form-group" id="blocco_cliente" style="display:block;">`;
+
+        // se un solo cliente aggiungo un bottone Allinea cliente che mi mette macrocategoria e nome nei due input sopra
+        // altrimenti metto una select per scegliere il clienete e il bottone Allinea cliente che si abilita solo dopo la selezione del cliente
+        if (clienti.length === 1) {
+            html += `<div class="form-group">
+                        <label for="cliente_esistente"> Cliente associato alla piazzola: </label>
+                        <div class="d-flex align-items-center gap-2">
+                            <!--input type="hidden" id="cliente_esistente" name="cliente_esistente" value="${clienti[0].descrizione}" data-cliente="${clienti[0].id_macro_categoria}"-->
+                            <select name="cliente_esistente" id="cliente_esistente" class="form-control">
+                                <option value="${clienti[0].id_macro_categoria}" data-cliente="${clienti[0].descrizione}" selected> ${clienti[0].descrizione} </option>
+                            </select>
+                            <button type="button" class="btn btn-info btn-md" title="Allinea cliente" id="allinea_cliente" onclick="allineaClienteSelect(${idPiazzola})">
+                                <i class="bi bi-person-fill-up"></i>
+                            </button>
+                        </div>
+                </div>
+            `;
+        }else if (clienti.length > 1) {
+            html += `<div class="form-group">
+                        <label for="cliente_esistente"> Scegli un cliente tra quelli già associati alla piazzola: </label>
+                        <div class="d-flex align-items-center gap-2">
+                            <select name="cliente_esistente" id="cliente_esistente" class="form-control" onchange="abilitaBottoniCliente(this)" required>
+                                <option value="">Seleziona un cliente</option>`;
+                                clienti.forEach(cliente => {
+                                    html += `<option value="${cliente.id_macro_categoria}" data-cliente="${cliente.descrizione}"> ${cliente.descrizione} </option>`;
+                                });
+
+            html += `</select>
+                        <button type="button" class="btn btn-info btn-md" title="Allinea cliente" id="allinea_cliente" onclick="allineaClienteSelect(${idPiazzola})" disabled>
+                            <i class="bi bi-person-fill-up"></i>
+                        </button>
+                    </div>
+                </div>`;
+        }
+
+        html += `</div>`;
+
+        return html;
+    }
+
+    let clienti_piazzola = {};    
+    civicoSelect.addEventListener('change', async function () {
         /* ATTENZIONE!! questa funzione viene triggerata dall'onchange del select dei civici, 
         quindi al momento solo per Genova perchè per il genoveato non sono disponibili i civici.*/
         
@@ -419,131 +482,167 @@ require('./footer.php');
         if(id_civico === '') {
             return;
         }
-        
-        // verifico se esiste già una piazzola associata a quel civico
-        fetch('backoffice/get_piazzole_pap.php?id_via=' + id_via + '&civico=' + id_civico)
-            .then(response => response.json())
-            .then(data => {
-                bottone_crea =  `<div class="text-center">
-                        <button id="bottone_crea" type="submit" class="btn btn-success" disabled>
-                            <i class="bi bi-house-add-fill"></i> Crea piazzola PAP
-                        </button>
-                    </div>`;
-                bottone_aggiungi = `<div class="text-center">
-                        <button id="bottone_aggiungi" type="submit" class="btn btn-warning" disabled>
-                            <i class="bi bi-plus-square-fill"></i> Aggiungi elemento/i a piazzola
-                        </button>
-                    </div>`;
-                // se non c'è alcuna piazzola associata a quel civico, mostrare solo il tasto "Crea piazzola PAP"
-                if (data == null){
-                    showToast('Non esiste alcuna piazzola associata a questo civico', 'success', 'top');
-                    
-                    $('#dettagli_piazzola_content').html(bottone_crea);
-                    $('#bottone_crea').prop("disabled",false);
-                    // verifico se esiste già una classe border-* e in caso la rimuovo per evitare conflitti di stile
-                    if (/\bborder\S*/.test($('#card_piazzola')[0].className)) {
-                        $('#card_piazzola')[0].className = $('#card_piazzola')[0].className.replace(/\bborder\S*\s?/g, '');                    
+
+        const bottone_crea = `<div class="text-center">
+                <button id="bottone_crea" type="submit" class="btn btn-success" disabled>
+                    <i class="bi bi-house-add-fill"></i> Crea piazzola PAP
+                </button>
+            </div>`;
+        const bottone_aggiungi = `<div class="text-center">
+                <button id="bottone_aggiungi" type="submit" class="btn btn-warning" disabled>
+                    <i class="bi bi-plus-square-fill"></i> Aggiungi elemento/i a piazzola
+                </button>
+            </div>`;
+
+        try {
+            // verifico se esiste già una piazzola associata a quel civico
+            const response1 = await fetch('backoffice/get_piazzole_pap.php?id_via=' + id_via + '&civico=' + id_civico);
+            const data = await response1.json();
+
+            function aggiornaBordoCard(type, card, card_off = null) {
+                if (/\bborder\S*/.test($(card)[0].className)) {
+                    $(card)[0].className = $(card)[0].className.replace(/\bborder\S*\s?/g, '');
+                }
+                $(card).addClass('border-' + type);
+                $(card).css({ "border-width": "medium" });
+                document.getElementById('dettagli_piazzola').style.display = "flex";
+                if ($(card).is(':hidden')) {
+                    $(card).show();
+                }
+                if (card_off) {
+                    if ($(card_off).is(':visible')) {
+                        $(card_off).hide();
                     }
-                    $('#card_piazzola').addClass('border-success');
-                    $('#card_piazzola').css({"border-width": "medium"});
-                    document.getElementById('dettagli_piazzola').style.display = "flex";
-                    if ($('#card_piazzola').is(':hidden')) {
-                        $('#card_piazzola').show();
-                    }
-                } else {
-                    // se invece trova una piazzola associata a quel civico, mostrare i dettagli della piazzola e i tasti "Crea piazzola PAP" "Aggiungi elemento/i a piazzola PAP"
-                    showToast('Esiste già una piazzola associata a questo civico', 'warning', 'top');
-                    
-                    let pap = [];
-                    let dettagli_piazzola = '<div class="col-md-4">';
-                    data.forEach(function(det) {
-                        if (det.is_pap === 't') {
-                            pap.push(1);
-                            dettagli_piazzola += `
-                            <i class="bi bi-p-circle-fill"></i></i> Piazzola PAP associata a questo civico:`;
-                        }else{
-                            pap.push(0);
-                            dettagli_piazzola += `
-                            <i class="bi bi-circle"></i> Piazzola NON PAP associata a questo civico:`;
-                        }
+                }
+            }
+
+
+            // se non c'è alcuna piazzola associata a quel civico, mostrare solo il tasto "Crea piazzola PAP"
+            if (data == null || data.length === 0) {
+                showToast('Non esiste alcuna piazzola associata a questo civico', 'success', 'top');
+                
+                $('#azioni_piazzola_content').html(bottone_crea);
+                $('#bottone_crea').prop("disabled",false);
+                // verifico se esiste già una classe border-* e in caso la rimuovo per evitare conflitti di stile
+                aggiornaBordoCard('success', '#card_azioni_piazzola', '#card_piazzola');
+            } else {
+                // se invece trova una piazzola associata a quel civico, mostrare i dettagli della piazzola 
+                // e i tasti "Crea piazzola PAP" "Aggiungi elemento/i a piazzola PAP"
+                showToast('Esiste già una piazzola associata a questo civico', 'warning', 'top');
+
+                let pap = [];
+                let dettagli_piazzola = '';
+                let azioni_piazzola = '';
+                
+                await Promise.all(data.map(async function(det, index) {
+                    const response2 = await fetch('backoffice/get_clienti_piazzola_pap.php?id_piazzola=' + det.id_piazzola);
+                    const clienti = await response2.json();
+
+                    clienti_piazzola[det.id_piazzola] = clienti;
+                    console.log('Clienti associati alla piazzola ' + det.id_piazzola + ': ' + JSON.stringify(clienti));
+                  
+                    dettagli_piazzola += `<div class="col-md-4" id="dettagli_piazzola_${det.id_piazzola}">`;
+                    //data.forEach(function(det) {
+                    if (det.is_pap === 't') {
+                        pap.push(1);
                         dettagli_piazzola += `
-                            <ul>
-                                <li>id piazzola: ${det.id_piazzola}</li>
-                                <li>riferimento: ${det.riferimento}</li>
-                                <li>via: ${det.via}</li>
-                                <li>numero civico: ${det.civico_testo}</li>
-                                <li>elementi: ${det.elementi}</li>
-                            </ul>
-                        `;
-                    });
+                        <i class="bi bi-p-circle-fill"></i> Piazzola PAP associata a questo civico:`;
+                    }else{
+                        pap.push(0);
+                        dettagli_piazzola += `
+                        <i class="bi bi-circle"></i> Piazzola NON PAP associata a questo civico:`;
+                    }
+                    dettagli_piazzola += `
+                        <ul>
+                            <li>id piazzola: ${det.id_piazzola} 
+                                <button type="button" class="btn btn-info btn-sm" title="Modifica dettagli piazzola" id="edit_piazzola_${det.id_piazzola}" onclick="editDettagliPiazzola(${det.id_piazzola})">
+                                    <i class="fa-solid fa-pencil"></i>
+                                </button>
+                            </li>
+                            <li>riferimento: ${det.riferimento}</li>
+                            <li>via: ${det.via}</li>
+                            <li>numero civico: ${det.civico_testo}</li>
+                            <li>elementi: ${det.elementi}</li>
+                            <li>suolo privato: 
+                                <input type="checkbox" ${det.suolo_privato == 1 ? 'checked' : ''} id="suolo_privato_${det.id_piazzola}" name="suolo_privato_${det.id_piazzola}" onchange="updateSuoloPrivato(this)">
+                            </li>
+                        </ul>
+                    `;
+                    //});
                     dettagli_piazzola += `</div>`;
                     // se c'è più di una piazzola associata a quel civico, mostrare una select per scegliere a quale piazzola aggiungere gli elementi, 
                     // altrimenti nascondere la select e passa direttamente l'id della piazzola esistente al form con un campo hidden
-                    
+                
                     if (data.length > 1) {
-                        //qua aggiungo una select con cui scelgono la piazzola a cui aggiungere gli elementi
-                        //let piazzola_esistente = data[0].id_piazzola;
-                        //$('#piazzola_esistente').val(piazzola_esistente);
-                        dettagli_piazzola += `<div class="form-group col-md-4">
-                            <label for="piazzola_esistente">Scegli la piazzola:</label>
-                            <select name="piazzola_esistente" id="piazzola_esistente" class="form-control" onchange="abilitaBottoni(this)" required>
-                            <option value="">Seleziona una piazzola</option>
-                        `;
-                        data.forEach(function(det) {
-                            dettagli_piazzola += `
-                                <option value="${det.id_piazzola}" data-pap="${det.is_pap}">${det.id_piazzola} - ${det.riferimento}</option>
+                        if (index === 0){
+                            //qua aggiungo una select con cui scelgono la piazzola a cui aggiungere gli elementi
+                            //let piazzola_esistente = data[0].id_piazzola;
+                            //$('#piazzola_esistente').val(piazzola_esistente);
+                            azioni_piazzola += `<div class="form-group col-md-4">
+                                <label for="piazzola_esistente">Scegli la piazzola:</label>
+                                <select name="piazzola_esistente" id="piazzola_esistente" class="form-control" onchange="abilitaBottoni(this)" required>
+                                <option value="">Seleziona una piazzola</option>
                             `;
-                        });
-                        dettagli_piazzola += `</select></div>`;
-                    }else{
-                        //se c'è una sola piazzola associata a quel civico aggiungo un campo hidden
-                        dettagli_piazzola += `<div class="form-group col-md-4">
-                            <input type="hidden" id="piazzola_esistente" name="piazzola_esistente" value="${data[0].id_piazzola}">
-                        </div>`;
-                    }
-                    
-                    // aggiungo i bottoni in ogni caso
-                    dettagli_piazzola += `<div class="col-md-2 text-center">
-                            ${bottone_crea}
-                        </div>
-                        <div class="col-md-2 text-center">
-                            ${bottone_aggiungi}
-                        </div>`;
-                    
-                    
-                    $('#dettagli_piazzola_content').html(dettagli_piazzola);
-                    if (/\bborder\S*/.test($('#card_piazzola')[0].className)) {
-                        $('#card_piazzola')[0].className = $('#card_piazzola')[0].className.replace(/\bborder\S*\s?/g, '');                    
-                    }
-                    $('#card_piazzola').addClass('border-warning');
-                    $('#card_piazzola').css({"border-width": "medium"});
-                    document.getElementById('dettagli_piazzola').style.display = "flex";
-                    if ($('#card_piazzola').is(':hidden')) {
-                        $('#card_piazzola').show();
-                    }
-
-                    // verifico quali bottoni abilitare in base al fatto che le piazzole trovate siano PAP o non PAP
-                    if(data.length === 1){
-                        if (pap.every(p => p === 0)) {
-                            console.log("solo piazzole NON PAP");
-                            $('#bottone_crea').prop("disabled",false);
-                            $('#bottone_aggiungi').prop("disabled",false);
-                        } 
-                        else if (pap.every(p => p === 1)) {
-                            console.log("solo piazzole PAP");
-                            $('#bottone_crea').prop("disabled",true);
-                            $('#bottone_aggiungi').prop("disabled",false);
+                            data.forEach(function(p) {
+                                azioni_piazzola += `
+                                    <option value="${p.id_piazzola}" data-pap="${p.is_pap}">${p.id_piazzola} - ${p.riferimento}</option>
+                                `;
+                            });
+                            azioni_piazzola += `</select></div>`;
+                            azioni_piazzola += `<div class="col-md-4" id="spazio_blocco_cliente"></div>`;
+                            //dettagli_piazzola += addBloccoClienti(clienti, det.id_piazzola, true);
                         }
+                    }else{
+                        azioni_piazzola += `<div class="form-group col-md-4">
+                            <label for="piazzola_esistente">Piazzola associata al civico:</label>
+                            <select name="piazzola_esistente" id="piazzola_esistente" class="form-control">
+                                <option value="${det.id_piazzola}" data-pap="${det.is_pap}" selected readonly>${det.id_piazzola} - ${det.riferimento}</option>
+                            </select></div>`;
+
+                        azioni_piazzola += `<div class="col-md-4" id="spazio_blocco_cliente">`;
+                        azioni_piazzola += addBloccoClienti(clienti, det.id_piazzola, false);
+                        azioni_piazzola += `</div>`;
+
+                        //se c'è una sola piazzola associata a quel civico aggiungo un campo hidden
+                        azioni_piazzola += `<div class="form-group col-md-4 d-none">
+                            <input type="hidden" id="piazzola_esistente" name="piazzola_esistente" value="${det.id_piazzola}">
+                        </div>`;
+                    }
+                }));
+
+                // aggiungo i bottoni in ogni caso
+                azioni_piazzola += `<div class="col-md-2 text-center">
+                        ${bottone_crea}
+                    </div>
+                    <div class="col-md-2 text-center">
+                        ${bottone_aggiungi}
+                    </div>`;
+
+                $('#dettagli_piazzola_content').html(dettagli_piazzola);
+                aggiornaBordoCard('warning', '#card_piazzola');
+
+                $('#azioni_piazzola_content').html(azioni_piazzola);
+                aggiornaBordoCard('warning', '#card_azioni_piazzola');
+
+                // verifico quali bottoni abilitare in base al fatto che le piazzole trovate siano PAP o non PAP
+                if(data.length === 1){
+                    if (pap.every(p => p === 0)) {
+                        console.log("solo piazzole NON PAP");
+                        $('#bottone_crea').prop("disabled",false);
+                        $('#bottone_aggiungi').prop("disabled",false);
+                    } 
+                    else if (pap.every(p => p === 1)) {
+                        console.log("solo piazzole PAP");
+                        $('#bottone_crea').prop("disabled",true);
+                        $('#bottone_aggiungi').prop("disabled",false);
                     }
                 }
-            })
+            }
 
-            .catch(error => {
-                civicoSelect.innerHTML =
-                    '<option value="">Errore caricamento</option>';
-
+        }catch(error) {
+                civicoSelect.innerHTML = '<option value="">Errore caricamento</option>';
                 console.error(error);
-            });
+        }
     });
 
 
@@ -575,10 +674,11 @@ require('./footer.php');
                 return;
             }
 
-            // in base al bottone cliccato decido quale url chiamare per il submit del form (creazione nuova piazzola o aggiunta elementi a piazzola esistente)
+            // in base al bottone cliccato decido quale url chiamare per il submit del form 
+            // (creazione nuova piazzola o aggiunta elementi a piazzola esistente)
             let ajax_url = '';
             var buttonId = event.originalEvent.submitter.id;                 
-            console.log('Bottone ' + buttonId + ' form piazzola PAP cliccato e finito qua');
+            console.log('Bottone ' + buttonId + ' form piazzola PAP cliccato');
             if (buttonId === 'bottone_crea') {
                 ajax_url = 'backoffice/add_piazzola_pap.php';
             }else if (buttonId === 'bottone_aggiungi') {
@@ -594,12 +694,17 @@ require('./footer.php');
                 success: function (response) {                       
                     console.log(response);
                     showToast(response, 'success', 'end');
+                    // resetto alcuni valori e nascondo le card dei dettagli piazzola e azioni piazzola
                     $('#civ_list').selectpicker('val', '');
-                    //$('#civ_list').selectpicker('refresh');
                     $('#tcliente').selectpicker('val', '');
-                    //$('#tcliente').selectpicker('refresh');
                     $('#desc').val('');
                     $('#suolo_privato').val('false');
+                    if($('#card_azioni_piazzola').is(':visible')){
+                        $('#card_azioni_piazzola').hide();
+                    }
+                    if($('#card_piazzola').is(':visible')){
+                        $('#card_piazzola').hide();
+                    }
                 }, 
                 error: function (jqXHR, textStatus, errorThrown) {                        
                     showToast(response, 'error', 'end');
@@ -611,7 +716,10 @@ require('./footer.php');
 </script>
 
 <script>
+
     function abilitaBottoni(val) {
+        // questa funzione viene triggerata al cambio di selezione della select che mostra le piazzole esistenti associate a quel civico,
+        // in base alla piazzola selezionata e al fatto che sia PAP o non PAP abilita o disabilita i bottoni di creazione nuova piazzola o aggiunta elementi a piazzola esistente
         piazzola_sel = $("#piazzola_esistente option:selected").val();
         is_pap = val.options[val.selectedIndex].getAttribute('data-pap');
         if(piazzola_sel === ''){
@@ -629,6 +737,87 @@ require('./footer.php');
                 $('#bottone_crea').prop("disabled",false);
                 $('#bottone_aggiungi').prop("disabled", false);
             }
+            
+            //tolgo eventuali background-color da selezione precedente
+            $('[id^="dettagli_piazzola_"]').css('background-color','');
+
+            // aggiungo background-color al div della piazzola selezionata con un po' di margine
+            $('#dettagli_piazzola_' + piazzola_sel).css('background-color', 'rgb(255, 229, 144)');
+            $('#dettagli_piazzola_' + piazzola_sel).css('padding', '5px');
+
+            // mostro il blocco sulla scelta del cliente solo se hanno selezionato la piazzola
+            const clienti = clienti_piazzola[piazzola_sel];
+            $('#spazio_blocco_cliente').html(addBloccoClienti(clienti, piazzola_sel, false));
+        }
+    }
+
+    function updateSuoloPrivato(checkbox) {
+        // funzione triggerata al click del checkbox del suolo privato nei dettagli della piazzola, 
+        // aggiorna il valore del suolo privato della piazzola nel database in base allo stato del checkbox
+        let id_piazzola = checkbox.id.split('_')[2];
+        let privato = checkbox.checked ? 1 : 0;
+        console.log('ID piazzola: ' + id_piazzola);
+        console.log('Privato: ' + privato);
+
+
+        $.ajax({
+            url: 'backoffice/update_suolo_privato.php',
+            method: 'POST',
+            data: { id_piazzola: id_piazzola, privato: privato },
+            success: function(response) {
+                console.log(response);
+                showToast(response, 'success', 'top');
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error(errorThrown);
+                showToast(response, 'error', 'top');
+            }
+        });
+    }
+
+    function editDettagliPiazzola(id_piazzola) {
+        // questa funzione viene triggerata al click del bottone di modifica dettagli piazzola, 
+        // per ora mostra un toast con funzionalità WIP, a regime dovrebbe aprire un modal con i dettagli editabili
+        console.log('ID piazzola da modificare: ' + id_piazzola);
+        showToast('Funzionalità in fase di sviluppo', 'info', 'top');
+    }
+
+    function allineaClienteSelect(id_piazzola) {
+        // questa funzione viene triggerata al click del bottone allinea cliente dopo aver selezionato un cliente (ne trova più di uno), 
+        // prende la macrocategoria e il nome del cliente scelto e li mette nei rispettivi campi del form
+        let id_macro_categoria = $(`#cliente_esistente option:selected`).val();
+        let nome_cliente = $(`#cliente_esistente option:selected`).data('cliente');
+        console.log('ID piazzola: ' + id_piazzola);
+        console.log('ID macro categoria cliente: ' + id_macro_categoria);
+        console.log('Nome cliente: ' + nome_cliente);
+        $('#tcliente').selectpicker('val', id_macro_categoria);
+        $('#desc').val(nome_cliente);
+    }
+
+    // questa funzione non è più utilizzata perchè ora anche in caso di un solo cliente trovato viene mostrata una select e non più un input hidden
+    // per ora la commentoata, se dovesse servire per qualche motivo la riattivo, altrimenti andrebbe rimossa per pulizia del codice
+    /*function allineaCliente(id_piazzola) {
+        // questa funzione viene triggerata al click del bottone allinea cliente in caso di un solo cliente trovato, 
+        // prende la macrocategoria e il nome del cliente e li mette nei rispettivi campi del form
+        let nome_cliente = $(`#cliente_esistente`).val();
+        let id_macro_categoria = $('#cliente_esistente').attr('data-cliente');
+        console.log('ID piazzola: ' + id_piazzola);
+        console.log('ID macro categoria cliente: ' + id_macro_categoria);
+        console.log('Nome cliente: ' + nome_cliente);
+        $('#tcliente').selectpicker('val', id_macro_categoria);
+        $('#desc').val(nome_cliente);
+    }*/
+
+    function abilitaBottoniCliente(val) {
+        // questa funzione viene triggerata al cambio di selezione della select che mostra i clienti esistenti associati a quella piazzola,
+        // se viene selezionato o meno un cliente abilita o disabilita il bottone di allineamento cliente
+        cliente_sel = $("#cliente_esistente option:selected").val();
+        if(cliente_sel === ''){
+            console.log('non è stato selezionato alcun cliente, disabilito bottone allinea');
+            $('#allinea_cliente').prop("disabled",true);
+        }else{
+            console.log('cliente selezionato, abilito bottone allinea');
+            $('#allinea_cliente').prop("disabled",false);
         }
     }
 </script>
@@ -658,8 +847,8 @@ require('./footer.php');
     setTimeout(() => {
         toast.className = 'toast';
         // se la card è in stato di errore dopo 3 secondi la nascondo insieme al toast
-        if ($('#card_piazzola').hasClass('border-danger')) {
-            $('#card_piazzola').hide();
+        if ($('#card_azioni_piazzola').hasClass('border-danger')) {
+            $('#card_azioni_piazzola').hide();
         }
     }, 3000);
   }
