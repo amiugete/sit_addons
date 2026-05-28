@@ -29,7 +29,7 @@ currentdir = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(currentdir)
 
 
-from env.credenziali import *
+from credenziali import *
 
 
 mail_footer='''<hr>Questa mail è stata creata in automatico. 
