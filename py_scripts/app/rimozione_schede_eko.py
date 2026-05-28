@@ -308,7 +308,7 @@ def main(args):
 
             
             
-            text = message.as_string()
+            #text = message.as_string()
 
             logger.info("Richiamo la funzione per inviare mail")
             invio=invio_messaggio(message)
