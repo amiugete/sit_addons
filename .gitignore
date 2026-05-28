@@ -1,3 +1,7 @@
+# file con le credenziali d'ambiente
+.env 
+
+# altro
 conn.php
 conn_test.php
 ldap.php
