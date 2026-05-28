@@ -179,15 +179,30 @@ where a.id=$1 and st_intersects(n.geoloc, st_transform(a.geom, 3003));";
         $comando='/usr/bin/python3 ../py_scripts/ecopunti_parte2.py  -u '.$utenze.' -a '.$eco.' -e false';
     }*/
     //****************************************************************************************************************/
-    $comando='/usr/bin/python3 ../py_scripts/ecopunti_parte2.py  -u '.$utenze.' -a '.$eco.' -e false';
-    //$comando='/usr/bin/python3 ../py_scripts/ecopunti_parte2.py  -u '.$utenze.' -a '.$eco;
-    //echo $comando;
-    //exit;
+    
+    $venv_path = __DIR__ . '/../py_scripts/venv/bin/python';
+    $python_run_script = __DIR__ . '/../py_scripts/run.py';
+    $python_argv = 'ecopunti_parte2';
+    
+    #$comando='/usr/bin/python3 ../py_scripts/ecopunti_parte2.py  -u '.$utenze.' -a '.$eco.' -e false';
+
+
+    $comando = sprintf(
+        '%s %s %s %s %s',
+        escapeshellarg($venv_path),
+        escapeshellarg($python_run_script),
+        escapeshellarg($python_argv),
+        escapeshellarg($utenze),
+        escapeshellarg($eco),
+    );
+    echo $comando;
+    //exit();
     
     
     #echo '<br><br>';
-    exec($comando, $output, $retval);
+    exec($comando. ' 2>&1', $output, $retval);
     //echo "<br>retval:".$retval."<br>";
+    //die(500);
     /*foreach($output as $key => $value)
     {
       echo $key." ".$value."<br>";
@@ -268,11 +283,11 @@ where a.id=$1 and st_intersects(n.geoloc, st_transform(a.geom, 3003));";
             http_response_code(500);
             echo json_encode(["error" => "File ZIP non trovato"]);
             exit;
-    }
+        }
     } else {
         http_response_code(500);
-        echo json_encode(["error" => "Errore nello script Python"]);
-        exit;
+        //echo json_encode(["error" => "Errore nello script Python"]);
+        //exit;
     }
    
       

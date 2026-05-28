@@ -29,7 +29,7 @@ currentdir = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(currentdir)
 
 
-from credenziali import *
+from env.credenziali import *
 
 
 mail_footer='''<hr>Questa mail è stata creata in automatico. 
@@ -323,7 +323,7 @@ def creazione_scheda_mail(body_text_html, receiver_email, script_name, logger_na
 
 
     #aggiungo logo 
-    logoname='{}/img/logo_amiu.jpg'.format(currentdir)
+    logoname='{}/app/img/logo_amiu.jpg'.format(currentdir)
     immagine(message,logoname)
     
     invio_messaggio(message)
@@ -371,7 +371,7 @@ def ripasso_mail(body_text_html, receiver_email, script_name, logger_name):
 
 
     #aggiungo logo 
-    logoname='{}/img/logo_amiu.jpg'.format(currentdir)
+    logoname='{}/app/img/logo_amiu.jpg'.format(currentdir)
     immagine(message,logoname)
     
     invio_messaggio(message)

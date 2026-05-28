@@ -1149,9 +1149,28 @@ echo "res_ok == ". $res_ok."<br>";
 if ($res_ok ==0){
   #exit();
   # richiamo il python per cancellare le schede
-  $comando='/usr/bin/python3 ../py_scripts/rimozione_schede_eko.py '.$cod_percorso.' '.$data_att.' '.$checkTest.'';
+
+
+  #$comando='/usr/bin/python3 ../py_scripts/rimozione_schede_eko.py '.$cod_percorso.' '.$data_att.' '.$checkTest.'';
+  $venv_path = __DIR__ . '/../py_scripts/venv/bin/python';
+  $python_run_script = __DIR__ . '/../py_scripts/run.py';
+  $python_argv = 'rimozione_schede_eko';
+  
+
+  $comando = sprintf(
+    '%s %s %s %s %s %s',
+    escapeshellarg($venv_path),
+    escapeshellarg($python_run_script),
+    escapeshellarg($python_argv),
+    escapeshellarg($cod_percorso),
+    escapeshellarg($data_att),
+    escapeshellarg($checkTest),
+
+);
+  
   echo $comando. "<br>";
-  exec($comando, $output, $retval);
+  exec($comando. ' 2>&1', $output, $retval);
+  
   echo "retval = ". $retval ."<br>";
   if ($retval == 0) {
     //header("location: ../dettagli_percorso.php?cp=".$cod_percorso."&v=".$new_vers."");

@@ -3,24 +3,59 @@
 $output=null;
 $retval=null;
 
+$venv_path = __DIR__ . '/../py_scripts/venv/bin/python';
+$python_run_script = __DIR__ . '/../py_scripts/run.py';
+$python_argv = 'report_settimanali_percorsi_ok';
+
+
 if ($_POST['report']=='all'){
-  $comando='/usr/bin/python3 ../py_scripts/report_settimanali_percorsi_ok.py 0 all_bilaterale no 0';
+  #$comando='/usr/bin/python3 ../py_scripts/report_settimanali_percorsi_ok.py 0 all_bilaterale no 0';
+  $comando = sprintf(
+    '%s %s %s 0 all_bilaterale no 0',
+    escapeshellarg($venv_path),
+    escapeshellarg($python_run_script),
+    escapeshellarg($python_argv)
+  );
   $file_name = '/tmp/report/report_bilaterali.xlsx';
   $download_name = 'report_bilaterali.xlsx';
 } else if ($_POST['report']=='200301'){ //RSU
-  $comando='/usr/bin/python3 ../py_scripts/report_settimanali_percorsi_ok.py 200301 all_bilaterale no 0';
+  #$comando='/usr/bin/python3 ../py_scripts/report_settimanali_percorsi_ok.py 200301 all_bilaterale no 0';
+  $comando = sprintf(
+    '%s %s %s 200301 all_bilaterale no 0',
+    escapeshellarg($venv_path),
+    escapeshellarg($python_run_script),
+    escapeshellarg($python_argv)
+  );
   $file_name = '/tmp/report/report_bilaterali.xlsx';
   $download_name = 'report_bilaterali_rsu.xlsx';
 } else if ($_POST['report']=='150106') {
-  $comando='/usr/bin/python3 ../py_scripts/report_settimanali_percorsi_ok.py 150106 all_bilaterale no 0';
+  #$comando='/usr/bin/python3 ../py_scripts/report_settimanali_percorsi_ok.py 150106 all_bilaterale no 0';
+  $comando = sprintf(
+    '%s %s %s 150106 all_bilaterale no 0',
+    escapeshellarg($venv_path),
+    escapeshellarg($python_run_script),
+    escapeshellarg($python_argv)
+  );
   $file_name = '/tmp/report/report_bilaterali.xlsx';
   $download_name = 'report_bilaterali_multi.xlsx';
 } else if ($_POST['report']=='200101') { // carta
-  $comando='/usr/bin/python3 ../py_scripts/report_settimanali_percorsi_ok.py 200101 all_bilaterale no 0';
+  #$comando='/usr/bin/python3 ../py_scripts/report_settimanali_percorsi_ok.py 200101 all_bilaterale no 0';
+  $comando = sprintf(
+    '%s %s %s 200101 all_bilaterale no 0',
+    escapeshellarg($venv_path),
+    escapeshellarg($python_run_script),
+    escapeshellarg($python_argv)
+  );
   $file_name = '/tmp/report/report_bilaterali.xlsx';
   $download_name = 'report_bilaterali_carta.xlsx';
 } else if ($_POST['report']=='200108') { // ORG
-  $comando='/usr/bin/python3 ../py_scripts/report_settimanali_percorsi_ok.py 200108 all_bilaterale no 0';
+  #$comando='/usr/bin/python3 ../py_scripts/report_settimanali_percorsi_ok.py 200108 all_bilaterale no 0';
+  $comando = sprintf(
+    '%s %s %s 200108 all_bilaterale no 0',
+    escapeshellarg($venv_path),
+    escapeshellarg($python_run_script),
+    escapeshellarg($python_argv)
+  );
   $file_name = '/tmp/report/report_bilaterali.xlsx';
   $download_name = 'report_bilaterali_org.xlsx';
 } 

@@ -65,8 +65,27 @@ if (isset($_POST)){
       //exit;
       //echo getcwd();
 
-      //$comando='/usr/bin/python3 ../py_scripts/seleziona_utenze_vie.py -i /var/www/html/utenze_bko/elenco_vie.txt -m '.$mail.'  -p '. $zona.'  -c '. $cons.' > /dev/null 2>&1 &';
-      $comando='/usr/bin/python3 ../py_scripts/seleziona_utenze_vie.py -i ./utenze_file/elenco_vie.txt -p '. $zona.' -u '.$utenze.' -c '. $cons;
+      
+      $venv_path = __DIR__ . '/../py_scripts/venv/bin/python';
+      $python_run_script = __DIR__ . '/../py_scripts/run.py';
+      $python_argv = 'seleziona_utenze_vie';
+      
+
+
+
+
+      $comando = sprintf(
+          '%s %s %s %s %s %s %s',
+          escapeshellarg($venv_path),
+          escapeshellarg($python_run_script),
+          escapeshellarg($python_argv),
+          escapeshellarg('./utenze_file/elenco_vie.txt'),
+          escapeshellarg($zona),
+          escapeshellarg($utenze),
+          escapeshellarg($cons)
+      );
+
+      #$comando='/usr/bin/python3 ../py_scripts/seleziona_utenze_vie.py -i ./utenze_file/elenco_vie.txt -p '. $zona.' -u '.$utenze.' -c '. $cons;
       echo $comando;
       //exit();
 
@@ -74,7 +93,7 @@ if (isset($_POST)){
       $output=null;
       $retval=null;
       
-      exec($comando, $output, $retval);
+      exec($comando. ' 2>&1', $output, $retval);
       foreach($output as $key => $value)
       {
         echo $key." ".$value."<br>";

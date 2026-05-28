@@ -6,11 +6,14 @@
 
 '''
 Funzione per invio mail di log a
+
+FORSE DA RIMUOVERE
+
 '''
 
 import os
 
-from credenziali import *
+from env.credenziali import *
 
 import email, smtplib, ssl
 import mimetypes
@@ -21,7 +24,7 @@ from email.mime.audio import MIMEAudio
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.text import MIMEText
-from invio_messaggio import *
+from env.invio_messaggio import *
 
 
 def sent_log_by_mail(script_name, log_file):

@@ -36,7 +36,10 @@ if ($tipo_report==1) {
 
 //$comando='/usr/bin/python3 ../py_scripts/export_driver_ekovision.py '.$data_start.' '.$data_end.' '.$tipo_report.' '.$email.'';
 
-$python_script = __DIR__ . '/../py_scripts/export_driver_ekovision.py';
+
+$venv_path = __DIR__ . '/../py_scripts/venv/bin/python';
+$python_run_script = __DIR__ . '/../py_scripts/run.py';
+$python_argv = 'export_driver_ekovision';
 $file_name = "/tmp/driver_eko/driver_ekovision_{$desc_file}.xlsx";
 $download_name = "report_{$desc_file}_".str_replace("/", "",$data_start)."_".str_replace("/", "",$data_end).".xlsx";
 
@@ -45,8 +48,10 @@ $download_name = "report_{$desc_file}_".str_replace("/", "",$data_start)."_".str
 
 
 $comando = sprintf(
-    '/usr/bin/python3 %s %s %s %s %s',
-    escapeshellarg($python_script),
+    '%s %s %s %s %s %s %s',
+    escapeshellarg($venv_path),
+    escapeshellarg($python_run_script),
+    escapeshellarg($python_argv),
     escapeshellarg($data_start),
     escapeshellarg($data_end),
     escapeshellarg($tipo_report),

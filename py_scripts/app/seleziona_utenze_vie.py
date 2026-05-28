@@ -49,7 +49,7 @@ sys.path.append(parentdir)
 
 
 
-from credenziali import *
+from env.credenziali import *
 #from credenziali import db, port, user, pwd, host, user_mail, pwd_mail, port_mail, smtp_mail
 
 
@@ -124,7 +124,7 @@ from email.mime.audio import MIMEAudio
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.text import MIMEText
-from invio_messaggio import *
+from env.invio_messaggio import *
 
 # funzionde per restituire un dizionario
 def makeDictFactory(cursor):
@@ -213,7 +213,9 @@ def write_excel_from_dict(con, file_path, query, logger):
     workbook.close()
     logger.info(f"Creato file: {file_path}")
 
-def main(argv):
+def main(args):
+    
+    
     #num_giorno=datetime.datetime.today().weekday()
     #giorno=datetime.datetime.today().strftime('%A')
 
@@ -227,6 +229,7 @@ def main(argv):
     giorno_file=datetime.datetime.today().strftime('%Y%m%d%H%M%S')
 
     logger.info('Leggo gli input')
+    """
     try:
         #opts, args = getopt.getopt(argv,"hi:p:m:c:",["ifile=","prefix=", "mail="])
         opts, args = getopt.getopt(argv,"hi:p:u:c:",["ifile=","prefix=","utenze="])
@@ -253,7 +256,15 @@ def main(argv):
             consegne = arg
             logger.info('Da inserire sul portale consegne (1) o no (0) (default 0) = {}'.format(consegne))
 
-
+    """
+    
+    file_csv = args[0]
+    prefisso1 = args[1]
+    utenze = args[2]    
+    consegne = args[3]
+    
+    
+    
     consegne=int(consegne)
     logger.debug(consegne)
 

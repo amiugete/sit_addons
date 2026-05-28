@@ -10,19 +10,46 @@ $vers=pg_escape_string($_GET['vers']);
 <?php
 $output=null;
 $retval=null;
+
+$venv_path = __DIR__ . '/./py_scripts/venv/bin/python';
+$python_run_script = __DIR__ . '/./py_scripts/run.py';
+$python_argv = 'report_settimanali_percorsi_ok';
+
+
+
+
+
+
+
+
 if ($vers=='c') {
-  $comando='/usr/bin/python3 ./py_scripts/report_settimanali_percorsi_ok.py '.$id.' compl no 0';
+  #$comando='/usr/bin/python3 ./py_scripts/report_settimanali_percorsi_ok.py '.$id.' compl no 0';
+  $comando = sprintf(
+    '%s %s %s %s compl no 0',
+    escapeshellarg($venv_path),
+    escapeshellarg($python_run_script),
+    escapeshellarg($python_argv),
+    escapeshellarg($id)
+  );
+  
   $file_name = '/tmp/report/report_' . $id . '.xlsx';
   $download_name = 'report_' . $id . '.xlsx';
 } else if ($vers=='s'){
-  $comando='/usr/bin/python3 ./py_scripts/report_settimanali_percorsi_ok.py '.$id.' sempl no 0';
+  #$comando='/usr/bin/python3 ./py_scripts/report_settimanali_percorsi_ok.py '.$id.' sempl no 0';
+  $comando = sprintf(
+    '%s %s %s %s sempl no 0',
+    escapeshellarg($venv_path),
+    escapeshellarg($python_run_script),
+    escapeshellarg($python_argv),
+    escapeshellarg($id)
+  );
   $file_name = '/tmp/report/report_' . $id . '_operatore.xlsx';
   $download_name = 'report_' . $id . '_operatore.xlsx';
 }
-//echo $comando;
-//echo '<br><br>';
+echo $comando;
+echo '<br><br>';
 //exit();
-exec($comando, $output, $retval);
+exec($comando. ' 2>&1', $output, $retval);
 if ($retval === 0 && file_exists($file_name)) {
 // Disabilita compressione e buffer
     if (function_exists('ob_end_clean')) ob_end_clean();

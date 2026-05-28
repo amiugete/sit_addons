@@ -33,7 +33,7 @@ import cx_Oracle
 currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
-from credenziali import *
+from env.credenziali import *
 
 
 import requests
@@ -47,11 +47,13 @@ import logging
 
 filename = inspect.getframeinfo(inspect.currentframe()).filename
 #path = os.path.dirname(os.path.abspath(filename))
-path1 = os.path.dirname(os.path.dirname(os.path.abspath(filename)))
 path=os.path.dirname(sys.argv[0]) 
 path1 = os.path.dirname(os.path.dirname(os.path.abspath(filename)))
 nome=os.path.basename(__file__).replace('.py','')
 #tmpfolder=tempfile.gettempdir() # get the current temporary directory
+
+
+
 
 giorno_file=datetime.today().strftime('%Y%m%d_%H%M%S')
 
@@ -77,34 +79,7 @@ else:
 
 
 
-# Create a custom logger
-logging.basicConfig(
-    level=logging.DEBUG,
-    handlers=[
-    ]
-)
 
-logger = logging.getLogger()
-
-# Create handlers
-c_handler = logging.FileHandler(filename=errorfile, encoding='utf-8', mode='w')
-#f_handler = logging.StreamHandler()
-f_handler = logging.FileHandler(filename=logfile, encoding='utf-8', mode='w')
-
-
-c_handler.setLevel(logging.ERROR)
-f_handler.setLevel(logging.DEBUG)
-
-
-# Add handlers to the logger
-logger.addHandler(c_handler)
-logger.addHandler(f_handler)
-
-
-cc_format = logging.Formatter('%(asctime)s\t%(levelname)s\t%(message)s')
-
-c_handler.setFormatter(cc_format)
-f_handler.setFormatter(cc_format)
 
 
 # libreria per invio mail
@@ -117,16 +92,55 @@ from email.mime.audio import MIMEAudio
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.text import MIMEText
-from invio_messaggio import *
+from env.invio_messaggio import *
 
 
 
 
 
-def main(arg1, arg2, arg3):
+def main(args):
+    
+    
+    arg1 = args[0]
+    arg2 = args[1]
+    arg3 = args[2]
+    
+    
+    
+    # Create a custom logger
+    logging.basicConfig(
+        level=logging.DEBUG,
+        handlers=[
+        ]
+    )
+
+    logger = logging.getLogger()
+
+    # Create handlers
+    c_handler = logging.FileHandler(filename=errorfile, encoding='utf-8', mode='w')
+    #f_handler = logging.StreamHandler()
+    f_handler = logging.FileHandler(filename=logfile, encoding='utf-8', mode='w')
+
+
+    c_handler.setLevel(logging.ERROR)
+    f_handler.setLevel(logging.DEBUG)
+
+
+    # Add handlers to the logger
+    logger.addHandler(c_handler)
+    logger.addHandler(f_handler)
+
+
+    cc_format = logging.Formatter('%(asctime)s\t%(levelname)s\t%(message)s')
+
+    c_handler.setFormatter(cc_format)
+    f_handler.setFormatter(cc_format)
     
     logger.info('Il PID corrente è {0}'.format(os.getpid()))
 
+
+    logger.debug('path: {}'.format(path))
+    logger.debug('path1: {}'.format(path1))
     # Get today's date
     #presentday = datetime.now() # or presentday = datetime.today()
     oggi=datetime.today()
@@ -287,7 +301,7 @@ def main(arg1, arg2, arg3):
 
 
             #aggiungo logo 
-            logoname='{}/img/logo_amiu.jpg'.format(path1)
+            logoname='{}/app/img/logo_amiu.jpg'.format(path1)
             immagine(message,logoname)
             
             

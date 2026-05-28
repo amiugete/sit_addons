@@ -33,7 +33,7 @@ currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
 
-from credenziali import *
+from env.credenziali import *
 #from credenziali import db, port, user, pwd, host, user_mail, pwd_mail, port_mail, smtp_mail
 
 
@@ -102,7 +102,7 @@ from email.mime.audio import MIMEAudio
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.text import MIMEText
-from invio_messaggio import *
+from env.invio_messaggio import *
 
 
 # ============================
@@ -174,10 +174,16 @@ def write_headers(ws, tipo, arg3, cell_format_title):
 
 
 
-def main(argv):
+def main(args):
+    
+   
+    
 
     logging.info('Il PID corrente è {0}'.format(os.getpid()))
     logging.info('Leggo gli input')
+    
+    
+    """
     try:
         #opts, args = getopt.getopt(argv,"hu:a:e:",["utenze=", "area=", "ecopunti="])
         opts, args = getopt.getopt(argv,"hu:a:e:",["utenze=", "area="])
@@ -207,8 +213,12 @@ def main(argv):
                 
             logging.info('ecopunto = {}'.format(ecopunto))
         '''
-
-    # carico i mezzi sul DB PostgreSQL
+    """
+    utenze = args[0]
+    area = args[1]
+    
+    
+    
     logging.info('Connessione al db SIT')
     try:
         conn = psycopg2.connect(dbname=db,

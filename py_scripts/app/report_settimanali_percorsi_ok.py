@@ -20,7 +20,7 @@ import xlsxwriter
 
 import datetime
 
-from credenziali import *
+from env.credenziali import *
 
 from mail_log import *
 
@@ -39,7 +39,7 @@ from email.mime.audio import MIMEAudio
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.text import MIMEText
-from invio_messaggio import *
+from env.invio_messaggio import *
 
 
 #cerco la directory corrente
@@ -94,7 +94,7 @@ f_handler = logging.FileHandler(filename=logfile, encoding='utf-8', mode='w')
 
 
 c_handler.setLevel(logging.ERROR)
-f_handler.setLevel(logging.INFO)
+f_handler.setLevel(logging.DEBUG)
 
 
 # Add handlers to the logger
@@ -180,7 +180,13 @@ def copy_format(book, fmt):
 
 
 
-def main(arg1, arg2, arg3, arg4): 
+def main(args): 
+    
+    
+    arg1 = args[0]
+    arg2 = args[1]
+    arg3 = args[2]
+    arg4 = args[3]
     
     # leggo l'input
     try: 
@@ -528,7 +534,12 @@ select coalesce(e.id_piazzola, e.id_elemento) as id,
             #print('''Manca l'input''')
             exit()
 
+        
+        if len(dettagli_percorso)==0:
+            logger.error("Percorso non presente su SIT")
+            sys.exit("Percorso non presente su SIT")
 
+        
         k=0       
         #logger.debug('la lunghezza della lista dettagli_percorso è: {}'.format(len(dettagli_percorso)))
         for dd in dettagli_percorso:
@@ -730,7 +741,24 @@ select coalesce(e.id_piazzola, e.id_elemento) as id,
                     logger.error(e)
                     sent_log_by_mail(filename,logfile)
 
+            
+            
+            # controllo percorso vuoto
+            if len(lista_elementi) == 0:
+                logger.warning(f'Percorso {cc} non trovato o senza dettagli')
 
+                if check_b == 1:
+                    # nel caso bilaterale salto il percorso
+                    continue
+                else:
+                    # nel caso singolo esco con errore
+                    sys.exit(f'Percorso {cc} non presente su SIT')
+            
+            logger.debug('Percorso {} '.format(cc))
+            logger.debug('len(lista_elementi): {}'.format(len(lista_elementi)))
+            
+            
+            
             k=0       
             for vv in lista_elementi:
                 if check_b==1 and coalesce_py(vv[12],0) > 80:
@@ -782,8 +810,8 @@ select coalesce(e.id_piazzola, e.id_elemento) as id,
                 k+=1
             
             if k==0:
-                logger.error("Percorso non presente su SIT")
-                sys.exit("Percorso non presente su SIT")
+                logger.error("Percorso senza elementi SIT")
+                #sys.exit("Percorso non presente su SIT")
         elif tipologia=='spazz':
             
             w.write(5,0, 'Via', cell_format_title)
@@ -888,8 +916,8 @@ select coalesce(e.id_piazzola, e.id_elemento) as id,
             
             
             if k==0:
-                logger.error("Percorso non presente su SIT")
-                sys.exit("Percorso non presente su SIT")
+                logger.error("Percorso senza elementi ")
+                #sys.exit("Percorso non presente su SIT")
 
 
 

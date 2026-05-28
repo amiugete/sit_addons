@@ -20,7 +20,7 @@ import xlsxwriter
 import datetime
 
 # il file con le credenziali per ovvie ragioni non è su github
-from credenziali import *
+from env.credenziali import *
 
 
 #import requests
@@ -37,7 +37,7 @@ from email.mime.audio import MIMEAudio
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.text import MIMEText
-from invio_messaggio import *
+from env.invio_messaggio import *
 
 
 
@@ -209,7 +209,14 @@ def copy_format(book, fmt):
 
 
 
-def main(arg1, arg2, arg3, arg4): 
+def main(args): 
+    
+    #args = [a.strip() for a in args]
+    
+    arg1 = args[0]
+    arg2 = args[1]
+    arg3 = args[2]
+    arg4 = args[3]
     
     
     logger.info('Il PID corrente è {0}'.format(os.getpid()))
@@ -223,7 +230,7 @@ def main(arg1, arg2, arg3, arg4):
     - data start 
     - data end
     - tipo report
-    
+    - mail
     '''
     
     
