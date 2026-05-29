@@ -37,9 +37,6 @@ if ((int)$id_role_SIT = 0) {
   redirect('no_permessi.php');
   //exit;
 }
-
-$cod_percorso= $_GET['cp'];
-$versione= $_GET['v'];
 ?>
 
 
