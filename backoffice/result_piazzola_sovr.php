@@ -1,17 +1,13 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 #require('../validate_input.php');
 
 
-if ($_SESSION['test']==1) {
-    require('../conn_test.php');
-} else {
-    require('../conn.php');
-}
+require_once '../conn_ok.php';
 
 
-//echo 'Session test = ' . $_SESSION['test']; 
-//exit;
 
 $res_ok=0;
 

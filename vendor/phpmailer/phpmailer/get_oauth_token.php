@@ -77,7 +77,9 @@ if (!isset($_GET['code']) && !isset($_POST['provider'])) {
 
 require 'vendor/autoload.php';
 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 $providerName = '';
 $clientId = '';

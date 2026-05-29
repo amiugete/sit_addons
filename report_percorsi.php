@@ -1,6 +1,8 @@
 <?php
 //session_set_cookie_params($lifetime);
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
     
 ?>
@@ -21,11 +23,7 @@ require_once('./req.php');
 
 the_page_title();
 
-if ($_SESSION['test']==1) {
-  require_once ('./conn_test.php');
-} else {
-  require_once ('./conn.php');
-}
+require_once './conn_ok.php';
 ?> 
 
 
@@ -73,8 +71,8 @@ if ((int)$id_role_SIT = 0) {
     $query0='select id_ut, descrizione
     from topo.ut where id_ut = $1';
 
-    $result0 = pg_prepare($conn, "my_query0", $query0);
-    $result0 = pg_execute($conn, "my_query0", array($_POST['ut0']));
+    $result0 = pg_prepare($conn_sit, "my_query0", $query0);
+    $result0 = pg_execute($conn_sit, "my_query0", array($_POST['ut0']));
     
     while($r0 = pg_fetch_assoc($result0)) { 
   ?>    
@@ -95,8 +93,8 @@ if ((int)$id_role_SIT = 0) {
   //echo "<br>". $query1;
 
 
-  $result1 = pg_prepare($conn, "my_query1", $query1);
-  $result1 = pg_execute($conn, "my_query1", array($_SESSION['username']));
+  $result1 = pg_prepare($conn_sit, "my_query1", $query1);
+  $result1 = pg_execute($conn_sit, "my_query1", array($_SESSION['username']));
 
   while($r1 = pg_fetch_assoc($result1)) { 
 ?>    

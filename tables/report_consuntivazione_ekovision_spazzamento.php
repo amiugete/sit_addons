@@ -1,14 +1,12 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 #require('../validate_input.php');
 
 $scheda=$_GET['s'];
 
-if ($_SESSION['test']==1) {
-    require_once ('../conn_test.php');
-} else {
-    require_once ('../conn.php');
-}
+require_once '../conn_ok.php';
 //echo "OK";
 
 
@@ -50,7 +48,7 @@ if(!$oraconn) {
     }
     oci_free_statement($result);
     oci_close($oraconn);
-    //pg_close($conn);
+    
     #echo $rows ;
     if (empty($rows)==FALSE){
         //print $rows;

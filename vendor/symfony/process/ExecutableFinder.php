@@ -65,14 +65,14 @@ class ExecutableFinder
             }
         } else {
             $dirs = array_merge(
-                explode(\PATH_SEPARATOR, getenv('PATH') ?: getenv('Path')),
+                explode(\PATH_SEPARATOR, $_ENV['PATH'] ?? null ?: $_ENV['Path'] ?? null),
                 $extraDirs
             );
         }
 
         $suffixes = [''];
         if ('\\' === \DIRECTORY_SEPARATOR) {
-            $pathExt = getenv('PATHEXT');
+            $pathExt = $_ENV['PATHEXT'] ?? null;
             $suffixes = array_merge($pathExt ? explode(\PATH_SEPARATOR, $pathExt) : $this->suffixes, $suffixes);
         }
         foreach ($suffixes as $suffix) {

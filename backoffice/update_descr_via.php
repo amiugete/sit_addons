@@ -1,18 +1,13 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 #require('../validate_input.php');
 
 
-if ($_SESSION['test']){
-    if ($_SESSION['test']==1) {
-        require_once ('../conn_test.php');
-    } else {
-        require_once ('../conn.php');
-    }
-} else {
-    echo 'Sessione scaduta. Si prega di ricaricare la pagina per proseguire';
-    exit();
-}
+
+require_once '../conn_ok.php';
+
 
 
 
@@ -86,7 +81,7 @@ echo $nome2 ."<br>";
 //exit();
 
 
-if ($_SESSION['test']!=1) {// update data_disattivazione = domani di quanto attivo fino ad ora
+if (($_ENV['APP_ENV'] ?? '') === 'prod') {// update data_disattivazione = domani di quanto attivo fino ad ora
     echo 'Update di strade <hr>';
     //exit();
 

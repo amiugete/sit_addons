@@ -1,8 +1,10 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 //require_once('../req.php');
-require_once('../conn.php');
+require_once('../conn_ok.php');
 
 
 $res_ok=0;

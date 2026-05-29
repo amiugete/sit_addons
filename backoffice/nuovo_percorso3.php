@@ -1,16 +1,16 @@
 <?php
-session_start();
-#require('../validate_input.php');
-
-if ($_SESSION['test']==1) {
-    echo "CONNESSIONE TEST<br>";
-    $checkTest=1;
-    require_once ('../conn_test.php');
-} else {
-    echo "CONNESSIONE ESERCIZIO<br>";
-    $checkTest=0;
-    require_once ('../conn.php');
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
+#require('../validate_input.php');
+require_once '../conn_ok.php';
+
+if(($_ENV['APP_ENV'] ?? '') === 'test') {
+    $checkTest=1;
+} else {
+    $checkTest=0;
+}
+
 //echo "OK";
 
 if ($_POST['rim']==$_POST['ut']){

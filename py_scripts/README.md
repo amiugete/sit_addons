@@ -25,3 +25,21 @@ python3 -m venv venv
 source venv/bin/activate
 pip3 install -r requirements.txt
 ```
+
+
+# Per vedere variabili non usate si può usare l'estensione vulture di python 
+
+1. Entro nel venv
+
+```
+source venv/bin/activate
+```
+
+2. Lancio _vulture_ escludendo le cartelle del venv
+
+```
+vulture . --exclude venv,__pycache__,build,dist > /home/procedure/anomalie_python.txt
+```
+
+
+NB per uscire da venv basta digitare `deactivate`

@@ -48,7 +48,7 @@ class PhpExecutableFinderTest extends TestCase
 
         $f = new PhpExecutableFinder();
 
-        $current = getenv('PHP_BINARY') ?: \PHP_BINARY;
+        $current = $_ENV['PHP_BINARY'] ?? null ?: \PHP_BINARY;
 
         $this->assertEquals($current.' --php', $f->find(), '::find() returns the executable PHP');
         $this->assertEquals($current, $f->find(false), '::find() returns the executable PHP');

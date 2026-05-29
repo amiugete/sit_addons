@@ -4,12 +4,23 @@
 require_once('./check_utente.php');
 
 
-session_start();
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+
+
+require_once './env.php';
+
 
 // parametri iniziali 
-$partenza_ditte_terze="21/10/2024";
+$partenza_ditte_terze = $_ENV['PARTENZA_DITTE_TERZE'] ?? null;
+$partenza_ekovision = $_ENV['PARTENZA_EKOVISION'] ?? null;
 
-$partenza_ekovision= "20/11/2023";
+
+//echo   "partenza_ditte_terze: " . $partenza_ditte_terze . "<br>";
+//echo   "partenza_ekovision: " . $partenza_ekovision
 
 
 ?>
@@ -119,7 +130,11 @@ var onResize = function() {
 <!--script src="./jquery.js"></script-->
 
 
-<?php if ($check_modal!=1){?>
+<?php 
+
+$check_modal = $check_modal ?? 0;
+
+if ($check_modal!=1){?>
 <!-- jQuery -->
 <script src="./vendor/components/jquery/jquery.min.js"></script>
 <?php }?>
@@ -248,15 +263,17 @@ $problemi =  'contattare l\'<a href="mailto:assterritorio@amiu.genova.it">ammini
 
 function the_page_title()
 {
-    $page_name = getcwd(); // getcwd() gets the directory of the file you call the function from
+    /*$page_name = getcwd(); // getcwd() gets the directory of the file you call the function from
     $each_page_name = explode('/', $page_name);
     $len_page_dir = count($each_page_name) -1;
     $temp = explode('_', $each_page_name[$len_page_dir]);
     $len_temp=count($temp)-1;
-    if ($temp[$len_temp]=='addons'){
-        $_SESSION['test']=-1;
-        $ambiente="";
-    } else if($temp[$len_temp]=='test') {
+    */
+    $app_env = $_ENV['APP_ENV'] ?? null;
+    
+    if ($app_env == 'prod') {
+        $test=0;
+    } else if($app_env =='test') {
         ?>
         <style>
             .navbar {
@@ -265,13 +282,14 @@ function the_page_title()
         </style>
         <?php
         $test=1;
-        $_SESSION['test']=1;
     } else {
-        echo "L'indirizzo è sbagliato. Contattare l'amministratore di sistema assterritorio@amiu.genova.it";
+        die("Non riconosco l'ambiente di esecuzione. 
+        Controlla la variabile APP_ENV in .env 
+        e assicurati che sia valorizzata correttamente 
+        (prod o test).");
     }
     return $test;
 }
-
 
 ?>
 

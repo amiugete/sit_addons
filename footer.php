@@ -22,6 +22,5 @@ In caso di problemi <?php echo $problemi;?>
 </footer>
 
 <?php
-
-pg_close($conn);
+//fine file
 ?>

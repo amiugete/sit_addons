@@ -6,6 +6,38 @@ Componenti aggiuntivi (add-ons) del SIT aziendale
 
 Vedi dipendenze sotto e crea i file nascosti:
 
+- file .env (che deve essere bloccato su APACHE / NGINX)
+
+
+```
+ISS="Parola1 Parola2"
+DB_HOST=localhost
+DB_USER=root
+DB_PASS=secret
+```
+
+
+- chiamato con *phpdotenv* dentro la libreria del progetto
+
+```
+composer require vlucas/phpdotenv
+
+```
+
+- dentro req.php  
+
+```
+require __DIR__ . '/vendor/autoload.php';
+
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
+```
+
+
+# -------------------
+# DEPRECATA
+
 - *conn_test.php*  per creare le connessioni al DB usato dall'ambiente di test
 - *conn.php* per creare le connessioni al DB usato dall'ambiente di produzione
 
@@ -45,6 +77,9 @@ $iss= 'XXXX';
 $secret_pwd = 'XXXXXXXXXXXX';
 ?>
 ```
+
+# -------------------
+
 
 ## Dipendenze
 

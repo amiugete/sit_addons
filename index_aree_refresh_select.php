@@ -1,5 +1,6 @@
 <?php
-require_once('./conn.php');
+require_once('./conn_ok.php');
+
 echo "<option value=''>Scegli un'area</option>";
     $query="SELECT id,
                 CASE 

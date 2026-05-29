@@ -1,6 +1,8 @@
 <?php
 //session_set_cookie_params($lifetime);
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
     
 ?>
@@ -21,11 +23,7 @@ require_once('./req.php');
 
 the_page_title();
 
-if ($_SESSION['test']==1) {
-  require_once ('./conn_test.php');
-} else {
-  require_once ('./conn.php');
-}
+require_once './conn_ok.php';
 ?> 
 
 
@@ -343,7 +341,7 @@ $result_sit = pg_prepare($conn_sit, "query_sit", $query_sit);
 $result_sit = pg_execute($conn_sit, "query_sit", array($cod_percorso));  
 
 
-if ($_SESSION['test']==1) {
+if (($_ENV['APP_ENV'] ?? '') ===  'test') {
   $testo_tasto="Percorso su SIT (produzione NON test)";
 } else {
   $testo_tasto="Percorso su SIT";

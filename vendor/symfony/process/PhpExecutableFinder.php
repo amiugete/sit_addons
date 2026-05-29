@@ -40,7 +40,7 @@ class PhpExecutableFinder
 
         // HHVM support
         if (\defined('HHVM_VERSION')) {
-            return (getenv('PHP_BINARY') ?: \PHP_BINARY).$args;
+            return ($_ENV['PHP_BINARY'] ?? null ?: \PHP_BINARY).$args;
         }
 
         // PHP_BINARY return the current sapi executable
@@ -48,7 +48,7 @@ class PhpExecutableFinder
             return \PHP_BINARY.$args;
         }
 
-        if ($php = getenv('PHP_PATH')) {
+        if ($php = $_ENV['PHP_PATH'] ?? null) {
             if (!@is_executable($php)) {
                 return false;
             }
@@ -56,7 +56,7 @@ class PhpExecutableFinder
             return $php;
         }
 
-        if ($php = getenv('PHP_PEAR_PHP_BIN')) {
+        if ($php = $_ENV['PHP_PEAR_PHP_BIN'] ?? null) {
             if (@is_executable($php)) {
                 return $php;
             }

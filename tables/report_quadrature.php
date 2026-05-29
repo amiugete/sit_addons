@@ -1,15 +1,13 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 #require('../validate_input.php');
 
 
 
 
-if ($_SESSION['test']==1) {
-    require_once ('../conn_test.php');
-} else {
-    require_once ('../conn.php');
-}
+require_once '../conn_ok.php';
 //echo "OK";
 
 
@@ -122,7 +120,7 @@ while($r = oci_fetch_assoc($result)) {
 }
 oci_free_statement($result);
 oci_close($oraconn);
-//pg_close($conn);
+
 #echo $rows ;
 
 //require_once("./json_paginazione.php");

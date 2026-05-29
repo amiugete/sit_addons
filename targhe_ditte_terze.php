@@ -1,6 +1,8 @@
 <?php
 //session_set_cookie_params($lifetime);
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
     
 ?>
@@ -21,11 +23,7 @@ require_once('./req.php');
 
 the_page_title();
 
-if ($_SESSION['test']==1) {
-  require_once ('./conn_test.php');
-} else {
-  require_once ('./conn.php');
-}
+require_once './conn_ok.php';
 ?> 
 
 
@@ -396,8 +394,8 @@ and u.ekovision = 't'
 and mail is not null
 order by 2";
 
-  $result0 = pg_prepare($conn, "my_query0", $query0);
-  $result0 = pg_execute($conn, "my_query0", array());
+  $result0 = pg_prepare($conn_sit, "my_query0", $query0);
+  $result0 = pg_execute($conn_sit, "my_query0", array());
   
   while($r0 = pg_fetch_assoc($result0)) { 
 ?>    

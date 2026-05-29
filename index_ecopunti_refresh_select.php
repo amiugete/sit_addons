@@ -1,5 +1,5 @@
 <?php
-require_once('./conn.php');
+require_once('./conn_ok.php');
 echo "<option value=''>Scegli un'area</option>";
     $query="SELECT * From etl.aree_ecopunti_4326 where data_disegno::date>=(NOW() - INTERVAL '30' DAY) order by data_disegno desc;";
     $result = pg_query($conn, $query);

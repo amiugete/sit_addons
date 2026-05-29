@@ -1,16 +1,14 @@
 <?php
 
 
-session_start();
-
-
-
-
-if ($_SESSION['test']==1) {
-    require_once ('./conn_test.php');
-} else {
-    require_once ('./conn.php');
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
+
+
+
+
+require_once './conn_ok.php';
 
 require_once('./credenziali_mail.php');
 

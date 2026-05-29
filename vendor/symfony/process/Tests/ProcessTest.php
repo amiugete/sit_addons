@@ -33,7 +33,7 @@ class ProcessTest extends TestCase
     public static function setUpBeforeClass()
     {
         $phpBin = new PhpExecutableFinder();
-        self::$phpBin = getenv('SYMFONY_PROCESS_PHP_TEST_BINARY') ?: ('phpdbg' === \PHP_SAPI ? 'php' : $phpBin->find());
+        self::$phpBin = $_ENV['SYMFONY_PROCESS_PHP_TEST_BINARY'] ?? null ?: ('phpdbg' === \PHP_SAPI ? 'php' : $phpBin->find());
 
         ob_start();
         phpinfo(\INFO_GENERAL);
@@ -1401,8 +1401,8 @@ class ProcessTest extends TestCase
         $process->run();
 
         $this->assertSame('foo', $process->getOutput());
-        $this->assertSame('foo', getenv('existing_var'));
-        $this->assertFalse(getenv('new_test_var'));
+        $this->assertSame('foo', $_ENV['existing_var'] ?? null);
+        $this->assertFalse($_ENV['new_test_var'] ?? null);
 
         putenv('existing_var');
         unset($_ENV['existing_var']);
@@ -1548,7 +1548,7 @@ EOTXT;
         $process = new Process($commandline, $cwd, $env, $input, $timeout);
         $process->inheritEnvironmentVariables();
 
-        if (false !== $enhance = getenv('ENHANCE_SIGCHLD')) {
+        if (false !== $enhance = $_ENV['ENHANCE_SIGCHLD'] ?? null) {
             try {
                 $process->setEnhanceSigchildCompatibility(false);
                 $process->getExitCode();

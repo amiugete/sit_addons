@@ -10,7 +10,9 @@ function redirect($url)
 }
 
 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // definisco la variabile lifetime
 $lifetime=86400;

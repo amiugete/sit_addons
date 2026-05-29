@@ -1,6 +1,8 @@
 <?php
 // download_driver_ekovision.php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Recupera dati dal form
 if (!isset($_POST['daterange'], $_POST['tipo_report'], $_POST['email'])) {

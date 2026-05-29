@@ -1,4 +1,7 @@
-<?php ?>
+<?php 
+require_once('conn_ok.php');
+?>
+
 <script>
   function utScelta(val) {
     document.getElementById('open_ut').submit();
@@ -28,8 +31,8 @@
     left join anagrafe_percorsi.cons_mapping_uo cmu on cmu.id_uo_sit = u.id_ut 
     where id_ut = $1';
 
-    $result0 = pg_prepare($conn, "my_query0", $query0);
-    $result0 = pg_execute($conn, "my_query0", array($_POST['ut0']));
+    $result0 = pg_prepare($conn_sit, "my_query0", $query0);
+    $result0 = pg_execute($conn_sit, "my_query0", array($_POST['ut0']));
     
     while($r0 = pg_fetch_assoc($result0)) {
         $uos=$r0["id_uo"]; 
@@ -52,8 +55,8 @@
   //echo "<br>". $query1;
 
 
-  $result1 = pg_prepare($conn, "my_query1", $query_ut);
-  $result1 = pg_execute($conn, "my_query1", array($_SESSION['username']));
+  $result1 = pg_prepare($conn_sit, "my_query1", $query_ut);
+  $result1 = pg_execute($conn_sit, "my_query1", array($_SESSION['username']));
 
   while($r1 = pg_fetch_assoc($result1)) { 
 ?>    

@@ -19,7 +19,7 @@
     <title>Ricerca utenze</title>
 <?php 
 require_once('./req.php');
-require_once('./conn.php');
+require_once('./conn_ok.php');
 ?> 
 
 </head>

@@ -1,15 +1,13 @@
 <?php
 $id=pg_escape_string($_GET['cod']);
 $vers=pg_escape_string($_GET['vers']);
-?>
-<?php 
-//require_once('./req.php');
-//require_once('./conn.php');
-?> 
 
-<?php
+
+
 $output=null;
 $retval=null;
+
+
 
 $venv_path = __DIR__ . '/./py_scripts/venv/bin/python';
 $python_run_script = __DIR__ . '/./py_scripts/run.py';

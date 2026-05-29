@@ -1,13 +1,11 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 #require('../validate_input.php');
 
 
-if ($_SESSION['test']==1) {
-    require_once ('../conn_test.php');
-} else {
-    require_once ('../conn.php');
-}
+require_once '../conn_ok.php';
 //echo "OK";
 
 if ($_SESSION['username']){
@@ -21,7 +19,7 @@ if(!$conn_sit) {
     die('Connessione fallita !<br />');
 } else {
 
-    if ($_GET['filter']){
+    if (!empty($_GET['filter'])) {
         foreach(json_decode($_GET['filter']) as $key => $val) {
             /*if (is_numeric($val)){
                 $filter = $filter. " AND ".$key." = ".$val." ";
@@ -101,6 +99,8 @@ if(!$conn_sit) {
                 where (select array_agg(id_ut) from (".$query_ut.") b) && (id_uts)";
     }
 
+
+
     if ($_GET['solo_attivi']=='t') {
         $query= $query. " and  flg_disattivo != 'Disattivo'";
     } else if ($_GET['solo_attivi']=='f') {
@@ -113,8 +113,8 @@ if(!$conn_sit) {
     $queryF = "select * from (".$query.") b where 1=1 ".$filter ;
 
     $result = pg_prepare($conn_sit, "my_query", $queryF);
-    if (pg_last_error($conn_sovr)){
-        echo pg_last_error($conn_sovr);
+    if (pg_last_error($conn_sit)){
+        echo pg_last_error($conn_sit);
         exit;
     }
 
@@ -124,8 +124,18 @@ if(!$conn_sit) {
         $result = pg_execute($conn_sit, "my_query", array($user));
         //$result = pg_execute($conn_sit, "my_query", array());
     }
-
    
+    
+   if (pg_last_error($conn_sit)){
+        echo pg_last_error($conn_sit);
+        if($_GET['ut']) {
+            echo '<br> UT FILTER: '.$_GET['ut'];        
+        } else {
+            echo '<br> USER: '.$user;
+        }
+        echo "<br>QUERY: ".$queryF;
+        exit;
+    }
 
     $rows = array();
     while($r = pg_fetch_assoc($result)) {

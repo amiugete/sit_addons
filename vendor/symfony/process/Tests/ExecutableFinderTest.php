@@ -31,7 +31,7 @@ class ExecutableFinderTest extends TestCase
 
     private function setPath($path)
     {
-        $this->path = getenv('PATH');
+        $this->path = $_ENV['PATH'] ?? null;
         putenv('PATH='.$path);
     }
 

@@ -1,17 +1,15 @@
 <?php
 
 
-session_start();
-
-
-
-
-
-if ($_SESSION['test']==1) {
-    require_once ('../conn_test.php');
-} else {
-    require_once ('../conn.php');
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
+
+
+
+
+
+require_once '../conn_ok.php';
 
 
 $res_ok=0;
@@ -79,7 +77,7 @@ while($ru = pg_fetch_assoc($result_u)) {
 }
 
 
-if ($_SESSION['test']==1) {
+if (($_ENV['APP_ENV'] ?? '') === 'test') {
     $testo_mail = "AMBIENTE DI TEST. Questa mail non arriva al RUTT, è solo un esempio. <br>
     In produzione arriverà invece a ".$mail_ut." <br><hr><br>";
 } else {
@@ -118,7 +116,7 @@ while($r = pg_fetch_assoc($result)) {
 // In questo momento il pezzo sopra non serve.. più semplice indirizzo fisso
 
 
-if ($_SESSION['test']==1) {
+if (($_ENV['APP_ENV'] ?? '') === 'test') {
     $interni='assterritorio@amiu.genova.it';
     $mails = array_map('trim', explode(',', $interni));
     $mails[] = $mail_utente;

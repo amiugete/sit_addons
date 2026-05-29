@@ -1,17 +1,15 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 #require('../validate_input.php');
 
 
-if ($_SESSION['test']==1) {
-    require_once ('../conn_test.php');
-} else {
-    require_once ('../conn.php');
-}
+require_once '../conn_ok.php';
 //echo "OK";
 
 
-if(!$conn) {
+if(!$conn_sit) {
     die('Connessione fallita !<br />');
 } else {
 
@@ -41,8 +39,8 @@ if(!$conn) {
 
     //print $query."<br>";
 
-    $result = pg_prepare($conn, "my_query", $query);
-    $result = pg_execute($conn, "my_query", array());
+    $result = pg_prepare($conn_sit, "my_query", $query);
+    $result = pg_execute($conn_sit, "my_query", array());
 
     $rows = array();
     while($r = pg_fetch_assoc($result)) {
@@ -51,7 +49,7 @@ if(!$conn) {
     }
     
     
-    //pg_close($conn);
+    //pg_close($conn_sit);
 	#echo $rows ;
 	if (empty($rows)==FALSE){
 		//print $rows;

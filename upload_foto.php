@@ -1,12 +1,13 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-if ($_SESSION['test']==1) {
-    require_once('./conn_test.php');
-  } else {
-    require_once('./conn.php');
-  }
-echo $_SESSION['test']."<br>";
+
+require_once 'conn_ok.php';
+
+
+echo $_ENV['APP_ENV'] ?? null."<br>";
 $id_piazzola=$_POST['piazzola'];
 echo $id_piazzola."<br>";
 

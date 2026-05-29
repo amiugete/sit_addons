@@ -1,14 +1,10 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 //require_once('./check_utente.php');
 
-if ($_SESSION['test']==1) {
-  //echo 'Ambiente di TEST attivo';
-require_once ('./conn_test.php');
-} else {
-  //echo 'Ambiente di PRODUZIONE attivo';
-  require_once ('./conn.php');
-}
+require_once('./conn_ok.php');
 
 // Faccio il controllo su SIT (sempre produzione non test)
 
@@ -211,7 +207,7 @@ if ($check_modal!=1){
     <img class="pull-left" src="img\amiu_small_white.png" alt="SIT" width="85px">
     <span>Sistema Informativo Territoriale - Funzionalità avanzate 
     <?php 
-    if ($_SESSION['test']==1) {
+    if (($_ENV['APP_ENV'] ?? '') ===  'test') {
        echo "(ambiente di TEST)";
     }
     ?>
@@ -552,7 +548,7 @@ if ($check_modal!=1){
   </div>
 </nav>
 <?php 
-if ($_SESSION['test']==1) {
+if (($_ENV['APP_ENV'] ?? '') ===  'test') {
 ?> <div> <?php
 
 $conto_underscore=count(explode("_", basename($_SERVER['PHP_SELF'])));

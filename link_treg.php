@@ -1,6 +1,8 @@
 <?php
 //session_set_cookie_params($lifetime);
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 ?>
 
 <div class="justify-content-start">

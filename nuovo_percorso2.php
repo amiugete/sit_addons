@@ -1,6 +1,8 @@
 <?php
 //session_set_cookie_params($lifetime);
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
     
 ?>
@@ -21,11 +23,7 @@ require_once('./req.php');
 
 the_page_title();
 
-if ($_SESSION['test']==1) {
-  require_once ('./conn_test.php');
-} else {
-  require_once ('./conn.php');
-}
+require_once './conn_ok.php';
 ?> 
 
 
@@ -85,8 +83,8 @@ $query1="select id, descrizione, lpad(codice_servizio,4,'0') as cod_start,
 id_servizio_uo, coalesce(id_servizio_sit,0) as id_servizio_sit, ut_obbligatoria, cdr
 from anagrafe_percorsi.anagrafe_tipo at2 
 where id=$1;";
-$result1 = pg_prepare($conn, "query1", $query1);
-$result1 = pg_execute($conn, "query1", array($tipo));  
+$result1 = pg_prepare($conn_sit, "query1", $query1);
+$result1 = pg_execute($conn_sit, "query1", array($tipo));  
 //echo $query1;    
 while($r1 = pg_fetch_assoc($result1)) { 
   $cod_start=$r1['cod_start'];
@@ -171,14 +169,14 @@ $query4="select cod_frequenza as freq_sit,
   descrizione_long 
   from etl.frequenze_ok fo 
   where cod_frequenza=$1::bit(12)::int;";
-  $result4 = pg_prepare($conn, "query4", $query4);
-  if (pg_last_error($conn)){
-    echo pg_last_error($conn).'<br>';
+  $result4 = pg_prepare($conn_sit, "query4", $query4);
+  if (pg_last_error($conn_sit)){
+    echo pg_last_error($conn_sit).'<br>';
     $res_ok=$res_ok+1;
   }
-  $result4 = pg_execute($conn, "query4", array($frequenza_binaria));  
-  if (pg_last_error($conn)){
-    echo pg_last_error($conn).'<br>';
+  $result4 = pg_execute($conn_sit, "query4", array($frequenza_binaria));  
+  if (pg_last_error($conn_sit)){
+    echo pg_last_error($conn_sit).'<br>';
     $res_ok=$res_ok+1;
   }
   //echo $query1;    
@@ -217,8 +215,8 @@ freq_binaria as freq_uo,
 descrizione_long 
 from etl.frequenze_ok fo 
 where cod_frequenza=$1;";
-$result4 = pg_prepare($conn, "query4", $query4);
-$result4 = pg_execute($conn, "query4", array($freq));  
+$result4 = pg_prepare($conn_sit, "query4", $query4);
+$result4 = pg_execute($conn_sit, "query4", array($freq));  
 //echo $query1;    
 while($r4 = pg_fetch_assoc($result4)) { 
   $freq_sit=$r4['freq_sit'];
@@ -353,7 +351,7 @@ if ($id_servizio_sit){
   $query1=$query0."order by descrizione ;";
 
   //echo $query1;
-  $result1 = pg_query($conn, $query1);
+  $result1 = pg_query($conn_sit, $query1);
   //echo $query1;    
   while($r1 = pg_fetch_assoc($result1)) { 
       //$valore=  $r2['id_via']. ";".$r2['desvia'];            
@@ -375,8 +373,8 @@ if ($id_servizio_sit){
   concat(cod_squadra, ' - ', desc_squadra) as descr 
   from elem.squadre s order by desc_squadra ;";
 
-  $result0_1 = pg_prepare($conn, "query0_1", $query0_1);
-  $result0_1 = pg_execute($conn, "query0_1", array()); 
+  $result0_1 = pg_prepare($conn_sit, "query0_1", $query0_1);
+  $result0_1 = pg_execute($conn_sit, "query0_1", array()); 
   while($r0_1 = pg_fetch_assoc($result0_1)) { 
       //$valore=  $r2['id_via']. ";".$r2['desvia'];            
   ?>
@@ -407,7 +405,7 @@ if ($id_servizio_sit){
   $query0="select id_ut, descrizione from topo.ut 
   where id_zona in (5) 
   order by descrizione ;";
-  $result0 = pg_query($conn, $query0);
+  $result0 = pg_query($conn_sit, $query0);
   //echo $query1;    
   while($r0 = pg_fetch_assoc($result0)) { 
       //$valore=  $r2['id_via']. ";".$r2['desvia'];            
@@ -428,8 +426,8 @@ if ($id_servizio_sit){
   concat(cod_squadra, ' - ', desc_squadra) as descr 
   from elem.squadre s order by desc_squadra ;";
 
-  $result0_1 = pg_prepare($conn, "query0_1", $query0_1);
-  $result0_1 = pg_execute($conn, "query0_1", array());  
+  $result0_1 = pg_prepare($conn_sit, "query0_1", $query0_1);
+  $result0_1 = pg_execute($conn_sit, "query0_1", array());  
   //echo $query1;    
   while($r0_1 = pg_fetch_assoc($result0_1)) { 
       //$valore=  $r2['id_via']. ";".$r2['desvia'];            
@@ -481,7 +479,7 @@ if ($id_servizio_sit){
   concat(categoria, ' (', trim(nome), ')') as cat_estesa  from elem.automezzi a 
   where a.cdaog3 not in ('9998' , '9997', '9996', '9994','9993')
   order by categoria ";
-  $result2 = pg_query($conn, $query2); 
+  $result2 = pg_query($conn_sit, $query2); 
   while($r2 = pg_fetch_assoc($result2)) {            
   ?>
             
