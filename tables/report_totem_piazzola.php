@@ -24,7 +24,7 @@ echo $_GET["uos"] ;
 # cerco le UT dell'utente
 
 
-$filter_bis=" and trim(coalesce(descr_causale,'')) != 'COMPLETATO' ";
+$filter_bis=" and (step0.causale is null or step0.causale <> 100) ";
 if($_GET["c"]=='all'){
 	$filter_bis="";
 }  
@@ -36,7 +36,7 @@ if($_GET["c"]=='all'){
 
 
 
-if(!$conn_hub) {
+if(!$conn_totem) {
     die('Connessione fallita !<br />');
 } else {
  
@@ -64,11 +64,11 @@ string_agg(desc_uo, ', ') as uo_esec,
 array_agg(id_uo_esec) as id_uo_esec,
 id_uo,
 case
-	when descr_causale = 'COMPLETATO' then 'OK'
-	when descr_causale is null then 'NON CONSUNTIVATO'
-	when descr_causale != 'COMPLETATO' then 'ANOMALIA'
+	when vc.descrizione = 'COMPLETATO' then 'OK'
+	when vc.descrizione is null then 'NON CONSUNTIVATO'
+	when vc.descrizione != 'COMPLETATO' then 'ANOMALIA'
 end stato_consuntivazione,
-descr_causale, 
+vc.descrizione as descr_causale, 
 case 
 	when check_previsto > 0 then 'PREVISTO'
 	else 'NON PREVISTO'
@@ -76,7 +76,10 @@ end check_previsto,
 datalav
 from (
 	select 
-		tr.ordinamento as ordine_rifiuto, cpra.tipo_rifiuto, cpra.id_percorso, cpra.descr_percorso, 
+		tr.ordinamento as ordine_rifiuto,
+		cpra.tipo_rifiuto, 
+		cpra.id_percorso, 
+		cpra.desc_percorso as descr_percorso, 
 		cpra.desc_uo,
 		cpra.id_uo as id_uo_esec,
 		pu.id_uo,
@@ -84,35 +87,24 @@ from (
 		cpra.nome_via, 
 		cpra.civico,
 		cpra.utente_posizione,
-		case 
-			when (ea.fatto=ea.num_elementi and trim(replace(ea.causale, ' - (no in questa giornata)', '')) = '') then 'COMPLETATO'
-			else trim(replace(ea.causale, ' - (no in questa giornata)', '')) 
-		end as descr_causale
-		,
-		case 
-			when (ea.fatto=ea.num_elementi and trim(replace(ea.causale, ' - (no in questa giornata)', '')) = '') then '100'
-			else ct.id 
-		end as causale,
-		case 
-			when extract(dow from to_date($1, 'DD/MM/YYYY'))=1 then cpra.lun
-			when extract(dow from to_date($1, 'DD/MM/YYYY'))=2 then cpra.mar
-			when extract(dow from to_date($1, 'DD/MM/YYYY'))=3 then cpra.mer
-			when extract(dow from to_date($1, 'DD/MM/YYYY'))=4 then cpra.gio
-			when extract(dow from to_date($1, 'DD/MM/YYYY'))=5 then cpra.ven
-			when extract(dow from to_date($1, 'DD/MM/YYYY'))=6 then cpra.sab
-			when extract(dow from to_date($1, 'DD/MM/YYYY'))=7 then cpra.dom
-		end as check_previsto, 
+		ea.id_causale as causale,
+		totem.verify_daily_frequency(
+            cod_frequenza_tratto,            
+            TO_DATE($1, 'DD/MM/YYYY'),
+            freq_settimane
+        ) AS check_previsto,
 		ea.datalav, at2.descr_orario
 		from raccolta.cons_percorsi_raccolta_amiu cpra 
 		left join raccolta.tipi_rifiuto tr on tr.nome= cpra.tipo_rifiuto
 		left join raccolta.anagr_turni at2 on at2.id_turno = cpra.id_turno
 		left join raccolta.piazzole_ut pu on pu.id_piazzola=cpra.id_piazzola
-		left join raccolta.effettuati_amiu ea on ea.id_tappa::bigint = cpra.id_tappa::bigint 
+		left join raccolta.effettuati_amiu ea on ea.tappa::bigint = cpra.id_tappa::bigint 
 											and ea.datalav = to_date($1, 'DD/MM/YYYY')
-		left join raccolta.causali_testi ct on trim(ct.descrizione) = trim(ea.causale)
+		--left join raccolta.causali_testi ct on trim(ct.descrizione) = trim(ea.causale)
 		where (to_date($1, 'DD/MM/YYYY') between cpra.data_inizio and (cpra.data_fine - interval '1' day))
 		/*and (pu.id_uo = ANY(string_to_array($2, ',')::int[]) OR $2 = any(id_uo_esec))*/
 ) as step0
+left join totem.v_causali vc on vc.id = step0.causale
 where (check_previsto = 1 or causale is not null) ".$filter_bis."
 group by  id_piazzola, nome_via, civico, utente_posizione, tipo_rifiuto, id_percorso, descr_percorso, descr_causale, 
 causale, 
@@ -120,7 +112,7 @@ check_previsto,
 datalav, ordine_rifiuto, descr_orario, id_uo
 ) as step1
 where id_uo=$2 or $2=any(id_uo_esec)
-order by descr_orario, stato_consuntivazione, ordine_rifiuto, nome_via, civico 
+order by descr_orario, stato_consuntivazione, ordine_rifiuto, nome_via, civico
             ";
 
 
@@ -130,20 +122,20 @@ order by descr_orario, stato_consuntivazione, ordine_rifiuto, nome_via, civico
 
 $query0 = "select * from (".$query.") a where 1=1 ".$filter ;
 
-$result = pg_prepare($conn_hub, "query0", $query0);
+$result = pg_prepare($conn_totem, "query0", $query0);
 
-if (!pg_last_error($conn_hub)){
+if (!pg_last_error($conn_totem)){
     #$res_ok=0;
 } else {
-    pg_last_error($conn_hub);
+    pg_last_error($conn_totem);
     $res_ok= $res_ok+1;
 }
 //echo "Sono qua 2";
-$result = pg_execute($conn_hub, "query0", array($_GET["d"], $_GET['uos']));  
-if (!pg_last_error($conn_hub)){
+$result = pg_execute($conn_totem, "query0", array($_GET["d"], $_GET['uos']));  
+if (!pg_last_error($conn_totem)){
     #$res_ok=0;
 } else {
-    pg_last_error($conn_hub);
+    pg_last_error($conn_totem);
     $res_ok= $res_ok+1;
 }
 //echo "Sono qua 3";

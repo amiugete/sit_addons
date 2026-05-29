@@ -35,7 +35,7 @@ if (!$conn_sit) {
 
 // consuntivazione totem
 
-$dbhost=$_ENV['DB_T_HOST'] ?? null;
+/*$dbhost=$_ENV['DB_T_HOST'] ?? null;
 $dbport=$_ENV['DB_T_PORT'] ?? null;
 $dbname=$_ENV['DB_T_NAME'] ?? null;
 $dbuser=$_ENV['DB_T_USER'] ?? null;
@@ -44,6 +44,18 @@ $dbpassword=$_ENV['DB_T_PASS'] ?? null;
 
 $conn_hub = pg_connect("host=$dbhost port=$dbport dbname=$dbname user=$dbuser password=$dbpassword");
 if (!$conn_hub) {
+   die("<br>Could not connect to DB PostgreSQL $dbname, please contact the administrator.");
+}*/
+
+
+$dbhost=$_ENV['DB_TOTEM_HOST'] ?? null;
+$dbport=$_ENV['DB_T_PORT'] ?? null;
+$dbname=$_ENV['DB_TOTEM_NAME'] ?? null;
+$dbuser=$_ENV['DB_TOTEM_USER'] ?? null;
+$dbpassword=$_ENV['DB_TOTEM_PASS'] ?? null;
+
+$conn_totem = pg_connect("host=$dbhost port=$dbport dbname=$dbname user=$dbuser password=$dbpassword");
+if (!$conn_totem) {
    die("<br>Could not connect to DB PostgreSQL $dbname, please contact the administrator.");
 }
 //echo '<i class="fa-solid fa-link-slash"></i> Problemi di connessione con il totem. Alcune pagine potrebbero non funzionare <hr>';
