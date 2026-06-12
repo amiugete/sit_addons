@@ -9,14 +9,17 @@ function redirect($url)
     //echo $string;
 }
 
+// definisco la variabile lifetime
+$lifetime=86400;
+
+ini_set('session.gc_maxlifetime', $lifetime);
+session_set_cookie_params($lifetime);
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// definisco la variabile lifetime
-$lifetime=86400;
-session_set_cookie_params($lifetime);
+
 /*if ($_GET['jwt']){
   setcookie("tokenCookie", $_GET['jwt'], time() + ($lifetime * 7));
 }*/
