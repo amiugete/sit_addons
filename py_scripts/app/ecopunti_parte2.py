@@ -18,7 +18,7 @@ Esegue le seguenti operazioni:
 import os,sys, getopt
 import inspect, os.path
 # da sistemare per Linux
-import cx_Oracle
+import oracledb 
 
 
 import xlsxwriter
@@ -337,12 +337,10 @@ def main(args):
 
 
     # connessione Oracle
-    #cx_Oracle.init_oracle_client(lib_dir=r"C:\oracle\instantclient_19_10")
-    logging.info('Connessione a DB Oracle')
-    cx_Oracle.init_oracle_client()
+    
     parametri_con='{}/{}@//{}:{}/{}'.format(user_strade,pwd_strade, host_uo,port_uo,service_uo)
     logging.debug(parametri_con)
-    con = cx_Oracle.connect(parametri_con)
+    con = oracledb.connect(parametri_con)
     logging.info("Versione ORACLE: {}".format(con.version))
 
     logging.debug(len(cod_civico))

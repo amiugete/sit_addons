@@ -12,7 +12,7 @@ import os, sys, re  # ,shutil,glob
 import inspect, os.path
 
 import psycopg2
-import cx_Oracle
+import oracledb
 
 
 import xlsxwriter
@@ -645,11 +645,11 @@ def main(args):
         
         
     # Mi connetto al DB oracle UO
-    cx_Oracle.init_oracle_client(percorso_oracle) # necessario configurare il client oracle correttamente
-    #cx_Oracle.init_oracle_client() # necessario configurare il client oracle correttamente
+    #cx_oracle.init_oracle_client(percorso_oracle) # necessario configurare il client oracle correttamente
+    ##cx_oracle.init_oracle_client() # necessario configurare il client oracle correttamente
     parametri_con='{}/{}@//{}:{}/{}'.format(user_uo,pwd_uo, host_uo,port_uo,service_uo)
     logger.debug(parametri_con)
-    con = cx_Oracle.connect(parametri_con)
+    con = oracledb.connect(parametri_con)
     logger.info("Versione ORACLE: {}".format(con.version))    
         
     

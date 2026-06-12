@@ -29,7 +29,7 @@ Esegue le seguenti operazioni:
 import os,sys, getopt
 import inspect, os.path
 # da sistemare per Linux
-import cx_Oracle
+import oracledb
 
 
 import xlsxwriter
@@ -396,11 +396,11 @@ ON v.id_via::integer = be.cod_strada::integer'''.format(codici_via)
 
     logger.info("Tentativo connessione ORACLE")
     # connessione Oracle
-    #cx_Oracle.init_oracle_client(lib_dir=r"C:\oracle\instantclient_19_10")
-    cx_Oracle.init_oracle_client()
+    ##cx_oracle.init_oracle_client(lib_dir=r"C:\oracle\instantclient_19_10")
+    #cx_oracle.init_oracle_client()
     parametri_con='{}/{}@//{}:{}/{}'.format(user_strade,pwd_strade, host_uo,port_uo,service_uo)
     logger.debug(parametri_con)
-    con = cx_Oracle.connect(parametri_con)
+    con = oracledb.connect(parametri_con)
     logger.info("Versione ORACLE: {}".format(con.version))
 
     nome_file = f"{giorno_file}_utenze_domestiche.xlsx"
