@@ -1,5 +1,5 @@
 oracledb>=4,<5
-psycopg2-binary==2.9.2
+psycopg2-binary>=2,<3
 requests==2.34.2
 XlsxWriter==3.2.3
 vulture==2.16

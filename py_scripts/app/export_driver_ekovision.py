@@ -645,8 +645,8 @@ def main(args):
         
         
     # Mi connetto al DB oracle UO
-    #cx_oracle.init_oracle_client(percorso_oracle) # necessario configurare il client oracle correttamente
-    ##cx_oracle.init_oracle_client() # necessario configurare il client oracle correttamente
+    oracledb.init_oracle_client() # necessario configurare il client oracle correttamente
+    #oracledb.init_oracle_client() # necessario configurare il client oracle correttamente
     parametri_con='{}/{}@//{}:{}/{}'.format(user_uo,pwd_uo, host_uo,port_uo,service_uo)
     logger.debug(parametri_con)
     con = oracledb.connect(parametri_con)

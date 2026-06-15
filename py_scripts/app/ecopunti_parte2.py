@@ -337,7 +337,7 @@ def main(args):
 
 
     # connessione Oracle
-    
+    oracledb.init_oracle_client()
     parametri_con='{}/{}@//{}:{}/{}'.format(user_strade,pwd_strade, host_uo,port_uo,service_uo)
     logging.debug(parametri_con)
     con = oracledb.connect(parametri_con)
