@@ -10,7 +10,12 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require_once './conn_ok.php';
 
-require_once('./credenziali_mail.php');
+$mail->Host = $_ENV['SMTP_SERVER'];
+
+$mail->Port = $_ENV['SMTP_PORT'];
+
+$mail->CharSet = $_ENV['SMTP_CHARSET'];
+
 
 //echo $_SESSION['user'];
 
