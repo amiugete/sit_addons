@@ -40,13 +40,14 @@ $mail->isSMTP();
 $mail->SMTPDebug = 0;
 //Set the hostname of the mail server
 
-// host and port on the file credenziali_mail.php
-require('./credenziali_mail.php');
+
+$mail->Host = $_ENV['SMTP_SERVER'];
+
+$mail->Port = $_ENV['SMTP_PORT'];
+
+$mail->CharSet = $_ENV['SMTP_CHARSET'];
 
 
-// commentato perchè definito in invio_mail_rutt.php
-//Set who the message is to be sent from
-//$mail->setFrom('no-reply@amiu.genova.it', 'No Reply');
 
 
 
