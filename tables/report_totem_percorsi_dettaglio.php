@@ -33,76 +33,76 @@ exit();
 */
 
 
-if(!$conn_hub) {
+if(!$conn_totem) {
     die('Connessione fallita !<br />');
 } else {
+
+    if ($_GET['filter']){
+        foreach(json_decode($_GET['filter']) as $key => $val) {
+            /*if (is_numeric($val)){
+                $filter = $filter. " AND ".$key." = ".$val." ";
+            } else {*/
+                $filter = $filter." AND upper(".$key.") LIKE upper('%".$val."%') ";
+            //} 
+            
+        }
+    } 
+    
+    $query="select distinct cpra.id_piazzola, cpra.nome_via,
+    case 
+        when (num_elementi- fatto)=0 then null
+        else concat((num_elementi- fatto)::text, ' di ', num_elementi::text)
+    end as elem_non_fatti,
+    causale, 
+    case 
+        when vpes.cognome is not null then concat(vpes.matricola, ' - ', vpes.cognome,' ', vpes.nome)
+        else ve.codice
+    end as operatore
+    from raccolta.v_effettuati ve
+    left join raccolta.cons_percorsi_raccolta_amiu cpra on cpra.id_tappa  = ve.tappa 
+    left join totem.v_personale_ekovision_step1 vpes on vpes.codice_badge::text = ve.codice 
+    where cpra.id_percorso = $1 
+    and ve.datalav = to_date($2, 'YYYY-MM-DD')";
+
  
-if ($_GET['filter']){
-    foreach(json_decode($_GET['filter']) as $key => $val) {
-        /*if (is_numeric($val)){
-            $filter = $filter. " AND ".$key." = ".$val." ";
-        } else {*/
-            $filter = $filter." AND upper(".$key.") LIKE upper('%".$val."%') ";
-        //} 
-         
+    //echo $query0;
+    //echo $uos;
+    //echo "Sono qua";
+
+    $query0 = "select * from (".$query.") a where 1=1 ".$filter ;
+
+    $result = pg_prepare($conn_totem, "query0", $query0);
+
+    if (!pg_last_error($conn_totem)){
+        #$res_ok=0;
+    } else {
+        pg_last_error($conn_totem);
+        $res_ok= $res_ok+1;
     }
-} 
-
-$query="select id_piazzola, nome_via,
-case 
-	when (num_elementi- fatto)=0 then null
-	else concat((num_elementi- fatto)::text, ' di ', num_elementi::text)
-end as elem_non_fatti,
-causale, 
-case 
-	when vpes.cognome is not null then concat(vpes.matricola, ' - ', vpes.cognome,' ', vpes.nome)
-	else ea.codice
-end as operatore
-from raccolta.effettuati_amiu ea
-left join totem.v_personale_ekovision_step1 vpes on vpes.codice_badge::text = ea.codice 
-where id_percorso = $1 
-and datalav = to_date($2, 'YYYY-MM-DD')
-            ";
+    //echo "Sono qua 2";
+    $result = pg_execute($conn_totem, "query0", array($_GET["id"], $_GET['datalav']));  
+    if (!pg_last_error($conn_totem)){
+        #$res_ok=0;
+    } else {
+        pg_last_error($conn_totem);
+        $res_ok= $res_ok+1;
+    }
+    //echo "Sono qua 3";
 
 
-//echo $query0;
-//echo $uos;
-//echo "Sono qua";
+    $rows = array();
+    while($r = pg_fetch_assoc($result)) {
+        $rows[] = $r;
+        //echo $r['piazzola'];
+    }
+            
 
-$query0 = "select * from (".$query.") a where 1=1 ".$filter ;
-
-$result = pg_prepare($conn_hub, "query0", $query0);
-
-if (!pg_last_error($conn_hub)){
-    #$res_ok=0;
-} else {
-    pg_last_error($conn_hub);
-    $res_ok= $res_ok+1;
-}
-//echo "Sono qua 2";
-$result = pg_execute($conn_hub, "query0", array($_GET["id"], $_GET['datalav']));  
-if (!pg_last_error($conn_hub)){
-    #$res_ok=0;
-} else {
-    pg_last_error($conn_hub);
-    $res_ok= $res_ok+1;
-}
-//echo "Sono qua 3";
-
-
-$rows = array();
-while($r = pg_fetch_assoc($result)) {
-    $rows[] = $r;
-    //echo $r['piazzola'];
-}
-        
-
-
-require_once("./json_no_paginazione.php");
+    //echo "sono qua!";
+    require_once "./json_no_paginazione.php";
 
 
 
-exit(0);
+    exit(0);
 }
 
 
