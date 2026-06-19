@@ -83,6 +83,22 @@ $secret_pwd = 'XXXXXXXXXXXX';
 
 ## Dipendenze
 
+
+Da giugno 2026 vorremmo usare: 
+
+- npm per librerie client
+- composer per librerie PHP (es. picqer/php-barcode-generator)
+
+
+Migrazione da completare!!!
+
+### Usando npm
+
+- leafletjs --> npm install leaflet
+
+
+
+
 ### Usando composer
 
 Tutte le librerie sono state installate usando composer che garantisce una più semplice mantenibilità futura

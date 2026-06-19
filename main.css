@@ -372,3 +372,11 @@ iframe {
     transform: translateX(0);
 }
 
+
+
+
+#map {
+    width: 100%;
+    /*height: calc(100vh - 120px);*/
+    height: 600px;
+}

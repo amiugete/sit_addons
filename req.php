@@ -88,9 +88,12 @@ $partenza_ekovision = $_ENV['PARTENZA_EKOVISION'] ?? null;
 
 
 <!-- MAPPA LEAFLET -->
-<!--link rel="stylesheet" href="./vendor/leaflet/leaflet.css">
 
-<link rel="stylesheet" href="./vendor/leaflet-locatecontrol-0.79.0/dist/L.Control.Locate.css"-->
+<link rel="stylesheet" href="./node_modules/leaflet/dist/leaflet.css">
+<link rel="stylesheet" href="./node_modules/leaflet.markercluster/dist/MarkerCluster.css">
+
+
+<!--link rel="stylesheet" href="./vendor/leaflet-locatecontrol-0.79.0/dist/L.Control.Locate.css"-->
 
 <script>
 
@@ -251,6 +254,10 @@ $(function() {
 
 .toast.info {
     background: #17a2b8;
+}
+
+.tab-pane {
+    padding: 2%;
 }
 </style>
 

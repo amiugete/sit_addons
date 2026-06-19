@@ -39,9 +39,12 @@
 <script src="./vendor/wenzhixin/bootstrap-table/dist/locale/bootstrap-table-it-IT.min.js"></script>
 <script src="./vendor/wenzhixin/bootstrap-table/dist/locale/bootstrap-table-en-US.min.js"></script>
 
+<!-- MAPPA LEAFLET-->
+<script src="./node_modules/leaflet/dist/leaflet.js"></script>
+<script src="./node_modules/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 
-<!--script src="./vendor/leaflet/leaflet.js"></script>
-<script src="./vendor/leaflet-locatecontrol-0.79.0/dist/L.Control.Locate.min.js"></script-->
+
+<!--script src="./vendor/leaflet-locatecontrol-0.79.0/dist/L.Control.Locate.min.js"></script-->
 
 
 
