@@ -314,6 +314,8 @@ if ($check_modal!=1){
               <li><a class="dropdown-item" href="./report_pesi_ut.php">Report pesi aggregato per UT</a></li>
             </ul>
             </li>
+             <li><a class="dropdown-item" href="./posizioni_itemA.php">Posizioni cassoni</a>
+            </li>
             <?php if ($check_edit_piazzola == 1) { ?>
             <li><a class="dropdown-item" href="./quadrature.php"><!--i class="fa-solid fa-business-time"></i-->Quadrature</a>
             <!--ul class="submenu dropdown-menu">

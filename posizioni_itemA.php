@@ -58,6 +58,32 @@ if ((int)$id_role_SIT = 0) {
 
     </div>
 
+    <div class="col d-flex align-items-center justify-content-center">
+
+    <!--input id="searchSportello"
+       class="form-control form-control-sm"
+       list="listaSportelli"
+       placeholder="Cerca sportello...">
+
+    <datalist id="listaSportelli"></datalist-->
+
+    <div class="input-group input-group-sm" style="max-width: 250px;">
+
+    <span class="input-group-text">
+        🔎
+    </span>
+
+    <input type="text"
+       id="searchSportello"
+       class="form-control"
+       list="listaSportelli"
+       placeholder="Cerca sportello...">
+
+    </div>
+    <datalist id="listaSportelli"></datalist>
+
+
+</div>
     <div class="col">
 
         <div class="form-check form-switch m-0">
@@ -115,6 +141,7 @@ const initialView = {
 
 
 const clusterRossi = L.markerClusterGroup({
+    disableClusteringAtZoom: 18,
     iconCreateFunction: function (cluster) {
         return L.divIcon({
             html: `<div style="
@@ -136,6 +163,7 @@ const clusterRossi = L.markerClusterGroup({
 });
 
 const clusterVerdi = L.markerClusterGroup({
+    disableClusteringAtZoom: 18,
     iconCreateFunction: function (cluster) {
         return L.divIcon({
             html: `<div style="
@@ -161,12 +189,11 @@ map.addLayer(clusterVerdi);
 map.addLayer(clusterRossi);
 
 
-L.tileLayer(
-    'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-    {
-        attribution: '&copy; OpenStreetMap'
-    }
-).addTo(map);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap',
+    maxZoom: 22,
+    maxNativeZoom: 19
+}).addTo(map);
 
 let tuttiMarker = [];
 let datiMezzi = [];
@@ -209,6 +236,9 @@ function aggiornaMappa() {
             className: 'sportello-label'
         });
 
+        // aggiungo sportello come ID
+        marker.options.sportello = m.sportello;
+        
         marker.bindPopup(`
             <b>Sportello:</b> ${m.sportello}<br>
             <b>Ultimo aggiornamento:</b> ${m.last_update}<br>
@@ -265,6 +295,15 @@ function aggiornaTooltip() {
             }
         });
     }
+// fine funziona aggiorna tooltip
+
+
+
+
+
+
+
+
 
 fetch('tables/posizioni_itemA.php')
     .then(response => response.json())
@@ -306,6 +345,18 @@ fetch('tables/posizioni_itemA.php')
 
         aggiornaMappa();
 
+
+    // Bootstrap select
+
+    // autocomplete dell'input
+    const dl = document.getElementById("listaSportelli");
+
+    data.forEach(m => {
+        const opt = document.createElement("option");
+        opt.value = m.sportello;
+        dl.appendChild(opt);
+    });
+
     })
     .catch(err => {
 
@@ -335,7 +386,36 @@ document.getElementById("resetMap").addEventListener("click", function () {
         map.setView([44.4056, 8.9463], 11); // fallback
     }
 
-});    
+});  
+
+
+// ricerca per sportello
+
+document.getElementById("searchSportello")
+    .addEventListener("change", function () {
+
+        const sportello = this.value;
+        if (!sportello) return;
+
+        const trovato = datiMezzi.find(m => m.sportello === sportello);
+        if (!trovato) return;
+
+        map.setView([trovato.lat, trovato.lon], 18, {
+            animate: true
+        });
+
+        const allLayers = [
+            ...clusterVerdi.getLayers(),
+            ...clusterRossi.getLayers()
+        ];
+
+        allLayers.forEach(layer => {
+            if (layer.options.sportello === sportello) {
+                layer.openPopup();
+            }
+        });
+
+});
 
 </script>
 </body>
