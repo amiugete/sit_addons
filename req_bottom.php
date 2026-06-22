@@ -42,6 +42,7 @@
 <!-- MAPPA LEAFLET-->
 <script src="./node_modules/leaflet/dist/leaflet.js"></script>
 <script src="./node_modules/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+<script src="./node_modules/leaflet.locatecontrol/dist/L.Control.Locate.min.js"></script>
 
 
 <!--script src="./vendor/leaflet-locatecontrol-0.79.0/dist/L.Control.Locate.min.js"></script-->

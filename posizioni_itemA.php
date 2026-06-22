@@ -128,16 +128,19 @@ if (!isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
 </div>
 
 
-
+<script type="text/javascript" src="mappa_base.js"></script>
 <script>
 
-const map = L.map('map');
+/*const map = L.map('map');
 
 // lo uso per il tasto torna allo zoom iniziale
 const initialView = {
     bounds: null,
     zoomed: false
-};
+};*/
+
+// questo richiama la funziona aggiornaTooltip ad ogni chiamata
+map.on('zoomend', aggiornaTooltip);
 
 
 const clusterRossi = L.markerClusterGroup({
@@ -189,13 +192,13 @@ map.addLayer(clusterVerdi);
 map.addLayer(clusterRossi);
 
 
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+/*L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap',
     maxZoom: 22,
     maxNativeZoom: 19
-}).addTo(map);
+}).addTo(map);*/
 
-let tuttiMarker = [];
+
 let datiMezzi = [];
 
 
@@ -230,7 +233,7 @@ function aggiornaMappa() {
         });
 
         marker.bindTooltip(m.sportello, {
-            permanent: true,
+            permanent: false, // per aprirli o chiuderli con la funzione openTolltip() o closeTolltip()
             direction: 'right',
             offset: [10,0],
             className: 'sportello-label'
@@ -274,27 +277,33 @@ function aggiornaMappa() {
 
 function aggiornaTooltip() {
 
-        const zoom = map.getZoom();
-
-        tuttiMarker.forEach(marker => {
+    const zoom = map.getZoom();
+    console.log('Zoom attuale:', zoom);
+    [clusterVerdi, clusterRossi].forEach(cluster => {
+        cluster.getLayers().forEach(marker => {
 
             const tooltip = marker.getTooltip();
 
             if (!tooltip) return;
-
+           
             if (zoom >= 15) {
-                tooltip.getElement()?.style.setProperty(
+                console.log('sono qui');
+                /*tooltip.getElement()?.style.setProperty(
                     'display',
                     'block'
-                );
+                );*/
+                marker.openTooltip();
             } else {
-                tooltip.getElement()?.style.setProperty(
+                console.log('OK zomm < 15')
+                marker.closeTooltip();
+                /*tooltip.getElement()?.style.setProperty(
                     'display',
                     'none'
-                );
+                );*/
             }
         });
-    }
+    });
+}
 // fine funziona aggiorna tooltip
 
 
@@ -378,7 +387,7 @@ document
 
 
 // zoom iniziale
-document.getElementById("resetMap").addEventListener("click", function () {
+/*document.getElementById("resetMap").addEventListener("click", function () {
 
     if (initialView.bounds) {
         map.fitBounds(initialView.bounds, { padding: [30, 30] });
@@ -386,7 +395,7 @@ document.getElementById("resetMap").addEventListener("click", function () {
         map.setView([44.4056, 8.9463], 11); // fallback
     }
 
-});  
+});  */
 
 
 // ricerca per sportello

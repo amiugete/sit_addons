@@ -91,6 +91,7 @@ $partenza_ekovision = $_ENV['PARTENZA_EKOVISION'] ?? null;
 
 <link rel="stylesheet" href="./node_modules/leaflet/dist/leaflet.css">
 <link rel="stylesheet" href="./node_modules/leaflet.markercluster/dist/MarkerCluster.css">
+<link rel="stylesheet" href="./node_modules/leaflet.locatecontrol/dist/L.Control.Locate.css">
 
 
 <!--link rel="stylesheet" href="./vendor/leaflet-locatecontrol-0.79.0/dist/L.Control.Locate.css"-->
