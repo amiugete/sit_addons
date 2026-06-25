@@ -560,7 +560,11 @@ $conto_underscore=count(explode("_", basename($_SERVER['PHP_SELF'])));
       ?>
       <h4><i class="fa-solid fa-triangle-exclamation"></i> Ambiente di TEST!</h4>
       <?php
-    } else {
+    } elseif (str_starts_with(basename($_SERVER['PHP_SELF']), 'index')) {
+      ?>
+      <!-- nulla-->
+      <?php
+    } else{
       ?>
       <h4><i class="fa-solid fa-triangle-exclamation"></i> Ambiente di TEST ma dati in esercizio!</h4>
       <?php

@@ -39,6 +39,11 @@
 <script src="./vendor/wenzhixin/bootstrap-table/dist/locale/bootstrap-table-it-IT.min.js"></script>
 <script src="./vendor/wenzhixin/bootstrap-table/dist/locale/bootstrap-table-en-US.min.js"></script>
 
+
+<!-- SELECT2 -->
+<script src="./node_modules/select2/dist/js/select2.full.min.js"></script>
+<script src="./node_modules/select2/dist/js/i18n/it.js"></script>
+
 <!-- MAPPA LEAFLET-->
 <script src="./node_modules/leaflet/dist/leaflet.js"></script>
 <script src="./node_modules/leaflet.markercluster/dist/leaflet.markercluster.js"></script>

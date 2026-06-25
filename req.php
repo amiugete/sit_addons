@@ -71,6 +71,10 @@ $partenza_ekovision = $_ENV['PARTENZA_EKOVISION'] ?? null;
 
 
 
+<!-- select2 -->
+<link rel="stylesheet" href="./node_modules/select2/dist/css/select2.min.css">
+<link rel="stylesheet" href="./node_modules/select2-bootstrap-theme/dist/select2-bootstrap.min.css">
+
 <!-- BOOTSTRAP DATEPICKER -->
 <link rel="stylesheet" href="./vendor/eternicode/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css"/>
 
