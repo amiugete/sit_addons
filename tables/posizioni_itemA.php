@@ -1,7 +1,5 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once '../session.php';
 $res_ok=0;
 #require('../validate_input.php');
 header('Content-Type: application/json; charset=utf-8');

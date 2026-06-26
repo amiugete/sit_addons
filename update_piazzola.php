@@ -1,8 +1,6 @@
 <?php 
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once './session.php';
 #require_once('./req.php');
 
 

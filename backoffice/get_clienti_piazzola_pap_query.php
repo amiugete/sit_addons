@@ -1,15 +1,6 @@
 <?php
-require_once '../session.php';
-#require('../validate_input.php');
-
-
-
-require_once '../conn_ok.php';
-
-
-$id_piazzola = $_GET['id_piazzola'];
-
-$query_clienti = "select distinct id_macro_categoria, 
+function getClientiPiazzola($conn_sit, $id_piazzola){
+    $query_clienti = "select distinct id_macro_categoria, 
 descrizione
 from elem.elementi_privati 
 where id_elemento in (
@@ -32,13 +23,15 @@ if (!pg_last_error($conn_sit)){
     $res_ok= $res_ok+1;
 }
 
+$clienti = [];
+
 while($row = pg_fetch_assoc($result_clienti)) {
 
     $clienti[] = $row;
 }
 
-header('Content-Type: application/json');
+return $clienti;
+};
 
-echo json_encode($clienti);
 
 ?>

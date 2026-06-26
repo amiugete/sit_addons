@@ -7,9 +7,7 @@ Description: example script for ldap authentication in PHP
 Version: 1.0
 */
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once('./session.php');
 $lifetime=86400;
 
 
@@ -90,10 +88,33 @@ if (isset($_POST["ldapLogin"])){
 				$_SESSION['start'] = time(); // Taking now logged in time.
 				// Ending a session in 8 hours from the starting time.
 				$_SESSION['expire'] = $_SESSION['start'] + (8* 60 * 60);
-				setcookie('un', $ldapUser, time() + (86400 * 7), "/"); // 86400 = 1 day
-				//header("Location: ./piazzola.php");
-				//header("Location:./piazzola.php");
+				//setcookie('un', $ldapUser, time() + (86400 * 7), "/"); // 86400 = 1 day
+				setcookie('un', $ldapUser, [
+					'expires'  => time() + 86400 * 7,
+					'path'     => $path_web,
+					'secure'   => true,
+					'httponly' => false,
+					'samesite' => 'Lax'
+				]);
+
+				
+				
+
+				//!!!! QUUESTO NON PASSA DA HTTPS ed è una schifezza. 
+				// Funziona ma mettendo in session.php secure=false, 
+				// proababilmente però si sta rompendo altra roba (sessioni, cookie, etc senza che ce ne accorgiamo)
+				// Va tolto ma per toglierlo probabilmente bisogna rifare completamente la pagina del login separando frontend da backend
+				
 				echo '<script>window.location.replace("./'.$origine.'")</script>';
+				//echo $path_web;
+				//header("Location: https://sit.amiu.genova.it/sit_addons_test/percorsi.php");
+				
+				
+				/*if (headers_sent($file, $line)) {
+					die("Headers già inviati in $file alla riga $line");
+				}
+				header("Location: https://" . $_SERVER['HTTP_HOST'] ."".$path_web."/" . $origine);*/
+				
 				exit;
 			} else{  
 				$errorMessage = "Credenziali errate per l'utente DSI\\".$ldapUser." Controlla il nome utente e/o la password inserita!";

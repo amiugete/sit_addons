@@ -1,9 +1,7 @@
 <?php
 
 //$id=pg_escape_string($_GET['id']);
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once './session.php';
 ?>
 
 

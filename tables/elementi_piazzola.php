@@ -1,8 +1,6 @@
 <?php
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once '../session.php';
 
 require_once '../conn_ok.php';
 
@@ -17,11 +15,12 @@ if(!$conn) {
 		tr.nome as rifiuto,
 		te.tipologia_elemento,
 		tr.colore,
+		tr.fa_icon,
 		te2.descrizione as tipo_raccolta,
 		te.tipo_elemento,
 		upper(te.descrizione) as tipo_elem, 
 		coalesce(ep.id_utenzapap,-1) as id_utenzapap,
-		concat (ep.descrizione, ' - ', ep.nome_attivita) as cliente,
+		concat (mc.descrizione, ' - ', ep.descrizione, ' - ', ep.nome_attivita) as cliente,
 		string_agg(distinct concat(vi.tipo, ' - ', vi.descrizione), ',') as desc_intervento,
 		string_agg(distinct vi.stato_descrizione, ',') as stato_intervento, 
 		max(vi.stato) as id_stato_intervento,
@@ -39,7 +38,8 @@ if(!$conn) {
 		join elem.tipi_elemento te on te.tipo_elemento = e.tipo_elemento 
 		join elem.tipi_rifiuto tr on tr.tipo_rifiuto = te.tipo_rifiuto
 		join elem.tipologie_elemento te2 on te2.tipologia_elemento = te.tipologia_elemento
-		left join elem.elementi_privati ep on ep.id_elemento = e.id_elemento 
+		left join elem.elementi_privati ep on ep.id_elemento = e.id_elemento
+		left join utenze.macro_categorie mc on mc.id_macro_categoria = ep.id_macro_categoria
 		left join gestione_oggetti.v_intervento vi on e.id_elemento = vi.elemento_id and vi.stato in (1,5)
 		where id_piazzola = $1  
 		group by 
@@ -49,10 +49,12 @@ if(!$conn) {
 		tr.nome,
 		te.tipologia_elemento,
 		tr.colore,
+		tr.fa_icon,
 		te2.descrizione ,
 		te.tipo_elemento,
 		te.descrizione , 
 		coalesce(ep.id_utenzapap,-1),
+		mc.descrizione,
 		ep.descrizione, ep.nome_attivita,
 		e.percent_riempimento, e.freq_stimata
 		order by tr.nome, te.descrizione";

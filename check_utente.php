@@ -1,5 +1,5 @@
 <?php
-
+require_once './req.php';
 function redirect($url)
 {
     $string = '<script type="text/javascript">';
@@ -15,9 +15,6 @@ $lifetime=86400;
 ini_set('session.gc_maxlifetime', $lifetime);
 session_set_cookie_params($lifetime);
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 
 
 /*if ($_GET['jwt']){
@@ -139,6 +136,11 @@ if ($_GET['jwt']){
 //echo "il problema non è qua";
 //exit();
 if (is_null($_SESSION['username']) AND basename($_SERVER['PHP_SELF'])!='login.php'){
+  //echo session_status();   // cosa stampa? 1 oppure 2?
+  //echo '<br>';
+  //echo session_name();     // cosa stampa? PHPSESSID oppure il tuo nome? 
+  //echo '<br>';
+  //echo 'Username: '.$_SESSION['username'];
   die ('Utente non riconosciuto <br><br><a href="./login.php" class="btn btn-info"> Vai al login </a>');
   
   

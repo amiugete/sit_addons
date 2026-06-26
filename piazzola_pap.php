@@ -1,8 +1,6 @@
 <?php
 //session_set_cookie_params($lifetime);
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once './session.php';
 
     
 ?>
@@ -184,15 +182,14 @@ if ((int)$id_role_SIT = 0) {
                             </div>
                             <div class="form-group col-md-6">
                                 <i class="bi bi-geo-alt-fill"></i><label for="via_list">Via:</label> <font color="red">*</font>
-                                            <select name="via_list" id="via_list" class="selectpicker show-tick form-control" data-dropup-auto="false"
-                                            data-live-search="true" required="" disabled>
-                                                <option value="">Seleziona la via</option>
-                                            </select> 
+                                <select name="via_list" id="via_list" class="selectpicker show-tick form-control" data-dropup-auto="false" data-live-search="true" required="" disabled>
+                                    <option value="">Seleziona la via</option>
+                                </select> 
                             </div>
                             <div class="form-group col-md-2">
                                 <i class="bi bi-geo-fill"></i><label for="civ_list">Civico:</label>
                                 <select name="civ_list" id="civ_list" class="selectpicker show-tick form-control" data-dropup-auto="false" data-live-search="true" required="" disabled>
-                                <option name="civ_list" value="">Seleziona il civico</option>
+                                    <option name="civ_list" value="">Seleziona il civico</option>
                                 </select>
                             </div>
                         </div>
@@ -444,9 +441,9 @@ require('./footer.php');
             `;
         }else if (clienti.length > 1) {
             html += `<div class="form-group">
-                        <label for="cliente_esistente"> Scegli un cliente tra quelli già associati alla piazzola: </label>
+                        <label for="cliente_esistente"> Vuoi selezionare un cliente tra quelli già associati alla piazzola? </label>
                         <div class="d-flex align-items-center gap-2">
-                            <select name="cliente_esistente" id="cliente_esistente" class="form-control" onchange="abilitaBottoniCliente(this)" required>
+                            <select name="cliente_esistente" id="cliente_esistente" class="form-control" onchange="abilitaBottoniCliente(this)">
                                 <option value="">Seleziona un cliente</option>`;
                                 clienti.forEach(cliente => {
                                     html += `<option value="${cliente.id_macro_categoria}" data-cliente="${cliente.descrizione}"> ${cliente.descrizione} </option>`;
@@ -781,6 +778,7 @@ require('./footer.php');
         // per ora mostra un toast con funzionalità WIP, a regime dovrebbe aprire un modal con i dettagli editabili
         console.log('ID piazzola da modificare: ' + id_piazzola);
         showToast('Funzionalità in fase di sviluppo', 'info', 'top');
+        //window.open('dettagli_piazzola.php?idp=' + id_piazzola, '_blank');
     }
 
     function allineaClienteSelect(id_piazzola) {

@@ -380,3 +380,32 @@ iframe {
     /*height: calc(100vh - 120px);*/
     height: 600px;
 }
+
+
+/* Bordi select2*/
+.select2-container--bootstrap-5 .select2-selection {
+    border: 1px solid #ced4da;
+}
+
+
+/* posizione freccia select2 */
+.select2-container--bootstrap-5 .select2-selection__arrow {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    left: auto !important;
+    transform: translateY(-50%);
+}
+
+
+
+/* posizione freccia select2 */
+.select2-container--bootstrap-5 .select2-selection__arrow b {
+    display: block !important;
+    width: 0;
+    height: 0;
+
+    border-color: #6c757d transparent transparent transparent !important;
+    border-style: solid !important;
+    border-width: 5px 4px 0 4px !important;
+}

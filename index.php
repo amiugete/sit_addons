@@ -1,8 +1,6 @@
 <?php
 //session_set_cookie_params($lifetime);
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once('./session.php');
 
 
     
@@ -21,7 +19,9 @@ if (session_status() === PHP_SESSION_NONE) {
     <title>Gestione servizi</title>
 <?php 
 
-require_once('./req.php');
+
+
+require_once './req.php';
 
 the_page_title();
 

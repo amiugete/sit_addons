@@ -5,9 +5,7 @@ require_once('./check_utente.php');
 
 
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once('./session.php');
 
 
 
@@ -71,13 +69,15 @@ $partenza_ekovision = $_ENV['PARTENZA_EKOVISION'] ?? null;
 
 
 
-<!-- select2 -->
-<link rel="stylesheet" href="./node_modules/select2/dist/css/select2.min.css">
-<link rel="stylesheet" href="./node_modules/select2-bootstrap-theme/dist/select2-bootstrap.min.css">
+
 
 <!-- BOOTSTRAP DATEPICKER -->
 <link rel="stylesheet" href="./vendor/eternicode/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css"/>
 
+
+<!-- select2 -->
+<link rel="stylesheet" href="./node_modules/select2/dist/css/select2.min.css">
+<link rel="stylesheet" href="./node_modules/select2-bootstrap-theme/dist/select2-bootstrap.min.css">
 
 
 <!--link href="./bootstrap-table-1.18.3/dist/bootstrap-table.css" rel="stylesheet"-->
@@ -103,14 +103,15 @@ $partenza_ekovision = $_ENV['PARTENZA_EKOVISION'] ?? null;
 <script>
 
 var onResize = function() {
+    console.log('Sono dentro la funzione onResize del req.php');
     var new_height= 10+$(".banner").height()+$(".navbar-sticky-top").height()
-    console.log(new_height);
+    console.log('new_height: '+ new_height);
     // apply dynamic padding at the top of the body according to the fixed navbar height
     $("body").css("margin-top", new_height);
 
 
     var new_width=$(".banner").width()
-    console.log(new_width);
+    console.log('new_width:' + new_width);
     if (new_width < 760) {
         $("#sit_btn1").css("display", 'none'); 
         $("#link_pc1").css("display", 'none');
@@ -124,10 +125,20 @@ var onResize = function() {
         $("#link_pc1").css("display", 'inline-block');
         $("#link_pc2").css("display", 'inline-block');
         $("#intestazione").css("display", 'inline-block');
-        
-
     }
-    
+    var h = window.innerHeight - new_height - 15; /* aggiungo 15 di padding  */
+    console.log('h:' + h);
+
+    $("#mainContainer").height(h);
+
+    if (typeof map !== 'undefined') {
+        setTimeout(() => map.invalidateSize(), 50);
+    }
+    /*$(".container-fluid.vh-100").css("height", h + "px");
+    //$("#map-container").css("height", h+"px");  
+    setTimeout(() => {
+        map.invalidateSize();
+    }, 100);*/
 };
 
 </script>
