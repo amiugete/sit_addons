@@ -1,6 +1,8 @@
 <?php
 //session_set_cookie_params($lifetime);
 require_once './session.php';
+require_once './conn_ok.php';
+require_once './redirect2wip.php';
 
     
 ?>
@@ -21,7 +23,7 @@ require_once('./req.php');
 
 the_page_title();
 
-require_once './conn_ok.php';
+
 ?> 
 
 
