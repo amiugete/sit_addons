@@ -398,7 +398,8 @@ if ($id_servizio_sit!=0 and $check_SIT==1){
   ddmm_switch_on, 
   ddmm_switch_off, 
   id_servizio, 
-  freq_settimane) 
+  freq_settimane,
+  coeff_compattazione) 
   VALUES
   (nextval('elem.sq_percorsi'::regclass),
   $1,
@@ -418,7 +419,8 @@ if ($id_servizio_sit!=0 and $check_SIT==1){
   $12,
   $13,
   $14, 
-  $15)";
+  $15,
+  1)";
   $result_sit = pg_prepare($conn_sit, "insert_sit", $insert_sit);
   $result_sit = pg_execute($conn_sit, "insert_sit", array($cod_percorso,$desc, $cdaog3, $turno, $id_uso, $_SESSION['username'], $data_att, $data_disatt_sit, $freq_sit, $stag, $sq_ut, $switchON, $switchOFF, $id_servizio_sit, $freq_sett)); 
 }// fine insert sit
