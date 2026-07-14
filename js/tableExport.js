@@ -30,7 +30,7 @@
   });
 });
  * 
- *Funzione da richiamare nella pagina web qualora oltre ai filtri sulle colonne
+ *Funzione da richiamare nella pagina web qualora non ci siano altri filtri oltre a quelli sulle colonne
  * $(function() {
   initTableExport({
     tableId: "ek_cons",
@@ -120,90 +120,6 @@ function buildParams(includeFilters = false) {
 
   return params;
 }
-
-
-/*function createExcelSheet(rows, fileName, sheetName) {
-  if (!rows || rows.length === 0) {
-    alert("Nessun dato da esportare.");
-    return;
-  }
-
-  const colNames = Object.keys(rows[0]);
-
-  function detectCellType(val) {
-    if (val === null || val === undefined || val === "") return null;
-
-    // Numeri
-    if (typeof val === "number" || (!isNaN(val) && val !== "")) {
-      const num = Number(val);
-      if (Number.isInteger(num)) {
-        return { v: num, t: "n", z: "0" }; // intero
-      } else {
-        return { v: num, t: "n", z: "0.00" }; // decimale
-      }
-    }
-
-    // Boolean
-    if (typeof val === "boolean") return { v: val, t: "b" };
-
-    // Solo ora (es. "14:35" o "14:35:22")
-    if (typeof val === "string" && /^([01]?\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/.test(val)) {
-      const parts = val.split(":").map(Number);
-      const d = new Date();
-      d.setHours(parts[0], parts[1], parts[2] || 0, 0);
-      return { v: d, t: "d", z: "hh:mm:ss" };
-    }
-
-    // Solo data (es. "2025-10-03")
-    if (typeof val === "string" && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
-      const d = new Date(val);
-      d.setHours(0, 0, 0, 0); // azzera orario
-      return { v: d, t: "d", z: "dd/mm/yyyy" };
-    }
-
-    // Oggetto Date
-    if (val instanceof Date && !isNaN(val)) {
-      const hasTime = val.getHours() + val.getMinutes() + val.getSeconds() > 0;
-      if (!hasTime) val.setHours(0, 0, 0, 0); // azzera se solo data
-      return { v: val, t: "d", z: hasTime ? "dd/mm/yyyy hh:mm:ss" : "dd/mm/yyyy" };
-    }
-
-    // Stringa parsabile come data completa
-    if (typeof val === "string" && !isNaN(Date.parse(val))) {
-      const d = new Date(val);
-      const hasTime = d.getHours() + d.getMinutes() + d.getSeconds() > 0;
-      if (!hasTime) d.setHours(0, 0, 0, 0);
-      return { v: d, t: "d", z: hasTime ? "dd/mm/yyyy hh:mm:ss" : "dd/mm/yyyy" };
-    }
-
-    // Stringhe generiche
-    return { v: val.toString(), t: "s" };
-  }
-
-  // Header
-  const aoa = [colNames];
-  rows.forEach(row => {
-    const r = colNames.map(h => detectCellType(row[h]));
-    aoa.push(r);
-  });
-
-  const ws = XLSX.utils.aoa_to_sheet(aoa);
-
-  // Autofilter
-  const range = XLSX.utils.decode_range(ws['!ref']);
-  ws['!autofilter'] = { ref: XLSX.utils.encode_range(range.s, { r: range.s.r, c: range.e.c }) };
-
-  // Larghezza colonne
-  ws['!cols'] = colNames.map(h => {
-    const maxLen = Math.max(h.length, ...rows.map(r => r[h] ? r[h].toString().length : 0));
-    return { wch: maxLen + 1 };
-  });
-
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, sheetName);
-
-  XLSX.writeFile(wb, fileName);
-}*/
 
 function createExcelSheet(rows, fileName, sheetName) {
   if (!rows || rows.length === 0) {
