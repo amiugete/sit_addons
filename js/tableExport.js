@@ -7,8 +7,7 @@
  *
  * @param {Object} config - configurazione
  * @param {string} config.tableId - ID tabella bootstrap (senza #)
- * @param {string} config.exportAllBtn - selettore bottone export totale
- * @param {string} config.exportFilteredBtn - selettore bottone export filtrato
+ * @param {string} config.exportFilteredBtn - selettore bottone export 
  * @param {string} config.baseUrl - URL base per la chiamata al server
  * @param {function} [config.extraParams] - (opzionale) funzione che ritorna un oggetto con parametri extra
  * 
@@ -16,7 +15,6 @@
  * $(function() {
   initTableExport({
     tableId: "ek_cons", // id della tabella
-    exportAllBtn: "#export-btn", //id del bottone eexport totale
     exportFilteredBtn: "#export-btn-filtered", //id del bottone esxport filtrato
     baseUrl: "./tables/report_consuntivazione_ekovision.php", // url per recupero dei dati
     extraParams: () => {
@@ -34,7 +32,6 @@
  * $(function() {
   initTableExport({
     tableId: "ek_cons",
-    exportAllBtn: "#export-btn",
     exportFilteredBtn: "#export-btn-filtered",
     baseUrl: "./tables/report_generico.php"
   });
@@ -44,7 +41,7 @@
 
 
 function initTableExport(config) {
-  if (!config || !config.tableId || !config.exportAllBtn || !config.exportFilteredBtn || !config.baseUrl) {
+  if (!config || !config.tableId || !config.exportFilteredBtn || !config.baseUrl) {
     console.error("initTableExport: configurazione mancante o incompleta", config);
     return;
   }
@@ -220,20 +217,6 @@ function detectCellType(val) {
 }
 
 
-  // Export dati totale
-  $(config.exportAllBtn).off("click").on("click", async () => {
-    const url = `${config.baseUrl}?${buildParams(false).toString()}`;
-    console.log("URL fetch export totale:", url);
-
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
-      createExcelSheet(data.rows || data, "export_completo.xlsx", "Dati");
-    } catch (err) {
-      console.error("Errore fetch export totale:", err);
-      alert("Errore durante export totale.");
-    }
-  });
 
   // Export dati filtrati applicando filtri e autodimensionamento colonne
   $(document).off("click", config.exportFilteredBtn).on("click", config.exportFilteredBtn, async () => {
