@@ -1076,7 +1076,7 @@ $result_mezzi = pg_execute($conn_sit, "query_mezzi", array($cod_percorso, $versi
           <?php
           ## da cambiare la query per lista mezzi
           $querymezzo="select cdaog3,
-          concat(categoria, ' (', nome, ')') as cat_estesa  from elem.automezzi a 
+          concat(trim(categoria), ' (', trim(nome), ')') as cat_estesa  from elem.automezzi a 
           where a.cdaog3 not in ('9998' , '9997', '9996', '9994','9993')
           order by categoria ;";
           $resultmezzo = pg_query($conn_sit, $querymezzo);
