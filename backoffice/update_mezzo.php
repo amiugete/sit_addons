@@ -14,22 +14,29 @@ if(($_ENV['APP_ENV'] ?? '') === 'test') {
 
 $res_ok=0;
 
-echo "Per ora il pulsante salva non fa nulla se non mostrare il turno selezionato e il percorso<br>"; 
+#echo "Per ora il pulsante salva non fa nulla se non mostrare il turno selezionato e il percorso<br>"; 
 
 
 #mezzo
 
-//$text = $_POST["lista_mezzi"];
+$text = $_POST["lista_mezzi"];
 //echo 'mezzi selezionati: '.$text."<br>";
 
 $codici_mezzi = explode(',', $_POST['lista_mezzi_valori']);
+/*if (!is_array($codici_mezzi)) {
+    echo 'cod mezzi non è un array <br>';
+    $codici_mezzi = [$codici_mezzi];
+}else{
+    echo 'cod mezzi è un array <br>';
+}*/
+
 /*foreach($codici_mezzi as $key ){
   echo "Codice: ".$key."<br>";
 }*/
 if (count($codici_mezzi)>1){
-  $cdaog3 = $codici_mezzi[0];
+  $cdaog3 = trim($codici_mezzi[0]);
 } else {
-  $cdaog3 = $codici_mezzi[0];
+  $cdaog3 = trim($codici_mezzi[0]);
 }
 
 $nomi_mezzi = explode(',', $_POST['lista_mezzi_nomi']);
@@ -46,7 +53,7 @@ if (count($nomi_mezzi)>1){
  //echo "mezzo per uo: ".$automezzo."<br>";
  //echo "mezzo per percorsi_ut: ".$cdaog3."<br>";
 
-//exit();
+#exit();
 
 // SQUADRA
 $id_ut_sit = intval($_POST['id_ut_sit']);
@@ -152,13 +159,13 @@ $insert_mezzi_percorso = "INSERT INTO anagrafe_percorsi.percorsi_mezzi (cod_perc
 foreach($codici_mezzi as $i => $id_mezzo){
   $result_mezzi_percorso = pg_prepare($conn_sit, "insert_mezzi_percorso_".$id_mezzo."_".$i, $insert_mezzi_percorso);
   if (pg_last_error($conn_sit)){
-    //echo pg_last_error($conn_sit).'<br>';
+    echo pg_last_error($conn_sit).'<br>';
     $res_ok=$res_ok+1;
   }
 
-  $result_mezzi_percorso = pg_execute($conn_sit, "insert_mezzi_percorso_".$id_mezzo."_".$i, array($cod_percorso, $new_vers, $id_mezzo)); 
+  $result_mezzi_percorso = pg_execute($conn_sit, "insert_mezzi_percorso_".$id_mezzo."_".$i, array($cod_percorso, $vers, $id_mezzo)); 
   if (pg_last_error($conn_sit)){
-    //echo pg_last_error($conn_sit).'<br>';
+    echo pg_last_error($conn_sit).'<br>';
     $res_ok=$res_ok+1;
   }
 }
