@@ -1,0 +1,70 @@
+/* ================================
+   Marker piazzole
+   ================================ */
+
+.piazzola-marker{
+    position:relative;
+    width:32px;
+    height:32px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.piazzola-marker::before{
+    content:"";
+    position:absolute;
+    inset:0;
+
+    background: var(--marker-bg, #c200c9);
+    
+    border:2px solid var(--marker-bd, #c200c9);
+    border-radius:50% 50% 50% 0;
+
+    transform:rotate(-45deg);
+
+    /*box-shadow:0 2px 5px rgba(0,0,0,.4);*/
+
+    z-index:0;
+}
+
+.piazzola-marker > *{
+    position:relative;
+    z-index:1;
+}
+
+
+.user-lock{
+    position: relative;
+    display: inline-block;
+}
+
+.user-lock .fa-user{
+    font-size: 12px;  /* icona principale più grande */
+}
+
+.lock-overlay{
+    position: absolute;
+    right: -5px;
+    bottom: -1px;
+
+    font-size: 8px; /* lucchetto più piccolo */
+    line-height: 1;
+}
+
+
+
+.piazzola-cluster div {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #c200c9;
+    border: 3px solid #fff;
+    color: #fff;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,.35);
+}
