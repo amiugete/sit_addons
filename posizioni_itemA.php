@@ -23,7 +23,15 @@ the_page_title();
 
 require_once './conn_ok.php';
 ?> 
+<style>
 
+    
+#mappa_cassoni {
+    width: 100%;
+    /*height: calc(100vh - 120px);*/
+    height: 600px;
+}
+</style>
 
 
 
@@ -110,7 +118,7 @@ if ((int)$id_role_SIT = 0) {
     </div>
 
 </div>
-<div id="map"></div>
+<div id="mappa_cassoni"></div>
 <!--script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script-->
 
 
@@ -136,6 +144,13 @@ const initialView = {
     bounds: null,
     zoomed: false
 };*/
+
+
+const mappa = creaMappa("mappa_cassoni");
+
+const map = mappa.map;
+const initialView = mappa.initialView;
+
 
 // questo richiama la funziona aggiornaTooltip ad ogni chiamata
 map.on('zoomend', aggiornaTooltip);

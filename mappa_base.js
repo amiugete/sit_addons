@@ -1,121 +1,237 @@
 /*
-Mappa di base da caricare all'occorenza nelle varie pagine PHP. 
-Contiene la mappa, layer di base e le funzioni di base.
+ * Mappa base Leaflet
+ *
+ * Utilizzo:
+ *
+ * const mappa = creaMappa("map");
+ *
+ * oppure
+ *
+ * const mappa = creaMappa("mapModal", {
+ *     center: [44.41, 8.93],
+ *     zoom: 17,
+ *     locateControl: false
+ * });
+ *
+ * map = oggetto Leaflet
+ * initialView = dati per reset
+ * layerControl = controllo layer
+ */
 
-la mappa va richiamata in php con:
-<script type="text/javascript" src="mappa_base.js"></script>
+function creaMappa(idElemento, options = {}) {
 
-e va aggiunto alla pagina php il div con id "map" dove verrà caricata la mappa (width e height sono settati in main.css):
-<div id="map"></div> 
+    const config = {
 
-*/
+        center: [44.4056, 8.9463],
+        zoom: 13,
 
-const map = L.map('map', {
-    minZoom: 1,
-    maxZoom: 22,
-    attributionControl: false
-}).setView([44.4056, 8.9463], 13);
-
-// lo uso per il tasto torna allo zoom iniziale
-const initialView = {
-    bounds: null,
-    zoomed: false
-};
-
-L.control.scale().addTo(map);
-
-L.control.attribution({ 
-    position: 'bottomright',
-    prefix: 'Mappa realizzata da <img src="./favicon_SIT.ico" width="12" height="12" alt="SIT" style="vertical-align: middle;"> APTE con <a href="https://leafletjs.com/" title="A JavaScript library for interactive maps" target="_blank">Leaflet</a>'
-}).addTo(map);
-
-
-
-/*L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap',
-    maxZoom: 22,
-    maxNativeZoom: 19
-}).addTo(map);*/
-
-var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 22,
-    maxNativeZoom: 19,
-    attribution: '© OpenStreetMap'
-}).addTo(map);
-
-var osmHOT = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-    maxZoom: 22,
-    maxNativeZoom: 19,
-    attribution: '© OpenStreetMap contributors, Tiles style by Humanitarian OpenStreetMap Team hosted by OpenStreetMap France'});
-
-var esriImagery = L.tileLayer(
-    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    {
+        minZoom: 1,
         maxZoom: 22,
-        maxNativeZoom: 19,
-        attribution: '© Esri, Vantor, Earthstar Geographics'
+
+        attributionControl: true,
+        scaleControl: true,
+        locateControl: true,
+        layerControl: true,
+
+        ...options
+
+    };
+
+    //----------------------------------------------------
+    // Mappa
+    //----------------------------------------------------
+
+    const map = L.map(idElemento, {
+
+        minZoom: config.minZoom,
+        maxZoom: config.maxZoom,
+        attributionControl: false
+
+    }).setView(config.center, config.zoom);
+
+    //----------------------------------------------------
+    // Stato
+    //----------------------------------------------------
+
+    const initialView = {
+
+        bounds: null,
+        zoomed: false
+
+    };
+
+    //----------------------------------------------------
+    // Controlli
+    //----------------------------------------------------
+
+    if (config.scaleControl) {
+
+        L.control.scale().addTo(map);
+
     }
-);
 
-var esriLabels = L.tileLayer(
-    'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
-    {
-        maxZoom: 22,
-        maxNativeZoom: 19
+    if (config.attributionControl) {
+
+        L.control.attribution({
+
+            position: "bottomright",
+
+            prefix:
+                'Mappa realizzata da ' +
+                '<img src="./favicon_SIT.ico" width="12" height="12">' +
+                ' APTE con ' +
+                '<a href="https://leafletjs.com/" target="_blank">Leaflet</a>'
+
+        }).addTo(map);
+
     }
-);
 
-var esriLabelsTraffic = L.tileLayer(
-    'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}',
-    {
-        maxZoom: 22,
-        maxNativeZoom: 19,
-        attribution: 'HERE, Garmin, © OpenStreetMap'
-    }
-);
+    //----------------------------------------------------
+    // Layer base
+    //----------------------------------------------------
 
-var esriHybrid = L.layerGroup([
-    esriImagery,
-    esriLabels,
-    esriLabelsTraffic
-]);
-
-var streetMap = L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
-    maxZoom: 22,
-    maxNativeZoom: 19,
-     attribution: 'Esri, HERE, Garmin, USGS, Intermap, INCREMENT P, NRCan, METI, NGCC, © OpenStreetMap'
-});
-
-var baseMaps = {
-    "OpenStreetMap": osm,
-    "OpenStreetMap.HOT": osmHOT,
-    "Esri Satellite": esriImagery,
-    "Esri Hybrid": esriHybrid,
-    "Esri Street Map": streetMap
-};
-
-var layerControl = L.control.layers(baseMaps).addTo(map);
-
-//geolocation utilizza plugin Leaflet.Locate installato con npm e richiamato in req e req_bottom
-L.control.locate({
-    strings: {
-      title: "Zoom alla tua posizione",
-      popup: "Sei qui"      
-    },
-    showPopup: false
-}).addTo(map);
-
-// zoom iniziale
-if (document.getElementById("resetMap")) {
-    document.getElementById("resetMap").addEventListener("click", function () {
-
-        if (initialView.bounds) {
-            map.fitBounds(initialView.bounds, { padding: [30, 30] });
-        } else {
-            map.setView([44.4056, 8.9463], 11); // fallback
+    const osm = L.tileLayer(
+        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+        {
+            maxZoom:22,
+            maxNativeZoom:19,
+            attribution:"© OpenStreetMap"
         }
+    ).addTo(map);
 
-    })
-};
+    const osmHOT = L.tileLayer(
+        'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+        {
+            maxZoom:22,
+            maxNativeZoom:19,
+            attribution:"© OpenStreetMap contributors"
+        }
+    );
 
+    const esriImagery = L.tileLayer(
+        'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        {
+            maxZoom:22,
+            maxNativeZoom:19,
+            attribution:"© Esri"
+        }
+    );
 
+    const esriLabels = L.tileLayer(
+        'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+        {
+            maxZoom:22,
+            maxNativeZoom:19
+        }
+    );
+
+    const esriTraffic = L.tileLayer(
+        'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}',
+        {
+            maxZoom:22,
+            maxNativeZoom:19
+        }
+    );
+
+    const esriHybrid = L.layerGroup([
+        esriImagery,
+        esriLabels,
+        esriTraffic
+    ]);
+
+    const streetMap = L.tileLayer(
+        'https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+        {
+            maxZoom:22,
+            maxNativeZoom:19
+        }
+    );
+
+    const baseMaps = {
+
+        "OpenStreetMap": osm,
+        "OpenStreetMap HOT": osmHOT,
+        "Esri Satellite": esriImagery,
+        "Esri Hybrid": esriHybrid,
+        "Esri Street Map": streetMap
+
+    };
+
+    //----------------------------------------------------
+    // Layer control
+    //----------------------------------------------------
+
+    let layerControl = null;
+
+    if (config.layerControl) {
+
+        layerControl =
+            L.control.layers(baseMaps).addTo(map);
+
+    }
+
+    //----------------------------------------------------
+    // Geolocalizzazione
+    //----------------------------------------------------
+
+    if (config.locateControl) {
+
+        L.control.locate({
+
+            strings: {
+
+                title: "Zoom alla tua posizione",
+                popup: "Sei qui"
+
+            },
+
+            showPopup:false
+
+        }).addTo(map);
+
+    }
+
+    //----------------------------------------------------
+    // Pulsante reset
+    //----------------------------------------------------
+
+    const btnReset = document.getElementById("resetMap");
+
+    if (btnReset) {
+
+        btnReset.addEventListener("click", function(){
+
+            if (initialView.bounds) {
+
+                map.fitBounds(initialView.bounds,{
+                    padding:[30,30]
+                });
+
+            }
+            else {
+
+                map.setView(
+                    config.center,
+                    config.zoom
+                );
+
+            }
+
+        });
+
+    }
+
+    //----------------------------------------------------
+    // ritorno
+    //----------------------------------------------------
+
+    return {
+
+        map,
+        initialView,
+        baseMaps,
+        layerControl
+
+    };
+
+}
