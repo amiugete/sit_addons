@@ -134,6 +134,7 @@ var onResize = function() {
     if (typeof map !== 'undefined') {
         setTimeout(() => map.invalidateSize(), 50);
     }
+
     /*$(".container-fluid.vh-100").css("height", h + "px");
     //$("#map-container").css("height", h+"px");  
     setTimeout(() => {
@@ -274,6 +275,19 @@ $(function() {
 
 .tab-pane {
     padding: 2%;
+}
+
+.form-check-input {
+    width: 16px;
+    height: 16px;
+    border: 1px solid #a3a5a8;
+    cursor: pointer;
+}
+
+/*classe usata quando si modificano tipo elemento, rimpimento e frequenza da dettagli elementi in editing piazzola*/
+.dettaglio-elemento-modificato {
+    background-color: #fffd81 !important;
+    color: #ff0000 !important;
 }
 </style>
 

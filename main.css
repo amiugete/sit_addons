@@ -327,6 +327,25 @@ iframe {
 }
 
 
+/* per il modal dei dettagli piazzole faccio le cose in grande*/
+.modal-piazzola {
+    max-width: 98vw;
+    width: 98vw;
+}
+
+.modal-piazzola .modal-content {
+    height: 95vh;
+}
+
+.modal-piazzola .modal-body {
+    overflow-y: auto;
+}
+
+.modal-piazzola .modal-body {
+    padding: 1rem;
+}
+
+
 
 
 /*------------------ BOTTONI PERSONALIZZATI  -----------------------------*/
