@@ -204,7 +204,7 @@ function mostraElemPiazzole(elementi) {
 
 }
 
-
+// questo è l'accordion della piazzola dentro i dettagli dell'asta
 function creaAccordionPiazzola(piazzola) {
 
     const numPrivati = piazzola.elementi.filter(e => e.privato == 1).length;
@@ -450,9 +450,22 @@ function mostraDettaglioPiazzola(piazzola, idPiazzola) {
             : "";
 
     $("#cardPiazzolaHeader").html(`
-        Piazzola ${idPiazzola}
-        ${iconaPap}
-    `);
+    <div class="d-flex justify-content-between align-items-center w-100">
+
+        <div>
+            Piazzola ${idPiazzola}
+            ${iconaPap}
+        </div>
+
+        <button
+            class="btn btn-sm btn-outline-primary"
+            title="Apri dettaglio completo"
+            onclick="apriDettaglioPiazzola(${idPiazzola})">
+            <i class="fa-solid fa-pen-to-square"></i>
+        </button>
+
+    </div>
+`);
 
     let html = `
 
@@ -520,3 +533,56 @@ function mostraDettaglioPiazzola(piazzola, idPiazzola) {
     $("#cardPiazzolaBody").html(html);
 
 }
+
+
+
+
+
+async function apriDettaglioPiazzola(idPiazzola) {
+
+    /*const response = await fetch(
+        `dettagli_piazzola.php?idp=${idPiazzola}`
+    );
+
+    const html = await response.text();
+
+    $("#modalDettaglioPiazzola .modal-body").html(html);
+
+    bootstrap.Modal
+        .getOrCreateInstance(
+            document.getElementById("modalDettaglioPiazzola")
+        )
+        .show();*/
+
+
+    //sovrascrivo il content del modal
+
+    //document.addEventListener("DOMContentLoaded", function() {
+      const idp = idPiazzola;
+      console.log(idp);
+      if (idp) {
+          //console.log("il percorso è: "+cp);
+          $.ajax({
+              type: "get",
+              url: "dettagli_piazzola_modal.php",
+              data: { 'idp': idp},
+              dataType: "text",
+              success: function(response) {
+                  $("#body_dettaglio_piazzola").html(response);
+
+                  //console.log($("#body_dettaglio").html(response))
+                  var modal = new bootstrap.Modal(document.getElementById("modalDettaglioPiazzola"));
+                  modal.show();
+
+                  // toglie i parametri dalla url
+                  const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                  window.history.replaceState({}, document.title, newUrl);
+              }
+          });
+      }
+  //});
+
+
+}
+
+
