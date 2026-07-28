@@ -1,12 +1,20 @@
 <?php 
+$res_ok = 0;
   // filtro targa
   $query_sportello="SELECT DISTINCT sportello
 FROM consunt.tb_pesi_percorsi
 ORDER BY 1";
 
   $resultt = pg_prepare($conn, "my_query_sportello", $query_sportello);
+  if (pg_last_error($conn)){
+        echo pg_last_error($conn);
+        $res_ok=$res_ok+1;
+  }
   $resultt = pg_execute($conn, "my_query_sportello", array());
-
+  if (pg_last_error($conn)){
+        echo pg_last_error($conn);
+        $res_ok=$res_ok+1;
+  }
   #echo $result;
 
   ?>
@@ -29,7 +37,15 @@ ORDER BY 1";
   ORDER BY 1";
 
   $resultr = pg_prepare($conn, "my_query_rifiuto", $query_rifiuto);
+  if (pg_last_error($conn)){
+        echo pg_last_error($conn);
+        $res_ok=$res_ok+1;
+  }
   $resultr = pg_execute($conn, "my_query_rifiuto", array());
+  if (pg_last_error($conn)){
+        echo pg_last_error($conn);
+        $res_ok=$res_ok+1;
+  }
 
   #echo $result;
 
@@ -54,7 +70,15 @@ ORDER BY 1";
   ORDER BY 1";
 
   $resultd = pg_prepare($conn, "my_query_descrizione", $query_descrizione);
+  if (pg_last_error($conn)){
+        echo pg_last_error($conn);
+        $res_ok=$res_ok+1;
+  }
   $resultd = pg_execute($conn, "my_query_descrizione", array());
+  if (pg_last_error($conn)){
+        echo pg_last_error($conn);
+        $res_ok=$res_ok+1;
+  }
 
   #echo $result;
 
@@ -78,7 +102,15 @@ FROM consunt.v_dettaglio_pesi_percorso
 ORDER BY 1";
 
   $results = pg_prepare($conn, "my_query_servizio", $query_servizio);
+  if (pg_last_error($conn)){
+        echo pg_last_error($conn);
+        $res_ok=$res_ok+1;
+  }
   $results = pg_execute($conn, "my_query_servizio", array());
+  if (pg_last_error($conn)){
+        echo pg_last_error($conn);
+        $res_ok=$res_ok+1;
+  }
 
   #echo $result;
 
