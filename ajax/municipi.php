@@ -14,15 +14,18 @@ if(!$conn_sit) {
 } else {
 
     $filter = "";
-    $query="select c.id_comune, c.descr_comune  from topo.comuni c
-        where c.gestito_sit = 'S'";
+    
+    $query="SELECT id, 'Mun ' ||id|| ' - '|| descrizione as descrizione
+FROM geo.municipi_area ma 
+order by 1
+";
 
  
     //echo $query0;
     //echo $uos;
     //echo "Sono qua";
 
-    $query0 = "select * from (".$query.") a where 1=1 ".$filter ;
+    $query0 = $query ;
 
     $result = pg_prepare($conn_sit, "query0", $query0);
 

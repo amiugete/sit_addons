@@ -7,22 +7,27 @@ header('Content-Type: application/json; charset=utf-8');
 
 require_once '../conn_ok.php';
 //echo "OK";
+$id_municipio = isset($_GET['id_municipio']) ? intval($_GET['id_municipio']) : null;
 
 
 if(!$conn_sit) {
     die('Connessione fallita !<br />');
 } else {
 
-    $filter = "";
-    $query="select c.id_comune, c.descr_comune  from topo.comuni c
-        where c.gestito_sit = 'S'";
+    if ($id_municipio !== null) {
+        $filter = " AND id_muncipio  = $id_municipio";
+}
+
+    $query="SELECT id_quartiere as id, nome as descrizione
+FROM topo.quartieri qa 
+WHERE qa.id_comune = 1 ";
 
  
     //echo $query0;
     //echo $uos;
     //echo "Sono qua";
 
-    $query0 = "select * from (".$query.") a where 1=1 ".$filter ;
+    $query0 = $query." ".$filter ;
 
     $result = pg_prepare($conn_sit, "query0", $query0);
 

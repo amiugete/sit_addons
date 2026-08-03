@@ -9,13 +9,23 @@ require_once '../conn_ok.php';
 //echo "OK";
 
 
+$id=(int)$_GET['id'];
+
 if(!$conn_sit) {
     die('Connessione fallita !<br />');
 } else {
 
-    $filter = "";
-    $query="select c.id_comune, c.descr_comune  from topo.comuni c
-        where c.gestito_sit = 'S'";
+    
+    $query="SELECT
+    ST_XMin(geom) AS xmin,
+    ST_YMin(geom) AS ymin,
+    ST_XMax(geom) AS xmax,
+    ST_YMax(geom) AS ymax
+FROM (
+    SELECT ST_Envelope(st_transform(geom, 4326)) geom
+    FROM geo.mv_nomi_via  
+    WHERE id_via = $1
+) q";
 
  
     //echo $query0;
@@ -33,7 +43,7 @@ if(!$conn_sit) {
         $res_ok= $res_ok+1;
     }
     //echo "Sono qua 2";
-    $result = pg_execute($conn_sit, "query0", array());  
+    $result = pg_execute($conn_sit, "query0", array($id));  
     if (!pg_last_error($conn_sit)){
         #$res_ok=0;
     } else {
@@ -48,6 +58,7 @@ if(!$conn_sit) {
         $rows[] = $r;
         //echo $r['piazzola'];
     }
+    //$rows = pg_fetch_assoc($res);
             
 
     //echo "sono qua!";
