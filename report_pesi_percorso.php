@@ -130,7 +130,7 @@ echo 'ut: '.$_POST['ut'].'<br>';?-->
   </select>  
        
 </div>
-  </form>
+</form>
 
   </div>
 
@@ -141,41 +141,48 @@ echo 'ut: '.$_POST['ut'].'<br>';?-->
 <?php 
 $dt= new DateTime();
 $today = new DateTime();
-$last_month = $dt->modify("-1 month");
-$query_min_date = "SELECT MIN(data_percorso) as min_date FROM consunt.v_dettaglio_pesi_percorso";
+$last_month = $dt->modify("-6 month");
+$query_min_date = "SELECT MIN(data_percorso) as min_date FROM consunt.tb_pesi_percorsi";
 $result_min_date = pg_prepare($conn, "my_query_min_date", $query_min_date);
 $result_min_date = pg_execute($conn, "my_query_min_date", array());
 while($r_min_date = pg_fetch_assoc($result_min_date)) { 
   $min_data = new DateTime($r_min_date['min_date']);
 }
+pg_free_result($result_min_date);
+
 ?>
 
 
 
 <div class="form-group col-4">
 <label for="data_inizio" >Da (GG/MM/AAAA) - A (GG/MM/AAAA) <!--small>Massimo 31 giorni </small></label><font color="red">*</font-->
-    <!--input type="text" class="form-control" name="daterange" value="<?php echo $last_month->format('d/m/Y');?> - <?php echo $today->format('d/m/Y');?>"/-->
-    <input type="text" class="form-control" name="daterange" placeholder="Filtra per intervallo date"/>
-
+    <!--input type="text" class="form-control" name="daterange" value="<?php echo $last_month->format('d/m/Y');?> - <?php echo $today->format('d/m/Y');?>"-->
+    <input type="text" class="form-control" name="daterange" placeholder="Filtra per intervallo date">
+    <small>Di default visualizzo gli ultimi 6 mesi</small>
 </div>
+
 
 
 <script>
 
 $(function() {
   $('input[name="daterange"]').daterangepicker({
-    autoUpdateInput: false,  // ← NON compilare automaticamente l'input
-    locale: {
-      cancelLabel: 'Cancella',
-      applyLabel: 'Applica'
-    },
-    opens: 'left',
-    /*maxSpan: {
-        days: 31
-    },*/
-    showISOWeekNumbers: true/*,
-    minDate: "<?php echo $partenza_ekovision;?>"*/
-    });
+      autoUpdateInput: true,
+      startDate: moment("<?php echo $last_month->format('Y-m-d'); ?>", "YYYY-MM-DD"),
+      endDate: moment("<?php echo $today->format('Y-m-d'); ?>", "YYYY-MM-DD"),
+      minDate: moment("<?php echo $min_data->format('Y-m-d'); ?>", "YYYY-MM-DD"),
+      locale: {
+          format: 'DD/MM/YYYY',
+          cancelLabel: 'Cancella',
+          applyLabel: 'Applica'
+      },
+      showISOWeekNumbers: true
+  });  
+
+
+
+
+
     
   /*}, function(start, end, label) {
     var data_inizio = start.format('YYYY-MM-DD') ;
@@ -190,12 +197,12 @@ $(function() {
     });*/
 
   // Lasciamo l’input vuoto e la tabella carica tutto
-  $('input[name="daterange"]').val('');
+  //$('input[name="daterange"]').val('');
 
   
   $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
-    $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
-
+    $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+    console.log('sono qua dentro e leggo i dati: '+picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
     // aggiorna i parametri e ricarica la tabella
     $('#pesi_per').bootstrapTable('refresh', {
       query: {
@@ -215,8 +222,16 @@ $(function() {
       }
     });
   });
-  });
+  
 //});
+
+
+
+}); // chiusura $(function()
+
+
+
+
 </script>
 
 <div class="col-4" style="align-content: center;">
@@ -256,7 +271,7 @@ $(function() {
 				data-filter-control="true"
         data-sort-select-options = "true"
         data-export-data-type="all"
-        data-url="./tables/data_report_pesi_percorso.php?ut=<?php echo $_POST['ut'];?>&data_inizio=<?php echo $min_data->format("Y-m-d");?>&data_fine=<?php echo $today->format("Y-m-d");?>" 
+        data-url="./tables/data_report_pesi_percorso.php" 
         data-toolbar="#toolbar"
         data-show-footer="false"
         data-query-params="queryParams"
@@ -274,7 +289,7 @@ $(function() {
         <th data-field="zona" data-sortable="true" data-visible="false"  data-filter-control="input">Zona</th>
         <th data-field="rimessa" data-sortable="true" data-visible="true" data-filter-control="false">UT<br>titolare</th>
         <th data-field="ut" data-sortable="true" data-visible="true" data-filter-control="false">UT<br>esecutrice</th> 
-        <th data-field="cod_percorso" data-sortable="true" data-visible="true" data-filter-control="false">Codice</th>
+        <th data-field="cod_percorso" data-sortable="true" data-visible="true" data-filter-control="input">Codice</th>
         <th data-field="descrizione" data-sortable="true" data-visible="true" data-filter-control="input">Percorso</th>
         <th data-field="servizio" data-sortable="true" data-visible="true" data-filter-control="select">Servizio</th>
         <th data-field="cod_cer" data-sortable="true" data-visible="false" data-filter-control="false">CER</th>
@@ -341,12 +356,14 @@ $(function() {
 
 
   
-var opzioni_prov = ['ECOS', 'RIMESSA' ];
+var opzioni_prov = ['ECOS Foglio Pesata', 'ECOS Totem', 'RIMESSA' ];
 
 function provFormat(value) {
-  if (value =='ECOS'){
+  if (value =='ECOS Foglio Pesata'){
     return '<span style="font-size: 1.5em; color: blue;"><i  title="'+value+'" class="bi bi-upc-scan"></i></span>';
-  }  else if (value =='RIMESSA') {
+  }  else if (value =='ECOS Totem') {
+    return '<span style="font-size: 1.5em; color: blue;"><i  title="'+value+'" class="bi bi-card-checklist"></i></span>';
+  } else if (value =='RIMESSA') {
     return '<span style="font-size: 1.5em; color: blue;"> <i title="'+value+'" class="bi bi-pencil-square"></i></span>';
   }
 };
@@ -376,15 +393,24 @@ function idFormatter() {
 
 
   function queryParams(params) {
-    const options = $table.bootstrapTable('getOptions')
+    const options = $table.bootstrapTable('getOptions');
     if (!options.pagination) {
-      params.limit = options.totalRows
+      params.limit = options.totalRows;
     }
-    return params
-  };
+
+    const picker = $('input[name="daterange"]').data('daterangepicker');
+    if (picker) {
+      params.data_inizio = picker.startDate.format('YYYY-MM-DD');
+      params.data_fine = picker.endDate.format('YYYY-MM-DD');
+    }
+
+    params.ut = $('#ut').val() == 0 ? '' : $('#ut').val();
+
+    return params;
+  }
 
 function rowStyle(row, index) {
-  console.log(row.percentualeportata)
+  //console.log(row.percentualeportata)
     if (row.percentualeportata > 120) {
       return {
         css: {

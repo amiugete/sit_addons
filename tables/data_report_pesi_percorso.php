@@ -7,6 +7,11 @@ require_once '../session.php';
 
 require_once '../conn_ok.php';
 
+
+$dataInizio = $_GET['data_inizio'] ?? null;
+$dataFine   = $_GET['data_fine'] ?? null;
+$ut         = $_GET['ut'] ?? null;
+
 if ($_SESSION['username']){
     $user=$_SESSION['username'];
 } else {
@@ -21,6 +26,8 @@ if(!$conn) {
 require_once ('./query_report_pesi_percorso.php');
 
 
+
+# da rivedere il filtro per la ricerca
 $filter='';
 
 if ($_GET['filter']){
@@ -36,14 +43,14 @@ if ($_GET['filter']){
 //exit();
 
 
-if($_GET['data_inizio']) {
+if($dataInizio) {
     $query_temp= $query0 ." WHERE data_percorso between to_date($2, 'YYYY-MM-DD') and to_date($3, 'YYYY-MM-DD')";
 } else {
     $query_temp = $query0 ." WHERE 0=0 ";
 }
 
 
- if($_GET['ut']>0) {
+ if($ut) {
         $query= "select * from (".$query_temp.") a where coalesce(id_ut, id_rimessa) = $1 ".$filter ;  
 } else {
     require_once("../query_ut.php");
@@ -53,6 +60,8 @@ if($_GET['data_inizio']) {
 
 
 $query = $query . " order by data_percorso desc, dataoraconf desc";
+//echo $query;
+//exit();
 //echo "<br><br>";
 //echo $_GET['ut'];
 //echo "<br><br>".$_SESSION["id_uos"];
@@ -60,16 +69,22 @@ $query = $query . " order by data_percorso desc, dataoraconf desc";
 //exit();
 
 $result = pg_prepare($conn, "my_query", $query);
-    if (pg_last_error($conn)){
-        echo pg_last_error($conn);
-        exit;
-    }
 
-if($_GET['ut']) {
+if ($result === false) {
+    die(pg_last_error($conn));
+}
+
+
+if($ut) {
     $result = pg_execute($conn, "my_query", array($_GET['ut'], $_GET['data_inizio'], $_GET['data_fine']));  
 } else {
-    $result = pg_execute($conn, "my_query", array($user, $_GET['data_inizio'], $_GET['data_fine']));}
+    $result = pg_execute($conn, "my_query", array($user, $_GET['data_inizio'], $_GET['data_fine']));
+}
 
+
+if ($result === false) {
+    die(pg_last_error($conn));
+}
 
 
 $rows = array();
@@ -82,7 +97,10 @@ if (empty($rows)==FALSE){
     //print $rows;
     $json = json_encode(array_values($rows));
 } else {
-    echo "[{\"NOTE\":'No data'}]";
+    echo json_encode([
+        ['NOTE' => 'No data']
+    ]);
+
 }
 
 require_once("./json_paginazione.php");
