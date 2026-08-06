@@ -142,7 +142,7 @@ echo 'ut: '.$_POST['ut'].'<br>';?-->
 $dt= new DateTime();
 $today = new DateTime();
 $last_month = $dt->modify("-1 month");
-$query_min_date = "SELECT MIN(data_percorso) as min_date FROM consunt.v_dettaglio_pesi_percorso";
+$query_min_date = "SELECT MIN(data_percorso) as min_date FROM consunt.tp_pesi_percorso";
 $result_min_date = pg_prepare($conn, "my_query_min_date", $query_min_date);
 $result_min_date = pg_execute($conn, "my_query_min_date", array());
 while($r_min_date = pg_fetch_assoc($result_min_date)) { 

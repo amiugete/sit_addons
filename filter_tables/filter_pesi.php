@@ -98,7 +98,7 @@ ORDER BY 1";
     <?php 
   // filtro servizio
   $query_servizio="SELECT DISTINCT servizio
-FROM consunt.v_dettaglio_pesi_percorso
+FROM consunt.v_dettaglio_pesi_percorso_ok
 ORDER BY 1";
 
   $results = pg_prepare($conn, "my_query_servizio", $query_servizio);
