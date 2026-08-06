@@ -141,13 +141,16 @@ echo 'ut: '.$_POST['ut'].'<br>';?-->
 <?php 
 $dt= new DateTime();
 $today = new DateTime();
-$last_month = $dt->modify("-1 month");
-$query_min_date = "SELECT MIN(data_percorso) as min_date FROM consunt.tp_pesi_percorso";
+$last_month = $dt->modify("-6 month");
+$query_min_date = "SELECT MIN(data_percorso) as min_date 
+FROM consunt.tb_pesi_percorsi tpp";
 $result_min_date = pg_prepare($conn, "my_query_min_date", $query_min_date);
 $result_min_date = pg_execute($conn, "my_query_min_date", array());
 while($r_min_date = pg_fetch_assoc($result_min_date)) { 
   $min_data = new DateTime($r_min_date['min_date']);
 }
+pg_free_result($result_min_date);
+
 ?>
 
 
@@ -156,7 +159,7 @@ while($r_min_date = pg_fetch_assoc($result_min_date)) {
 <label for="data_inizio" >Da (GG/MM/AAAA) - A (GG/MM/AAAA) <!--small>Massimo 31 giorni </small></label><font color="red">*</font-->
     <!--input type="text" class="form-control" name="daterange" value="<?php echo $last_month->format('d/m/Y');?> - <?php echo $today->format('d/m/Y');?>"/-->
     <input type="text" class="form-control" name="daterange" placeholder="Filtra per intervallo date"/>
-
+   <small>Di default visualizzo gli ultimi 6 mesi</small>
 </div>
 
 
@@ -164,17 +167,16 @@ while($r_min_date = pg_fetch_assoc($result_min_date)) {
 
 $(function() {
   $('input[name="daterange"]').daterangepicker({
-    autoUpdateInput: false,  // ← NON compilare automaticamente l'input
-    locale: {
-      cancelLabel: 'Cancella',
-      applyLabel: 'Applica'
-    },
-    opens: 'left',
-    /*maxSpan: {
-        days: 31
-    },*/
-    showISOWeekNumbers: true/*,
-    minDate: "<?php echo $partenza_ekovision;?>"*/
+    autoUpdateInput: true,
+      startDate: moment("<?php echo $last_month->format('Y-m-d'); ?>", "YYYY-MM-DD"),
+      endDate: moment("<?php echo $today->format('Y-m-d'); ?>", "YYYY-MM-DD"),
+      minDate: moment("<?php echo $min_data->format('Y-m-d'); ?>", "YYYY-MM-DD"),
+      locale: {
+          format: 'DD/MM/YYYY',
+          cancelLabel: 'Cancella',
+          applyLabel: 'Applica'
+      },
+      showISOWeekNumbers: true
     });
     
   /*}, function(start, end, label) {
@@ -190,7 +192,7 @@ $(function() {
     });*/
 
   // Lasciamo l’input vuoto e la tabella carica tutto
-  $('input[name="daterange"]').val('');
+  //$('input[name="daterange"]').val('');
 
   
   $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
@@ -256,7 +258,7 @@ $(function() {
 				data-filter-control="true"
         data-sort-select-options = "true"
         data-export-data-type="all"
-        data-url="./tables/data_report_pesi_ut.php?ut=<?php echo $_POST['ut'];?>&data_inizio=<?php echo $min_data->format("Y-m-d");?>&data_fine=<?php echo $today->format("Y-m-d");?>" 
+        data-url="./tables/data_report_pesi_ut.php" 
         data-toolbar="#toolbar"
         data-show-footer="false"
         data-query-params="queryParams"
@@ -324,13 +326,22 @@ $(function() {
 
 
 
-  function queryParams(params) {
-    const options = $table.bootstrapTable('getOptions')
+function queryParams(params) {
+    const options = $table.bootstrapTable('getOptions');
     if (!options.pagination) {
-      params.limit = options.totalRows
+      params.limit = options.totalRows;
     }
-    return params
-  };
+
+    const picker = $('input[name="daterange"]').data('daterangepicker');
+    if (picker) {
+      params.data_inizio = picker.startDate.format('YYYY-MM-DD');
+      params.data_fine = picker.endDate.format('YYYY-MM-DD');
+    }
+
+    params.ut = $('#ut').val() == 0 ? '' : $('#ut').val();
+
+    return params;
+  }
 
 
 function dateFormat(value, row, index) {
@@ -351,11 +362,20 @@ $(function() {
     baseUrl: "./tables/data_report_pesi_ut.php",
     extraParams: () => {
       // parametri extra della pagina
-      const range = $('input[name="daterange"]').val().split(" - ");
+      const val = $('input[name="daterange"]').val();
+
+      let data_inizio = "<?php echo $min_data->format("Y-m-d"); ?>";
+      let data_fine = "<?php echo $today->format("Y-m-d"); ?>";
+
+      if (val && val.includes(" - ")) {
+        const range = val.split(" - ");
+        data_inizio = range[0].split('/').reverse().join('-');
+        data_fine = range[1].split('/').reverse().join('-');
+      }
       return {
         ut: $("#ut").val() == 0 ? "" : $("#ut").val(),
-        data_inizio: range[0].split('/').reverse().join('-'),
-        data_fine: range[1].split('/').reverse().join('-')
+        data_inizio,
+        data_fine
       };
     }
   });
