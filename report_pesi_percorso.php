@@ -287,8 +287,8 @@ $(function() {
         <!--th data-field="state" data-checkbox="true" ></th-->  
         <th data-field="id" data-sortable="true" data-visible="false"  data-filter-control="select">ID</th>
         <th data-field="zona" data-sortable="true" data-visible="false"  data-filter-control="input">Zona</th>
-        <th data-field="rimessa" data-sortable="true" data-visible="true" data-filter-control="false">UT<br>titolare</th>
-        <th data-field="ut" data-sortable="true" data-visible="true" data-filter-control="false">UT<br>esecutrice</th> 
+        <th data-field="ut_titolare" data-sortable="true" data-visible="true" data-filter-control="false">UT<br>titolare</th>
+        <th data-field="ut_esecutrice" data-sortable="true" data-visible="true" data-filter-control="false">UT<br>esecutrice</th> 
         <th data-field="cod_percorso" data-sortable="true" data-visible="true" data-filter-control="input">Codice</th>
         <th data-field="descrizione" data-sortable="true" data-visible="true" data-filter-control="input">Percorso</th>
         <th data-field="servizio" data-sortable="true" data-visible="true" data-filter-control="select">Servizio</th>

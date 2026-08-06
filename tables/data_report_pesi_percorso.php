@@ -51,16 +51,18 @@ if($dataInizio) {
 
 
  if($ut) {
-        $query= "select * from (".$query_temp.") a where coalesce(id_ut, id_rimessa) = $1 ".$filter ;  
+        $query= "select * from (".$query_temp.") a where $1 IN (id_ut_titolare, id_ut_esecutrice) ".$filter ;  
 } else {
     require_once("../query_ut.php");
+    // in questo caso devo confrontare 2 array con l'operatore && (array overlap) per vedere se l'utente loggato ha accesso a uno dei due ut_titolare o ut_esecutrice
     $query= "select * from (".$query_temp.") a 
-            where COALESCE(id_ut, id_rimessa) IN (select x.id_uo from (".$query_ut.") x )".$filter;
+            where ARRAY[id_ut_titolare, id_ut_esecutrice] && ARRAY(select x.id_uo from (".$query_ut.") x )".$filter;
 }
 
 
 $query = $query . " order by data_percorso desc, dataoraconf desc";
-//echo $query;
+//echo $query. '<br><br>';
+//echo $user. '<br><br>'. $dataInizio. '<br><br>'.$dataFine. '<br><br>';
 //exit();
 //echo "<br><br>";
 //echo $_GET['ut'];
@@ -76,9 +78,9 @@ if ($result === false) {
 
 
 if($ut) {
-    $result = pg_execute($conn, "my_query", array($_GET['ut'], $_GET['data_inizio'], $_GET['data_fine']));  
+    $result = pg_execute($conn, "my_query", array($ut, $dataInizio, $dataFine));  
 } else {
-    $result = pg_execute($conn, "my_query", array($user, $_GET['data_inizio'], $_GET['data_fine']));
+    $result = pg_execute($conn, "my_query", array($user, $dataInizio, $dataFine));
 }
 
 

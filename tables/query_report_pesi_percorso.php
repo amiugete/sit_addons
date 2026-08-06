@@ -2,8 +2,8 @@
 
 
 $query0 = "SELECT id, zona, 
-rimessa, id_rimessa, 
-ut, id_ut, 
+ut_titolare, id_ut_titolare, 
+ut_esecutrice, id_ut_esecutrice, 
 cod_percorso, descrizione, 
 servizio, cod_cer, descr_rifiuto,
 turno, orario, 
@@ -13,7 +13,7 @@ mezzipertarga, portataprev,
 portataeff, percentualeportata, 
 personale, provenienza, 
 destinazione, peso
-FROM consunt.v_dettaglio_pesi_percorso";
+FROM consunt.v_dettaglio_pesi_percorso_ok";
 
 
 
