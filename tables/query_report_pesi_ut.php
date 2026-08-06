@@ -4,29 +4,25 @@
 $query0 = "select
 	row_number() OVER () as id,
     zona,
-    id_rimessa,
-    rimessa,
-    id_ut,
-    ut,
+    ut_titolare, id_ut_titolare, 
+    ut_esecutrice, id_ut_esecutrice, 
     cod_cer,
     descr_rifiuto,
     data_percorso,
     COUNT(*) AS numero_pesate,
     SUM(peso) AS peso_totale,
     COUNT(cod_percorso) AS numero_percorsi
-FROM consunt.v_dettaglio_pesi_percorso";
+FROM consunt.v_dettaglio_pesi_percorso_ok";
 
 $query00 = "
 GROUP BY
     zona,
-    id_rimessa,
-    rimessa,
-    id_ut,
-    ut,
+    ut_titolare, id_ut_titolare, 
+    ut_esecutrice, id_ut_esecutrice, 
     cod_cer,
     descr_rifiuto,
 	data_percorso
-order by ut, data_percorso desc";
+order by ut_titolare, data_percorso desc";
 
 
 

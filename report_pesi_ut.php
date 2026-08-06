@@ -16,7 +16,7 @@ require_once './conn_ok.php';
     <meta name="description" content="">
     <meta name="author" content="roberto" >
 
-    <title>Pesi per UT</title>
+    <title>Pesi aggregati per UT</title>
 <?php 
 require_once('./req.php');
 
@@ -264,15 +264,15 @@ $(function() {
         
 <thead>
 
-
+ 
 
  	<tr>
         <!--th data-checkbox="true" data-field="id"></th-->  
         <!--th data-field="state" data-checkbox="true" ></th-->  
         <th data-field="id" data-sortable="true" data-visible="false"  data-filter-control="select">ID</th>
         <th data-field="zona" data-sortable="true" data-visible="false"  data-filter-control="input">Zona</th>
-        <th data-field="rimessa" data-sortable="true" data-visible="true" data-filter-control="false">UT titolare</th>
-        <th data-field="ut" data-sortable="true" data-visible="true" data-filter-control="false">UT esecutrice</th> 
+        <th data-field="ut_titolare" data-sortable="true" data-visible="true" data-filter-control="false">UT titolare</th>
+        <th data-field="ut_esecutrice" data-sortable="true" data-visible="true" data-filter-control="false">UT esecutrice</th> 
         <th data-field="cod_cer" data-sortable="true" data-visible="false" data-filter-control="false">CER</th>
         <th data-field="descr_rifiuto" data-sortable="true" data-visible="true" data-filter-data="var:rifiuto_filtro" data-filter-control="select">Rifiuto</th>
         <th data-field="data_percorso" data-formatter="dateFormat" data-sortable="true" data-visible="true" data-filter-control="false">Data</th>

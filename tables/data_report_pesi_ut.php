@@ -44,11 +44,11 @@ if($_GET['data_inizio']) {
 
 
  if($_GET['ut']>0) {
-        $query= "select * from (".$query_temp.") a where coalesce(id_ut, id_rimessa) = $1 ".$filter ;  
+        $query= "select * from (".$query_temp.") a where $1 IN (id_ut_titolare, id_ut_esecutrice) ".$filter ;  
 } else {
     require_once("../query_ut.php");
     $query= "select * from (".$query_temp.") a 
-            where COALESCE(id_ut, id_rimessa) IN (select x.id_uo from (".$query_ut.") x )".$filter;
+            where ARRAY[id_ut_titolare, id_ut_esecutrice] && ARRAY(select x.id_uo from (".$query_ut.") x )".$filter;
 }
 
 //echo $query;
