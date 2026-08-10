@@ -289,6 +289,12 @@ $(function() {
     background-color: #fffd81 !important;
     color: #ff0000 !important;
 }
+
+#mappa_piazzola {
+    width: 100%;
+    /*height: calc(100vh - 120px);*/
+    height: 600px;
+}
 </style>
 
 
@@ -331,6 +337,8 @@ function the_page_title()
 ?>
 
 <!-- libreria per l'esportazione in excel -->
-<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<!--script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script-->
+<script src="./node_modules/xlsx/dist/xlsx.full.min.js"></script>
+
 <!-- script JS per recuperare i dati della tabella filtrati e non e scaricarli in excel -->
 <script src="./js/tableExport.js"></script>
