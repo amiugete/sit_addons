@@ -499,7 +499,7 @@ echo "<br><br>Insert in elenco percorsi UT<br>";
 
 if ($sq_ut==15){
   $vis='S';
-  $rim_resp='S';
+  $rim_resp='N';
 } else {
   $vis='N';
   $rim_resp='N';
