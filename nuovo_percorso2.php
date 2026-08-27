@@ -319,9 +319,17 @@ if ($id_servizio_sit){
 
 <hr>
 
-<h4>Gruppo di coordinamento o UT Responsabile</h4>
-<!--small id="uts" class="form-text text-muted"> Deve sempre esserci un Gruppo di Coordinamento. <b>Per tutti i servizi di raccolta deve essere una Unità territoriale.</b> 
-    Nel caso di servizi della sola rimessa (es. Ganci) è la rimessa stessa.</small-->
+
+ <?php 
+ if($ut_obbligatoria =='t'){
+  ?>
+  <h4>UT Responsabile</h4>
+  <small id="uts" class="form-text text-muted"> ATTENZIONE! Il campo UT Responsabile è sempre obbligatorio. 
+    In assenza di persone dell'UT stessa, slezionare la squadra <i>nessun operatore (SQ15)</i></small>
+<?php } else { ?>
+  <h4>UT/Rimessa</h4>
+<?php } ?>
+
 
 
 
@@ -330,7 +338,7 @@ if ($id_servizio_sit){
 <div class="form-group  col-md-6">
   <label for="ut">UT:</label> <font color="red">*</font>
   <select name="ut" id="ut" class="selectpicker show-tick form-control" data-live-search="true" data-size="5" required=""  onchange="showSedeOperativa(this)">
-    <option name="ut" value="">Seleziona il Gruppo di Coordinamento (UT)</option>
+    <option name="ut" value="">Seleziona UT Responsabile</option>
   <?php            
   /*$query1="select id_ut, descrizione from topo.ut 
   where id_zona not in (5) 
@@ -365,7 +373,7 @@ if ($id_servizio_sit){
 <div class="form-group  col-md-6">
   <label for="sq_ut">Squadra UT:</label> <font color="red">*</font>
   <select name="sq_ut" id="sq_ut" class="selectpicker show-tick form-control" data-size="5"  data-live-search="true" required="">
-    <option name="sq_ut" value="">Seleziona la squadra del Gruppo di Coordinamento</option>
+    <option name="sq_ut" value="">Seleziona la squadra dell'UT </option>
   <?php            
   $query0_1="select id_squadra, 
   concat(cod_squadra, ' - ', desc_squadra) as descr 
@@ -417,15 +425,15 @@ if ($id_servizio_sit){
 
 <div id="sqrimessa" class="form-group  col-md-6" style="display: none;">
   <label for="sq_rim">Squadra rimessa:</label> 
-                <select name="sq_rim" id="sq_rim" class="selectpicker show-tick form-control"  data-size="5"  data-live-search="true">
-                <option name="sq_rim" value="">Seleziona la squadra della rimessa</option>
+  <select name="sq_rim" id="sq_rim" class="selectpicker show-tick form-control"  data-size="5"  data-live-search="true">
+      <option name="sq_rim" value="">Seleziona la squadra della rimessa</option>
   <?php            
   $query0_1="select id_squadra, 
   concat(cod_squadra, ' - ', desc_squadra) as descr 
-  from elem.squadre s order by desc_squadra ;";
+  from elem.squadre s order by desc_squadra;";
 
   $result0_1 = pg_prepare($conn_sit, "query0_1", $query0_1);
-  $result0_1 = pg_execute($conn_sit, "query0_1", array());  
+  $result0_1 = pg_execute($conn_sit, "query0_1", array());
   //echo $query1;    
   while($r0_1 = pg_fetch_assoc($result0_1)) { 
       //$valore=  $r2['id_via']. ";".$r2['desvia'];            

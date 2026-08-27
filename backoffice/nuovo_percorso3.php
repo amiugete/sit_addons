@@ -190,6 +190,7 @@ while($r2 = pg_fetch_assoc($result2)) {
 }
 
 if($_POST['rim']){
+  //echo 'la rimessa ok';
       $rim_sit = $_POST['rim'];
       $sq_rim = $_POST['sq_rim'];
       
@@ -204,6 +205,11 @@ if($_POST['rim']){
         $rim_uo=$r1['id_uo'];
       }
 }
+
+//echo "rimessa: ".strtoupper($_POST['rim'])."<br>";
+//echo "squadra rimessa: ".strtoupper($_POST['sq_rim'])."<br>";
+
+//exit();
 ###################### INIZIO INSERT UO #########################
 
 if ($checkTest == 0){
@@ -239,7 +245,6 @@ if ($checkTest == 0){
 
   if($_POST['rim']){
       # insert UO 
-
       
       $result_uo1 = oci_parse($oraconn, $insert_uo);
       # passo i parametri
@@ -255,10 +260,23 @@ if ($checkTest == 0){
       oci_bind_by_name($result_uo1, ':p10', $sq_rim);
       oci_bind_by_name($result_uo1, ':p11', $freq_uo);
       oci_bind_by_name($result_uo1, ':p12', $freq_sett);
+      oci_bind_by_name($result_uo1, ":id_ser_uo", $id_ser_uo, 32);
 
 
-      oci_execute($result_uo1);
+      $ris_rim= oci_execute($result_uo1);
+      if (!$ris_rim) {
+        echo "<br>ci sono errori<br>";
+        $e = oci_error($result_uo1);  // For oci_execute errors pass the statement handle
+        echo $e;
+        echo $e['message'];
+        echo htmlentities($e['message']);
+        echo "\n<pre>\n";
+        echo htmlentities($e['sqltext']);
+        echo "\n%".($e['offset']+1)."s", "^";
+        echo  "\n</pre>\n";
+      }
 
+      echo "<br> sono arrivato qua a inserire rimessa";
       oci_free_statement($result_uo1);
 
   }// fine if rimessa
@@ -272,8 +290,6 @@ if ($checkTest == 0){
 
 
   echo $insert_uo."<br>";
-
-  #exit();
 
 
   # INSERT UO 
