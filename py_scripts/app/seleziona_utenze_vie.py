@@ -262,11 +262,13 @@ def main(args):
     prefisso1 = args[1]
     utenze = args[2]    
     consegne = args[3]
+    admin = args[4]
     
     
     
     consegne=int(consegne)
-    logger.debug(consegne)
+    admin=int(admin)
+    logger.debug(admin)
 
     #aggiorno il prefisso del file
     giorno_file='{}_{}'.format(giorno_file, prefisso1.replace(' ', '_'))
@@ -430,18 +432,28 @@ ON v.id_via::integer = be.cod_strada::integer'''.format(codici_via)
         files += [file_domestiche, file_civdomestiche, file_abitanti]
 
         logger.info("Utenze domestiche su strade")
-        write_excel_from_query(con, file_domestiche,
-            ['ID_UTENTE','PROGR_UTENZA','COGNOME','NOME','COD_VIA','DESCR_VIA','CIVICO','LETTERA_CIVICO',
-            'COLORE','SCALA','INTERNO','LETTERA_INTERNO','CAP','UNITA_URBANISTICA','QUARTIERE','CIRCOSCRIZIONE',
-            'ZONA','ABITAZIONE_DI_RESIDENZA','NUM_OCCUPANTI','DESCR_CATEGORIA','DESCR_UTILIZZO'],
-            f'''SELECT ID_UTENTE, PROGR_UTENZA, COGNOME, NOME, COD_VIA, DESCR_VIA,
-                CIVICO, LETTERA_CIVICO, COLORE, SCALA, INTERNO, LETTERA_INTERNO, CAP, 
-                UNITA_URBANISTICA, QUARTIERE, CIRCOSCRIZIONE, ZONA, ABITAZIONE_DI_RESIDENZA, NUM_OCCUPANTI,
-                DESCR_CATEGORIA, DESCR_UTILIZZO
-                FROM STRADE.UTENZE_TIA_DOMESTICHE
-                WHERE COD_VIA in ({codici_via})''', logger)
-
-
+        if admin == 1:
+            write_excel_from_query(con, file_domestiche,
+                ['ID_UTENTE','PROGR_UTENZA','COGNOME','NOME','COD_VIA','DESCR_VIA','CIVICO','LETTERA_CIVICO',
+                'COLORE','SCALA','INTERNO','LETTERA_INTERNO','CAP','UNITA_URBANISTICA','QUARTIERE','CIRCOSCRIZIONE',
+                'ZONA','ABITAZIONE_DI_RESIDENZA','NUM_OCCUPANTI','DESCR_CATEGORIA','DESCR_UTILIZZO'],
+                f'''SELECT ID_UTENTE, PROGR_UTENZA, COGNOME, NOME, COD_VIA, DESCR_VIA,
+                    CIVICO, LETTERA_CIVICO, COLORE, SCALA, INTERNO, LETTERA_INTERNO, CAP, 
+                    UNITA_URBANISTICA, QUARTIERE, CIRCOSCRIZIONE, ZONA, ABITAZIONE_DI_RESIDENZA, NUM_OCCUPANTI,
+                    DESCR_CATEGORIA, DESCR_UTILIZZO
+                    FROM STRADE.UTENZE_TIA_DOMESTICHE
+                    WHERE COD_VIA in ({codici_via})''', logger)
+        else:
+            write_excel_from_query(con, file_domestiche,
+                ['ID_UTENTE','PROGR_UTENZA','COD_VIA','DESCR_VIA','CIVICO','LETTERA_CIVICO',
+                'COLORE','SCALA','INTERNO','LETTERA_INTERNO','CAP','UNITA_URBANISTICA','QUARTIERE','CIRCOSCRIZIONE',
+                'ZONA','ABITAZIONE_DI_RESIDENZA','NUM_OCCUPANTI','DESCR_CATEGORIA','DESCR_UTILIZZO'],
+                f'''SELECT ID_UTENTE, PROGR_UTENZA, COD_VIA, DESCR_VIA,
+                    CIVICO, LETTERA_CIVICO, COLORE, SCALA, INTERNO, LETTERA_INTERNO, CAP, 
+                    UNITA_URBANISTICA, QUARTIERE, CIRCOSCRIZIONE, ZONA, ABITAZIONE_DI_RESIDENZA, NUM_OCCUPANTI,
+                    DESCR_CATEGORIA, DESCR_UTILIZZO
+                    FROM STRADE.UTENZE_TIA_DOMESTICHE
+                    WHERE COD_VIA in ({codici_via})''', logger)
 
         logger.info("Civici Utenze domestiche")
         write_excel_from_query(con, file_civdomestiche,
@@ -509,16 +521,28 @@ ON v.id_via::integer = be.cod_strada::integer'''.format(codici_via)
 
         # Domestiche
         logger.info("Utenze domestiche")
-        write_excel_from_query(con, file_domestiche,
-            ['ID_UTENTE','PROGR_UTENZA','COGNOME','NOME','COD_VIA','DESCR_VIA','CIVICO','LETTERA_CIVICO',
-            'COLORE','SCALA','INTERNO','LETTERA_INTERNO','CAP','UNITA_URBANISTICA','QUARTIERE','CIRCOSCRIZIONE',
-            'ZONA','ABITAZIONE_DI_RESIDENZA','NUM_OCCUPANTI','DESCR_CATEGORIA','DESCR_UTILIZZO'],
-            f'''SELECT ID_UTENTE, PROGR_UTENZA, COGNOME, NOME, COD_VIA, DESCR_VIA,
-                CIVICO, LETTERA_CIVICO, COLORE, SCALA, INTERNO, LETTERA_INTERNO, CAP, 
-                UNITA_URBANISTICA, QUARTIERE, CIRCOSCRIZIONE, ZONA, ABITAZIONE_DI_RESIDENZA, NUM_OCCUPANTI,
-                DESCR_CATEGORIA, DESCR_UTILIZZO
-                FROM STRADE.UTENZE_TIA_DOMESTICHE
-                WHERE COD_VIA in ({codici_via})''', logger)
+        if admin == 1:
+            write_excel_from_query(con, file_domestiche,
+                ['ID_UTENTE','PROGR_UTENZA','COGNOME','NOME','COD_VIA','DESCR_VIA','CIVICO','LETTERA_CIVICO',
+                'COLORE','SCALA','INTERNO','LETTERA_INTERNO','CAP','UNITA_URBANISTICA','QUARTIERE','CIRCOSCRIZIONE',
+                'ZONA','ABITAZIONE_DI_RESIDENZA','NUM_OCCUPANTI','DESCR_CATEGORIA','DESCR_UTILIZZO'],
+                f'''SELECT ID_UTENTE, PROGR_UTENZA, COGNOME, NOME, COD_VIA, DESCR_VIA,
+                    CIVICO, LETTERA_CIVICO, COLORE, SCALA, INTERNO, LETTERA_INTERNO, CAP, 
+                    UNITA_URBANISTICA, QUARTIERE, CIRCOSCRIZIONE, ZONA, ABITAZIONE_DI_RESIDENZA, NUM_OCCUPANTI,
+                    DESCR_CATEGORIA, DESCR_UTILIZZO
+                    FROM STRADE.UTENZE_TIA_DOMESTICHE
+                    WHERE COD_VIA in ({codici_via})''', logger)
+        else:
+            write_excel_from_query(con, file_domestiche,
+                ['ID_UTENTE','PROGR_UTENZA','COD_VIA','DESCR_VIA','CIVICO','LETTERA_CIVICO',
+                'COLORE','SCALA','INTERNO','LETTERA_INTERNO','CAP','UNITA_URBANISTICA','QUARTIERE','CIRCOSCRIZIONE',
+                'ZONA','ABITAZIONE_DI_RESIDENZA','NUM_OCCUPANTI','DESCR_CATEGORIA','DESCR_UTILIZZO'],
+                f'''SELECT ID_UTENTE, PROGR_UTENZA, COD_VIA, DESCR_VIA,
+                    CIVICO, LETTERA_CIVICO, COLORE, SCALA, INTERNO, LETTERA_INTERNO, CAP, 
+                    UNITA_URBANISTICA, QUARTIERE, CIRCOSCRIZIONE, ZONA, ABITAZIONE_DI_RESIDENZA, NUM_OCCUPANTI,
+                    DESCR_CATEGORIA, DESCR_UTILIZZO
+                    FROM STRADE.UTENZE_TIA_DOMESTICHE
+                    WHERE COD_VIA in ({codici_via})''', logger)
 
         logger.info("Civici Utenze domestiche")
         write_excel_from_query(con, file_civdomestiche,

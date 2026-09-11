@@ -45,9 +45,10 @@ if (trim($check_utenze) != 't') {
       <div class="container">
       
 
-            <h2> Seleziona vie da cui recuperare le utenze <i class="fas fa-users"></i> </h2>
+            <h2>Seleziona vie da cui recuperare le utenze <i class="fas fa-users"></i> </h2>
             <hr>
             <form name="openfile" id="getutenze" method="post" autocomplete="off" action="./backoffice/utenze_vie_output.php" >
+                <input type="hidden" class="form-control" id="role" name="role"  value=<?php echo $role_SIT; ?>>
             <div class="row">             
             <div class="col-md-4"> 
             <div class="form-group">

@@ -49,10 +49,18 @@ if (isset($_POST)){
       } else {
         $cons=0;
       }
-      
-      //echo "<br>sono qua 2<br>";
-      //exit;
 
+     
+      /*echo "<br>sono ".$user."<br>";
+      exit();*/
+      $check_admin = 0;
+
+      if ($_POST['role'] == 'ADMIN'){
+        $check_admin = 1;
+      }
+      
+
+      #exit();
       $file = fopen("./utenze_file/elenco_vie.txt","w+");
       //echo $file;
       $text = $_POST["lista_vie"];
@@ -75,14 +83,15 @@ if (isset($_POST)){
 
 
       $comando = sprintf(
-          '%s %s %s %s %s %s %s',
+          '%s %s %s %s %s %s %s %s',
           escapeshellarg($venv_path),
           escapeshellarg($python_run_script),
           escapeshellarg($python_argv),
           escapeshellarg('./utenze_file/elenco_vie.txt'),
           escapeshellarg($zona),
           escapeshellarg($utenze),
-          escapeshellarg($cons)
+          escapeshellarg($cons),
+          escapeshellarg($check_admin)
       );
 
       #$comando='/usr/bin/python3 ../py_scripts/seleziona_utenze_vie.py -i ./utenze_file/elenco_vie.txt -p '. $zona.' -u '.$utenze.' -c '. $cons;
