@@ -137,7 +137,7 @@ $(window).bind ("beforeunload",  function (zEvent) {
             <!--form name="openfile" method="post" autocomplete="off" action="<?php echo $_SERVER['PHP_SELF'] ?>" -->
             <div class = "row row-small">
             <form class="tag-small" name="openfile" id="open_file" method="post" autocomplete="off" action="" >
-
+                <input type="hidden" class="form-control" id="role" name="role"  value=<?php echo $role_SIT; ?>>
             <div class="row">
             
             

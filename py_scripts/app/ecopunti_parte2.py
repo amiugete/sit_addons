@@ -216,9 +216,31 @@ def main(args):
     """
     utenze = args[0]
     area = args[1]
+    admin = args[2]
+    admin=int(admin)
     
-    
-    
+    if admin == 1:
+        HEADERS["domestiche"]["1"] = [
+            "ID_UTENTE", "PROGR_UTENZA", "COGNOME",
+            "NOME", "COD_VIA", "DESCR_VIA", "CIVICO",
+            "LETTERA_CIVICO", "COLORE", "SCALA",
+            "INTERNO", "LETTER", "QUARTIERE",
+            "CIRCOSCRIZIONE", "ZONA",
+            "ABITAZIONE_DI_RESIDENZA", "NUM_OCCUPANTI",
+            "DESCR_CATEGORIA", "DESCR_UTILIZZO", "COD_INTERNO",
+            "Presenza dato su Saltax?", "Chiave consegnata?"
+        ]
+    else:
+        HEADERS["domestiche"]["1"] = [
+            "ID_UTENTE", "PROGR_UTENZA", "COD_VIA", "DESCR_VIA",
+            "CIVICO", "LETTERA_CIVICO", "COLORE", "SCALA",
+            "INTERNO", "LETTER", "QUARTIERE", "CIRCOSCRIZIONE",
+            "ZONA", "ABITAZIONE_DI_RESIDENZA", "NUM_OCCUPANTI",
+            "DESCR_CATEGORIA", "DESCR_UTILIZZO", "COD_INTERNO",
+            "Presenza dato su Saltax?", "Chiave consegnata?"
+        ]
+
+
     logging.info('Connessione al db SIT')
     try:
         conn = psycopg2.connect(dbname=db,
@@ -528,12 +550,20 @@ and object_name = 'CIV_TMP' '''
     
 
     #exit()
-    query=''' SELECT ID_UTENTE, PROGR_UTENZA, COGNOME, NOME, COD_VIA, DESCR_VIA,
-        CIVICO, LETTERA_CIVICO, COLORE, SCALA, INTERNO, LETTERA_INTERNO, CAP, 
-        UNITA_URBANISTICA, QUARTIERE, CIRCOSCRIZIONE, ZONA, ABITAZIONE_DI_RESIDENZA, NUM_OCCUPANTI, DESCR_CATEGORIA, DESCR_UTILIZZO, COD_INTERNO
-        FROM STRADE.UTENZE_TIA_DOMESTICHE
-        WHERE COD_CIVICO in (SELECT COD_CIVICO FROM STRADE.CIV_TMP )
-        '''
+    if admin == 1:
+        query=''' SELECT ID_UTENTE, PROGR_UTENZA, COGNOME, NOME, COD_VIA, DESCR_VIA,
+            CIVICO, LETTERA_CIVICO, COLORE, SCALA, INTERNO, LETTERA_INTERNO, CAP, 
+            UNITA_URBANISTICA, QUARTIERE, CIRCOSCRIZIONE, ZONA, ABITAZIONE_DI_RESIDENZA, NUM_OCCUPANTI, DESCR_CATEGORIA, DESCR_UTILIZZO, COD_INTERNO
+            FROM STRADE.UTENZE_TIA_DOMESTICHE
+            WHERE COD_CIVICO in (SELECT COD_CIVICO FROM STRADE.CIV_TMP )
+            '''
+    else:
+        query=''' SELECT ID_UTENTE, PROGR_UTENZA, COD_VIA, DESCR_VIA,
+            CIVICO, LETTERA_CIVICO, COLORE, SCALA, INTERNO, LETTERA_INTERNO, CAP, 
+            UNITA_URBANISTICA, QUARTIERE, CIRCOSCRIZIONE, ZONA, ABITAZIONE_DI_RESIDENZA, NUM_OCCUPANTI, DESCR_CATEGORIA, DESCR_UTILIZZO, COD_INTERNO
+            FROM STRADE.UTENZE_TIA_DOMESTICHE
+            WHERE COD_CIVICO in (SELECT COD_CIVICO FROM STRADE.CIV_TMP )
+            '''
     try:
         lista_domestiche = cur.execute(query)
     except Exception as e:

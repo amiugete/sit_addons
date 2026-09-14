@@ -16,6 +16,11 @@ $res_ok=0;
 
     $utenze = $_POST['ute-list'];
     $eco = intval($_POST['id_area']);
+    $check_admin = 0;
+
+    if ($_POST['role'] == 'ADMIN'){
+        $check_admin = 1;
+    }
     //$ecopoint = $_POST['ecop'];
     //echo "Utenze : " . $utenze."<br>";
     //echo "Id area: " . $eco."<br>";
@@ -188,12 +193,13 @@ where a.id=$1 and st_intersects(n.geoloc, st_transform(a.geom, 3003));";
 
 
     $comando = sprintf(
-        '%s %s %s %s %s',
+        '%s %s %s %s %s %s',
         escapeshellarg($venv_path),
         escapeshellarg($python_run_script),
         escapeshellarg($python_argv),
         escapeshellarg($utenze),
         escapeshellarg($eco),
+        escapeshellarg($check_admin)
     );
     echo $comando;
     //exit();
