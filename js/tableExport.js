@@ -48,6 +48,19 @@ function initTableExport(config) {
 
   var $table = $(`#${config.tableId}`);
 
+  // Aggiunta di fileName e sheetName opzionali (default: "export_filtrato.xlsx" e "Dati") 
+  const now = new Date();
+
+  const dataOra =
+      now.getFullYear().toString() +
+      String(now.getMonth() + 1).padStart(2, "0") +
+      String(now.getDate()).padStart(2, "0") + "_" +
+      String(now.getHours()).padStart(2, "0") +
+      String(now.getMinutes()).padStart(2, "0") +
+      String(now.getSeconds()).padStart(2, "0");
+  const fileName = `${config.fileName || 'export_filtrato'}_${dataOra}.xlsx`;
+  const sheetName = config.sheetName || "Dati";
+
   if ($table.length === 0) {
     console.error(`initTableExport: tabella con id '${config.tableId}' non trovata`);
     return;
@@ -235,7 +248,13 @@ function detectCellType(val) {
         alert('Errore: risposta server non valida.');
         return;
       }
-      createExcelSheet(data.rows || data, "export_filtrato.xlsx", "Dati");
+      
+      createExcelSheet(
+          data.rows || data,
+          fileName,
+          sheetName
+      );
+      
     } catch (err) {
       console.error("Errore fetch export filtrato:", err);
       alert("Errore durante export filtrato.");

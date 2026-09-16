@@ -299,6 +299,10 @@ $(function() {
     exportAllBtn: "#export-btn",
     exportFilteredBtn: "#export-btn-filtered",
     baseUrl: "./tables/percorsi_raggruppati.php",
+
+    fileName: "Servizi_SIT",
+    sheetName: "Servizi",
+
     extraParams: () => {
       // parametri extra della pagina
       //const range = $('input[name="daterange"]').val().split(" - ");
