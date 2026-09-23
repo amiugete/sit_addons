@@ -15,7 +15,7 @@ if(!$conn_sit) {
 } else {
 
     if ($id_municipio !== null) {
-        $filter = " AND id_muncipio  = $id_municipio";
+        $filter = " AND qa.id_municipio  = $id_municipio";
 }
 
     $query="SELECT id_quartiere as id, nome as descrizione

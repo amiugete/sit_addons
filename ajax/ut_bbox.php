@@ -8,34 +8,31 @@ header('Content-Type: application/json; charset=utf-8');
 require_once '../conn_ok.php';
 //echo "OK";
 
-$id_comune=$_GET['id_comune'];
-$id_quartiere = isset($_GET['id_quartiere']) ? intval($_GET['id_quartiere']) : null;
-$id_municipio = isset($_GET['id_municipio']) ? intval($_GET['id_municipio']) : null;
 
-$filter = "" ;
+$id=(int)$_GET['id'];
 
 if(!$conn_sit) {
     die('Connessione fallita !<br />');
 } else {
 
-    if ($id_quartiere !== null) {
-        $filter = " AND id_quartiere  = $id_quartiere";
-    }
-    if ($id_municipio !== null) {
-        $filter = " AND id_circoscrizione  = $id_municipio";
-    }
     
-    $query="select distinct v.id_via as id, nome as descrizione
-from topo.vie v 
-left join elem.aste a on a.id_via = v.id_via 
-where id_comune = $1";
+    $query="SELECT
+    ST_XMin(geom) AS xmin,
+    ST_YMin(geom) AS ymin,
+    ST_XMax(geom) AS xmax,
+    ST_YMax(geom) AS ymax
+FROM (
+    SELECT ST_Envelope(st_transform(geoloc, 4326)) geom
+    FROM geo.v_unita_territoriali_area vuta 
+    WHERE id = $1
+) q";
 
  
     //echo $query0;
     //echo $uos;
     //echo "Sono qua";
 
-    $query0 = $query." ".$filter . " order by 2" ;
+    $query0 = "select * from (".$query.") a where 1=1 ".$filter ;
 
     $result = pg_prepare($conn_sit, "query0", $query0);
 
@@ -46,7 +43,7 @@ where id_comune = $1";
         $res_ok= $res_ok+1;
     }
     //echo "Sono qua 2";
-    $result = pg_execute($conn_sit, "query0", array($id_comune));  
+    $result = pg_execute($conn_sit, "query0", array($id));  
     if (!pg_last_error($conn_sit)){
         #$res_ok=0;
     } else {
@@ -61,6 +58,7 @@ where id_comune = $1";
         $rows[] = $r;
         //echo $r['piazzola'];
     }
+    //$rows = pg_fetch_assoc($res);
             
 
     //echo "sono qua!";

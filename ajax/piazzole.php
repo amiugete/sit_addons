@@ -8,7 +8,8 @@ header('Content-Type: application/json; charset=utf-8');
 require_once '../conn_ok.php';
 //echo "OK";
 
-$id_comune=$_GET['id_comune'];
+$q=isset($_GET['q']) ? intval($_GET['q']) : null;
+$id_comune=isset($_GET['id_comune']) ? intval($_GET['id_comune']) : null;
 $id_quartiere = isset($_GET['id_quartiere']) ? intval($_GET['id_quartiere']) : null;
 $id_municipio = isset($_GET['id_municipio']) ? intval($_GET['id_municipio']) : null;
 
@@ -19,23 +20,27 @@ if(!$conn_sit) {
 } else {
 
     if ($id_quartiere !== null) {
-        $filter = " AND id_quartiere  = $id_quartiere";
+        $filter = " AND a.id_quartiere  = $id_quartiere";
     }
     if ($id_municipio !== null) {
-        $filter = " AND id_circoscrizione  = $id_municipio";
+        $filter = " AND a.id_municipio  = $id_municipio";
     }
-    
-    $query="select distinct v.id_via as id, nome as descrizione
-from topo.vie v 
-left join elem.aste a on a.id_via = v.id_via 
-where id_comune = $1";
+    if ($id_comune !== null) {
+        $filter = " AND v.id_comune  = $id_comune";
+    }
+    $query="SELECT p.id_piazzola as id, 
+concat (p.id_piazzola, ' - ', v.nome, ', ', p.numero_civico, ' - ', p.riferimento ) as descrizione
+from elem.piazzole p 
+join  elem.aste a on a.id_asta = p.id_asta
+join topo.vie v on v.id_via = a.id_via
+where p.data_eliminazione is null and starts_with(p.id_piazzola::text, $1::text)";
 
  
     //echo $query0;
     //echo $uos;
     //echo "Sono qua";
 
-    $query0 = $query." ".$filter . " order by 2" ;
+    $query0 = $query." ".$filter . " order by 1" ;
 
     $result = pg_prepare($conn_sit, "query0", $query0);
 
@@ -46,7 +51,7 @@ where id_comune = $1";
         $res_ok= $res_ok+1;
     }
     //echo "Sono qua 2";
-    $result = pg_execute($conn_sit, "query0", array($id_comune));  
+    $result = pg_execute($conn_sit, "query0", array($q));  
     if (!pg_last_error($conn_sit)){
         #$res_ok=0;
     } else {
