@@ -283,7 +283,7 @@ window.dpEvents = {
 
 
 function nameFormatterReport(value, row) {
-      if (row.flg_disattivo == 'Attivo' && !row.tipo.includes('SOLO TESTATA')) {
+      if (row.flg_disattivo != 'Disattivo' && !row.tipo.includes('SOLO TESTATA')) {
         return [
           '<div class="btn-group btn-group-sm" role="group" aria-label="...">',
           '<a class="btn btn-success btn-sm" href="./download_report_percorso.php?cod='+row.cod_percorso+'&vers=s"><i title="Versione per operatore" class="fa-solid fa-clipboard-list"></i></a>',
