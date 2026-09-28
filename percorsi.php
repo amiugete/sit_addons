@@ -68,7 +68,7 @@ require_once("select_ut.php");
   <div id="toolbar"> 
 </div>
 				<table  id="percorsi" class="table-hover table-sm" 
-        idfield="id" 
+        data-id-field="id" 
         data-toolbar="#toolbar" 
         data-group-by="false"
         data-group-by-field='["cod_percorso", "descrizione", "famiglia", "tipo"]'
@@ -108,6 +108,9 @@ require_once("select_ut.php");
         <th data-field="descrizione" data-sortable="true" data-visible="true" data-filter-control="input" data-formatter="troncaFormatter">Descrizione</th>
         <th data-field="freq" data-sortable="true" data-visible="true" data-filter-control="input">Frequenza</th>
         <th data-field="turno" data-sortable="true" data-visible="true" data-filter-control="select">Turno</th>
+        <th data-field="turno_dettaglio" data-sortable="true" data-visible="false" data-filter-control="select">Turno<br>dettaglio</th>
+        <th data-field="risorse_umane" data-sortable="true" data-visible="false" data-filter-control="select">Risorse<br>umane</th>
+        <th data-field="risorse_tecniche" data-sortable="true" data-visible="false" data-filter-control="select">Risorse<br>tecniche</th>
         <th data-field="versione" data-sortable="true" data-visible="true" data-filter-control="select">V</th>
         <th data-field="stagionalita" data-sortable="true" data-visible="true" data-filter-control="select">Stag</th>
         <th data-field="destinazione" data-sortable="true" data-visible="false" data-filter-control="select">Dest</th>
@@ -117,9 +120,9 @@ require_once("select_ut.php");
         data-filter-strict-search="true" data-search-formatter="false" data-filter-data="var:opzioni" 
         data-filter-control="select" data-filter-control-multiple-search="true" data-filter-control-multiple-search-delimiter=","
 data-filter-options="{ filterAlgorithm: 'or' }"></th>
-        <th data-field="cp_report" data-sortable="false" data-formatter="nameFormatterReport" data-visible="true" >Report</th>
+        <th data-sortable="false" data-formatter="nameFormatterReport" data-visible="true" >Report</th>
         <?php if ($check_edit_piazzola== 1) { ?>
-          <th data-field="cp_edit" data-sortable="true"  data-visible="true"  data-events="dpEvents" data-formatter="nameFormatterEdit_ok">Edit</th>
+          <th data-sortable="true" data-visible="true"  data-events="dpEvents" data-formatter="nameFormatterEdit_ok">Edit</th>
         <?php } ?>
           <!--th data-field="quartiere" data-sortable="true" data-visible="true" data-filter-control="select">Quartiere<br>/Comune</th>
         <th data-field="ut" data-sortable="true" data-visible="true" data-filter-control="select">UT</th>

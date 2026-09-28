@@ -28,8 +28,10 @@ if(!$conn_sit) {
         }
     } 
 
-    $query0= "select ep.cod_percorso as cp_edit, ep.cod_percorso,
-     ep.cod_percorso as cp_report, p.id_percorso as id_percorso_sit, 
+    $query0= "select  concat(ep.cod_percorso, '_', ep.versione_testata) as id, 
+    ep.cod_percorso,
+    /*ep.cod_percorso as cp_report,*/ 
+    p.id_percorso as id_percorso_sit, 
     ep.descrizione, af.descrizione as famiglia,
     at2.descrizione as tipo,
     array_agg(u.id_ut) as id_uts,
@@ -41,6 +43,9 @@ if(!$conn_sit) {
     when ep.freq_settimane = 'D' then concat(fo.descrizione_long, ' (Sett. DISPARI)')
     end as freq,
     string_agg(distinct t.descrizione, ',') as turno, 
+    string_agg(distinct t.cod_turno , ',') as turno_dettaglio, 
+    string_agg(distinct s.desc_squadra, ', ') FILTER (WHERE s.id_squadra<>15) as risorse_umane,
+    string_agg(concat(trim(aa.categoria), ' (', trim(aa.nome), ')') , ', ') FILTER (WHERE aa.categoria is not null) as risorse_tecniche,
     ep.versione_testata as versione, 
     ep.data_inizio_validita,
     ep.data_fine_validita,
@@ -69,6 +74,9 @@ if(!$conn_sit) {
     left join etl.frequenze_ok fo on fo.cod_frequenza::int = ep.freq_testata 
     left join anagrafe_percorsi.percorsi_destinazione pd on pd.cod_percorso = ep.cod_percorso
     left join anagrafiche.destinazioni ad on ad.id_destinazione = pd.id_destinazione
+    left join elem.squadre s on s.id_squadra = pu.id_squadra 
+    left join anagrafe_percorsi.percorsi_mezzi pm on pm.cod_percorso = ep.cod_percorso and pm.versione = ep.versione_testata 
+    left join elem.automezzi aa on aa.cdaog3 = pm.id_mezzo 
     group by ep.cod_percorso, p.id_percorso, 
     ep.descrizione, af.descrizione, at2.descrizione, fo.descrizione_long, ep.versione_testata,  
     ep.data_inizio_validita, ep.data_fine_validita, ep.freq_settimane, ep.stagionalita, ep.ddmm_switch_on, ep.ddmm_switch_off
