@@ -120,8 +120,8 @@ HEADERS = {
             "ID_UTENTE", "PROGR_UTENZA", "COGNOME", 
             "NOME", "COD_VIA", "DESCR_VIA", "CIVICO", 
             "LETTERA_CIVICO", "COLORE", "SCALA", 
-            "INTERNO", "LETTERA_INTERNO", "CAP", "QUARTIERE", 
-            "CIRCOSCRIZIONE", "ZONA", 
+            "INTERNO", "LETTERA_INTERNO", "CAP", "UNITA_URBANISTICA",
+            "QUARTIERE", "CIRCOSCRIZIONE", "ZONA", 
             "ABITAZIONE_DI_RESIDENZA", "NUM_OCCUPANTI", 
             "DESCR_CATEGORIA", "DESCR_UTILIZZO", "COD_INTERNO",
             "Presenza dato su Saltax?", "Chiave consegnata?"
@@ -222,7 +222,8 @@ def main(args):
             "ID_UTENTE", "PROGR_UTENZA", "COGNOME",
             "NOME", "COD_VIA", "DESCR_VIA", "CIVICO",
             "LETTERA_CIVICO", "COLORE", "SCALA",
-            "INTERNO", "LETTERA_INTERNO", "CAP", "QUARTIERE",
+            "INTERNO", "LETTERA_INTERNO", "CAP", 
+            "UNITA_URBANISTICA", "QUARTIERE",
             "CIRCOSCRIZIONE", "ZONA",
             "ABITAZIONE_DI_RESIDENZA", "NUM_OCCUPANTI",
             "DESCR_CATEGORIA", "DESCR_UTILIZZO", "COD_INTERNO",
@@ -232,7 +233,8 @@ def main(args):
         HEADERS["domestiche"]["1"] = [
             "ID_UTENTE", "PROGR_UTENZA", "COD_VIA", "DESCR_VIA",
             "CIVICO", "LETTERA_CIVICO", "COLORE", "SCALA",
-            "INTERNO", "LETTERA_INTERNO", "CAP", "QUARTIERE", "CIRCOSCRIZIONE",
+            "INTERNO", "LETTERA_INTERNO", "CAP", "UNITA_URBANISTICA",
+            "QUARTIERE", "CIRCOSCRIZIONE",
             "ZONA", "ABITAZIONE_DI_RESIDENZA", "NUM_OCCUPANTI",
             "DESCR_CATEGORIA", "DESCR_UTILIZZO", "COD_INTERNO",
             "Presenza dato su Saltax?", "Chiave consegnata?"
@@ -546,7 +548,7 @@ and object_name = 'CIV_TMP' '''
     cur = con.cursor()
    
     
-    
+
 
     #exit()
     if admin == 1:
@@ -563,6 +565,7 @@ and object_name = 'CIV_TMP' '''
             FROM STRADE.UTENZE_TIA_DOMESTICHE
             WHERE COD_CIVICO in (SELECT COD_CIVICO FROM STRADE.CIV_TMP )
             '''
+
     try:
         lista_domestiche = cur.execute(query)
     except Exception as e:
@@ -578,12 +581,15 @@ and object_name = 'CIV_TMP' '''
                 w.write(i, j, rr[j])
                 j+=1
             query_saltax='''select * from ecopunti_xatlas_key 
-                where pper ={0} and cod_interno = '{1}'
+                where pper =%s and cod_interno = %s
                 and data_attivazione_utenza is not null 
-                and data_cessazione_utenza is null '''.format(rr[0],rr[19])
+                and data_cessazione_utenza is null '''
             #print(query_saltax)
             cur_saltax= conn_saltax.cursor()
-            cur_saltax.execute(query_saltax)
+            if admin == 1:
+                cur_saltax.execute(query_saltax, (rr[0], rr[21]))
+            else:
+                cur_saltax.execute(query_saltax, (rr[0], rr[19]))
             presente_saltax=cur_saltax.fetchall()
             if len(presente_saltax)>0:
                 w.write(i, j, 'S')
@@ -591,12 +597,15 @@ and object_name = 'CIV_TMP' '''
                 w.write(i, j, 'N')
             j+=1
             query_saltax1='''select * from ecopunti_xatlas_key 
-                where pper ={0} and cod_interno = '{1}'
+                where pper =%s and cod_interno = %s
                 and data_attivazione_utenza is not null 
                 and data_cessazione_utenza is null 
-                and data_consegna is not null'''.format(rr[0],rr[19])
+                and data_consegna is not null'''
             #print(query_saltax1)
-            cur_saltax.execute(query_saltax1)
+            if admin == 1:
+                cur_saltax.execute(query_saltax, (rr[0], rr[21]))
+            else:
+                cur_saltax.execute(query_saltax, (rr[0], rr[19]))
             consegnato_saltax=cur_saltax.fetchall()
             if len(consegnato_saltax)>0:
                 w.write(i, j, 'Chiave già consegnata')
