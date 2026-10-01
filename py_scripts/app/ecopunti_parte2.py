@@ -137,7 +137,7 @@ HEADERS = {
             "CIVICO", "COLORE", "SCALA", "INTERNO", "LETTERA_INTERNO", "CAP", 
             "UNITA_URBANISTICA", "QUARTIERE", "CIRCOSCRIZIONE", 
             "SUPERFICIE", "DESCR_CATEGORIA", 
-            "DESCR_UTILIZZO", "COD_INTERNO"
+            "DESCR_UTILIZZO", "COD_INTERNO",
             "Presenza dato su Saltax?", "Chiave consegnata?"
         ],
         "2": [
