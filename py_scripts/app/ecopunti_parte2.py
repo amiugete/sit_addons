@@ -546,6 +546,7 @@ and object_name = 'CIV_TMP' '''
     cur = con.cursor()
    
     
+    
 
     #exit()
     if admin == 1:
