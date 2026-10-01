@@ -120,7 +120,7 @@ HEADERS = {
             "ID_UTENTE", "PROGR_UTENZA", "COGNOME", 
             "NOME", "COD_VIA", "DESCR_VIA", "CIVICO", 
             "LETTERA_CIVICO", "COLORE", "SCALA", 
-            "INTERNO", "LETTER", "QUARTIERE", 
+            "INTERNO", "LETTERA_INTERNO", "CAP", "QUARTIERE", 
             "CIRCOSCRIZIONE", "ZONA", 
             "ABITAZIONE_DI_RESIDENZA", "NUM_OCCUPANTI", 
             "DESCR_CATEGORIA", "DESCR_UTILIZZO", "COD_INTERNO",
@@ -133,18 +133,16 @@ HEADERS = {
     },
     "nondomestiche": {
         "1": [
-            "ID servizio COGE", "Desc servizio COGE", "Giorno",
-            "ID Comune", "Comune", "ID Municipio", "Municipio",
-            "ID UO", "Desc UO", "Tipo mezzo", "Sportello", "Ore"
+            "ID_UTENTE", "PROGR_UTENZA", "NOMINATIVO", "CFISC_PARIVA", "COD_VIA", "DESCR_VIA",
+            "CIVICO", "COLORE", "SCALA", "INTERNO", "LETTERA_INTERNO", "CAP", 
+            "UNITA_URBANISTICA", "QUARTIERE", "CIRCOSCRIZIONE", 
+            "SUPERFICIE", "DESCR_CATEGORIA", 
+            "DESCR_UTILIZZO", "COD_INTERNO"
+            "Presenza dato su Saltax?", "Chiave consegnata?"
         ],
         "2": [
-            "ID_UTENTE", "PROGR_UTENZA", "NOMINATIVO", 
-            "CFISC_PARIVA", "COD_VIA", "DESCR_VIA", 
-            "CIVICO", "COLORE", "SCALA", "INTERNO", 
-            "LETTERA_INTERNO", "CAP", "UNITA_URBANISTICA", 
-            "QUARTIERE", "CIRCOSCRIZIONE", "SUPERFICIE", 
-            "DESCR_CATEGORIA", "DESCR_UTILIZZO", "COD_INTERNO", 
-            "Presenza dato su Saltax?", "Chiave consegnata?"
+            "COD_VIA", "DESCR_VIA",
+            "CIVICO", "LETTERA_CIVICO", "COLORE"
         ]
     }, 
     "ab_vie":{
@@ -224,7 +222,7 @@ def main(args):
             "ID_UTENTE", "PROGR_UTENZA", "COGNOME",
             "NOME", "COD_VIA", "DESCR_VIA", "CIVICO",
             "LETTERA_CIVICO", "COLORE", "SCALA",
-            "INTERNO", "LETTER", "QUARTIERE",
+            "INTERNO", "LETTERA_INTERNO", "CAP", "QUARTIERE",
             "CIRCOSCRIZIONE", "ZONA",
             "ABITAZIONE_DI_RESIDENZA", "NUM_OCCUPANTI",
             "DESCR_CATEGORIA", "DESCR_UTILIZZO", "COD_INTERNO",
@@ -234,7 +232,7 @@ def main(args):
         HEADERS["domestiche"]["1"] = [
             "ID_UTENTE", "PROGR_UTENZA", "COD_VIA", "DESCR_VIA",
             "CIVICO", "LETTERA_CIVICO", "COLORE", "SCALA",
-            "INTERNO", "LETTER", "QUARTIERE", "CIRCOSCRIZIONE",
+            "INTERNO", "LETTERA_INTERNO", "CAP", "QUARTIERE", "CIRCOSCRIZIONE",
             "ZONA", "ABITAZIONE_DI_RESIDENZA", "NUM_OCCUPANTI",
             "DESCR_CATEGORIA", "DESCR_UTILIZZO", "COD_INTERNO",
             "Presenza dato su Saltax?", "Chiave consegnata?"
