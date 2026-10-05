@@ -1,9 +1,11 @@
 {
   "dependencies": {
+    "@turf/turf": "^7.4.0",
     "leaflet": "^1.9.4",
     "leaflet.locatecontrol": "^0.90.0",
     "leaflet.markercluster": "^1.5.3",
     "select2": "^4.1.0",
-    "select2-bootstrap-theme": "^0.1.0-beta.10"
+    "select2-bootstrap-theme": "^0.1.0-beta.10",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   }
 }
