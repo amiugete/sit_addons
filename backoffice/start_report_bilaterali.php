@@ -37,6 +37,43 @@ if (!is_dir($job_dir)) {
 }
 
 
+
+// ============================================================
+// PULIZIA JOB VECCHI
+// ============================================================
+
+$max_age = 24 * 60 * 60; // 24 ore
+$now = time();
+
+foreach (glob($job_dir . '/*') as $file) {
+
+    if (
+        is_file($file) &&
+        ($now - filemtime($file)) > $max_age
+    ) {
+        unlink($file);
+    }
+}
+
+
+// ============================================================
+// PULIZIA LOG VECCHI
+// ============================================================
+
+$log_dir = '/tmp/report_settimanali_ok/log';
+
+if (is_dir($log_dir)) {
+    foreach (glob($log_dir . '/*.log') as $file) {
+
+    if ( is_file($file) && ($now - filemtime($file)) > $max_age) {
+        unlink($file);
+    }
+    }
+}
+
+
+
+
 // Creo lo stato iniziale
 $status_file = $job_dir . '/' . $job_id . '.json';
 
