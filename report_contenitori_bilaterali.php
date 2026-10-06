@@ -169,87 +169,233 @@ while($rmax = pg_fetch_assoc($result_max)) {
 
 
 
+
+
 <script type="text/javascript">
 
+$(document).ready(function () {
 
-$(document).ready(function(){
-  $('.downloadBtn').on('click', function(event) {
-    event.preventDefault(); 
-    console.log('Sono qua');
-    $('#output_message').show(); 
-    
+    $('.downloadBtn').on('click', function (event) {
 
-    // 🔹 Leggo i parametri dal bottone cliccato
-    const reportType = $(this).data('report'); // es: "bilaterali", "ekovision", ecc.
+        event.preventDefault();
 
-    console.log('Download richiesto per:', reportType);
+        const reportType = $(this).data('report');
 
-    $.ajax({ 
-        url: './backoffice/download_report_percorsi_bilaterali.php', 
-        method: 'POST', 
-        data: { report: reportType }, // invio i dati
-        //processData: true, 
-        //contentType: false, 
-        xhrFields: {
-        responseType: 'blob' // to avoid binary data being mangled on charset conversion
-        },
-        success: function(blob, status, xhr) {
-            console.log('Finito di elaborare il file');
-            //console.log(response);
-          
-            $('#output_message').hide(); 
-            // check for a filename
-            var filename = "";
-            var disposition = xhr.getResponseHeader('Content-Disposition');
-            if (disposition && disposition.indexOf('attachment') !== -1) {
-                var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-                var matches = filenameRegex.exec(disposition);
-                if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
-            }
+        console.log('Download richiesto per:', reportType);
 
-            if (typeof window.navigator.msSaveBlob !== 'undefined') {
-                // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
-                window.navigator.msSaveBlob(blob, filename);
-            } else {
-                var URL = window.URL || window.webkitURL;
-                var downloadUrl = URL.createObjectURL(blob);
+        // Mostro GIF / messaggio di elaborazione
+        $('#output_message').show();
 
-                if (filename) {
-                    // use HTML5 a[download] attribute to specify filename
-                    var a = document.createElement("a");
-                    // safari doesn't support this yet
-                    if (typeof a.download === 'undefined') {
-                        window.location.href = downloadUrl;
-                    } else {
-                        a.href = downloadUrl;
-                        a.download = filename;
-                        document.body.appendChild(a);
-                        a.click();
-                    }
+
+        // ============================================================
+        // 1. AVVIO GENERAZIONE REPORT
+        // ============================================================
+
+        $.ajax({
+
+            url: './backoffice/start_report_bilaterali.php',
+
+            method: 'POST',
+
+            dataType: 'json',
+
+            data: {
+                report: reportType
+            },
+
+            success: function (response) {
+
+                console.log('Risposta start:', response);
+
+                if (response.success) {
+
+                    console.log('Job avviato:', response.job_id);
+
+                    // Inizio il polling
+                    checkReport(response.job_id);
+
                 } else {
-                    window.location.href = downloadUrl;
+
+                    $('#output_message').hide();
+
+                    alert(
+                        response.message ||
+                        'Errore durante l\'avvio del report.'
+                    );
                 }
+            },
 
-                setTimeout(function () { URL.revokeObjectURL(downloadUrl); }, 100); // cleanup
+            error: function (jqXHR, textStatus, errorThrown) {
+
+                $('#output_message').hide();
+
+                console.error('Errore avvio report');
+                console.error('HTTP status:', jqXHR.status);
+                console.error('textStatus:', textStatus);
+                console.error('errorThrown:', errorThrown);
+                console.error('responseText:', jqXHR.responseText);
+
+                alert(
+                    'Errore durante l\'avvio del report.\n' +
+                    'HTTP status: ' + jqXHR.status
+                );
             }
-            console.log('Sono arrivato qua');
-        },
-        error: function (jqXHR, textStatus, errorThrown) {                        
-            alert('Your form was not sent successfully.'); 
-            console.error(errorThrown); 
-        } 
-    }); 
 
-    //return true;
+        });
+
     });
+
 });
 
 
+// ====================================================================
+// 2. CONTROLLO PERIODICAMENTE SE IL REPORT E' PRONTO
+// ====================================================================
 
-$(window).bind ("beforeunload",  function (zEvent) {
-  console.log('Nascondo gif 2');
-  //$('#output_message').hide();
-} );
+function checkReport(jobId) {
+
+    $.ajax({
+
+        url: './backoffice/report_status.php',
+
+        method: 'GET',
+
+        dataType: 'json',
+
+        cache: false,
+
+        data: {
+            job_id: jobId
+        },
+
+        success: function (response) {
+
+            console.log(
+                'Job:',
+                jobId,
+                'Stato:',
+                response.status
+            );
+
+
+            // ========================================================
+            // REPORT PRONTO
+            // ========================================================
+
+            if (response.status === 'ready') {
+
+                console.log('Report pronto');
+
+                $('#output_message').hide();
+
+                downloadReport(jobId);
+
+            }
+
+            // ========================================================
+            // ERRORE DURANTE LA GENERAZIONE
+            // ========================================================
+
+            else if (response.status === 'error') {
+
+                $('#output_message').hide();
+
+                console.error(
+                    'Errore generazione report:',
+                    response
+                );
+
+                alert(
+                    response.message ||
+                    'Errore durante la generazione del report.'
+                );
+
+            }
+
+            // ========================================================
+            // REPORT ANCORA IN ELABORAZIONE
+            // ========================================================
+
+            else if (response.status === 'running') {
+
+                setTimeout(function () {
+
+                    checkReport(jobId);
+
+                }, 2000);
+
+            }
+
+            // ========================================================
+            // STATO NON PREVISTO
+            // ========================================================
+
+            else {
+
+                $('#output_message').hide();
+
+                console.error(
+                    'Stato job non riconosciuto:',
+                    response
+                );
+
+                alert(
+                    'Stato del report non riconosciuto.'
+                );
+            }
+
+        },
+
+        error: function (jqXHR, textStatus, errorThrown) {
+
+            console.error('Errore controllo stato report');
+            console.error('HTTP status:', jqXHR.status);
+            console.error('textStatus:', textStatus);
+            console.error('errorThrown:', errorThrown);
+
+            /*
+             * Non interrompo immediatamente.
+             *
+             * Potrebbe trattarsi di un errore HTTP temporaneo.
+             * Riprovo dopo 3 secondi.
+             */
+
+            setTimeout(function() {
+
+                checkReport(jobId);
+
+            }, 3000);
+
+      }
+
+    });
+
+}
+
+// ====================================================================
+// 3. DOWNLOAD DEL FILE PRONTO
+// ====================================================================
+
+function downloadReport(jobId) {
+
+    console.log(
+        'Avvio download job:',
+        jobId
+    );
+
+    window.location.href =
+        './backoffice/download_report_bilaterali.php?job_id=' +
+        encodeURIComponent(jobId);
+}
+
+
+$(window).on('beforeunload', function () {
+
+    console.log('Uscita dalla pagina');
+
+});
+
+</script>
 
 
 </script>

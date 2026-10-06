@@ -1,5 +1,7 @@
 <?php
 
+// sostituito da 3 file
+
 $output=null;
 $retval=null;
 
