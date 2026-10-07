@@ -94,7 +94,7 @@ f_handler = logging.FileHandler(filename=logfile, encoding='utf-8', mode='w')
 
 
 c_handler.setLevel(logging.ERROR)
-f_handler.setLevel(logging.DEBUG)
+f_handler.setLevel(logging.INFO)
 
 
 # Add handlers to the logger
@@ -180,23 +180,40 @@ def copy_format(book, fmt):
 
 
 
-def main(args): 
-    
-    
+def main(args):
+
+    if len(args) < 4:
+        raise ValueError(
+            "Parametri insufficienti. "
+            "Attesi almeno: codice, tipo_report, mail, giorni"
+        )
+
     arg1 = args[0]
     arg2 = args[1]
     arg3 = args[2]
-    arg4 = args[3]
-    
+
+    try:
+        arg4 = int(args[3])
+    except (ValueError, TypeError):
+        arg4 = 0
+
+    arg5 = args[4] if len(args) > 4 else None
+
+
     # leggo l'input
-    try: 
-        #codice='0203009803'
-        codice=arg1 #sys.argv[1]
-        logger.info('Inizio creazione report per percorso {}'.format(codice))
+    try:
+        codice = arg1
+        logger.info(
+            'Inizio creazione report per percorso %s',
+            codice
+        )
     except Exception as e:
-        logger.error(e)
-        sent_log_by_mail(filename,errorfile)
-        exit()
+        logger.exception(e)
+        sent_log_by_mail(filename, errorfile)
+        return
+    
+    
+    
     
     try: 
         #codice='0203009803'
@@ -215,7 +232,7 @@ def main(args):
     except Exception as e:
         logger.error(e)
         sent_log_by_mail(filename,errorfile)
-        exit()
+        sys.exit(1)
     
     try: 
         #codice='0203009803'
@@ -229,7 +246,7 @@ def main(args):
     except Exception as e:
         logger.error(e)
         sent_log_by_mail(filename,errorfile)
-        exit()
+        sys.exit(1)
     
     
     try: 
@@ -253,22 +270,37 @@ def main(args):
         if check_s == 1:
             nome_file='{}_operatore'.format(nome_file)
 
+        if (os.getuid()==33): # wwww-data
+            if not os.path.exists('/tmp/report'):
+                os.makedirs("/tmp/report")
+            file_report="/tmp/report/{1}.xlsx".format(path,nome_file)
+        else:
+            file_report="{0}/report/{1}.xlsx".format(path,nome_file)
+        
+        if os.path.exists(file_report):
+            logger.info('Rimuovo il file creato in precedenza')
+            os.remove(file_report)    
+            
 
     if check_b == 1:
-        nome_file='report_bilaterali'
 
+        if not arg5:
+            raise ValueError(
+                "File di output non specificato per il report bilaterale"
+            )
 
-    if (os.getuid()==33): # wwww-data
-        if not os.path.exists('/tmp/report'):
-            os.makedirs("/tmp/report")
-        file_report="/tmp/report/{1}.xlsx".format(path,nome_file)
-    else:
-        file_report="{0}/report/{1}.xlsx".format(path,nome_file)
-    
-    
-    if os.path.exists(file_report):
-        logger.info('Rimuovo il file creato in precedenza')
-        os.remove(file_report)
+        file_report = arg5
+
+        output_dir = os.path.dirname(file_report)
+
+        if output_dir:
+            os.makedirs(output_dir, exist_ok=True)
+
+        logger.info(
+            'File report bilaterale: %s',
+            file_report
+        )
+
         
               
     workbook = xlsxwriter.Workbook(file_report)    
@@ -514,7 +546,7 @@ select coalesce(e.id_piazzola, e.id_elemento) as id,
             logger.error(e)
             sent_log_by_mail(filename,logfile)
             #print('''Manca l'input''')
-            exit()
+            sys.exit(1)
     
         for epb in elenco_percorsi_bilaterali:
             codici_percorsi.append(epb[0])
@@ -532,7 +564,7 @@ select coalesce(e.id_piazzola, e.id_elemento) as id,
             logger.error(e)
             sent_log_by_mail(filename,logfile)
             #print('''Manca l'input''')
-            exit()
+            sys.exit(1)
 
         
         if len(dettagli_percorso)==0:
@@ -1071,4 +1103,4 @@ select coalesce(e.id_piazzola, e.id_elemento) as id,
     error_log_mail(errorfile, 'roberto.marzocchi@amiu.genova.it', os.path.basename(__file__), logger)
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
+    main(sys.argv[1:])
