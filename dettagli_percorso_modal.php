@@ -817,11 +817,11 @@ while($r2 = pg_fetch_assoc($result2)) {
             ON c.id_comune = cu.id_comune 
         LEFT JOIN anagrafe_percorsi.percorsi_comuni pc 
             ON pc.id_comune = cu.id_comune
-            AND pc.cod_percorso = $1
-        WHERE cu.id_ut = $2
+            AND pc.cod_percorso = $1 AND pc.versione = $2
+        WHERE cu.id_ut = $3
         ORDER BY c.descr_comune;";
       $resultC = pg_prepare($conn_sit, "queryC", $query_comuni);
-      $resultC = pg_execute($conn_sit, "queryC", array($cod_percorso, $r2["id_ut"]));  
+      $resultC = pg_execute($conn_sit, "queryC", array($cod_percorso, $versione, $r2["id_ut"]));  
       $count_result = pg_num_rows($resultC);
       //echo $count_result.'<br>';
       //echo 'UT:'.$r2["id_ut"].'<br>';
