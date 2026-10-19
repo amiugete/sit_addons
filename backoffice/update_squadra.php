@@ -74,7 +74,7 @@ if (!pg_last_error($conn_sit)){
 }
 
 
-$result_usit3 = pg_execute($conn_sit, "update_sit3", array($turno, $cod_percorso, $ut_uo)); 
+$result_usit3 = pg_execute($conn_sit, "update_sit3", array($squadra, $cod_percorso, $ut_uo)); 
 if (!pg_last_error($conn_sit)){
     #$res_ok=0;
 } else {
@@ -84,7 +84,7 @@ if (!pg_last_error($conn_sit)){
 
 
 if ($res_ok==0){
-    echo '<font color="green"> Nuovo turno salvato correttamente!</font>';
+    echo '<font color="green"> Nuova squadra salvata correttamente!</font>';
 } else {
     echo $res_ok.'<font color="red"> ERRORE - contatta assterritorio@amiu.genova.it</font>';
 }
