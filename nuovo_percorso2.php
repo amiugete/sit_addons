@@ -244,6 +244,11 @@ $data_disatt = $_POST['data_disatt'];
 
 $codice_percorso=$cod_start.''.$id_percorso_parte2.''.$id_percorso_turno;
 ?>
+
+<div class="row g-3 align-items-center" style="margin-bottom: 1%;">
+
+<div class="col-md-4">
+
 <h3>Testata percorso</h3>
 <ul><?php
 //echo '<li><b>Nuovo codice</b>: '.$codice_percorso.'</li>';
@@ -273,8 +278,12 @@ echo '<li><b>CDR</b>: '.$cdr.'</li>';
 ?>
 
 
-<hr>
+</div>
 
+<div class="col-md-8">
+<h3>
+  Opzioni SIT / Ekovision
+</h3>
 
 <form id="newpercorso2" name="bilat" method="post" autocomplete="off" action="./backoffice/nuovo_percorso3.php">
 
@@ -298,23 +307,117 @@ echo '<li><b>CDR</b>: '.$cdr.'</li>';
 
 
 <?php
-if ($id_servizio_sit){
-?>
-<div class="form-check">
-  <input class="form-check-input" type="checkbox" value="1" id="check_SIT" name="check_SIT" checked>
-  <label class="form-check-label" for="check_SIT">
-    Creo il percorso anche su SIT <i class="fa-solid fa-map-location-dot"></i> <font color="red">(disabilitare nel caso in cui si voglia clonare il percorso su SIT ad esempio per un cambio servizio)</font>
-  </label>
-</div>
-<?php
-}
+//echo "Id servizio SIT: ". $id_servizio_sit."<br>";
 ?>
 
-<div class="form-check">
+<script>
+
+$(document).ready(function() {
+
+let caricata = false;
+
+$('#check_SIT').change(function () {
+    console.log('Entro qua');
+    console.log('caricata '+caricata);
+
+    if ($(this).is(':checked')) {
+
+        if (!caricata) {
+            console.log('Entro anche qua');
+            $.ajax({
+                url: './ajax/clona_percorso.php',
+                type: 'POST',
+                data: {
+                    id_servizio_sit: <?php echo $id_servizio_sit; ?>
+                },
+                success: function (html) {
+                    console.log('Abilito il select');
+                    $('#clona_percorso')
+                        .html(html)
+                        .prop('disabled', false)
+                        .selectpicker('refresh');
+
+                    caricata = true;
+                }, 
+                error: function (jqXHR, textStatus, errorThrown) {
+
+                  console.error('HTTP status:', jqXHR.status);
+                  console.error('textStatus:', textStatus);
+                  console.error('errorThrown:', errorThrown);
+                  console.error('responseText:', jqXHR.responseText);
+
+                  alert(
+                      'Errore durante l\'avvio del report.\n' +
+                      'HTTP status: ' + jqXHR.status
+                  );
+                }
+            });
+
+        } else {
+            $('#clona_percorso')
+                .prop('disabled', false)
+                .selectpicker('refresh');
+        }
+
+    } else {
+
+        $('#clona_percorso')
+            .prop('disabled', true)
+            .val('')
+            .selectpicker('refresh');
+
+    }
+
+});
+
+});
+
+</script>
+
+
+
+<?php
+if ($id_servizio_sit){
+
+
+?>
+
+<div class="row g-3 align-items-center" style="margin-bottom: 1%;">
+<div class="form-group  col-md-6">
+  <input class="form-check-input" type="checkbox" value="1" id="check_SIT" name="check_SIT">
+  <label class="form-check-label" for="check_SIT">
+    Clona da percorso SIT
+  </label>
+</div>
+
+
+
+<div class="form-group  col-md-6">
+  <label for="clona_percorso">Clona da percorso:</label> 
+  <!--select name="clona_percorso" id="clona_percorso" class="selectpicker show-tick form-control" data-size="5"  data-live-search="true" disabled-->
+  <select name="clona_percorso"
+        id="clona_percorso"
+        class="selectpicker show-tick form-control"
+        data-size="5"
+        data-live-search="true"
+        disabled>
+</select>            
+</div>
+<?php } ?>
+</div>
+
+
+<div class="row g-3 align-items-center" style="margin-bottom: 1%;">
+<div class="form-check  col-md-12">
   <input class="form-check-input" type="checkbox" value="t" id="check_EKO" name="check_EKO" <?php if ($check_superedit == 0) {echo 'disabled';} ?> checked>
   <label class="form-check-label" for="check_EKO">
     Il percorso verrà automaticamente trasferito anche a Ekovision <i class="fa-solid fa-circle-nodes"></i> (per disabilitare scrivere a </i>assterritorio</i>)
   </label>
+</div>
+</div>
+
+
+</div>
 </div>
 
 <hr>
@@ -759,7 +862,10 @@ $(document).on("keydown", ":input:not(textarea)", function(event) {
 
 </script>
 
+</div>
 
 </body>
 
 </html>
+<?php 
+?>

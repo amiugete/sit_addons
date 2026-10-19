@@ -50,13 +50,15 @@ echo $id_servizio_uo."<br>";
 echo $id_servizio_sit."<br>";
 
 
-if ($_POST['check_SIT']){
-  $check_SIT = intval($_POST['check_SIT']);
+if ($_POST['clona_percorso']){
+  $check_SIT = 2;
+  $clona_percorso = $_POST['clona_percorso'];
 } else {
-  $check_SIT = 0;
+  $check_SIT = 1;
 }
 echo "check_SIT:".$check_SIT."<br>";
-
+echo "percorso da clonare:".$clona_percorso."<br>";
+//exit;
 
 
 if ($_POST['check_EKO']){
@@ -396,12 +398,11 @@ if ($checkTest == 0){
 
 // nel SIT va inserito il codice del primo mezzo selezionato 
 
-if ($id_servizio_sit!=0 and $check_SIT==1){
+if ($id_servizio_sit!=0 and $check_SIT>0){
   # INSERT SIT
 
   $insert_sit="INSERT INTO elem.percorsi 
-  (id_percorso, 
-  cod_percorso, 
+  (cod_percorso, 
   versione, id_ut_resp,
   descrizione, ente_effettuante,
   famiglia_mezzo, id_turno, 
@@ -417,8 +418,7 @@ if ($id_servizio_sit!=0 and $check_SIT==1){
   freq_settimane,
   coeff_compattazione) 
   VALUES
-  (nextval('elem.sq_percorsi'::regclass),
-  $1,
+  ($1,
   1, NULL,
   $2, 1,
   $3, $4,
@@ -436,10 +436,32 @@ if ($id_servizio_sit!=0 and $check_SIT==1){
   $13,
   $14, 
   $15,
-  1)";
+  1) RETURNING id_percorso";
   $result_sit = pg_prepare($conn_sit, "insert_sit", $insert_sit);
   $result_sit = pg_execute($conn_sit, "insert_sit", array($cod_percorso,$desc, $cdaog3, $turno, $id_uso, $_SESSION['username'], $data_att, $data_disatt_sit, $freq_sit, $stag, $sq_ut, $switchON, $switchOFF, $id_servizio_sit, $freq_sett)); 
-}// fine insert sit
+
+  $r = pg_fetch_assoc($result_sit);
+
+  $new_id_percorso = $r['id_percorso'];
+
+  echo $new_id_percorso;  
+  }// fine insert sit
+
+// verifico se il percorso fosse da clonare 
+
+if ($check_SIT==2) {
+
+  $query_clona_percorso = "select elem.clona_percorso_new_freq(
+    $1 ,
+    $2 , 
+    $3 , 
+    $4 
+    )";
+
+  $result_clona_percorso = pg_prepare($conn_sit, "query_clona_percorso", $query_clona_percorso);
+  $result_clona_percorso = pg_execute($conn_sit, "query_clona_percorso", array($clona_percorso, $new_id_percorso, $freq_sit, $freq_sett)); 
+
+}
 
 echo  pg_last_error($conn_sit);
 # vanno popolate anche le altre tabelle del SIT (anagrafe percorsi)
