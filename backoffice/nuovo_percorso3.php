@@ -455,11 +455,11 @@ if ($check_SIT==2) {
     $1 ,
     $2 , 
     $3 , 
-    $4 
+    'F' 
     )";
 
   $result_clona_percorso = pg_prepare($conn_sit, "query_clona_percorso", $query_clona_percorso);
-  $result_clona_percorso = pg_execute($conn_sit, "query_clona_percorso", array($clona_percorso, $new_id_percorso, $freq_sit, $freq_sett)); 
+  $result_clona_percorso = pg_execute($conn_sit, "query_clona_percorso", array($clona_percorso, $new_id_percorso, $freq_sit)); 
 
 }
 
