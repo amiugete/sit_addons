@@ -136,7 +136,7 @@ data-filter-options="{ filterAlgorithm: 'or' }"></th>
 
 
 <div class="modal fade" id="viewMemberModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"> 
-    <div class="modal-dialog modal-dialog-scrollable modal-xl" >
+    <div class="modal-dialog modal-dialog-scrollable modal-percorsi" >
       <div class="modal-content">
         <div class="modal-header">
           <!--h5 class="modal-title" id="exampleModalLabel">Titolo</h5-->
@@ -145,9 +145,9 @@ data-filter-options="{ filterAlgorithm: 'or' }"></th>
       <div class="modal-body" id="body_dettaglio">
                 <!-- output data here-->
       </div>
-      <div class="modal-footer">
+      <!--div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-      </div>
+      </div-->
     </div>
   </div>
 </div>

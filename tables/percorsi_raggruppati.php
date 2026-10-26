@@ -44,6 +44,7 @@ if(!$conn_sit) {
     end as freq,
     string_agg(distinct t.descrizione, ',') as turno, 
     string_agg(distinct t.cod_turno , ',') as turno_dettaglio, 
+    ep.durata, 
     string_agg(distinct s.desc_squadra, ', ') FILTER (WHERE s.id_squadra<>15) as risorse_umane,
     string_agg(concat(trim(aa.categoria), ' (', trim(aa.nome), ')') , ', ') FILTER (WHERE aa.categoria is not null) as risorse_tecniche,
     ep.versione_testata as versione, 
@@ -79,7 +80,8 @@ if(!$conn_sit) {
     left join elem.automezzi aa on aa.cdaog3 = pm.id_mezzo 
     group by ep.cod_percorso, p.id_percorso, 
     ep.descrizione, af.descrizione, at2.descrizione, fo.descrizione_long, ep.versione_testata,  
-    ep.data_inizio_validita, ep.data_fine_validita, ep.freq_settimane, ep.stagionalita, ep.ddmm_switch_on, ep.ddmm_switch_off
+    ep.data_inizio_validita, ep.data_fine_validita, ep.freq_settimane, ep.stagionalita, ep.ddmm_switch_on, ep.ddmm_switch_off, 
+    ep.durata
     order by 1,9";
     
 
