@@ -399,8 +399,8 @@ data_attivazione
     )
     select coalesce(e.id_piazzola, e.id_elemento) as id, 
         concat(v.nome, ', ',
-        coalesce(e.numero_civico, p.numero_civico)) as indirizzo, 
-        coalesce(e.riferimento, p.riferimento) as riferimento, 
+        coalesce(p.numero_civico, e.numero_civico)) as indirizzo, 
+        coalesce(p.riferimento, e.riferimento) as riferimento, 
         te.descrizione, 
         coalesce(p.note,e.note) as note,
         eap.frequenza, fo.descrizione_long, fo.freq_binaria,
@@ -423,8 +423,8 @@ data_attivazione
         on te.tipo_elemento = e.tipo_elemento  
         group by coalesce(e.id_piazzola, e.id_elemento) , 
         concat(v.nome, ', ',
-        coalesce(e.numero_civico, p.numero_civico)) , 
-        coalesce(e.riferimento, p.riferimento), 
+        coalesce(p.numero_civico, e.numero_civico)) , 
+        coalesce(p.riferimento, e.riferimento), 
         te.descrizione, 
         coalesce(p.note,e.note),
         eap.frequenza, fo.descrizione_long, fo.freq_binaria, ap.num_seq
