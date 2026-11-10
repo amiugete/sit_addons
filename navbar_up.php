@@ -489,6 +489,7 @@ if ($check_modal!=1){
             <li><b>Mail: </b><?php echo $mail_user?></li>
             <li><b>Profilo: </b><?php echo $profilo?></li>
             <li><b>UT/Rimesse: </b><?php echo $uts?></li>
+            <li><b>Id ruolo SIT: </b><?php echo $id_role_SIT?></li>
             <hr>
             <li><b>Funzionalità ad accesso profilato: </b>
             <ul>
