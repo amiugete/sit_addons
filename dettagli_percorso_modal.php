@@ -311,7 +311,7 @@ require_once './conn_ok.php';
               <?php if(($_ENV['APP_ENV'] ?? '') === 'test') {
                   require './dettagli_percorso_tab_modifica.php'; 
                   }else{
-                    require './redirect2wip.php';
+                    require './modal_wip.php';
                   }?>
             </div>
             <div class="tab-pane fade" id="analisi-tab-pane" role="tabpanel" aria-labelledby="analisi-tab" tabindex="0">
