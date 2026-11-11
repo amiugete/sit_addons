@@ -54,16 +54,28 @@ $versione= $_GET['v'];
 <?php
 // TIPOLOGIA PERCORSO
 $tipo = $_POST['tipo'];
+
+//echo 'tipo: '.$tipo.'<br>';
 $codice_percorso=$_POST['id_percorso'];
+//echo 'codice_percorso: '.$codice_percorso.'<br>';
 $desc= $_POST['desc'];
+//echo 'desc: '.$desc.'<br>';
 $turno= $_POST['turno'];
+//echo 'turno: '.$turno.'<br>';
 $turnoIni= $_POST['turno_ini'];
+//echo 'turnoIni: '.$turnoIni.'<br>';
 $turnoFine= $_POST['turno_fine'];
+//echo 'turnoFine: '.$turnoFine.'<br>';
 $turnoRefDay = $_POST['turno_ref_day'];
+//echo 'turnoRefDay: '.$turnoRefDay.'<br>';
 $freq_sit = $_POST['freq_sit'];
+//echo 'freq_sit: '.$freq_sit.'<br>';
 $fbin = $_POST['fbin'];
+//echo 'fbin: '.$fbin.'<br>';
 $freq_sett = $_POST['freq_sett'];
+//echo 'freq_sett: '.$freq_sett.'<br>';
 $freq_uo = $_POST['freq_uo'];
+//echo 'freq_uo: '.$freq_uo.'<br>';
 $old_vers= $_POST['old_vers'];
 $new_vers= $_POST['old_vers']+1;
 $stag = $_POST['stag'];
@@ -109,7 +121,7 @@ if(intval($turnoIni) > intval($turnoFine)){
 //exit();
 ?></ul--><?php
 
-
+//xit();
 ?>
 
 

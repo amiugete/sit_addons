@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@turf/turf": "^7.4.0",
+    "daterangepicker": "file:daterangepicker-4.0.2.tgz",
     "leaflet": "^1.9.4",
     "leaflet.locatecontrol": "^0.90.0",
     "leaflet.markercluster": "^1.5.3",

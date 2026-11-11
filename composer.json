@@ -3,7 +3,7 @@
         "twbs/bootstrap": "^5.3",
         "twbs/bootstrap-icons": "^1.10",
         "snapappointments/bootstrap-select": "^1.13",
-        "picqer/php-barcode-generator": "^2.3",
+        "picqer/php-barcode-generator": "^3.0",
         "wenzhixin/bootstrap-table": "^1.22",
         "firebase/php-jwt": "^6.8",
         "fortawesome/font-awesome": "^6.4",
@@ -16,7 +16,8 @@
         "cache/apcu-adapter": "^1.3",
         "phpmailer/phpmailer": "^7.0",
         "orchidjs/tom-select": "^2.6",
-        "vlucas/phpdotenv": "^5.6"
+        "vlucas/phpdotenv": "^5.6",
+        "ezyang/htmlpurifier": "^4.19"
     },
     "config": {
         "allow-plugins": {

@@ -1,216 +1,26 @@
 <?php
 //session_set_cookie_params($lifetime);
 require_once './session.php';
-require_once './conn_ok.php';
+
+$pageTitle = 'Titolo della pagina';
+$pageDescription = 'Descrizione della pagina per i meta tag';
+
+require_once './includes/header.php';
+
+$name = dirname(__FILE__);
+
+if ((int)$id_role_SIT === 0) {
+    ///echo'Non ho i permessi..';
+    redirect('no_permessi.php');
+    exit;
+}
+# da togliere / commentARE quando si vuole andare in produzione 
 require_once './redirect2wip.php';
-
-
-    
-?>
-<!DOCTYPE html>
-<html lang="it">
-
-<head>
-
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="roberto" >
-
-    <title>Gestione servizi</title>
-<?php 
-
-require_once('./req.php');
-
-the_page_title();
-
-require_once './conn_ok.php';
-?> 
-
-
-<style>
-.d-flex.h-100 {
-    height: 100vh;
-    width: 100%;
-    overflow: hidden;
-}
-
-
-#mapContainer {
-    flex: 1 1 auto;
-    min-width: 0;   /* 🔥 FONDAMENTALE */
-    position: relative;
-    display: flex;
-    flex-direction: column;
-}
-
-/* MAPPA sotto */
-#mappa_principale {
-    top: 35px;
-    width: 100%;
-    height: 95%;
-}
-
-/* UI SOPRA la mappa (ma separata) */
-#mapUI {
-    position: absolute;
-    inset: 0;
-    z-index: 1000;
-    pointer-events: none; /* IMPORTANTISSIMO */
-}
-
-/* bottoni cliccabili */
-.map-btn {
-    position: absolute;
-    top: 0px;
-    background: white;
-    border: 1px solid #ccc;
-    padding: 6px 10px;
-    border-radius: 4px;
-
-    pointer-events: auto; /* riattiva click */
-}
-
-
-
-
-
-/* posizioni */
-#btnFiltri {
-    left: 10px;
-}
-
-#btnRisultati {
-    right: 10px;
-}
-
-/* SIDEBAR NON deve usare transform per questo caso */
-.sidebar {
-    width: 320px;
-    flex: 0 0 320px;
-    transition: all 0.3s ease;
-    background: #fff;
-    overflow-y: auto ; /* dovrebbe fare la scrollbar quando necessario*/
-}
-
-
-.sidebar-content {
-    padding: 10px;
-}
-
-
-
-
-/* chiusura vera tipo Lizmap */
-.sidebar.chiuso {
-    flex: 0 0 0;
-    width: 0;
-    min-width: 0;
-    overflow: hidden;
-}
-
-
-
-/*#panelFiltri.chiuso {
-    width: 0;
-    overflow: hidden;
-}
-
-#panelRisultati.chiuso {
-    width: 0;
-    overflow: hidden;
-}*/
-
-.ts-control input {
-    width: 100% !important;
-}
-
-
-/*select2 con stesso aspetto delle card e dei pulsanti Bootstrap:*/
-.select2-container--bootstrap-5 .select2-selection {
-    border-radius: var(--bs-border-radius) !important;
-}
-
-
-.select2-container--bootstrap-5.select2-container--disabled .select2-selection {
-    background-color: var(--bs-secondary-bg);
-    color: var(--bs-secondary-color);
-    opacity: .65;
-    cursor: not-allowed;
-}
-
-.select2-container--bootstrap-5.select2-container--disabled .select2-selection__arrow b {
-    opacity: .5;
-}
-
-/* rimuovere scelta */
-/* il contenitore della select */
-.select2-selection--single{
-    position: relative;
-}
-
-/* bottone */
-.select2-selection__clear{
-
-    position:absolute !important;
-    right:26px;
-    top:50%;
-    transform:translateY(-50%);
-
-    width:20px;
-    height:20px;
-
-    margin:0 !important;
-    padding:0 !important;
-
-    border:none;
-    background:transparent;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-}
-
-/* nasconde la X originale */
-.select2-selection__clear span{
-    display:none;
-}
-
-/* FontAwesome */
-.select2-selection__clear::before{
-
-    font-family:"Font Awesome 6 Free";
-    font-weight:900;
-    content:"\f057";     /* circle-xmark */
-
-    color:var(--bs-danger);
-    font-size:1rem;
-}
-</style>
-
-
-
-
-</head>
-
-<body>
-
-<?php 
-require_once('./navbar_up.php');
-$name=dirname(__FILE__);
-if ((int)$id_role_SIT = 0) {
-  redirect('no_permessi.php');
-  //exit;
-}
-
-
-
 ?>
 
-
-
+<!-- FLUID è più esteso su tutto lo schermo -->
 <div class="container-fluid" id="mainContainer">
+    
 
 
 <!-- MODAL DETTAGLI PIAZZOLA -->
@@ -277,29 +87,41 @@ if ((int)$id_role_SIT = 0) {
 
             <!-- COMUNE -->
             <div class="mb-3">
-                <select id="cmbComune" class="form-select">
+                <select id="cmbComune" class="form-select select2-clear-no-open">
                     <option value="">Seleziona comune </option>
                 </select>
             </div>
             <div class="mb-3">
-                <select id="cmbMunicipio" class="form-select" disabled>
+                <select id="cmbMunicipio" class="form-select select2-clear-no-open" disabled>
                     <option value="">Seleziona municipio </option>
                 </select>
             </div>
             <div class="mb-3">
-                <select id="cmbQuartiere" class="form-select" disabled>
+                <select id="cmbQuartiere" class="form-select select2-clear-no-open" disabled>
                     <option value="">Seleziona quartiere </option>
                 </select>
             </div>
             <div class="mb-3">
-                <select id="cmbVia" class="form-select" disabled>
+                <select id="cmbVia" class="form-select select2-clear-no-open" disabled>
                     <option value="">Seleziona via </option>
                 </select>
             </div>
             
-            <!-- Comune -->
+            <hr>
+            <div class="mb-3">
+                <select id="cmbUT" class="form-select select2-clear-no-open">
+                    <option value="">Seleziona UT </option>
+                </select>
+            </div>
+            <hr>
+            <!-- Piazzola -->
+            <div class="mb-3">
+                <select id="cmbPiazzola" class="form-select select2-clear-no-open">
+                    <option value="">Seleziona piazzola </option>
+                </select>
+            </div>
 
-        <!-- Via -->
+            
 
             </div>
 
@@ -349,7 +171,7 @@ if ((int)$id_role_SIT = 0) {
                        Piazzole
 
                     </label>
-                    <button type="button" class="btn btn-sm" data-bs-container="body" 
+                    <!--button type="button" class="btn btn-sm" data-bs-container="body" 
                     data-bs-toggle="popover" data-bs-placement="right" id="btnInfoPiazzole" data-bs-html="true" >
                     <i class="fa-regular fa-circle-question"></i>
                     </button>
@@ -363,57 +185,183 @@ if ((int)$id_role_SIT = 0) {
 
                         <i class="fa-solid fa-circle-info"></i>
 
-                    </a>
+                    </a-->
                 </div>
 
-                <div class="collapse mt-2 ms-4" id="legendaPiazzole">
+                
 
-                    <div class="legend-item">
+                <!-- LEGENDA --> 
+                 <a class="text-decoration-none"
+                    data-bs-toggle="collapse"
+                    href="#legendaPiazzole"
+                    role="button">
 
-                        <div class="piazzola">
-                            <div class="piazzola-marker"></div>
+                        <i class="fa-solid fa-location-dot"></i>
+                        Legenda
+
+                </a>
+                <div class="collapse mt-2 ms-3"
+                    id="legendaPiazzole">
+                    
+                    
+                <div class="legend-item">
+
+                    <div class="piazzola">
+                        <div class="piazzola-marker"
+                            style="--marker-bg:#c200c988; --marker-bd:#c200c9;">
                         </div>
-
-                        <span>Piazzola</span>
-
                     </div>
 
-                    <div class="legend-item">
+                    <span>Piazzola</span>
 
-                        <div class="piazzola pap">
-                            <div class="piazzola-marker">P</div>
+                </div>
+
+
+                <div class="legend-item">
+
+                    <div class="piazzola">
+                        <div class="piazzola-marker"
+                            style="--marker-bg:#c200c988; --marker-bd:#c200c9;">
+                            
+                            <i class="fa-solid fa-user"></i>
+
                         </div>
-
-                        <span>PAP</span>
-
                     </div>
 
-                    <div class="legend-item">
+                    <span>Piazzola con cliente</span>
 
-                        <div class="piazzola ecopunto">
-                            <div class="piazzola-marker">€</div>
+                </div>
+
+
+                <div class="legend-item">
+
+                    <div class="piazzola">
+                        <div class="piazzola-marker"
+                            style="--marker-bg:#c200c988; --marker-bd:#c200c9;">
+
+                            <i class="fa-solid fa-recycle"></i>
+
                         </div>
-
-                        <span>Ecopunto</span>
-
                     </div>
 
-                    <div class="legend-item">
+                    <span>Ecopunto</span>
 
-                        <div class="piazzola privato">
-                            <div class="piazzola-marker"></div>
+                </div>
+
+
+                <div class="legend-item">
+
+                    <!--div class="piazzola">
+                        <div class="piazzola-marker"
+                            style="--marker-bg:#c200c988; --marker-bd:#c200c9;">
+
+                            
+                            <i class="fa-solid fa-user-lock"></i>
+
                         </div>
+                    </div-->
 
-                        <span>Suolo privato</span>
+                    <small title="Si ricorda che indicare se la piazzola è su suolo privato ha impatto sul pagamento della COSAP 
+                    (Canone per l'Occupazione di Spazi ed Aree Pubbliche)"><i class="fa-solid fa-lock"></i> - La presenza del lucchetto in basso a destra indica che la piazzola 
+                    è su <i>suolo privato</i>. 
+                    </small>
 
-                    </div>
-                <hr>
-                <div id="filtriRifiuti"></div>
+                </div>
                 </div>
                 
-                <hr>
 
-                    </div>
+
+                <!--    FILTRO RIFIUTI -->
+                <a class="text-decoration-none"
+                data-bs-toggle="collapse"
+                href="#filtriPiazzole"
+                role="button">
+
+                    <i class="fa-solid fa-filter"></i>
+                    Filtri rifiuti
+
+                </a>
+                <div class="collapse mt-2 ms-3"
+                    id="filtriPiazzole">
+                
+                
+                <div class="d-flex justify-content-between mb-2">
+
+                <button type="button"
+                        class="btn btn-sm btn-outline-secondary"
+                        id="btnSelezionaRifiuti">
+
+                    Seleziona tutti
+
+                </button>
+
+
+                <button type="button"
+                        class="btn btn-sm btn-outline-secondary"
+                        id="btnDeselezionaRifiuti">
+
+                    Deseleziona tutti
+
+                </button>
+
+            </div>
+
+
+
+            <div id="filtriRifiuti"></div>
+
+
+
+            <script type="text/javascript">
+                $("#btnSelezionaRifiuti").on("click", function(){
+                    
+                    filtroRifiutiAttivo = true;
+
+                    $(".filtro-rifiuto").each(function(){
+
+                        this.checked = true;
+                        filtriRifiutiAttivi.add(this.value);
+
+                    });
+
+                    visualizzaPiazzole(map);
+
+                });
+
+
+                $("#btnDeselezionaRifiuti").on("click", function(){
+
+
+                    filtroRifiutiAttivo = true;
+                    
+                    $(".filtro-rifiuto").each(function(){
+
+                        this.checked = false;
+                        filtriRifiutiAttivi.delete(this.value);
+
+                    });
+
+                    visualizzaPiazzole(map);
+
+                });
+                
+            </script> 
+            </div>
+
+            
+                
+            <hr>
+            </div>
+
+
+
+            <!-- qua ci andranno altri layer -->
+
+
+
+
+
+
 
              </div>
         </div>
@@ -499,19 +447,106 @@ if ((int)$id_role_SIT = 0) {
 
 </div>
 
-<?php
-require_once('req_bottom.php');
-require('./footer.php');
-?>
+
+<!-- SEZIONE MODAL 
+ 
+vengono poi popolati lato JS
+
+-->
+
+
+
+<!-- modal piazzola -->
+<div class="modal fade" id="modalFotoPiazzola" tabindex="-1">
+
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+                    Foto piazzola
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body text-center"
+                 id="contenutoFotoPiazzola">
+            
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+<!-- Modal Percorsi-->
+<div class="modal fade" id="modalPercorsi" tabindex="-1" aria-labelledby="modalPercorsiLabel" aria-hidden="true">
+
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title" id="modalPercorsiLabel">
+                    <i class="fa-solid fa-route me-2"></i>
+                    Percorsi
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Chiudi">
+                </button>
+
+            </div>
+
+            <div class="modal-body" id="modalPercorsiBody">
+
+                <!-- Contenuto inserito dinamicamente -->
+
+                <div class="text-center text-muted py-4">
+                    <i class="fa-solid fa-spinner fa-spin me-2"></i>
+                    Caricamento...
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+
+<?php require_once './includes/footer.php'; ?>
 
 
 <script type="text/javascript" src="./mappa_base.js"></script>
 
 <script>
-    const mappa = creaMappa("mappa_principale");
+    const mappaPrincipale = creaMappa("mappa_principale");
 
-    map = mappa.map;
-    initialView = mappa.initialView;
+    map = mappaPrincipale.map;
+    initialView = mappaPrincipale.initialView;
+    
+    setTimeout(() => {
+        map.invalidateSize();
+    }, 100);
 </script>
 
 
@@ -526,6 +561,10 @@ require('./footer.php');
 <script type="text/javascript" src="./layers/layer_piazzole.js"></script>
 
 <script type="text/javascript" src="./layers/sposta_mappa.js"></script>
+
+
+<script type="text/javascript" src="./layers/modal_percorsi_piazzola_elemento.js"></script>
+
 
 
 <script type="text/javascript" >
@@ -666,6 +705,25 @@ fetch('ajax/comuni.php')
 
 
 
+fetch('ajax/ut.php')
+    .then(r => r.json())
+    .then(data => {
+
+        const cmb = document.getElementById('cmbUT');
+
+        data.forEach(c => {
+
+            const opt = document.createElement('option');
+
+            opt.value = c.id;
+            opt.textContent = c.descrizione;
+
+            cmb.appendChild(opt);
+        });
+
+    });
+
+
 
 
     // TOM SELECT
@@ -684,6 +742,15 @@ fetch('ajax/comuni.php')
 $('#cmbComune').select2({
     theme: 'bootstrap-5',
     placeholder: 'Cerca comune...',
+    width: '100%',
+    allowClear: true
+});
+
+
+
+$('#cmbUT').select2({
+    theme: 'bootstrap-5',
+    placeholder: 'Cerca UT...',
     width: '100%',
     allowClear: true
 });
@@ -719,6 +786,23 @@ $('#cmbVia').select2({
 
 
 <script type="text/javascript" >
+
+// devo poi assegnare la classe select2-clear-no-open alle quattro <select> <select>
+// in modo che all'eliminazione della selezione non si apra la select2
+
+$('.select2-clear-no-open')
+    .on('select2:unselecting', function () {
+        $(this).data('unselecting', true);
+    })
+    .on('select2:opening', function (e) {
+
+        if ($(this).data('unselecting')) {
+            $(this).removeData('unselecting');
+            e.preventDefault();
+        }
+
+    });
+
 
 let idMunicipio = null;
 let idQuartiere = null;
@@ -805,7 +889,7 @@ async function aggiornaQuartieri() {
 }
 
 async function aggiornaVie() {
-
+    console.log('aggiornaVie')
     const idComune = $("#cmbComune").val();
     const idMunicipio = $("#cmbMunicipio").val();
     const idQuartiere = $("#cmbQuartiere").val();
@@ -849,160 +933,151 @@ async function aggiornaVie() {
 }
 
 
+async function zoomSuEntita(urlBbox) {
 
-
-
-
-
-// zoom bbox 
-$('#cmbComune').on('change', function () {
-
-
+    // Invalida la cache dei layer
     cacheLayer.aste.bounds = null;
     cacheLayer.piazzole.bounds = null;
 
-    
+    try {
+
+        const response = await fetch(urlBbox);
+
+        if (!response.ok) {
+            throw new Error(`Errore HTTP ${response.status}`);
+        }
+
+        const b = await response.json();
+
+        if (!b || b.length === 0) {
+            return;
+        }
+
+        map.fitBounds([
+            [parseFloat(b[0].ymin), parseFloat(b[0].xmin)],
+            [parseFloat(b[0].ymax), parseFloat(b[0].xmax)]
+        ]);
+
+    }
+    catch (err) {
+        console.error("Errore durante lo zoom:", err);
+    }
+
+}
+
+
+
+
+// zoom bbox e aggiorno cmbobox municipio, quartiere e via 
+$('#cmbComune').on('change', async function () {
+
+   
     const idComune = $(this).val();
 
     console.log('Cambiato comune', idComune);
 
 
-    const cmbVia = $('#cmbVia');
-
-    // Svuota sempre la combo vie
-    cmbVia.empty()
-          .append('<option value="">Seleziona via</option>')
-          .prop('disabled', true);
+    
 
     if (!idComune){
+        resetSelect("#cmbMunicipio", "Seleziona municipio");
+        resetSelect("#cmbQuartiere", "Seleziona quartiere");
+        resetSelect("#cmbVia", "Seleziona via");
+        resetSelect("#cmbVia", "Seleziona via", false);
+        cacheLayer.aste.bounds = null;
+        cacheLayer.piazzole.bounds = null;
+
         return;
         // dovrei abilitare disabled=false CmbVie
     }
-    // Abilita la combo
-    cmbVia.prop('disabled', false);
-
-    if (idComune == 1 ) {
-        console.log('Comune selezionato è Genova, carico municipi e quartieri');
-        // carica i municipi
-        fetch(`ajax/municipi.php?id_comune=${idComune}`)
-            .then(r => r.json())
-            .then(data => {
-
-                const cmbMunicipio = $('#cmbMunicipio');
-
-                cmbMunicipio.empty()
-                    .append('<option value="">Seleziona municipio</option>');
-
-                data.forEach(m => {
-                    cmbMunicipio.append(
-                        $('<option>', {
-                            value: m.id,
-                            text: m.descrizione
-                        })
-                    );
-                });
-
-
-                // Abilita la combo
-                cmbMunicipio.prop('disabled', false);
-
-                // Se usi Select2 aggiorna la grafica
-                cmbMunicipio.trigger('change.select2');
-            });
-
-        // carica i quartieri
-        // se ci fosssero anche i municipi, dovrei filtrare i quartieri per municipio selezionato
-
-        console.log('Carico quartieri per comune', idComune, 'e municipio', idMunicipio);
-
-        let URL_QUARTIERI = `ajax/quartieri.php?id_comune=${idComune}`
-        if (idMunicipio) {
-            URL_QUARTIERI += `&id_municipio=${idMunicipio}`;
-        }
-
-        fetch(URL_QUARTIERI)
-            .then(r => r.json())
-            .then(data => {
-                const cmbQuartiere = $('#cmbQuartiere');
-
-                cmbQuartiere.empty()
-                    .append('<option value="">Seleziona quartiere</option>');
-
-                data.forEach(m => {
-                    cmbQuartiere.append(
-                        $('<option>', {
-                            value: m.id,
-                            text: m.descrizione
-                        })
-                    );
-                });
-
-
-                // Abilita la combo
-                cmbQuartiere.prop('disabled', false);
-
-                // Se usi Select2 aggiorna la grafica
-                cmbQuartiere.trigger('change.select2');
-        });
-    } else {
-        // disabilita la combo dei municipi
-        $('#cmbMunicipio').empty()
-            .append('<option value="">Seleziona municipio</option>')
-            .prop('disabled', true);
-        
-
-        // disabilita la combo dei quartieri
-        $('#cmbQuartiere').empty()
-            .append('<option value="">Seleziona quartiere</option>')
-            .prop('disabled', true);    
-    }
-
-
-
-    // Carica le vie del comune
-    let URL_VIE = `ajax/vie.php?id_comune=${idComune}`
-    if (idMunicipio) {
-        URL_VIE += `&id_municipio=${idMunicipio}`;
-    }
-    if (idQuartiere) {
-        URL_VIE += `&id_quartiere=${idQuartiere}`;
-    }
     
-    fetch(URL_VIE)
-        .then(r => r.json())
-        .then(data => {
 
-            data.forEach(v => {
-                cmbVia.append(
-                    $('<option>', {
-                        value: v.id_via,
-                        text: v.nome
-                    })
-                );
-            });
 
-            // Se usi Select2 aggiorna la grafica
-            cmbVia.trigger('change.select2');
-        });
-
+    // aggiorno cmbobox municipio, quartiere e via
+    await aggiornaMunicipi();
+    await aggiornaQuartieri();
+    await aggiornaVie();
 
     // Zoom sul comune
-    fetch(`ajax/comune_bbox.php?id=${idComune}`)
-        .then(r => r.json())
-        .then(b => {
-            console.log('Faccio zoom su comune!')
-            map.fitBounds([
-                [parseFloat(b[0].ymin), parseFloat(b[0].xmin)],
-                [parseFloat(b[0].ymax), parseFloat(b[0].xmax)]
-            ]);
-
-        });
-
-    });
+    await zoomSuEntita(`ajax/comune_bbox.php?id=${idComune}`);
 
 
+});
 
 
+// zoom bbox e aggiorno cmbobox municipio, quartiere e via 
+$('#cmbUT').on('change', async function () {
+
+    const idUT = $(this).val();
+
+    console.log('Cambiata UT', idUT);
+    
+
+    if (!idUT){
+        resetSelect("#cmbComune", "Seleziona comune", false);
+        resetSelect("#cmbMunicipio", "Seleziona municipio");
+        resetSelect("#cmbQuartiere", "Seleziona quartiere");
+        resetSelect("#cmbVia", "Seleziona via");
+
+        cacheLayer.aste.bounds = null;
+        cacheLayer.piazzole.bounds = null;
+
+        return;
+        // dovrei abilitare disabled=false CmbVie
+    }
+    
+
+    // Zoom sul comune
+    await zoomSuEntita(`ajax/ut_bbox.php?id=${idUT}`);
+
+
+});
+
+$('#cmbMunicipio').on('change', async function () {
+
+   
+
+    const idMunicipio = $(this).val();
+
+    if (!idMunicipio) {
+        await aggiornaQuartieri();
+        await aggiornaVie();
+        return;
+    }
+
+    
+    // aggiorno cmbobox quartiere e via
+    await aggiornaQuartieri();
+    await aggiornaVie();
+    
+
+    // zoom sul municipio
+    await zoomSuEntita(`ajax/municipio_bbox.php?id=${idMunicipio}`);
+
+
+});
+
+
+
+$('#cmbQuartiere').on('change', async function () {
+
+   
+    const idQuartiere = $(this).val();
+
+    if (!idQuartiere) {
+        await aggiornaVie();
+        return;
+    }
+
+    // aggiorno cmbobox via
+    await aggiornaVie();
+
+
+    // zoom sul quartiere
+    await zoomSuEntita(`ajax/quartiere_bbox.php?id=${idQuartiere}`);
+
+
+});
 
 
 
@@ -1014,35 +1089,34 @@ $('#cmbVia').on('change', function () {
 
 
    
-    if (!idVia)
+    if (!idVia){
         return;
-        // dovrei abilitare disabled=false CmbVie
+    }
+    
+    // Zoom sulla via
+    fetch(`ajax/via_bbox.php?id=${idVia}`)
+        .then(r => r.json())
+        .then(b => {
+            console.log('Faccio zoom su comune!')
+            map.fitBounds([
+                [parseFloat(b[0].ymin), parseFloat(b[0].xmin)],
+                [parseFloat(b[0].ymax), parseFloat(b[0].xmax)]
+            ]);
 
-        // Abilita la combo
-        
+        });
 
-        // Zoom sulla via
-        fetch(`ajax/via_bbox.php?id=${idVia}`)
-            .then(r => r.json())
-            .then(b => {
-                console.log('Faccio zoom su comune!')
-                map.fitBounds([
-                  [parseFloat(b[0].ymin), parseFloat(b[0].xmin)],
-                  [parseFloat(b[0].ymax), parseFloat(b[0].xmax)]
-                ]);
+        // evidenziazione aste 
+        fetch(`ajax/via_aste.php?id=${idVia}`)
+        .then(r => r.json())
+        .then(data => {
 
-            });
+            const ids = data.map(a => a.id_asta);
 
-            // evidenziazione aste 
-            fetch(`ajax/via_aste.php?id=${idVia}`)
-            .then(r => r.json())
-            .then(data => {
+            evidenziaAste(ids);
 
-                const ids = data.map(a => a.id_asta);
+        });
 
-                evidenziaAste(ids);
 
-            });
 
 
 
@@ -1113,6 +1187,87 @@ $('#cmbQuartiere').on('change', function () {
 });
 
 
+
+
+$('#cmbPiazzola').select2({
+
+    placeholder: "Cerca piazzola...",
+    allowClear: true,
+    minimumInputLength: 3,
+
+    ajax: {
+
+        url: 'ajax/piazzole.php',
+        dataType: 'json',
+        delay: 300,
+        cache: true,
+
+        data: function (params) {
+
+            const dati = {
+                q: params.term
+            };
+
+            if (filtraLayer) {
+
+                dati.id_comune = $("#cmbComune").val();
+                dati.id_municipio = $("#cmbMunicipio").val();
+                dati.id_quartiere = $("#cmbQuartiere").val();
+                dati.id_via = $("#cmbVia").val();
+
+            }
+
+            return dati;
+
+        },
+
+        processResults: function (data) {
+
+            return {
+                results: data.map(p => ({
+                    id: p.id,
+                    text: p.descrizione
+                }))
+            };
+
+        }
+
+    }
+
+});
+
+
+$('#cmbPiazzola').on('select2:select', async function (e) {
+
+    const idPiazzola = e.params.data.id;
+
+    console.log('La piazzola selezionata è:', idPiazzola);
+
+    piazzolaSelezionata = idPiazzola;
+
+
+    let p = await fetch(`ajax/piazzola_geo.php?id=${idPiazzola}`)
+        .then(r => r.json());
+
+    console.log('Dati piazzola:', p);
+    console.log('Lat:', p[0].lat, 'Lon:', p[0].lon);
+    map.setView(
+        [parseFloat(p[0].lat), parseFloat(p[0].lon)],
+        18,              // livello di zoom
+        {
+            animate: true,
+            duration: 0.5
+        }
+    );
+
+    //evidenziaPiazzolaById(idPiazzola);
+    apriPannelloRisultati();
+    await caricaDettaglioPiazzola(idPiazzola) 
+
+});
+
+
+
 // chkFiltraLayer
 
 let filtraLayer = false;
@@ -1125,9 +1280,9 @@ $('#chkFiltraLayer').on('change', function(){
     $('#badgeFiltroLayer')
         .toggleClass('d-none', !filtraLayer);
 
-    aggiornaAste();
+    aggiornaAste(map);
 
-    aggiornaPiazzole();
+    aggiornaPiazzole(map);
 
 });
 </script>

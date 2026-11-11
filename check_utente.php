@@ -1,4 +1,5 @@
 <?php
+require_once './session.php';
 require_once './req.php';
 function redirect($url)
 {
@@ -10,11 +11,11 @@ function redirect($url)
 }
 
 // definisco la variabile lifetime
-$lifetime=86400;
+/*$lifetime=86400;
 
 ini_set('session.gc_maxlifetime', $lifetime);
 session_set_cookie_params($lifetime);
-
+*/
 
 
 /*if ($_GET['jwt']){

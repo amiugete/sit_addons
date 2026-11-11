@@ -374,7 +374,7 @@ if (!isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
 
   </div>
 
-
+  <script type="text/javascript" src="./mappa_base.js"></script>
 
   <script type="text/javascript">
  var today = new Date();

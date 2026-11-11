@@ -41,7 +41,7 @@ function creaMappa(idElemento, options = {}) {
     // Mappa
     //----------------------------------------------------
 
-    const map = L.map(idElemento, {
+    let map = L.map(idElemento, {
 
         minZoom: config.minZoom,
         maxZoom: config.maxZoom,
@@ -53,7 +53,7 @@ function creaMappa(idElemento, options = {}) {
     // Stato
     //----------------------------------------------------
 
-    const initialView = {
+    let initialView = {
 
         bounds: null,
         zoomed: false
@@ -235,3 +235,31 @@ function creaMappa(idElemento, options = {}) {
     };
 
 }
+
+
+/**
+ * Restituisce un bbox allargato rispetto a quello corrente.
+ *
+ * @param {L.LatLngBounds} bounds
+ * @param {number} fattore 0.30 = +30%
+ * @returns {L.LatLngBounds}
+ */
+
+
+function espandiBounds(bounds, fattore = 0.30) {
+
+    const sw = bounds.getSouthWest();
+    const ne = bounds.getNorthEast();
+
+    const deltaLat = (ne.lat - sw.lat) * fattore;
+    const deltaLng = (ne.lng - sw.lng) * fattore;
+
+    return L.latLngBounds(
+        [sw.lat - deltaLat, sw.lng - deltaLng],
+        [ne.lat + deltaLat, ne.lng + deltaLng]
+    );
+
+}
+
+
+
