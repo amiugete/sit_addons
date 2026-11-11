@@ -9,8 +9,16 @@ in modo da evitare che utenti esterni possano accedere a pagine in sviluppo.
     if(($_ENV['APP_ENV'] ?? '') === 'test') {
     $checkTest=1;
     } else {
-        $checkTest=0;
-        header("Location: ./wip.php");
-        die();
+        $checkTest=0; 
+        //header("Location: ./wip.php"); ?>
+        <div class="container">
+            <div class="row">
+                <h1 style="text-align:center;">PAGINA IN COSTRUZIONE</h1>
+                <img src="./img/wip.png">
+            </div>
+        </div>
+    <?php
+       // die();
+       exit();
     }
 ?>
