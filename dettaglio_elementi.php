@@ -548,12 +548,15 @@ require_once './redirect2wip.php';
 						percent_riempimento: riga_cliccata.find('.edit_percent_riempimento').val(),
 						freq_stimata: riga_cliccata.find('.edit_freq_stimata').val()
 					},
+					dataType: 'json',
 					success: function(response) {
+						console.log(response.messaggio);
 						$('#dett_elementi').bootstrapTable('refresh');
-						showToast(response, 'success', 'modal');
+						showToast(response.messaggio, 'success', 'modal');
 					}, 
-					error: function (jqXHR, textStatus, errorThrown) {                        
-						showToast(response, 'error', 'modal');
+					error: function (jqXHR, textStatus, errorThrown) {  
+						const messaggio = jqXHR.responseJSON?.messaggio || 'Errore durante il salvataggio delle modifiche!';                      
+						showToast(messaggio, 'error', 'modal');
 						console.error(errorThrown); 
 					}
 				});
