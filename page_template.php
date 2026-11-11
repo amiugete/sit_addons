@@ -26,5 +26,5 @@ if ((int)$id_role_SIT === 0) {
  <h1>Titolo H1</h1>
   <p>Qua c'è il contenuto principale della mia pagina web</p>
 </main>
-</!--div>
+</div>
 <?php require_once './includes/footer.php'; ?>
