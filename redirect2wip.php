@@ -12,8 +12,10 @@ in modo da evitare che utenti esterni possano accedere a pagine in sviluppo.
         $checkTest=0; 
         //header("Location: ./wip.php"); ?>
             <div class="row justify-content-center align-items-center" style="width: 70%;">
-                <h1 style="text-align:center;">PAGINA IN COSTRUZIONE</h1>
-                <img class="img-fluid" src="./img/wip.png">
+                <div class="col-auto">
+                    <h1 style="text-align:center;">PAGINA IN COSTRUZIONE</h1>
+                    <img class="img-fluid" src="./img/wip.png">
+                </div>
             </div>
         </div> <!-- chiusura del div container nella pagina principale --> 
     <?php
