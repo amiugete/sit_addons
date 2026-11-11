@@ -1,1519 +1,516 @@
 <?php
 //session_set_cookie_params($lifetime);
 require_once './session.php';
-
+require_once './conn_ok.php';
 ?>
+
 <!DOCTYPE html>
 <html lang="it">
+  <head>
 
-<?php
-$check_modal = 1;
+    <?php
+      $check_modal = 1;
 
-require_once('./req.php');
+      require_once('./req.php');
 
-the_page_title();
-
-require_once './conn_ok.php';
-
-
-
-require_once('./navbar_up.php');
-$name=dirname(__FILE__);
-if ((int)$id_role_SIT = 0) {
-  redirect('no_permessi.php');
-  //exit;
-}
-
-
-$cod_percorso= $_GET['cp'];
-$versione= $_GET['v'];
-
-
-// verifico se c'è già una versione successiva
-$check_versione_successiva=0;
-$query_check_versione="select ep.cod_percorso from anagrafe_percorsi.elenco_percorsi ep
-where ep.cod_percorso = $1 and ep.versione_testata > $2";
-$result0 = pg_prepare($conn_sit, "query_check_versione", $query_check_versione);
-$result0 = pg_execute($conn_sit, "query_check_versione", array($cod_percorso, intval($versione)));
-while($r0 = pg_fetch_assoc($result0)) {
-  $check_versione_successiva=1;
-}
-
-$check_in_attivazione=0;
-
-//verifico se il percorso è stagionale ma in dismissione
-$check_stag_dismiss = 0;
-$query_check_stag_dismiss="select p.cod_percorso, p.stagionalita, p.ddmm_switch_on, p.ddmm_switch_off from elem.percorsi p 
-where p.cod_percorso = $1";
-$resultst = pg_prepare($conn_sit, "query_check_stag_dismiss", $query_check_stag_dismiss);
-$resultst = pg_execute($conn_sit, "query_check_stag_dismiss",array($cod_percorso));
-while($rst = pg_fetch_assoc($resultst)) {
-  if ($rst["stagionalita"] == '' && $rst["ddmm_switch_on"] != '' && $rst["ddmm_switch_off"] != ''){
-    $check_stag_dismiss=1;
-  }
-}
-?>
-
-
-<div id="modal_dettagli">
-
-
-
-<?php
-$query_testata = "select ep.cod_percorso, 
-ep.descrizione, t.cod_turno, t.id_turno, t.inizio_ora, t.fine_ora, ep.durata, fo.descrizione_long, 
-ep.freq_testata, ep.freq_testata::bit(12) as fbin, fo.freq_binaria, ep.id_tipo, ep.freq_settimane,
-at2.id_servizio_uo, at2.id_servizio_sit, 
-to_char(ep.data_inizio_validita, 'DD/MM/YYYY') as data_inizio_print,
-ep.data_inizio_validita, to_char(ep.data_fine_validita, 'DD/MM/YYYY') as data_disattivazione_testata,
-case 
-when ep.data_fine_validita < now() then 1
-else 0
-end flg_disattivo, 
-case 
-when ep.data_inizio_validita > now()::date then 1
-else 0
-end flg_in_attivazione,
-to_char(ep.data_ultima_modifica, 'DD/MM/YYYY HH24:MI') as data_ultima_modifica, 
-ep.ekovision,
-ep.stagionalita,
-ep.ddmm_switch_on, 
-ep.ddmm_switch_off,
-ep.giorno_competenza,
-at2.cdr,
-ep.nota_versione
-from anagrafe_percorsi.elenco_percorsi ep
-join elem.turni t on t.id_turno = ep.id_turno
-join etl.frequenze_ok fo on fo.cod_frequenza = ep.freq_testata
-join anagrafe_percorsi.anagrafe_tipo at2 on at2.id = ep.id_tipo 
-where ep.cod_percorso = $1 and ep.versione_testata  = $2";
-$result = pg_prepare($conn_sit, "query_testata", $query_testata);
-$result = pg_execute($conn_sit, "query_testata", array($cod_percorso, $versione));  
-
-//echo $cod_percorso . '<br>';
-//echo $versione . '<br>';
-?>
-<h3> Testata percorso  
-<!--a class="btn btn-info"  href="./percorsi.php"> <i class="fa-solid fa-table-list"></i> Torna a elenco percorsi </a-->
-<?php if (intval($versione) > 1) { ?>
-  <!--a class="btn btn-info"  href="./dettagli_percorso.php?cp=<?php echo $cod_percorso;?>&v=<?php echo (intval($versione)-1);?>"> 
-  <i class="fa-solid fa-arrow-up"></i> Visualizza versione precedente </a-->
-<?php } ?>
-<?php if ($check_versione_successiva==1) { ?>
-  <!-- class="btn btn-info"  href="./dettagli_percorso.php?cp=<?php echo $cod_percorso;?>&v=<?php echo (intval($versione)+1);?>"> 
-  <i class="fa-solid fa-arrow-down"></i> Visualizza versione successiva </a-->
-<?php } ?>
-
-</h3>
-
-
-
-
-
-<?php
-echo '<ul class="mt-1">';
-while($r = pg_fetch_assoc($result)) {
-  echo '<li class="mt-1"><b> Codice percorso </b>'.$r["cod_percorso"].'</li>';
-  echo '<li class="mt-1"><b> Versione percorso </b>'.$versione.'</li>';
-  $desc=$r["descrizione"];
-
-  if(intval($r["flg_in_attivazione"])==1){
-    $check_in_attivazione=1;
-  }
-
-  if ($check_versione_successiva==0 and $check_superedit==1 and $check_in_attivazione==1 and $r["flg_disattivo"]==0 and $versione > 1){
+      the_page_title();
     ?>
-    <li><b> Note versione </b>
-    <!--form class="row row-cols-lg-auto g-3 align-items-center" name="form_cp" method="post" autocomplete="off" action="./backoffice/update_codice_percorso.php"-->
-    <form class="row row-cols-lg-auto g-3 align-items-center" name="form_nota" id="form_nota" autocomplete="off">
-      <input type="hidden" id="id_percorso" name="id_percorso" value="<?php echo $cod_percorso;?>">
-      <input type="hidden" id="old_vers" name="old_vers" value="<?php echo $versione;?>">
-      <div class="col-12" style="width:50%;">
-        <div class="input-group">
-          <input type="text" name="nota_vers" id="nota_vers" class="form-control" value="<?php echo $r["nota_versione"];?>" required="">
-        </div>
-      </div>
-      <br> 
-      <div class="col-12">
-        <button type="submit" class="btn btn-info">
-          <i class="fa-solid fa-arrow-up-from-bracket"></i> Salva
-        </button>
-      </div> 
-    </form>
-  <!-- lancio il form e scrivo il risultato -->
-    <p><div id="results_nota"></div></p>
-              <script> 
-              $(document).ready(function () {                 
-                  $('#form_nota').submit(function (event) { 
-                      event.preventDefault();                  
-                      console.log('Bottone form nota cliccato e finito qua');
-                      var formData = $(this).serialize();
-                      console.log(formData);
-                      $.ajax({ 
-                          url: 'backoffice/update_nota.php', 
-                          method: 'POST', 
-                          data: formData, 
-                          //processData: true, 
-                          //contentType: false, 
-                          success: function (response) {                       
-                              //alert('Your form has been sent successfully.'); 
-                              console.log(response);
-                              $("#results_nota").html(response).fadeIn("slow");
-                          }, 
-                          error: function (jqXHR, textStatus, errorThrown) {                        
-                              alert('Your form was not sent successfully.'); 
-                              console.error(errorThrown); 
-                          } 
-                      }); 
-                  }); 
-              }); 
-          </script>
-        <?php 
-    } else {
-      if ($r["nota_versione"]!='' and $versione > 1){
-          echo '<li class="mt-1"><b> Nota versione: </b>'.$r["nota_versione"].' ';
+  </head>
+  <body>
+    <?php
+
+      require_once('./navbar_up.php');
+      $name=dirname(__FILE__);
+      if ((int)$id_role_SIT = 0) {
+        redirect('no_permessi.php');
+        //exit;
       }
-      
-    }
-  
-  if($check_versione_successiva==0 and $check_edit==1 and $r["flg_disattivo"]==0){
+
+
+      $cod_percorso= $_GET['cp'];
+      $versione= $_GET['v'];
+
+
+      // verifico se c'è già una versione successiva
+      $check_versione_successiva=0;
+      $query_check_versione="select ep.cod_percorso from anagrafe_percorsi.elenco_percorsi ep
+      where ep.cod_percorso = $1 and ep.versione_testata > $2";
+      $result0 = pg_prepare($conn_sit, "query_check_versione", $query_check_versione);
+      $result0 = pg_execute($conn_sit, "query_check_versione", array($cod_percorso, intval($versione)));
+      while($r0 = pg_fetch_assoc($result0)) {
+        $check_versione_successiva=1;
+      }
+
+      $check_in_attivazione=0;
+
+      //verifico se il percorso è stagionale ma in dismissione
+      $check_stag_dismiss = 0;
+      $query_check_stag_dismiss="select p.cod_percorso, p.stagionalita, p.ddmm_switch_on, p.ddmm_switch_off from elem.percorsi p 
+      where p.cod_percorso = $1";
+      $resultst = pg_prepare($conn_sit, "query_check_stag_dismiss", $query_check_stag_dismiss);
+      $resultst = pg_execute($conn_sit, "query_check_stag_dismiss",array($cod_percorso));
+      while($rst = pg_fetch_assoc($resultst)) {
+        if ($rst["stagionalita"] == '' && $rst["ddmm_switch_on"] != '' && $rst["ddmm_switch_off"] != ''){
+          $check_stag_dismiss=1;
+        }
+      }
     ?>
-    <li><b>Descrizione</b>
-    <!--form class="row row-cols-lg-auto g-3 align-items-center" name="form_desc" method="post" autocomplete="off" action="./backoffice/update_descrizione.php"-->
-    <form class="row row-cols-lg-auto g-3 align-items-center" name="form_desc" id="form_desc" autocomplete="off">
-    <input type="hidden" id="id_percorso" name="id_percorso" value="<?php echo $cod_percorso;?>">
-    <input type="hidden" id="old_vers" name="old_vers" value="<?php echo $versione;?>">
 
+      <?php
+        // ottengo dettagli testata percorso
+        $query_testata = "select ep.cod_percorso, 
+        ep.descrizione, t.cod_turno, t.id_turno, t.inizio_ora, t.fine_ora, ep.durata, fo.descrizione_long, 
+        ep.freq_testata, ep.freq_testata::bit(12) as fbin, fo.freq_binaria, ep.id_tipo, 
+        case 
+        	when tipo_servizio_sit  is null then 'TESTATA' 
+        else 
+        	case 
+	        	when tipo_servizio_sit = 'piazzole' then 'RACCOLTA'
+        	else upper(tipo_servizio_sit) 
+        	end
+        end tipo_servizio_new,
+        ep.freq_settimane,
+        at2.id_servizio_uo, at2.id_servizio_sit, 
+        to_char(ep.data_inizio_validita, 'DD/MM/YYYY') as data_inizio_print,
+        ep.data_inizio_validita, to_char(ep.data_fine_validita, 'DD/MM/YYYY') as data_disattivazione_testata,
+        case 
+        when ep.data_fine_validita < now() then 1
+        else 0
+        end flg_disattivo, 
+        case 
+        when ep.data_inizio_validita > now()::date then 1
+        else 0
+        end flg_in_attivazione,
+        to_char(ep.data_ultima_modifica, 'DD/MM/YYYY HH24:MI') as data_ultima_modifica, 
+        ep.ekovision,
+        ep.stagionalita,
+        ep.ddmm_switch_on, 
+        ep.ddmm_switch_off,
+        ep.giorno_competenza,
+        at2.cdr,
+        ep.nota_versione,
+        at2.gestione_arera
+        from anagrafe_percorsi.elenco_percorsi ep
+        join elem.turni t on t.id_turno = ep.id_turno
+        join etl.frequenze_ok fo on fo.cod_frequenza = ep.freq_testata
+        join anagrafe_percorsi.anagrafe_tipo at2 on at2.id = ep.id_tipo 
+        where ep.cod_percorso = $1 and ep.versione_testata  = $2";
+        $result = pg_prepare($conn_sit, "query_testata", $query_testata);
+        $result = pg_execute($conn_sit, "query_testata", array($cod_percorso, $versione)); 
+        while($r = pg_fetch_assoc($result)) {
+          $descr_percorso = $r["descrizione"];
+          $cod_turno = $r["cod_turno"];
+          $turno = $r["id_turno"];
+          $turnoIni = $r["inizio_ora"];
+          $turnoFine = $r["fine_ora"];
+          $durata = $r["durata"];
+          $descrizione_long = $r["descrizione_long"];
+          $freq_testata = $r["fbin"];
+          $freq_uo = $r["freq_binaria"];
+          $id_tipo = $r["id_tipo"];
+          $tipo_servizio = $r["tipo_servizio_new"];
+          $freq_sett = $r["freq_settimane"];
+          $id_servizio_uo = $r["id_servizio_uo"];
+          $id_servizio_sit = $r["id_servizio_sit"];
+          $data_inizio_print = $r["data_inizio_print"];
+          $data_inizio_validita = $r["data_inizio_validita"];
+          $data_disattivazione_testata = $r["data_disattivazione_testata"];
+          $flg_disattivo = $r["flg_disattivo"];
+          $flg_in_attivazione = $r["flg_in_attivazione"];
+          $data_ultima_modifica = $r["data_ultima_modifica"];
+          $eko = $r["ekovision"];
+          $stag = $r["stagionalita"];
+          $switchON = $r["ddmm_switch_on"];
+          $switchOFF = $r["ddmm_switch_off"];
+          $giorno_competenza = $r["giorno_competenza"];
+          $cdr = $r["cdr"];
+          $nota_versione = $r["nota_versione"];
+          $gestione_arera = $r["gestione_arera"];
+          $freq_sit=$r["freq_testata"];
+        }
+        if(intval($flg_in_attivazione)==1){
+          $check_in_attivazione=1;
+        }
 
+        if ($freq_settimane =='T'){
+          $tipo_frequenza = 'Settimanale';
+        } else if ($freq_settimane =='P') {
+          $tipo_frequenza = 'Mensile - Solo settimane Pari';
+        } else if ($freq_settimane=='D') {
+          $tipo_frequenza = 'Mensile - Solo settimane Dispari';
+        }
 
-    <?php
-    # non serve più 
-    $tomorrow = new DateTime('tomorrow');
-    ?>
-    
-    <div class="col-lg-8" >
-    <div class="input-group">
-  
-          <input type="text" name="desc" id="desc" maxlength="auto" class="form-control" value="<?php echo $desc;?>" required="">
+        // query per dettagli UT- risorse umane
+        $query0_modal="select 
+        u.descrizione as ut,
+        pu.id_squadra,
+        concat(s.cod_squadra, ' - ',s.desc_squadra) as squadra,
+        pu.cdaog3,
+        a.categoria as mezzo,
+        pu.responsabile, 
+        pu.solo_visualizzazione, 
+        pu.rimessa, 
+        pu.data_attivazione,
+        to_char(pu.data_attivazione, 'DD/MM/YYYY') as data_attivazione_print, 
+        pu.data_disattivazione, 
+        u.id_ut
+        from anagrafe_percorsi.percorsi_ut pu 
+        join anagrafe_percorsi.cons_mapping_uo cmu on cmu.id_uo = pu.id_ut 
+        left join elem.automezzi a on a.cdaog3 = pu.cdaog3 
+        join elem.squadre s on s.id_squadra = pu.id_squadra 
+        join topo.ut u on u.id_ut = cmu.id_uo_sit  
+        where pu.cod_percorso = $1  and pu.data_disattivazione = to_date($2, 'DD/MM/YYYY')";
+
+        // RIMESSA - SEDE OPERATIVA
+        $query_rimessa=$query0_modal ." and rimessa = 'S' and responsabile = 'N'";
+        $result1 = pg_prepare($conn_sit, "query_rimessa", $query_rimessa);
+        $result1 = pg_execute($conn_sit, "query_rimessa", array($cod_percorso, $data_disattivazione_testata));
+
+        while($r1 = pg_fetch_assoc($result1)) {
+          $utr = $r1["ut"];
+          $id_utr = $r1["id_ut"];
+          $squadra_rim = $r1["squadra"]; 
+          $data_att_print_r = $r1["data_attivazione_print"];
+          $rimessa = $r1["id_ut"];
+          $sq_rimessa = $r1["id_squadra"];
+          $mezzo = $r1["cdaog3"];
+
+        }
+
+        // GRUPPO DI COORDINAMENTO
+        $query_ut=$query0_modal ." AND responsabile = 'S' and pu.id_squadra!= 15 ";
+        $result2 = pg_prepare($conn_sit, "query_ut", $query_ut);
+        $result2 = pg_execute($conn_sit, "query_ut", array($cod_percorso, $data_disattivazione_testata));
+        
+        while($r2 = pg_fetch_assoc($result2)) {
+          $utgc = $r2["ut"];
+          $id_squadra_gc = $r2["id_squadra"];
+          $id_utgc = $r2["id_ut"];
+          $squadra_gc = $r2["squadra"];
+          $data_att_print_gc = $r2["data_attivazione_print"];
+          $mezzo = $r2["cdaog3"];
           
+        }
 
-    </div>
-    </div>
+        // UT VISUALIZZAZIONE
+        $query_ut2=$query0_modal ." and pu.id_squadra= 15 and rimessa = 'N' order by responsabile desc";
+        $resultut2 = pg_prepare($conn_sit, "query_ut2", $query_ut2);
+        $resultut2 = pg_execute($conn_sit, "query_ut2", array($cod_percorso, $data_disattivazione_testata));
 
-
-
-    <br>
-    
-    <div class="col-lg-4">
-    
-    <button type="submit" class="btn btn-info">
-    <i class="fa-solid fa-arrow-up-from-bracket"></i> Salva
-    </button>
-    </div> 
-  </form>
-<!-- lancio il form e scrivo il risultato -->
-<p><div id="results_desc"></div></p>
-            <script> 
-            $(document).ready(function () {                 
-                $('#form_desc').submit(function (event) { 
-                    event.preventDefault();                  
-                    console.log('Bottone form dd cliccato e finito qua');
-                    var formData = $(this).serialize();
-                    console.log(formData);
-                    $.ajax({ 
-                        url: 'backoffice/update_descrizione.php', 
-                        method: 'POST', 
-                        data: formData, 
-                        //processData: true, 
-                        //contentType: false, 
-                        success: function (response) {                       
-                            //alert('Your form has been sent successfully.'); 
-                            console.log(response);
-                            $("#results_desc").html(response).fadeIn("slow");
-                        }, 
-                        error: function (jqXHR, textStatus, errorThrown) {                        
-                            alert('Your form was not sent successfully.'); 
-                            console.error(errorThrown); 
-                        } 
-                    }); 
-                }); 
-            }); 
-        </script>
-      <?php 
-  } else {
-    echo '<li class="mt-1"><b> Descrizione </b>'.$r["descrizione"].' ';
-  }
-
-  if ($check_versione_successiva==0 and $check_superedit==1 and $check_in_attivazione==1 and $r["flg_disattivo"]==0){
-    ?>
-    <li><b>Turno</b>
-    <!--form class="row row-cols-lg-auto g-3 align-items-center" name="form_dd" method="post" autocomplete="off" action="./backoffice/update_data_attivazione.php"-->
-    <form class="row row-cols-lg-auto g-3 align-items-center" name="form_turno" id="form_turno" autocomplete="off" >
-    <input type="hidden" id="id_percorso" name="id_percorso" value="<?php echo $cod_percorso;?>">
-    <input type="hidden" id="old_vers" name="old_vers" value="<?php echo $versione;?>">
-
-    
-    <div class="col-12">
-    <!--div class="input-group"-->
-    <!--input type="text" name="turno" id="turno" maxlength="60" class="form-control" value="<?php echo $r["cod_turno"];?>" required=""-->
-      <select name="turno" id="turno" class="form-select" data-live-search="true"  required="">
-              
-              <?php            
-              $query2bis="SELECT ID_TURNO, 
-              concat(concat(codice_turno, ' --> '), DESCR_ORARIO) AS DESCR
-              FROM ANAGR_TURNI at2 
-              WHERE DTA_DISATTIVAZIONE > SYSDATE 
-              ORDER BY inizio_ora, inizio_minuti, fine_ora,fine_minuti";
-            
-              
-            
-            $result2bis = oci_parse($oraconn, $query2bis);
-            oci_execute($result2bis);
-            
-              while($r2bis = oci_fetch_assoc($result2bis)) { 
-                  //$valore=  $r2['id_via']. ";".$r2['desvia'];            
-              ?>
-                        
-                    <option name="turno" 
-                    <?php
-                    if ($r2bis['ID_TURNO']==$r["id_turno"]) {
-                    echo 'selected ';
-                  }?>
-                    value="<?php echo $r2bis['ID_TURNO']?>" ><?php echo $r2bis['DESCR'];?></option>
-              <?php } 
-               oci_free_statement($result2bis);
-              ?>
-             
-      </select> 
-
-    
-    <!--/div-->
-    </div>
+        $check_visualizzazione = 0;
+        if (pg_num_rows($resultut2) > 0){
+          $check_visualizzazione = 1;
+        }
 
 
-    <br>
-    
-    <div class="col-12">
-    
-    <button type="submit" class="btn btn-info">
-    <i class="fa-solid fa-arrow-up-from-bracket"></i> Salva
-    </button>
-    </div> 
-  </form>
-  <p><div id="results_turno"></div></p>
-            <script> 
-            $(document).ready(function () {                 
-                $('#form_turno').submit(function (event) { 
-                    console.log('Bottone form dd cliccato e finito qua');
-                    event.preventDefault();                  
-                    var formData = $(this).serialize();
-                    console.log(formData);
-                    $.ajax({ 
-                        url: 'backoffice/update_turno.php', 
-                        method: 'POST', 
-                        data: formData, 
-                        //processData: true, 
-                        //contentType: false, 
-                        success: function (response) {                       
-                            //alert('Your form has been sent successfully.'); 
-                            console.log(response);
-                            $("#results_turno").html(response).fadeIn("slow");
-                        }, 
-                        error: function (jqXHR, textStatus, errorThrown) {                        
-                            alert('Your form was not sent successfully.'); 
-                            console.error(errorThrown); 
-                        } 
-                    }); 
-                }); 
-            }); 
-        </script>
+        /*while($rut2 = pg_fetch_assoc($resultut2)) {
+          $utvis = $rut2["ut"];
+          $id_utvis = $rut2["id_ut"];
+          $data_att_print_vis = $rut2["data_attivazione_print"];
 
-    <?php
-  }else{
-    echo '<li class="mt-1"><b> Turno </b>'.$r["cod_turno"].'</li>';
-  }
-  
-  echo '<li class="mt-1"><b> Durata </b>'.$r["durata"].'</li>';
-  echo '<li class="mt-1"><b> Frequenza </b>'.$r["descrizione_long"];
-  
- if ($r['freq_settimane']=='T'){
-  echo '';
- } else if ($r['freq_settimane']=='P') {
-  echo ' - Solo settimane Pari';
- } else if ($r['freq_settimane']=='D') {
- echo ' - Solo settimane Dispari';
-}
-  echo '</li>';
+        }*/
 
+        // query competenza comuni
+        if ($id_servizio_sit=="" and $cdr=='f'){
+          $query_comuni="SELECT 
+              cu.id_comune,
+              cu.id_ut,
+              c.descr_comune,
+              COALESCE(pc.competenza, 0) AS competenza
+              FROM topo.comuni_ut cu
+              JOIN topo.comuni c 
+                  ON c.id_comune = cu.id_comune 
+              LEFT JOIN anagrafe_percorsi.percorsi_comuni pc 
+                  ON pc.id_comune = cu.id_comune
+                  AND pc.cod_percorso = $1 AND pc.versione = $2
+                  WHERE cu.id_ut = $3
+              ORDER BY c.descr_comune;";
+            $resultC = pg_prepare($conn_sit, "queryC", $query_comuni);
+            $resultC = pg_execute($conn_sit, "queryC", array($cod_percorso, $versione, $id_utgc));  
+            $count_result = pg_num_rows($resultC);
+        }
 
+        $mezzo='';
+        //query risorse tecniche
+        $query_mezzi="select cdaog3,
+            concat(categoria, ' (', trim(nome), ')') as cat_estesa  
+            from elem.automezzi a 
+            join anagrafe_percorsi.percorsi_mezzi pm on pm.id_mezzo = a.cdaog3 
+            where pm.cod_percorso = $1 and pm.versione = $2
+            order by categoria ";
+        $result_mezzi = pg_prepare($conn_sit, "query_mezzi", $query_mezzi);
+        $result_mezzi = pg_execute($conn_sit, "query_mezzi", array($cod_percorso, $versione));
 
-
- 
-  if ($check_versione_successiva==0 and $check_superedit==1 and $check_in_attivazione==1 and $r["flg_disattivo"]==0){
-  ?>
-    <li><b>Data attivazione testata (inclusa)</b>
-    <!--form class="row row-cols-lg-auto g-3 align-items-center" name="form_dd" method="post" autocomplete="off" action="./backoffice/update_data_attivazione.php"-->
-    <form class="row row-cols-lg-auto g-3 align-items-center" name="form_da" id="form_da" autocomplete="off" >
-    <input type="hidden" id="id_percorso" name="id_percorso" value="<?php echo $cod_percorso;?>">
-    <input type="hidden" id="old_vers" name="old_vers" value="<?php echo $versione;?>">
-
-
-
-    <?php
-    # non serve più 
-    $tomorrow = new DateTime('tomorrow');
-    ?>
-    
-    <div class="col-12">
-    <div class="input-group">
-            <input name="data_att" id="js-date1" type="text" class="form-control" value="<?php echo $r["data_inizio_print"];?>" required="">
-          <div class="input-group-addon">
-              <span class="glyphicon glyphicon-th"></span>
-          </div>
-
-    </div>
-    </div>
-
-
-
-    <br>
-    
-    <div class="col-12">
-    
-    <button type="submit" class="btn btn-info">
-    <i class="fa-solid fa-arrow-up-from-bracket"></i> Salva
-    </button>
-    </div> 
-  </form>
-<!-- lancio il form e scrivo il risultato -->
-<p><div id="results_da"></div></p>
-            <script> 
-            $(document).ready(function () {                 
-                $('#form_da').submit(function (event) { 
-                    console.log('Bottone form dd cliccato e finito qua');
-                    event.preventDefault();                  
-                    var formData = $(this).serialize();
-                    console.log(formData);
-                    $.ajax({ 
-                        url: 'backoffice/update_data_attivazione.php', 
-                        method: 'POST', 
-                        data: formData, 
-                        //processData: true, 
-                        //contentType: false, 
-                        success: function (response) {                       
-                            //alert('Your form has been sent successfully.'); 
-                            console.log(response);
-                            $("#results_da").html(response).fadeIn("slow");
-                        }, 
-                        error: function (jqXHR, textStatus, errorThrown) {                        
-                            alert('Your form was not sent successfully.'); 
-                            console.error(errorThrown); 
-                        } 
-                    }); 
-                }); 
-            }); 
-        </script>
-
-
-
-
-
-
-      <?php 
-  } else { 
-    echo '<li class="mt-1"><b> Data attivazione testata (inclusa) </b>'.$r["data_inizio_print"].'';
-  }
-  echo '</li>';
-  $tomorrow = new DateTime('tomorrow');
-  $today = new DateTime('today');
-
-
-
-
-  
-
-  if($check_versione_successiva==0 and $check_superedit==1 and $r["flg_disattivo"]==0){
-      /*echo '- <button type="button" class="btn btn-sm btn-info" title="Modifica data disattivazione" 
-      data-bs-toggle="collapse" data-bs-target="#edit_dd'.$cod_percorso.'_'.$versione.'" aria-expanded="false" aria-controls="edit_dd'.$cod_percorso.'_'.$versione.'">
-      <i class="fa-solid fa-pencil"></i></button>';*/
-      ?> 
-      <!-- Data disattivazione -->
-         
-      
-      <li><b>Data disattivazione (esclusa)</b>
-              <!--form class="row row-cols-lg-auto g-3 align-items-center" name="form_dd" method="post" autocomplete="off" action="./backoffice/update_data_disattivazione.php"-->
-              <form class="row row-cols-lg-auto g-3 align-items-center" name="form_dd" id="form_dd">
-
-              <input type="hidden" id="id_percorso" name="id_percorso" value="<?php echo $cod_percorso;?>">
-              <input type="hidden" id="old_vers" name="old_vers" value="<?php echo $versione;?>">
-      
-      
-      
-              <?php
-              # non serve più 
-              $tomorrow = new DateTime('tomorrow');
-              ?>
-              
-              <div class="col-12 align-items-center" style="display: inline-flex; white-space:nowrap;">
-              <div class="input-group">
-            
-                    <!--input name="data_disatt" id="js-date2" type="text" class="form-control" value="<?php echo $tomorrow->format('d/m/Y');?>" required=""-->
-                    <input name="data_disatt" id="js-date2" type="text" class="form-control" value="<?php echo $r["data_disattivazione_testata"];?>" required="">
-                    <div class="input-group-addon">
-                        <span class="glyphicon glyphicon-th"></span>
-                    </div>
-                    <button type="button" id="btnTomorrow" class="btn btn-info btn-sm" title="Imposta a domani"><i class="fa-solid fa-calendar-day"></i></button>
-                    <button type="button" id="btnInf" class="btn btn-info btn-sm" title="Imposta all'infinito"><i class="fa-solid fa-calendar-xmark"></i></button>
-              </div>
-              <?php 
-                if($r["stagionalita"]!='' && $check_stag_dismiss == 0){
-              ?>
-                  <div class="form-check" style="margin-left: 2%;">
-                    <input class="form-check-input" type="checkbox" value="t" id="dis_stag" name="dis_stag" style="border-width: 2px; border-color: darkgray;" <?php if ($check_superedit == 0) {echo 'disabled';} ?>>
-                    <label class="form-check-label" for="dis_stag">
-                      <small>spuntare la casella per dismettere il percorso stagionale</small>
-                    </label>
-                  </div>
-              <?php
-                }
-              ?>
-              </div>
-      
-      
-      
-              <br>
-              
-              <div class="col-12">
-              
-              <button type="submit" class="btn btn-info">
-              <i class="fa-solid fa-arrow-up-from-bracket"></i> Salva
-              </button>
-              </div> 
-
-              
-            </form>
-            
-            <!-- lancio il form e scrivo il risultato -->
-            <p><div id="results_dd"></div></p>
-            <script> 
-            $(document).ready(function () {                 
-                $('#form_dd').submit(function (event) { 
-                    console.log('Bottone form dd cliccato e finito qua');
-                    event.preventDefault();                  
-                    var formData = $(this).serialize();
-                    console.log(formData);
-                    $.ajax({ 
-                        url: 'backoffice/update_data_disattivazione.php', 
-                        method: 'POST', 
-                        data: formData, 
-                        //processData: true, 
-                        //contentType: false, 
-                        success: function (response) {                       
-                            //alert('Your form has been sent successfully.'); 
-                            console.log(response);
-                            $("#results_dd").html(response).fadeIn("slow");
-                        }, 
-                        error: function (jqXHR, textStatus, errorThrown) {                        
-                            alert('Your form was not sent successfully.'); 
-                            console.error(errorThrown); 
-                        } 
-                    }); 
-                }); 
-            }); 
-        </script>
-
-
-
-
-
-
-      <?php 
-  } else {  echo '<li class="mt-1"><b> Data disattivazione (esclusa*) </b>'.$r["data_disattivazione_testata"]. ' ';
-  }
-  if ($r["flg_disattivo"]==1){
-    echo ' - <b><font color=red>Percorso disattivo</font></b>';
-  }
-  echo '</li>';
-
-  $stag = $r["stagionalita"];
-  $switchON = $r["ddmm_switch_on"];
-  $switchOFF = $r["ddmm_switch_off"];
-  if($stag != ''){
-    if ($check_versione_successiva==0 and $check_superedit==1 and $check_in_attivazione==1 and $r["flg_disattivo"]==0){
-      $switchOng = substr($switchON, 0, 2);
-      $switchOnm = substr($switchON, 2);
-      $switchOffg = substr($switchOFF, 0, 2);
-      $switchOffm = substr($switchOFF, 2);
+        //per debug da commentare o eliminare
+        //$check_in_attivazione=1;
       ?>
-        <li><b>Stagionalità</b>
-        <form class="row g-3 align-items-center" name="form_stag" id="form_stag" autocomplete="off" >
-          <input type="hidden" id="id_percorso" name="id_percorso" value="<?php echo $cod_percorso;?>">
-          <input type="hidden" id="old_vers" name="old_vers" value="<?php echo $versione;?>">
-          <div class="col-12 align-items-center" style="width: auto; display: inline-flex; white-space:nowrap;">
-            <label for="stag"> Stagione </label><span>&nbsp;</span>
-            <select name="stag" id="stag" class="form-select" data-live-search="true">
-              <option name="stag" value="" <?php if($stag ==''){echo 'selected';}?>>Nessuna</option>
-              <option name="stag" value="E" <?php if($stag =='E'){echo 'selected';}?>>Estate</option>
-              <option name="stag" value="I" <?php if($stag =='I'){echo 'selected';}?>>Inverno</option>
-            </select>        
-          </div>
-          <!--div class="form-group col-md-6" id="switchstag" style=" display: block;"-->
-          <div class="col-12 align-items-center" style="width:30%; display: inline-flex; white-space:nowrap;">
-            <label for="switchon"> Switch On </label> <span>&nbsp;</span>
-            <input type="number" placeholder="Giorno" name="switchong" id="gson" max="31" class="form-control" value="<?php if($stag !=''){echo $switchOng;}?>">
-            <input type="number" placeholder="Mese" name="switchonm" id="mson" max="12" class="form-control" value="<?php if($stag !=''){echo $switchOnm;}?>">
-          </div>
-          <br>
-          <div class=" col-12 align-items-center" style="width:30%; display: inline-flex; white-space:nowrap;">
-            <label for="switchoff"> Switch Off </label><span>&nbsp;</span>
-            <input type="number" placeholder="Giorno" name="switchoffg" id="gsof" max="31" class="form-control" value="<?php if($stag !=''){echo $switchOffg;}?>">
-            <input type="number" placeholder="Mese" name="switchoffm" id="msof" max="12" class="form-control" value="<?php if($stag !=''){echo $switchOffm;}?>">
-          </div>
-          <div class="col-12" style="width: auto;">
-            <button type="submit" class="btn btn-info">
-              <i class="fa-solid fa-arrow-up-from-bracket"></i> Salva
-            </button>
-          </div> 
-        </form>
-        <p><div id="results_stag"></div></p>
-          <script> 
-            $(document).ready(function () {                 
-                $('#form_stag').submit(function (event) { 
-                    console.log('Bottone form dd cliccato e finito qua');
-                    event.preventDefault();                  
-                    var formData = $(this).serialize();
-                    console.log(formData);
-                    $.ajax({ 
-                        url: 'backoffice/update_stagione.php', 
-                        method: 'POST', 
-                        data: formData, 
-                        //processData: true, 
-                        //contentType: false, 
-                        success: function (response) {                       
-                            //alert('Your form has been sent successfully.'); 
-                            console.log(response);
-                            $("#results_stag").html(response).fadeIn("slow");
-                        }, 
-                        error: function (jqXHR, textStatus, errorThrown) {                        
-                            alert('Your form was not sent successfully.'); 
-                            console.error(errorThrown); 
-                        } 
-                    }); 
-                }); 
-            }); 
-          </script>
-    <?php
-    }else{
-      echo '<li class="mt-1"><b> Stagionalità </b>'.$stag .'</li> ';
-      echo '<li class="mt-1"><b> Switch On </b>'.$switchON .'</li> ';
-      echo '<li class="mt-1"><b> Switch Off </b>'.$switchOFF .'</li> ';
-    }
-  }
 
-
-  $eko=$r["ekovision"];
-  if ($eko=='t'){
-    echo '<li><i class="fa-solid fa-link"></i> Percorso trasmesso a ekovision</li>';
-  } else {
-    echo '<li><i class="fa-solid fa-link-slash"></i> Percorso non trasmesso a ekovision</li>';
-  }
-  echo '<li>Ultima modifica il '.$r['data_ultima_modifica'].'</li>';
-  $freq_sit=$r["freq_testata"];
-  $fbin=$r["fbin"];
-  $freq_sett=$r["freq_settimane"];
-  $freq_uo=$r["freq_binaria"];
-  $id_servizio_uo=$r['id_servizio_uo'];
-  $id_servizio_sit= $r['id_servizio_sit'];
-  $tipo= $r['id_tipo'];
-  $turno=$r["id_turno"];
-  $turnoIni=$r["inizio_ora"];
-  $turnoFine=$r["fine_ora"];
-  $turnoRefDay=$r["giorno_competenza"];
-  $data_attivazione_testata=$r['data_inizio_validita'];
-  $data_inizio_print=$r['data_inizio_print'];
-  $data_disattivazione_testata=$r['data_disattivazione_testata'];
-  $cdr=$r['cdr'];
-
-  
-}
-echo '</ul>';
-
-
-
-
-
-?>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<?php
-//echo $data_inizio_print.'<br>';
-
-
-# percorso su SIT
-$query_sit = "
-select id_percorso_sit, cod_percorso, versioni_uo,
-data_inizio_validita, data_fine_validita                 
-from anagrafe_percorsi.date_percorsi_sit_uo
-where cod_percorso = $1
-and data_inizio_validita = to_date($2, 'DD/MM/YYYY')
-and data_fine_validita = to_date($3, 'DD/MM/YYYY')
-";
-
-
-
-
-
-$result_sit = pg_prepare($conn_sit, "query_sit", $query_sit);
-$result_sit = pg_execute($conn_sit, "query_sit", array($cod_percorso, $data_inizio_print, $data_disattivazione_testata));  
-
-
-if (($_ENV['APP_ENV'] ?? '') ===  'test') {
-  $testo_tasto="Percorso su SIT (produzione NON test)";
-} else {
-  $testo_tasto="Percorso su SIT";
-}
-
-while($r_s = pg_fetch_assoc($result_sit)) {
-  echo '<a class="btn btn-primary" target="SIT" href="'.$url_sit.'/#!/percorsi/percorso-details/?idPercorso='.$r_s["id_percorso_sit"].'"> 
-  <i class="fa-solid fa-map-location-dot"></i> '.$testo_tasto.' </a>';
-}
-
-
-$query_anomalie_sit = "select dpsu.*,  /*p.data_attivazione ,*/p.versione as versione_sit,
-date_trunc('day',p.data_dismissione) as  data_dismissione 
-from anagrafe_percorsi.date_percorsi_sit_uo dpsu
-join elem.percorsi p on p.id_percorso = dpsu.id_percorso_sit 
-where dpsu.cod_percorso in (
-	select /*count(id_percorso_sit),*/ cod_percorso/*, data_fine_validita*/
-	from anagrafe_percorsi.date_percorsi_sit_uo dpsu1  
-	where data_inizio_validita != data_fine_validita 
-	group by cod_percorso, data_fine_validita 
-	having count(id_percorso_sit) > 1)
-	and dpsu.cod_percorso = $1
-order by 2,1";
-
-$result_anomalie_sit = pg_prepare($conn_sit, "query_anomalie_sit", $query_anomalie_sit);
-$result_anomalie_sit = pg_execute($conn_sit, "query_anomalie_sit", array($cod_percorso));  
-$check_anomalie=0;
-while($r_as = pg_fetch_assoc($result_anomalie_sit)) {
-  $check_anomalie=1;
-  echo '<br><br><i class="fa-solid fa-triangle-exclamation"></i> ';
-  echo '<b> Anomalia sulla tabella anagrafe_percorsi.date_percorsi_sit_uo da correggere </b>';
-  echo '<ul>';
-  ?>
-
-
-
-
-  <?php
-  echo '<li> <i class="fa-solid fa-question"></i> Data attivazione da controllare versione ' .$r_as['versione_sit'] .' del SIT: '.$r_as['data_inizio_validita'] .'</li>';
-  echo '<li> <i class="fa-solid fa-question"></i> Data disattivazione da controllare versione ' .$r_as['versione_sit'] .' del SIT: '.$r_as['data_fine_validita'] .'</li>';
-  echo '<li> <i class="fa-solid fa-check"></i> Data dismissione da SIT versione ' .$r_as['versione_sit'] .' del SIT: '.$r_as['data_dismissione'] .'</li>';
-  echo '</ul>';
-}
-
-if ($check_anomalie==1){
-  echo '<i class="fa-solid fa-list-check"></i> Per correggere occorre modificare la dara di attivzione / disattivazione della tabella 
-  anagrafe_percorsi.date_percorsi_sit_uo';
-}
-
-
-
-?>
-<hr>
-<h3> Risorse umane</h3>
-<?php
-$mezzo='';
-$query0_modal="select 
-u.descrizione as ut,
-pu.id_squadra,
-concat(s.cod_squadra, ' - ',s.desc_squadra) as squadra,
-pu.cdaog3,
-a.categoria as mezzo,
-pu.responsabile, 
-pu.solo_visualizzazione, 
-pu.rimessa, 
-pu.data_attivazione,
-to_char(pu.data_attivazione, 'DD/MM/YYYY') as data_attivazione_print, 
-pu.data_disattivazione, 
-u.id_ut
-from anagrafe_percorsi.percorsi_ut pu 
-join anagrafe_percorsi.cons_mapping_uo cmu on cmu.id_uo = pu.id_ut 
-left join elem.automezzi a on a.cdaog3 = pu.cdaog3 
-join elem.squadre s on s.id_squadra = pu.id_squadra 
-join topo.ut u on u.id_ut = cmu.id_uo_sit  
-where pu.cod_percorso = $1  and pu.data_disattivazione = to_date($2, 'DD/MM/YYYY')";
-
-// RIMESSA / SEDE OPERATIVA
-$query_rimessa=$query0_modal ." and rimessa = 'S' and responsabile = 'N'";
-$result1 = pg_prepare($conn_sit, "query_rimessa", $query_rimessa);
-$result1 = pg_execute($conn_sit, "query_rimessa", array($cod_percorso, $data_disattivazione_testata));
-echo '<ul>';
-while($r1 = pg_fetch_assoc($result1)) {
-  echo '<h4><li class="mt-1"><b> Sede operativa </b>'.$r1["ut"].'</li></h4>';
-  echo '<li class="mt-1"><b> Squadra </b>'.$r1["squadra"].'</li>'; 
-
-  // inserire composizione squadra con funzioncina da recuperare anche sotto 
-
-
-  //echo '<li class="mt-1"><b> Mezzo </b>'.$r1["mezzo"].'</li>';
-  //echo '<li class="mt-1"><b> Responsabile </b>'.$r1["responsabile"].'</li>';
-  //echo '<li class="mt-1"><b> Solo visualizzazione </b>'.$r1["solo_visualizzazione"].'</li>';
-  echo '<li class="mt-1"><b> Data attivazione </b>'.$r1["data_attivazione_print"].'</li>';
-  //echo '<li class="mt-1"><b> Data disattivazione  </b>'.$r1["data_disattivazione"].'</li>';
-  $rimessa=$r1["id_ut"];
-  $sq_rimessa=$r1["id_squadra"];
-  $mezzo=$r1["cdaog3"];
-
-}
-echo '</ul>';
-
-
-// GRUPPO DI COORDINAMENTO
-
-//$query_ut=$query0_modal ." and pu.id_squadra!= 15 and (rimessa = 'N' and responsabile = 'N') or ";
-$query_ut=$query0_modal ." AND responsabile = 'S' and pu.id_squadra!= 15 ";
-$result2 = pg_prepare($conn_sit, "query_ut", $query_ut);
-$result2 = pg_execute($conn_sit, "query_ut", array($cod_percorso, $data_disattivazione_testata));
-//echo '<hr>';
-if (pg_num_rows($result2) > 0){
-  echo '<h4> <b>Gruppo di coordinamento</b></h4>';
-} else {
-  echo '<h4> <b>Nessun Gruppo di Coordinamento</b></h4>';
-}
-echo '<ul>';
-while($r2 = pg_fetch_assoc($result2)) {
-  echo '<h4><li class="mt-1"><b> Gruppo di coordinamento</b> '.$r2["ut"].'</li></h4>';
-  echo '<form class="row row-cols-lg-auto g-3 align-items-center" name="form_com" id="form_com" autocomplete="off">';
-  echo '<input type="hidden" id="id_percorso" name="id_percorso" value="'.$cod_percorso.'">';
-  echo '<input type="hidden" id="id_servizio_uo" name="id_servizio_uo" value="'.$id_servizio_uo.'">';
-  echo '<input type="hidden" id="old_vers" name="old_vers" value="'.$versione.'">';
-  echo '<div id="comuni" class="form-group col-md-12" style="display: none !important;">';
-  if ($id_servizio_sit=="" and $cdr=='f'){
-    $query_comuni="SELECT 
-        cu.id_comune,
-        cu.id_ut,
-        c.descr_comune,
-        COALESCE(pc.competenza, 0) AS competenza
-        FROM topo.comuni_ut cu
-        JOIN topo.comuni c 
-            ON c.id_comune = cu.id_comune 
-        LEFT JOIN anagrafe_percorsi.percorsi_comuni pc 
-            ON pc.id_comune = cu.id_comune
-            AND pc.cod_percorso = $1 AND pc.versione = $2
-        WHERE cu.id_ut = $3
-        ORDER BY c.descr_comune;";
-      $resultC = pg_prepare($conn_sit, "queryC", $query_comuni);
-      $resultC = pg_execute($conn_sit, "queryC", array($cod_percorso, $versione, $r2["id_ut"]));  
-      $count_result = pg_num_rows($resultC);
-      //echo $count_result.'<br>';
-      //echo 'UT:'.$r2["id_ut"].'<br>';
-      if($check_versione_successiva==0 and $check_edit==1 and $r["flg_disattivo"]==0){
-        while($rC = pg_fetch_assoc($resultC)) {
-          ?>
-          <div class="comuni-row">
-            <label for="inlineCheckbox1"><?php echo $rC['descr_comune']?></label>
+      <div id="modal_dettagli">
+        <div class="row g-3 align-items-center">
+          <h3> Percorso  <?php echo $cod_percorso; ?> - <?php echo $descr_percorso; ?> - versione n° <?php echo $versione; ?>
             <?php
-              if($count_result == 1) {
-                // Se c'è un solo comune, lo seleziono automaticamente e metto la checkbox disabled
-                //devo però passare il valore dell'id_comune con un input hidden perchè il disabled non passa il valor in post
-                echo '<input type="hidden" name="comuni[]" value="' . $rC['id_comune'] . '">';
+              if ($gestione_arera === 't'){
+                echo ' <i class="fa-solid fa-scale-balanced" title="Tipo servizio gestione area"></i>';
+              }
+              if ($eko === 't'){
+                echo ' <i class="fa-solid fa-list-check" title="Percorso trasmesso a Ekovision"></i>';
               }
             ?>
-            <input class="comuni-check" type="checkbox" style="border-color:darkgrey;" name="comuni[]" id="comune_<?php echo $rC['id_comune']?>" value="<?php echo $rC['id_comune']?>" <?php 
-            if ($count_result == 1){
-                echo "checked disabled";
-            } elseif ($count_result > 1 and $rC['competenza'] > 0 ){
-                echo "checked";
-            } ?>>
-            <input type="number" class="percent-input" name="percentuali[<?= $rC['id_comune'] ?>]" placeholder="%" min="0" max="100" <?php
-              if ($count_result == 1) {
-                // Se c'è un solo comune, imposto il valore 100 e metto l'input readonly
-                //altrimenti lo metto disabled in modo che venga attivato solo se viene checcata la checbox corrispondente
-                  echo 'value="100" readonly';
-              } elseif ($count_result > 1 and $rC['competenza'] > 0 ){
-                  echo 'value="'.$rC['competenza'].'"';
-              }
-              else {
-                  echo 'disabled';
-              }
-            ?>>
+          </h3>
+          <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="testata-tab" data-bs-toggle="tab" data-bs-target="#testata-tab-pane" type="button" role="tab" aria-controls="testata-tab-pane" aria-selected="true">Testata</button>
+            </li>
+            <?php if ($tipo_servizio == 'RACCOLTA'){?>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="piazzole-tab" data-bs-toggle="tab" data-bs-target="#piazzole-tab-pane" type="button" role="tab" aria-controls="piazzole-tab-pane" aria-selected="false">Piazzole</button>
+              </li>
+            <?php } elseif ($tipo_servizio == 'SPAZZAMENTO'){?>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="aste-tab" data-bs-toggle="tab" data-bs-target="#aste-tab-pane" type="button" role="tab" aria-controls="aste-tab-pane" aria-selected="false">Aste</button>
+              </li>
+            <?php } elseif ($tipo_servizio == 'ALTRO'){?>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="elementi-tab" data-bs-toggle="tab" data-bs-target="#elementi-tab-pane" type="button" role="tab" aria-controls="elementi-tab-pane" aria-selected="false">Elementi</button>
+              </li>
+            <?php } ?>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="posizione-tab" data-bs-toggle="tab" data-bs-target="#posizione-tab-pane" type="button" role="tab" aria-controls="posizione-tab-pane" aria-selected="false">Modifica</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="analisi-tab" data-bs-toggle="tab" data-bs-target="#analisi-tab-pane" type="button" role="tab" aria-controls="analisi-tab-pane" aria-selected="false">Analisi</button>
+            </li>
+            <!--li class="nav-item" role="presentation">
+              <button class="nav-link" id="disabled-tab" data-bs-toggle="tab" data-bs-target="#disabled-tab-pane" type="button" role="tab" aria-controls="disabled-tab-pane" aria-selected="false" disabled>Disabled</button>
+            </li-->
+          </ul>
+          <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="testata-tab-pane" role="tabpanel" aria-labelledby="testata-tab" tabindex="0">
+              <!-- CONTENUTO TAB DETTAGLI TESTATA-->
+              <?php require './dettagli_percorso_tab_testata.php'; ?>
+            </div>
+            <div class="tab-pane fade" id="piazzole-tab-pane" role="tabpanel" aria-labelledby="piazzole-tab" tabindex="0">
+              <!-- CONTENUTO TAB PIAZZOLE-->
+               <?php if(($_ENV['APP_ENV'] ?? '') === 'test') {
+                  require './dettagli_percorso_tab_piazzole.php'; 
+                  }else{
+                    require './modal_wip.php';
+                  }?>
+            </div>
+            <div class="tab-pane fade" id="aste-tab-pane" role="tabpanel" aria-labelledby="aste-tab" tabindex="0">
+              <div class="row g-3 align-items-stretch">
+                <?php require './modal_wip.php'; ?>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="elementi-tab-pane" role="tabpanel" aria-labelledby="elementi-tab" tabindex="0">
+              <div class="row g-3 align-items-stretch">
+                <?php require './modal_wip.php'; ?>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="posizione-tab-pane" role="tabpanel" aria-labelledby="posizione-tab" tabindex="0">
+              <?php if(($_ENV['APP_ENV'] ?? '') === 'test') {
+                  require './dettagli_percorso_tab_modifica.php'; 
+                  }else{
+                    require './redirect2wip.php';
+                  }?>
+            </div>
+            <div class="tab-pane fade" id="analisi-tab-pane" role="tabpanel" aria-labelledby="analisi-tab" tabindex="0">
+              <div class="row g-3 align-items-stretch">
+                <?php require './modal_wip.php'; ?>
+              </div>
+            </div>
           </div>
-      <?php
-        } // chiude il while della query_comuni
-      ?>
-          <br>
-          <div class="comuni-row">
-          <button type="submit" class="btn btn-info">
-          <i class="fa-solid fa-arrow-up-from-bracket"></i> Salva
-          </button>
-          </div>
-          
-        <?php
-          }else{
-            echo 'non sono super edit e non posso modificare i comuni';
-            while($rC = pg_fetch_assoc($resultC)) {
-              echo '<div class="comuni-row">'.$rC['descr_comune'].': '.$rC['competenza'].'% </div>';
-            }
-          }
-        }
-        echo '</div>'; // chiude il div comuni
-        echo '</form>';
-      ?>
-    
-<!-- lancio il form e scrivo il risultato -->
-  <!-- RIPARTIRE DA QUI il salva non deve comparire se non sono suoper edit quindi il form si deve chiudere nell'if, nell'else devo rifare la query per far vedere i valori?-->
-<p><div id="results_com"></div></p>
-            <script> 
-            $(document).ready(function () {
-              $('#form_com').on('submit', function (event) {
-
-                // verifico se almeno un comune  è selezionato
-                let checkedC = $("input[name='comuni[]']:checked");
-                console.log("Checkbox selezionate:", checkedC.length);
-
-                if (checkedC.length === 0) {
-                    event.preventDefault();
-                    alert("E' necessario selezionare almeno un comune.");
-                    return false;
-                }
-
-                // verifico se la somma delle percentuali è 100
-                let somma = 0;
-                $(".percent-input:not([disabled])").each(function () {
-                    somma += parseFloat($(this).val()) || 0;
-                });
-
-                console.log("Somma percentuali:", somma);
-
-                if (somma !== 100) {
-                    event.preventDefault();
-                    alert("La somma delle percentuali deve essere 100. Somma attuale: " + somma);
-                    return false;
-                }
-
-                // --- Se i controlli sono ok → invio AJAX ---
-                event.preventDefault();  
-                console.log("Controlli OK, invio form comuni");
-
-                var formData = $(this).serialize();
-
-                $.ajax({
-                    url: 'backoffice/update_comuni.php',
-                    method: 'POST',
-                    data: formData,
-                    success: function (response) {
-                      console.log(response);
-                      $("#results_com").html(response).fadeIn("slow");
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                      alert('Errore durante l\'invio del form.');
-                       console.error(errorThrown);
-                    }
-                });
-
-            });
-
-          });
-
-        </script>
-      <?php
-  //rendo la squadra modificabile se percorso non è ancor attivo
-  if ($check_versione_successiva==0 and $check_superedit==1 and $check_in_attivazione==1 and $r["flg_disattivo"]==0){
-    ?>
-    <li class="mt-1"><b>Squadra</b>
-    <!--form class="row row-cols-lg-auto g-3 align-items-center" name="form_dd" method="post" autocomplete="off" action="./backoffice/update_data_attivazione.php"-->
-    <form class="row row-cols-lg-auto g-3 align-items-center" name="form_squadra" id="form_squadra" autocomplete="off" >
-      <input type="hidden" id="id_percorso" name="id_percorso" value="<?php echo $cod_percorso;?>">
-      <input type="hidden" id="old_vers" name="old_vers" value="<?php echo $versione;?>">
-      <input type="hidden" id="id_ut_sit" name="id_ut_sit" value="<?php echo $r2["id_ut"];?>">
-      <div class="col-12">
-        <select name="sq_ut" id="sq_ut" class="form-select" data-size="5"  data-live-search="true" required="">
-          <?php
-          $query0_1="select id_squadra, 
-          concat(cod_squadra, ' - ', desc_squadra) as descr 
-          from elem.squadre s order by desc_squadra ;";
-          $result0_1 = pg_prepare($conn_sit, "query0_1", $query0_1);            
-          $result0_1 = pg_execute($conn_sit, "query0_1", array()); 
-          while($r0_1 = pg_fetch_assoc($result0_1)) {         
-            ?>
-            <option name="sq_ut" 
-            <?php 
-            if ($r0_1['id_squadra']==$r2["id_squadra"]){
-              echo ' selected ';
-            } ?>
-            value="<?php echo $r0_1['id_squadra']?>" ><?php echo $r0_1['descr'] ?></option>
-          <?php } ?>
-        </select>
-      </div>
-      <br>
-      <div class="col-12">
-        <button type="submit" class="btn btn-info">
-          <i class="fa-solid fa-arrow-up-from-bracket"></i> Salva
-        </button>
-      </div> 
-    </form>
-    <div id="results_squadra"></div>
-      <script> 
-        $(document).ready(function () {                 
-            $('#form_squadra').submit(function (event) { 
-                console.log('Bottone form dd cliccato e finito qua');
-                event.preventDefault();                  
-                var formData = $(this).serialize();
-                console.log(formData);
-                $.ajax({ 
-                    url: 'backoffice/update_squadra.php', 
-                    method: 'POST', 
-                    data: formData, 
-                    //processData: true, 
-                    //contentType: false, 
-                    success: function (response) {                       
-                        //alert('Your form has been sent successfully.'); 
-                        console.log(response);
-                        $("#results_squadra").html(response).fadeIn("slow");
-                    }, 
-                    error: function (jqXHR, textStatus, errorThrown) {                        
-                        alert('Your form was not sent successfully.'); 
-                        console.error(errorThrown); 
-                    } 
-                }); 
-            }); 
-        }); 
-      </script>
-  <?php
-  }else{
-    echo '<li class="mt-1"><b> Squadra </b>'.$r2["squadra"].'</li>';
-  }
-
-  // inserire composizione squadra con funzioncina da recuperare anche sotto 
-
-
-  //echo '<li class="mt-1"><b> Responsabile </b>'.$r2["responsabile"].'</li>';
-  if ($r2["responsabile"]=='S'){
-    $gc=$r2["id_ut"];
-    $sq_gc=$r2["id_squadra"];
-    if ($mezzo==''){
-      $mezzo=$r2["cdaog3"];
-    }
-  }
-  //echo '<li class="mt-1"><b> Solo visualizzazione </b>'.$r2["solo_visualizzazione"].'</li>';
-  echo '<li class="mt-1"><b> Data attivazione </b>'.$r2["data_attivazione_print"].'</li>';
-  //echo '<li class="mt-1"><b> Data disattivazione  </b>'.$r2["data_disattivazione"].'</li>';
-}
-echo '</ul>';
-
-
-// ALtre UT Visualizzazione
-
-$query_ut2=$query0_modal ." and pu.id_squadra= 15 and rimessa = 'N' order by responsabile desc";
-$result2 = pg_prepare($conn_sit, "query_ut2", $query_ut2);
-$result2 = pg_execute($conn_sit, "query_ut2", array($cod_percorso, $data_disattivazione_testata));
-//echo '<hr>';
-
-if (pg_num_rows($result2) > 0){
-  echo '<h4> <b>UT visualizzazione</b></h4>';
-}
-
-echo '<ul>';
-while($r2 = pg_fetch_assoc($result2)) {
-  echo '<h4><li class="mt-1">'.$r2["ut"].'</li></h4>';
-  //echo '<li class="mt-1"><b> Squadra </b>'.$r2["id_squadra"].'</li>'; 
-
-  // inserire composizione squadra con funzioncina da recuperare anche sotto 
-
-
-  //echo '<li class="mt-1"><b> Mezzo </b>'.$r2["mezzo"].'</li>';
-  //echo '<li class="mt-1"><b> Responsabile </b>'.$r2["responsabile"].'</li>';
-  echo '<li class="mt-1"><b> Data attivazione </b>'.$r2["data_attivazione_print"].'</li>';
-  //echo '<li class="mt-1"><b> Data disattivazione  </b>'.$r2["data_disattivazione"].'</li>';
-}
-echo '</ul>';
-?>
-<hr>
-<h3> Risorse tecniche</h3>
-<h5>Mezzi</h5>
-<?php
-$query_mezzi="select cdaog3,
-        concat(categoria, ' (', trim(nome), ')') as cat_estesa  
-        from elem.automezzi a 
-        join anagrafe_percorsi.percorsi_mezzi pm on pm.id_mezzo = a.cdaog3 
-        where pm.cod_percorso = $1 and pm.versione = $2
-        order by categoria ";
-$result_mezzi = pg_prepare($conn_sit, "query_mezzi", $query_mezzi);
-$result_mezzi = pg_execute($conn_sit, "query_mezzi", array($cod_percorso, $versione));
-
-?>
-
-<?php
-  if ($check_versione_successiva==0 and $check_superedit==1 and $check_in_attivazione==1 and $r["flg_disattivo"]==0){
-    ?>
-    
-    <!--form class="row row-cols-lg-auto g-3 align-items-center" name="form_dd" method="post" autocomplete="off" action="./backoffice/update_data_attivazione.php"-->
-    <form class="row g-3 align-items-center" name="form_mezzo" id="form_mezzo" autocomplete="off" >
-      <input type="hidden" id="id_percorso" name="id_percorso" value="<?php echo $cod_percorso;?>">
-      <input type="hidden" id="old_vers" name="old_vers" value="<?php echo $versione;?>">
-      <input type="hidden" id="id_ut_sit" name="id_ut_sit" value="<?php echo $r2["id_ut"];?>">
-      <div class="form-group col-6">
-        <select name="mezzo_ut" id="mezzo_ut" class="selectpicker show-tick form-control" data-size="5"  data-live-search="true" onchange="writelist();" title="Seleziona la tipologia di mezzo">
-          <!--option name="cdaog3" value="">Seleziona la tipologia di mezzo</option-->
-          <?php
-          ## da cambiare la query per lista mezzi
-          $querymezzo="select cdaog3,
-          concat(trim(categoria), ' (', trim(nome), ')') as cat_estesa  from elem.automezzi a 
-          where a.cdaog3 not in ('9998' , '9997', '9996', '9994','9993')
-          order by categoria ;";
-          $resultmezzo = pg_query($conn_sit, $querymezzo);
-          //echo $query1;    
-          while($rm = pg_fetch_assoc($resultmezzo)) { 
-          ?>   
-            <option name="cdaog3" value="<?php echo $rm['cdaog3']?>" ><?php echo $rm['cat_estesa'] ?></option>
-          <?php } ?>
-        </select>
-      </div>
-      <div class="col-4">
-        <label for="lista_mezzi">Elenco mezzi selezionati:</label>
-        <textarea readonly id="lista_mezzi" name="lista_mezzi" rows="4"  class="form-control" required><?php
-          while($rm = pg_fetch_assoc($result_mezzi)) {
-              echo $rm['cdaog3'].' - '.$rm['cat_estesa']."\n";
-            }?>
-        </textarea>
-        <input type="hidden" id="lista_mezzi_valori" name="lista_mezzi_valori" value="">
-        <input type="hidden" id="lista_mezzi_nomi" name="lista_mezzi_nomi" value="">
-        <div class="form-group" style="display: flex; margin-top:2%;">
-        <small class="text-muted" ><!--Anteprima del file con l'elenco mezzi usato dall'applicativo per generare i file con le utenze. 
-        In caso di errori con i mezzi clicca sul bottone per rimuovere l'ultima linea.<br-->
-        <a href="#" class="btn btn-warning btn-sm" id="removeline" ><i class="far fa-trash-alt"></i>Elimina ultimo mezzo</a>
-        <!--br> o riparti dall'inizio<br-->
-        <a href="#" class="btn btn-danger btn-sm" id="aggiorna" ><i class="fas fa-redo"></i>Elimina intero elenco</a></small>
         </div>
-        <script>
-            $(document).ready(function() {
-                $('#removeline').click(function() {
-                  //cancello ulrima riga del textarea
-                  var lm = $('#lista_mezzi');
-                  var text_lm = lm.val().trim("\n");
-                  var valuelist_lm = text_lm.split("\n");
-                  var last_lm = valuelist_lm[valuelist_lm.length - 1];
-                  replace_lm=text_lm.replace(last_lm, "").replace(/\n$/, "")
-                  lm.val(replace_lm)
-
-                  
-                  // stessa cosa per i campi nascosti
-                  var lm_valori = $('#lista_mezzi_valori');
-                  var text_lm_valori = lm_valori.val().split(",");
-                  text_lm_valori.pop();
-                  lm_valori.val(text_lm_valori)
-
-                  var lm_nomi = $('#lista_mezzi_nomi');
-                  console.log('lista nomi prima: '+lm_nomi.val())
-                  var text_lm_nomi = lm_nomi.val().split(",");
-                  text_lm_nomi.pop();
-                  lm_nomi.val(text_lm_nomi)
-
-                  console.log('lista mezzi: '+lm.val())
-                  console.log('lista nomi dopo: '+lm_nomi.val())
-                  console.log('lista valori dopo: '+lm_valori.val())
-                })
-            });
-            $(document).ready(function() {
-                $('#aggiorna').click(function() {
-                    // pulisco tutto
-                    $('#lista_mezzi').val('');
-                    $('#lista_mezzi_valori').val('');
-                    $('#lista_mezzi_nomi').val('');
-                })
-            });
-
-        </script>            
       </div>
-
-      <div class="col-2 d-flex justify-content-center align-items-center">
-        <button type="submit" class="btn btn-info">
-          <i class="fa-solid fa-arrow-up-from-bracket"></i> Salva
-        </button>
-      </div> 
-    </form>
-    <p><div id="results_mezzo"></div></p>
-      <script> 
-        $(document).ready(function () {                 
-            $('#form_mezzo').submit(function (event) { 
-                console.log('Bottone form dd cliccato e finito qua');
-                event.preventDefault();                  
-                var formData = $(this).serialize();
-                console.log(formData);
-                $.ajax({ 
-                    url: 'backoffice/update_mezzo.php', 
-                    method: 'POST', 
-                    data: formData, 
-                    //processData: true, 
-                    //contentType: false, 
-                    success: function (response) {                       
-                        //alert('Your form has been sent successfully.'); 
-                        console.log(response);
-                        $("#results_mezzo").html(response).fadeIn("slow");
-                    }, 
-                    error: function (jqXHR, textStatus, errorThrown) {                        
-                        alert('Your form was not sent successfully.'); 
-                        console.error(errorThrown); 
-                    } 
-                }); 
-            }); 
-        }); 
-      </script>
-  <?php
-  }else{
-    echo '<ul>';
-while($rm = pg_fetch_assoc($result_mezzi)) {
-    echo '<li class="mt-1">'.$rm["cat_estesa"].'</li>';
-}
-echo '</ul>';
-  }
-echo '<hr>';
-?>
-<?php
-
-if($check_versione_successiva==0){
-?>
-
-<form id="nv" name="nuova_versione" target="_blank" method="post" autocomplete="off" action="./nuova_versione.php">
-
-<input type="hidden" id="id_percorso" name="id_percorso" value="<?php echo $cod_percorso;?>">
-<input type="hidden" id="desc" name="desc" value="<?php echo $desc;?>">
-<input type="hidden" id="freq_uo" name="freq_uo" value="<?php echo $freq_uo;?>">
-<input type="hidden" id="freq_sit" name="freq_sit" value="<?php echo $freq_sit;?>">
-<input type="hidden" id="fbin" name="fbin" value="<?php echo $fbin;?>">
-<input type="hidden" id="freq_sett" name="freq_sett" value="<?php echo $freq_sett;?>">
-<input type="hidden" id="id_servizio_uo" name="id_servizio_uo" value="<?php echo $id_servizio_uo;?>">
-<input type="hidden" id="id_servizio_sit" name="id_servizio_sit" value="<?php echo $id_servizio_sit;?>">
-<input type="hidden" id="durata" name="durata" value="<?php echo $durata;?>">
-<input type="hidden" id="turno" name="turno" value="<?php echo $turno;?>">
-<input type="hidden" id="turno_ini" name="turno_ini" value="<?php echo $turnoIni;?>">
-<input type="hidden" id="turno_fine" name="turno_fine" value="<?php echo $turnoFine;?>">
-<input type="hidden" id="turno_ref_day" name="turno_ref_day" value="<?php echo $turnoRefDay;?>">
-<input type="hidden" id="tipo" name="tipo" value="<?php echo $tipo;?>">
-<input type="hidden" id="old_vers" name="old_vers" value="<?php echo $versione;?>">
-<input type="hidden" id="rimessa" name="rimessa" value="<?php echo $rimessa;?>">
-<input type="hidden" id="sq_rimessa" name="sq_rimessa" value="<?php echo $sq_rimessa;?>">
-<input type="hidden" id="gc" name="gc" value="<?php echo $gc;?>">
-<input type="hidden" id="sq_gc" name="sq_gc" value="<?php echo $sq_gc;?>">
-<input type="hidden" id="mezzo" name="mezzo" value="<?php echo $mezzo;?>">
-<input type="hidden" id="eko" name="eko" value="<?php echo $eko;?>">
-<input type="hidden" id="stag" name="stag" value="<?php echo $stag;?>">
-<input type="hidden" id="swon" name="swon" value="<?php echo $switchON;?>">
-<input type="hidden" id="swoff" name="swoff" value="<?php echo $switchOFF;?>">
-<input type="hidden" id="cdr" name="cdr" value="<?php echo $cdr;?>">
-
-<?php if ($check_superedit==1 and $check_in_attivazione==0){?>
-<div class="row g-3 align-items-center">
-<button type="submit" class="btn btn-info">
-<i class="fa-solid fa-plus"></i> <i class="fa-solid fa-arrow-up-from-bracket"></i> Nuova versione
-</button>
-</div>
-<?php } else {
-  //echo 'Check in attivazione '. $check_in_attivazione;
-  if ($check_in_attivazione==1){
-    echo '<div style=" text-align-last: center;"><h6><i class="fa-solid fa-ban"></i> Percorso non ancora attivo. Per modifiche contattare <a href="mailto:assterritorio@amiu.genova.it">AssTerritorio</a>.</h6></div>';
-  }
-}?>
-</form>
-
-
-<hr>
-
-<?php if ($check_superedit==1){?>
-<!--form id="vis" name="vis" method="post" autocomplete="off" action="./backoffice/nuova_visualizzazione.php"-->
-<form id="vis" name="vis" autocomplete="off" >
-
-<input type="hidden" id="id_percorso" name="id_percorso" value="<?php echo $cod_percorso;?>">
-<input type="hidden" id="desc" name="desc" value="<?php echo $desc;?>">
-<input type="hidden" id="freq_uo" name="freq_uo" value="<?php echo $freq_uo;?>">
-<input type="hidden" id="freq_sit" name="freq_sit" value="<?php echo $freq_sit;?>">
-<input type="hidden" id="freq_sett" name="freq_sett" value="<?php echo $freq_sett;?>">
-<input type="hidden" id="id_servizio_uo" name="id_servizio_uo" value="<?php echo $id_servizio_uo;?>">
-<input type="hidden" id="id_servizio_sit" name="id_servizio_sit" value="<?php echo $id_servizio_sit;?>">
-<input type="hidden" id="durata" name="durata" value="<?php echo $durata;?>">
-<input type="hidden" id="turno" name="turno" value="<?php echo $turno;?>">
-<input type="hidden" id="tipo" name="tipo" value="<?php echo $tipo;?>">
-<input type="hidden" id="data_attivazione" name="data_attivazione" value="<?php echo $data_attivazione_testata;?>">
-<input type="hidden" id="data_disattivazione" name="data_disattivazione" value="<?php echo $data_disattivazione_testata;?>">
-<!--input type="hidden" id="gc" name="gc" value="<?php echo $gc;?>"-->
-<input type="hidden" id="sq_ut" name="sq_ut" value="15">
-<input type="hidden" id="mezzo" name="mezzo" value="<?php echo $mezzo;?>">
-<input type="hidden" id="new_vers" name="new_vers" value="<?php echo $versione;?>">
-<input type="hidden" id="stag" name="stag" value="<?php echo $stag;?>">
-<input type="hidden" id="swon" name="swon" value="<?php echo $switchON;?>">
-<input type="hidden" id="swoff" name="swoff" value="<?php echo $switchOFF;?>">
-<input type="hidden" id="cdr" name="cdr" value="<?php echo $cdr;?>">
-
-<div class="row g-3 align-items-center">
-
-<div class="form-group  col-md-6">
-  <label for="ut">UT:</label> <font color="red">*</font>
-                <select name="ut" id="ut" class="selectpicker show-tick form-control" placeholder= "Seleziona UT in visualizzazione" 
-                data-live-search="true" data-size="5" required="">
-                <!--option name="ut" value=""></option-->
-  <?php            
-  
-
-  $query3="select id_ut, descrizione 
-  from topo.ut   
-  where id_ut not in (select distinct cmu.id_uo_sit  from anagrafe_percorsi.percorsi_ut pu 
-join anagrafe_percorsi.cons_mapping_uo cmu on cmu.id_uo = pu.id_ut 
-where cod_percorso = $1 and data_disattivazione  =to_date($2, 'DD/MM/YYYY'))
-  order by descrizione  ;";
-  
-  $result3 = pg_prepare($conn_sit, "query3", $query3);
-  $result3 = pg_execute($conn_sit, "query3", array($cod_percorso , $data_disattivazione_testata));  
-  while($r3 = pg_fetch_assoc($result3)) { 
-      //$valore=  $r2['id_via']. ";".$r2['desvia'];            
-  ?>
-            
-        <option name="ut" value="<?php echo $r3['id_ut']?>" ><?php echo $r3['descrizione'] ?></option>
-  <?php } ?>
-
-  </select>            
-</div>
-</div> 
-
-
-<div class="row g-3 align-items-center">
-<button type="submit" class="btn btn-info">
-<i class="fa-solid fa-plus"></i> <i class="fa-solid fa-eye"></i> Aggiungi in visualizzazione
-</button>
-</div>
-
-
-
-</form>
-
-<?php }?>
-<!-- lancio il form e scrivo il risultato -->
-<p><div id="results_vis"></div></p>
-            <script> 
-            $(document).ready(function () {                 
-                $('#vis').submit(function (event) { 
-                    console.log('Bottone nuova visualizzazione cliccato e finito qua');
-                    event.preventDefault();                  
-                    var formData = $(this).serialize();
-                    console.log(formData);
-                    $.ajax({ 
-                        url: 'backoffice/nuova_visualizzazione.php', 
-                        method: 'POST', 
-                        data: formData, 
-                        //processData: true, 
-                        //contentType: false, 
-                        success: function (response) {                       
-                            //alert('Your form has been sent successfully.'); 
-                            console.log(response);
-                            $("#results_vis").html(response).fadeIn("slow");
-                        }, 
-                        error: function (jqXHR, textStatus, errorThrown) {                        
-                            alert('Your form was not sent successfully.'); 
-                            console.error(errorThrown); 
-                        } 
-                    }); 
-                }); 
-            }); 
-        </script>
+    
+    
 
 
 
 
+    <script>
+
+    var $table = $('#piazzole_percorso');
+
+    $(function() {
+      $table.bootstrapTable()
+    });
+
+    // imposto la data di disattivazione a domani
+    $('#btnTomorrow').click(function() {     
+      $('#js-date2').datepicker('setDate', "+1d");
+    });
+
+    $('#btnInf').click(function() {     
+      $('#js-date2').datepicker('setDate', "31/12/2099");
+    });
+
+    $(document).ready(function(){
+      console.log('Ci passo?');
+      $('#js-date1').datepicker({
+          format: 'dd/mm/yyyy',
+          todayBtn: "linked", // in conflitto con startDate
+          startDate: '+1d', 
+          language:'it' 
+      });
 
 
-<?php } else {
-    echo '<i class="fa-solid fa-ghost"></i> Non è ultima versione del percorso.. non posso fare modifiche.';
-}?>
+      $('#js-date2').datepicker({
+          format: 'dd/mm/yyyy',
+          todayBtn: 'linked',
+          startDate: '+1d', 
+          assumeNearbyYear: "true",
+          startView: 0 ,
+          language:'it' 
+      });
+    }); 
 
-<hr>
-<b> NOTE </b>
-<small>* la data di disattivazione si intende esclusa. Il che significa che se indico il 31/12 il 31/12 quel percorso non ci sarà più. Se voglio che sia attiva fino al 31/12 devo disattivarlo il 01/01
-</small>
-
-
-
-
-</div>
-
-<?php
-//require_once('req_bottom.php');
-//require_once('./footer.php');
-?>
+    $(document).ready(function(){
+        console.log('Arrivo qua');
+        //$('#ut').removeAttr('disabled');
+        $('#ut').selectpicker("show");
+        //$('#ut').selectpicker("refresh");
+    });
 
 
-
-<script>
-
-// imposto la data di disattivazione a domani
-$('#btnTomorrow').click(function() {     
-  $('#js-date2').datepicker('setDate', "+1d");
-});
-
-$('#btnInf').click(function() {     
-  $('#js-date2').datepicker('setDate', "31/12/2099");
-});
-
-$(document).ready(function(){
-  console.log('Ci passo?');
-  $('#js-date1').datepicker({
-      format: 'dd/mm/yyyy',
-      todayBtn: "linked", // in conflitto con startDate
-      startDate: '+1d', 
-      language:'it' 
-  });
-
-
-  $('#js-date2').datepicker({
-      format: 'dd/mm/yyyy',
-      todayBtn: 'linked',
-      startDate: '+1d', 
-      assumeNearbyYear: "true",
-      startView: 0 ,
-      language:'it' 
-  });
-}); 
-
-$(document).ready(function(){
-    console.log('Arrivo qua');
-    //$('#ut').removeAttr('disabled');
-    $('#ut').selectpicker("show");
-    //$('#ut').selectpicker("refresh");
-});
-
-
-$(document).ready(function() {
-    // Se ci sono checkbox già selezionate al caricamento della pagina, abilita gli input percentuali corrispondenti
-    id_sit = "<?php echo $id_servizio_sit;?>";
-    cdr = "<?php echo $cdr;?>";
-    if(id_sit==""){
-      console.log("percorso SENZA id sit");
-      if(cdr=="f"){
-        console.log("NON è un CDR");
-        document.getElementById('comuni').style.display = "";
-      }
-    } else {
-      console.log("percorso CON id sit, non devo fare nulla");
-    }
-});
-
-document.addEventListener("change", function(e) {
-    if (e.target.classList.contains("comuni-check")) {
-
-        //trovo il div padre della checkbox
-        let div_check = e.target.closest(".comuni-row") || e.target.parentElement;
-        console.log(div_check);
-      
-        // cerca l'input test nel div padre
-        let inputPercent = div_check.querySelector(".percent-input");
-        if (!inputPercent) {
-            // fallback: niente input trovato (debug)
-            console.warn("Percent input non trovato per la checkbox", e.target);
-            return;
-        }
-
-        if (e.target.checked) {
-            inputPercent.disabled = false;
-            // mette il puntatore del mouse sull'input corrispondente
-            inputPercent.focus();
+    $(document).ready(function() {
+        // Se ci sono checkbox già selezionate al caricamento della pagina, abilita gli input percentuali corrispondenti
+        id_sit = "<?php echo $id_servizio_sit;?>";
+        cdr = "<?php echo $cdr;?>";
+        if(id_sit==""){
+          console.log("percorso SENZA id sit");
+          if(cdr=="f"){
+            console.log("NON è un CDR");
+            document.getElementById('comuni').style.display = "";
+            document.getElementById('comuni-label').style.display = "";
+          }
         } else {
-            inputPercent.disabled = true;
-            inputPercent.value = "";
+          console.log("percorso CON id sit, non devo fare nulla");
         }
-    }
-});
+    });
 
-// al caricamento della pagina, popola i campi hidden con i valori già presenti nella textarea
-$(document).ready(function() {
-    var lista = document.getElementById("lista_mezzi").value.trim();
-    if (lista === '') return;
+    document.addEventListener("change", function(e) {
+        if (e.target.classList.contains("comuni-check")) {
 
-    var righe = lista.split('\n').filter(r => r.trim() !== '');
-    
-    var codici = righe.map(r => r.split(' - ')[0].trim());
-    var nomi   = righe.map(r => r.split('(')[1].replace(/\)$/, '').trim());
+            //trovo il div padre della checkbox
+            let div_check = e.target.closest(".comuni-row") || e.target.parentElement;
+            console.log(div_check);
+          
+            // cerca l'input test nel div padre
+            let inputPercent = div_check.querySelector(".percent-input");
+            if (!inputPercent) {
+                // fallback: niente input trovato (debug)
+                console.warn("Percent input non trovato per la checkbox", e.target);
+                return;
+            }
 
-    document.getElementById("lista_mezzi_valori").value = codici.join(',');
-    document.getElementById("lista_mezzi_nomi").value   = nomi.join(',');
-});
+            if (e.target.checked) {
+                inputPercent.disabled = false;
+                // mette il puntatore del mouse sull'input corrispondente
+                inputPercent.focus();
+            } else {
+                inputPercent.disabled = true;
+                inputPercent.value = "";
+            }
+        }
+    });
 
-</script>
+    // al caricamento della pagina, popola i campi hidden con i valori già presenti nella textarea
+    $(document).ready(function() {
+        var lista = document.getElementById("lista_mezzi").value.trim();
+        if (lista === '') return;
+
+        var righe = lista.split('\n').filter(r => r.trim() !== '');
+        
+        var codici = righe.map(r => r.split(' - ')[0].trim());
+        var nomi   = righe.map(r => r.split('(')[1].replace(/\)$/, '').trim());
+
+        document.getElementById("lista_mezzi_valori").value = codici.join(',');
+        document.getElementById("lista_mezzi_nomi").value   = nomi.join(',');
+    });
+
+    </script>
 
 
-<script type="text/javascript" >
+    <script type="text/javascript" >
 
-$(document).on("keydown", ":input:not(textarea)", function(event) {
-    if (event.key == "Enter") {
-        event.preventDefault();
-    }
-});
+    $(document).on("keydown", ":input:not(textarea)", function(event) {
+        if (event.key == "Enter") {
+            event.preventDefault();
+        }
+    });
 
-</script>
+    </script>
 
-<script>
+    <script>
 
-  $(function () {
-    $('#mezzo_ut').selectpicker();
-  });
+      $(function () {
+        $('#mezzo_ut').selectpicker();
+      });
 
-	function writelist(){
-		var mezzo_value=$("#mezzo_ut option:selected").val(); //get the value of the current selected option.
-    console.log(mezzo_value);
-    var mezzo_text=$("#mezzo_ut option:selected").text();
-		console.log(mezzo_text);
+      function writelist(){
+        var mezzo_value=$("#mezzo_ut option:selected").val(); //get the value of the current selected option.
+        console.log(mezzo_value);
+        var mezzo_text=$("#mezzo_ut option:selected").text();
+        console.log(mezzo_text);
 
-    if (mezzo_value === '') return;
+        if (mezzo_value === '') return;
 
-    //document.getElementById("lista_mezzi").value += mezzo_value+ ' - '+mezzo_text+ "\n";
+        //document.getElementById("lista_mezzi").value += mezzo_value+ ' - '+mezzo_text+ "\n";
 
-    var lista_mezzi = document.getElementById("lista_mezzi");
-    lista_mezzi.value = lista_mezzi.value.trim();
+        var lista_mezzi = document.getElementById("lista_mezzi");
+        lista_mezzi.value = lista_mezzi.value.trim();
 
-    if (lista_mezzi.value != '') {
-        lista_mezzi.value = lista_mezzi.value + '\n' + mezzo_value + ' - ' + mezzo_text;
-    } else {
-        lista_mezzi.value = mezzo_value + ' - ' + mezzo_text;
-    }
+        if (lista_mezzi.value != '') {
+            lista_mezzi.value = lista_mezzi.value + '\n' + mezzo_value + ' - ' + mezzo_text;
+        } else {
+            lista_mezzi.value = mezzo_value + ' - ' + mezzo_text;
+        }
 
-    // creo una lista con i soli codici mezzo, li salvo in un campo nascosto del form in modo da inviarli al submit
-    var codici_list = document.getElementById("lista_mezzi_valori");
-    if (codici_list.value != "") {
-        // il campo ha già dei valori → aggiungo la virgola e il nuovo valore
-        codici_list.value = codici_list.value + ',' + mezzo_value;
-    } else {
-        // il campo è ancora vuoto → scrivo solo il valore, senza virgola iniziale
-        codici_list.value = mezzo_value;
-    }
-    
-    // creo una lista con i soli nomi mezzo, li salvo in un campo nascosto del form in modo da inviarli al submit
-    var nomi_list = document.getElementById("lista_mezzi_nomi");
-    if (nomi_list.value != "") {
-        // il campo ha già dei valori → aggiungo la virgola e il nuovo valore
-        nomi_list.value = nomi_list.value + ',' + mezzo_text.split('(')[1].replace(/\)$/, '');
-    } else {
-        // il campo è ancora vuoto → scrivo solo il valore, senza virgola iniziale
-        nomi_list.value = mezzo_text.split('(')[1].replace(/\)$/, '');
-    }
+        // creo una lista con i soli codici mezzo, li salvo in un campo nascosto del form in modo da inviarli al submit
+        var codici_list = document.getElementById("lista_mezzi_valori");
+        if (codici_list.value != "") {
+            // il campo ha già dei valori → aggiungo la virgola e il nuovo valore
+            codici_list.value = codici_list.value + ',' + mezzo_value;
+        } else {
+            // il campo è ancora vuoto → scrivo solo il valore, senza virgola iniziale
+            codici_list.value = mezzo_value;
+        }
+        
+        // creo una lista con i soli nomi mezzo, li salvo in un campo nascosto del form in modo da inviarli al submit
+        var nomi_list = document.getElementById("lista_mezzi_nomi");
+        if (nomi_list.value != "") {
+            // il campo ha già dei valori → aggiungo la virgola e il nuovo valore
+            nomi_list.value = nomi_list.value + ',' + mezzo_text.split('(')[1].replace(/\)$/, '');
+        } else {
+            // il campo è ancora vuoto → scrivo solo il valore, senza virgola iniziale
+            nomi_list.value = mezzo_text.split('(')[1].replace(/\)$/, '');
+        }
 
-    $("#mezzo_ut").selectpicker('val', '');
-	} 
+        $("#mezzo_ut").selectpicker('val', '');
+      } 
 
-</script>
+    </script>
 
+
+    <script>
+      function showToast(message, type = 'success', pos='page') {
+
+        let toast;
+        if (pos === 'modal') {
+            toast = document.getElementById('toast_modal');
+        } else if (pos === 'map') {
+            toast = document.getElementById('toast_map');
+        }else {
+            toast = document.getElementById('toast');
+        }
+        toast.textContent = message;
+        toast.className = 'toast show ' + type;
+
+        setTimeout(() => {
+            toast.className = 'toast';
+        }, 3000);
+      }
+    </script>
+    </body>
 </html>
