@@ -75,106 +75,129 @@ $cod_percorso = $_POST['id_percorso'];
 $vers = intval($_POST['old_vers']);
 //echo "versione: ".$vers."<br>";
 
-//exit();
-if ($checkTest == 0){
-    // update turno su UO
-    $update_uo= "UPDATE ANAGR_SER_PER_UO aspu
-    SET FAM_MEZZO = :c0
-    WHERE ID_PERCORSO = :c1 
-    AND DTA_ATTIVAZIONE > SYSDATE or DTA_ATTIVAZIONE is null ";
+try {
+    /* FACIO TUTTO IN UNA TRANSACTION*/
 
-    $result_uo0 = oci_parse($oraconn, $update_uo);
-    # passo i parametri
-    oci_bind_by_name($result_uo0, ':c0', $automezzo);
-    oci_bind_by_name($result_uo0, ':c1', $cod_percorso);
-    oci_execute($result_uo0);
-    oci_free_statement($result_uo0);
-}
+    if ($checkTest == 0){
+        // update turno su UO
+        $update_uo= "UPDATE ANAGR_SER_PER_UO aspu
+        SET FAM_MEZZO = :c0
+        WHERE ID_PERCORSO = :c1 
+        AND DTA_ATTIVAZIONE > SYSDATE or DTA_ATTIVAZIONE is null ";
 
-// update turno su SIT elem.percorsi
-$update_sit0="UPDATE elem.percorsi p
-SET famiglia_mezzo = $1
-where cod_percorso LIKE $2 and (data_attivazione > now() or data_dismissione is null or data_attivazione is null )";
+        $result_uo0 = oci_parse($oraconn, $update_uo);
+        # passo i parametri
+        oci_bind_by_name($result_uo0, ':c0', $automezzo);
+        oci_bind_by_name($result_uo0, ':c1', $cod_percorso);
+        oci_execute($result_uo0);
+        oci_free_statement($result_uo0);
+    }
 
-$result_usit0 = pg_prepare($conn_sit, "update_sit0", $update_sit0);
-if (!pg_last_error($conn_sit)){
-    #$res_ok=0;
-} else {
-    pg_last_error($conn_sit);
-    $res_ok= $res_ok+1;
-}
-$result_usit0 = pg_execute($conn_sit, "update_sit0", array($cdaog3, $cod_percorso)); 
-if (!pg_last_error($conn_sit)){
-    #$res_ok=0;
-} else {
-    pg_last_error($conn_sit);
-    $res_ok= $res_ok+1;
-}
+    pg_query($conn_sit, "BEGIN");
 
-// update turno su SIT anagrafe_percorsi.percorsi_ut
-$update_sit3="UPDATE anagrafe_percorsi.percorsi_ut epo
-SET cdaog3 = $1
-where cod_percorso LIKE $2 and data_attivazione > now()";
+    // update turno su SIT elem.percorsi
+    $update_sit0="UPDATE elem.percorsi p
+    SET famiglia_mezzo = $1
+    where cod_percorso LIKE $2 and (data_attivazione > now() or data_dismissione is null or data_attivazione is null )";
 
+    $result_usit0 = pg_prepare($conn_sit, "update_sit0", $update_sit0);
+    if (!pg_last_error($conn_sit)){
+        #$res_ok=0;
+    } else {
+        pg_last_error($conn_sit);
+        $res_ok= $res_ok+1;
+    }
+    $result_usit0 = pg_execute($conn_sit, "update_sit0", array($cdaog3, $cod_percorso)); 
+    if (!pg_last_error($conn_sit)){
+        #$res_ok=0;
+    } else {
+        pg_last_error($conn_sit);
+        $res_ok= $res_ok+1;
+    }
 
-$result_usit3 = pg_prepare($conn_sit, "update_sit3", $update_sit3);
-if (!pg_last_error($conn_sit)){
-    #$res_ok=0;
-} else {
-    pg_last_error($conn_sit);
-    $res_ok= $res_ok+1;
-}
-
-$result_usit3 = pg_execute($conn_sit, "update_sit3", array($cdaog3, $cod_percorso)); 
-if (!pg_last_error($conn_sit)){
-    #$res_ok=0;
-} else {
-    pg_last_error($conn_sit);
-    $res_ok= $res_ok+1;
-}
-
-// elimino le righe da anagrafe_percorsi.percorsi_mezzi  per percorso e versione e le salvo nuovamente
-
-$dellete_mezzi = "DELETE FROM anagrafe_percorsi.percorsi_mezzi
-WHERE cod_percorso LIKE $1 and versione = $2";
-
-$result_delete_mezzi = pg_prepare($conn_sit, "delete_mezzi", $dellete_mezzi);
-if (!pg_last_error($conn_sit)){
-    #$res_ok=0;
-} else {
-    pg_last_error($conn_sit);
-    $res_ok= $res_ok+1;
-}
-
-$result_delete_mezzi = pg_execute($conn_sit, "delete_mezzi", array($cod_percorso, $vers)); 
-if (!pg_last_error($conn_sit)){
-    #$res_ok=0;
-} else {
-    pg_last_error($conn_sit);
-    $res_ok= $res_ok+1;
-}
-
-// inserisco i nuovi mezzi
-$insert_mezzi_percorso = "INSERT INTO anagrafe_percorsi.percorsi_mezzi (cod_percorso, versione, id_mezzo) VALUES ($1, $2, $3)";
-foreach($codici_mezzi as $i => $id_mezzo){
-  $result_mezzi_percorso = pg_prepare($conn_sit, "insert_mezzi_percorso_".$id_mezzo."_".$i, $insert_mezzi_percorso);
-  if (pg_last_error($conn_sit)){
-    echo pg_last_error($conn_sit).'<br>';
-    $res_ok=$res_ok+1;
-  }
-
-  $result_mezzi_percorso = pg_execute($conn_sit, "insert_mezzi_percorso_".$id_mezzo."_".$i, array($cod_percorso, $vers, $id_mezzo)); 
-  if (pg_last_error($conn_sit)){
-    echo pg_last_error($conn_sit).'<br>';
-    $res_ok=$res_ok+1;
-  }
-}
+    // update turno su SIT anagrafe_percorsi.percorsi_ut
+    $update_sit3="UPDATE anagrafe_percorsi.percorsi_ut epo
+    SET cdaog3 = $1
+    where cod_percorso LIKE $2 and data_attivazione > now()";
 
 
-if ($res_ok==0){
-    echo '<font color="green"> Nuovo mezzo salvato correttamente!</font>';
-} else {
-    echo $res_ok.'<font color="red"> ERRORE - contatta assterritorio@amiu.genova.it</font>';
-}
+    $result_usit3 = pg_prepare($conn_sit, "update_sit3", $update_sit3);
+    if (!pg_last_error($conn_sit)){
+        #$res_ok=0;
+    } else {
+        pg_last_error($conn_sit);
+        $res_ok= $res_ok+1;
+    }
+
+    $result_usit3 = pg_execute($conn_sit, "update_sit3", array($cdaog3, $cod_percorso)); 
+    if (!pg_last_error($conn_sit)){
+        #$res_ok=0;
+    } else {
+        pg_last_error($conn_sit);
+        $res_ok= $res_ok+1;
+    }
+
+    // elimino le righe da anagrafe_percorsi.percorsi_mezzi  per percorso e versione e le salvo nuovamente
+
+    $dellete_mezzi = "DELETE FROM anagrafe_percorsi.percorsi_mezzi
+    WHERE cod_percorso LIKE $1 and versione = $2";
+
+    $result_delete_mezzi = pg_prepare($conn_sit, "delete_mezzi", $dellete_mezzi);
+    if (!pg_last_error($conn_sit)){
+        #$res_ok=0;
+    } else {
+        pg_last_error($conn_sit);
+        $res_ok= $res_ok+1;
+    }
+
+    $result_delete_mezzi = pg_execute($conn_sit, "delete_mezzi", array($cod_percorso, $vers)); 
+    if (!pg_last_error($conn_sit)){
+        #$res_ok=0;
+    } else {
+        pg_last_error($conn_sit);
+        $res_ok= $res_ok+1;
+    }
+
+    // inserisco i nuovi mezzi
+    $insert_mezzi_percorso = "INSERT INTO anagrafe_percorsi.percorsi_mezzi (cod_percorso, versione, id_mezzo) VALUES ($1, $2, $3)";
+    foreach($codici_mezzi as $i => $id_mezzo){
+    $result_mezzi_percorso = pg_prepare($conn_sit, "insert_mezzi_percorso_".$id_mezzo."_".$i, $insert_mezzi_percorso);
+    if (pg_last_error($conn_sit)){
+        echo pg_last_error($conn_sit).'<br>';
+        $res_ok=$res_ok+1;
+    }
+
+    $result_mezzi_percorso = pg_execute($conn_sit, "insert_mezzi_percorso_".$id_mezzo."_".$i, array($cod_percorso, $vers, $id_mezzo)); 
+    if (pg_last_error($conn_sit)){
+        echo pg_last_error($conn_sit).'<br>';
+        $res_ok=$res_ok+1;
+    }
+    }
+
+
+    if ($res_ok==0){
+        pg_query($conn_sit, "COMMIT");
+        http_response_code(200);
+        echo json_encode([
+            'ok' => true,
+            'messaggio' => 'Nuova mezzo salvato correttamente!'
+        ]);
+    }else{
+        pg_query($conn_sit, "ROLLBACK");
+        http_response_code(400);
+        echo json_encode([
+            'ok' => false,
+            'messaggio' => "Impossibile salvare il mezzo. Errore: " . $e->getMessage()
+        ]);
+    }
+}            
+catch (Exception $e) {
+    pg_query($conn_sit, "ROLLBACK");
+    http_response_code(400);
+    echo json_encode([
+            'ok' => false,
+            'messaggio' => "Impossibile salvare il mezzo. Errore: " . $e->getMessage()
+    ]);
+} 
 
 ?>

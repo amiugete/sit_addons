@@ -107,6 +107,8 @@ $id_ut_sit = $_POST['ut'];
 
 
 
+try {
+    /* FACIO TUTTO IN UNA TRANSACTION*/
 
 
 
@@ -220,6 +222,8 @@ if ($checkTest == 0){
 # verificare le altre UT in visualizzazione
 #######################################################################
 
+pg_query($conn_sit, "BEGIN");
+
 
 //echo "<br><br>Insert in elenco percorsi UT<br>";
 
@@ -271,12 +275,29 @@ if (!pg_last_error($conn_sit)){
 }
 
 
-if ($res_ok==0){
-  echo '<font color="green"> Visualizzazione aggiunta, chiudi e apri il form per visualizzare i risultati!</font>';
-} else {
-  echo '<font color="red"> ERRORE - contatta assterritorio@amiu.genova.it</font>';
-}
-#exit();
-//header("location: ../dettagli_percorso.php?cp=".$cod_percorso."&v=".$new_vers."");
+    if ($res_ok==0){
+        pg_query($conn_sit, "COMMIT");
+        http_response_code(200);
+        echo json_encode([
+            'ok' => true,
+            'messaggio' => 'UT in visualizzazione aggiunta correttamente!'
+        ]);
+    }else{
+        pg_query($conn_sit, "ROLLBACK");
+        http_response_code(400);
+        echo json_encode([
+            'ok' => false,
+            'messaggio' => "Impossibile aggiungere UT in visualizzazione. Errore: " . $e->getMessage()
+        ]);
+    }
+}            
+catch (Exception $e) {
+    pg_query($conn_sit, "ROLLBACK");
+    http_response_code(400);
+    echo json_encode([
+            'ok' => false,
+            'messaggio' => "Impossibile aggiungere UT in visualizzazione. Errore: " . $e->getMessage()
+    ]);
+} 
 
 ?>

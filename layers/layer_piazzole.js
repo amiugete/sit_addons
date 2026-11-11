@@ -1,10 +1,54 @@
-
-
 // creo una Map dei rifiuti presenti nella mia bbox
-const rifiutiDisponibili = new Map();
+const rifiutiDisponibili = new Map(); // solo vista corrente
 
-let geojsonPiazzole = null;
+// vedo che filtri sono attivi
+const filtriRifiutiAttivi = new Set(); // scelta utente persistente
+
+// uesta invece è una variabile globale che indica se il filtro rifiuti è attivo o meno
+let filtroRifiutiAttivo = true;
+
+//let geojsonPiazzole = null;
 let firmaRifiuti = "";
+
+
+// per la piazzola selezionata
+let piazzolaSelezionata = null;
+let markerPiazzolaSelezionata = null;
+
+
+let piazzoleById = new Map();
+
+
+// funzione per evidenziare la piazzola selezionata su mappa
+function evidenziaPiazzola(markerP) {
+
+    
+    if (markerPiazzolaSelezionata) {
+        markerPiazzolaSelezionata.getElement()?.classList.remove("piazzola-selezionata");
+    }
+
+    markerPiazzolaSelezionata = markerP;
+
+    markerP.getElement()?.classList.add("piazzola-selezionata");
+}
+
+
+
+// funzione per evidenziare la piazzola selezionata dal select2
+function evidenziaPiazzolaById(idPiazzola) {
+
+    const markerPiazzola = piazzoleById.get(idPiazzola);
+
+    if (!markerPiazzola) {
+        console.warn("Piazzola non trovata:", idPiazzola);
+        return;
+    }
+
+    evidenziaPiazzola(markerPiazzola);
+
+}
+
+
 
 
 var popoverContentPiazzole = `Piazzole (o Punti di Raccolta PdR) AMIU`;
@@ -17,6 +61,7 @@ return new bootstrap.Popover(popoverTriggerEl, {
     content: popoverContentPiazzole
 })
 })
+
 
 
 
@@ -48,21 +93,64 @@ const clusterPiazzole = L.markerClusterGroup({
 });
 
 
-// aggiungo il cluster alla mappa
-map.addLayer(clusterPiazzole);
+
+const layerPiazzole = L.geoJSON(null, {
+
+    pointToLayer: function(feature, latlng) {
+
+        const marker = L.marker(latlng, {
+
+            icon: creaIconaPiazzola(feature.properties)
+
+        });
+
+        marker.feature = feature;
+        
+        piazzoleById.set(feature.properties.id_piazzola, marker);
+
+
+        return marker;
+
+    },
+
+    onEachFeature: function(feature, marker) {
+
+        marker.on("click", function() {
+
+            piazzolaSelezionata = marker.feature.properties.id_piazzola;
+
+            selezionaPiazzola(
+                feature.properties.id_piazzola,
+                feature.properties.id_asta,
+                marker
+            );
+            evidenziaPiazzola(marker);
+        });
+
+        marker.bindTooltip(
+            "Piazzola " + feature.properties.id_piazzola,
+            { direction: "top" }
+        );
+
+    }
+
+});
+
+
+
+
 
 
 
 // checkbox layer piazzole
 $("#chkPiazzole").on("change", function(){
 
-    aggiornaPiazzole();
+    aggiornaPiazzole(map);
 
 });
 
 
-// aggiorno quando cambia bbox
-map.on("moveend", aggiornaPiazzole);
+
 
 
 
@@ -87,10 +175,11 @@ function creaIconaPiazzola(properties) {
 
     } else if (properties.is_pap == 1 && properties.suolo_privato == 1) {
 
-        simbolo = `<span class="user-lock">
+        /*simbolo = `<span class="user-lock">
                 <i class="fa-solid fa-user fa-inverse"></i>
                 <i class="fa-solid fa-lock lock-overlay fa-inverse"></i>
-            </span>`;
+            </span>`;*/
+        simbolo = '<i class="fa-solid fa-user-lock fa-inverse"></i>';
         //classe += " ecopunto";
 
     } else if (properties.ecopunto == 1 && properties.suolo_privato == 0) {
@@ -141,83 +230,152 @@ function creaIconaPiazzola(properties) {
 
 
 
+function svuotaLayerPiazzole() {
+
+    piazzoleById.clear();
+
+    layerPiazzole.clearLayers();
+
+    clusterPiazzole.clearLayers();
+
+    if (map.hasLayer(clusterPiazzole))
+        map.removeLayer(clusterPiazzole);
+
+    //geojsonPiazzole = null;
+
+    firmaRifiuti = "";
+    rifiutiDisponibili.clear();
+    $("#filtriRifiuti").empty();
 
 
 
-function aggiornaPiazzole(){
+    if (cacheLayer.piazzole.controller)
+        cacheLayer.piazzole.controller.abort();
 
-    console.log("aggiorno piazzole");
-    // checkbox spenta
-
-    if(!$("#chkPiazzole").is(":checked")){
-
-
-        clusterPiazzole.clearLayers();
-
-        return;
-
-    }
-
-
-
-    const b = map.getBounds();
-
-
-    const url =
-
-        "layers/piazzole.php?" +
-
-        "xmin=" + b.getWest() +
-
-        "&ymin=" + b.getSouth() +
-
-        "&xmax=" + b.getEast() +
-
-        "&ymax=" + b.getNorth();
-
-
-
-
-    fetch(url)
-
-
-    .then(r => r.json())
-
-
-    .then(data => {
-
-        geojsonPiazzole = data;
-
-        aggiornaElencoRifiuti();
-
-        visualizzaPiazzole();
-
-    })
-
-    .catch(err => {
-
-        console.error(
-            "Errore caricamento piazzole",
-            err
-        );
-
-    });
-
+    cacheLayer.piazzole.bounds = null;
+    cacheLayer.piazzole.firmaQuery = null;
+    cacheLayer.piazzole.ultimoAggiornamento = null;
+    cacheLayer.piazzole.controller = null;
 
 }
 
 
 
-function aggiornaElencoRifiuti(){
+
+function aggiornaPiazzole(mappa) {
+
+    //console.log("aggiorno piazzole");
+
+    //console.log("zoom =" + mappa.getZoom());
+
+    // da decidere un livello di zoom
+    if (mappa.getZoom() < 11) {
+
+        $("#chkPiazzole").prop("disabled", true);
+        svuotaLayerPiazzole();
+
+        return;
+    }
+
+    $("#chkPiazzole").prop("disabled", false);
+
+
+    if (!$("#chkPiazzole").is(":checked")) {
+
+        svuotaLayerPiazzole();
+
+        return;
+    }
+
+    //console.log("Sono dentro aggiorno piazzole");
+    const p = getParametriMappa(mappa);
+    //console.log(p);
+    const firmaQuery = p.params.toString();
+
+    /*console.log("PARAMS:", p.params.toString());
+    console.log("VIEWPORT:", p.viewport);
+    console.log("BOUNDS:", p.bounds);*/
+    
+    // se il viewport è completamente contenuto
+    // nell'area già caricata evito una nuova query
+    if (
+        cacheLayer.piazzole.bounds &&
+        cacheLayer.piazzole.bounds.contains(p.viewport) &&
+        cacheLayer.piazzole.firmaQuery === firmaQuery
+    ) {
+        return;
+    }
+
+
+    // costruisco la URL
+    const url =
+        "layers/piazzole.php?" +
+        p.params_filter.toString();
+
+
+    fetchJson(url, cacheLayer.piazzole)
+
+        .then(r => r.json())
+
+        .then(data => {
+
+            layerPiazzole.clearLayers();
+            layerPiazzole.addData(data);
+
+
+            cacheLayer.piazzole.bounds = p.bounds;
+            cacheLayer.piazzole.firmaQuery = firmaQuery;
+            cacheLayer.piazzole.ultimoAggiornamento = new Date();
+
+
+            aggiornaElencoRifiuti();
+
+            visualizzaPiazzole(mappa);
+
+
+            if (piazzolaSelezionata) {
+
+                const marker =
+                    piazzoleById.get(piazzolaSelezionata);
+
+                console.log(
+                    "marker selezionato: ",
+                    marker
+                );
+
+                if (marker) {
+
+                    console.log(
+                        "evidenzio marker selezionato"
+                    );
+
+                    evidenziaPiazzola(marker);
+                }
+            }
+
+        })
+
+        .catch(err => {
+
+            if (err.name === "AbortError")
+                return;
+
+            console.error(err);
+
+        });
+}
+
+
+
+function aggiornaElencoRifiuti() {
 
     const nuovaMap = new Map();
 
-    geojsonPiazzole.features.forEach(function(feature){
+    layerPiazzole.eachLayer(function(marker) {
 
-        if (!feature.properties.rifiuti)
-            return;
+        const rifiuti = marker.feature.properties.rifiuti || [];
 
-        feature.properties.rifiuti.forEach(function(r){
+        rifiuti.forEach(function(r) {
 
             nuovaMap.set(r.nome, r);
 
@@ -230,17 +388,14 @@ function aggiornaElencoRifiuti(){
             .sort()
             .join("|");
 
-    if (nuovaFirma === firmaRifiuti){
-
+    if (nuovaFirma === firmaRifiuti)
         return;
-
-    }
 
     firmaRifiuti = nuovaFirma;
 
     rifiutiDisponibili.clear();
 
-    nuovaMap.forEach((v,k)=>rifiutiDisponibili.set(k,v));
+    nuovaMap.forEach((v, k) => rifiutiDisponibili.set(k, v));
 
     aggiornaMenuRifiuti();
 
@@ -248,81 +403,88 @@ function aggiornaElencoRifiuti(){
 
 
 
-function visualizzaPiazzole(){
+function visualizzaPiazzole(mappa) {
+
+    // il cluster deve essere associato alla mappa
+    // PRIMA di aggiungergli i marker
+    if (!mappa.hasLayer(clusterPiazzole))
+        mappa.addLayer(clusterPiazzole);
+
 
     clusterPiazzole.clearLayers();
 
-    if (!geojsonPiazzole)
-        return;
 
+    const boundsVisibili = mappa.getBounds();
+
+    const conteggi = new Map();
+
+
+    // recupero i filtri una sola volta
     const filtriAttivi =
         $(".filtro-rifiuto:checked")
-        .map(function(){
+            .map(function () {
+                return this.value;
+            })
+            .get();
 
-            return this.value;
 
-        })
-        .get();
+    layerPiazzole.eachLayer(function(marker) {
 
-    const layer = L.geoJSON(geojsonPiazzole, {
 
-        pointToLayer:function(feature,latlng){
+        // considero solo quello realmente visibile
+        if (!boundsVisibili.contains(marker.getLatLng()))
+            return;
 
-            const marker = L.marker(latlng,{
 
-                icon: creaIconaPiazzola(feature.properties)
+        const rifiuti =
+            marker.feature.properties.rifiuti || [];
 
-            });
 
-            marker.feature = feature;
+        rifiuti.forEach(r => {
 
-            return marker;
-
-        },
-
-        onEachFeature:function(feature,marker){
-
-            marker.on("click",function(){
-
-                selezionaPiazzola(
-                    feature.properties.id_piazzola,
-                    feature.properties.id_asta,
-                    layer
-                );
-
-            });
-
-            marker.bindTooltip(
-                "Piazzola " + feature.properties.id_piazzola,
-                {direction:"top"}
+            conteggi.set(
+                r.nome,
+                (conteggi.get(r.nome) || 0) + 1
             );
 
-        }
+        });
+
+
+        const visibile =
+            filtriAttivi.length > 0 &&
+            rifiuti.some(r =>
+                filtriAttivi.includes(r.nome)
+            );
+
+
+        if (visibile)
+            /*console.log("AGGIUNGO MARKER AL CLUSTER");
+            console.log("marker:", marker);
+            console.log("marker._map:", marker._map);
+            console.log("cluster._map:", clusterPiazzole._map);*/
+            clusterPiazzole.addLayer(marker);
 
     });
 
-    layer.eachLayer(function(marker){
 
-        /*console.log(marker.feature);*/
+    aggiornaContatoriRifiuti(conteggi);
 
-        
-        const rifiuti = marker.feature.properties.rifiuti || [];
+}
 
-        const visibile =
 
-            filtriAttivi.length === 0 ||
 
-            rifiuti.some(function(r){
+// funzione per aggiornare i contatori dei rifiuti nel menu
+function aggiornaContatoriRifiuti(conteggi){
 
-                return filtriAttivi.includes(r.nome);
+    rifiutiDisponibili.forEach((r,nome)=>{
 
-            });
+        const el =
+          document.getElementById(
+             "count-rifiuto-"+nome
+          );
 
-        if(visibile){
-
-            clusterPiazzole.addLayer(marker);
-
-        }
+        if(el)
+            el.textContent = conteggi.get(nome)||0;
 
     });
 
@@ -336,6 +498,17 @@ function aggiornaMenuRifiuti(){
     [...rifiutiDisponibili.values()]
         .sort((a,b)=>a.ordine-b.ordine)
         .forEach(function(r){
+            
+
+            let inizializzatoFiltroRifiuti = false;
+
+
+            const checked =
+                filtriRifiutiAttivi.size === 0 ||
+                filtriRifiutiAttivi.has(r.nome)
+                ? "checked"
+                : "";
+
 
             html += `
                 <div class="form-check">
@@ -344,11 +517,16 @@ function aggiornaMenuRifiuti(){
                         class="form-check-input filtro-rifiuto"
                         type="checkbox"
                         value="${r.nome}"
-                        checked>
+                        ${checked}>
 
-                    <label class="form-check-label">
+                    <label class="form-check-label d-flex justify-content-between w-100">
 
-                        ${r.nome}
+                        <span>${r.nome}</span>
+
+                        <span class="badge bg-secondary ms-2"
+                            id="count-rifiuto-${r.nome}">
+                            0
+                        </span>
 
                     </label>
 
@@ -358,14 +536,24 @@ function aggiornaMenuRifiuti(){
         });
 
     $("#filtriRifiuti").html(html);
+    
+    inizializzatoFiltroRifiuti = true;
+
+
 
 }
+
  // nel file html devo avere un div con id filtriRifiuti <div id="filtriRifiuti"></div>
 
 
- $(document).on("change", ".filtro-rifiuto", function(){
+$(document).on("change", ".filtro-rifiuto", function(){
 
-    visualizzaPiazzole();
+    if(this.checked)
+        filtriRifiutiAttivi.add(this.value);
+    else
+        filtriRifiutiAttivi.delete(this.value);
+
+    visualizzaPiazzole(mappa);
 
 });
 

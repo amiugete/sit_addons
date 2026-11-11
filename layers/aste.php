@@ -17,6 +17,21 @@ $xmax = isset($_GET['xmax']) ? floatval($_GET['xmax']) : null;
 $ymax = isset($_GET['ymax']) ? floatval($_GET['ymax']) : null;
 
 
+
+$id_comune = isset($_GET['id_comune']) ? intval($_GET['id_comune']) : null;
+$id_via = isset($_GET['id_via']) ? intval($_GET['id_via']) : null;
+
+
+$filter = ' AND 1=1 ';
+if ($id_comune) {
+    $filter = $filter . 'AND v.id_comune = '.$id_comune.' ';
+}
+if ($id_via) {
+    $filter = $filter . 'AND a.id_via = '.$id_via.' ';
+}
+
+
+
 if(!$conn) {
     die('Connessione fallita !<br />');
 } else {
@@ -44,7 +59,7 @@ if(!$conn) {
             4326
         ),
         ST_SRID(g.geoloc)
-    )
+    ) " . $filter ."
     ORDER BY a.id_asta";
     
 

@@ -81,82 +81,112 @@ return new bootstrap.Popover(popoverTriggerEl, {
 // evento legato al checkbox per mostrare/nascondere le aste
 $("#chkAste").on("change", function(){
 
-    aggiornaAste();
+    aggiornaAste(map);
     
 
 });
 
-map.on("moveend", aggiornaAste);
+
+
+function svuotaLayerAste() {
+
+    asteById.clear();
+
+    layerAste.clearLayers();
+
+    if (map.hasLayer(layerAste))
+        map.removeLayer(layerAste);
+
+
+    if (cacheLayer.aste.controller)
+        cacheLayer.aste.controller.abort();
+
+    cacheLayer.aste.bounds = null;
+    cacheLayer.aste.firmaQuery = null;
+    cacheLayer.aste.ultimoAggiornamento = null;
+    cacheLayer.aste.controller = null;
+
+}
 
 
 
-function aggiornaAste(){
+function aggiornaAste(mappa) {
 
     // controllo livello di zoom, se è inferiore a 15 non faccio nulla
-        if(map.getZoom()<15){
+    if (mappa.getZoom() < 15) {
 
-            $("#chkAste").prop("disabled", true);
-            asteById.clear();
-            layerAste.clearLayers();
+        $("#chkAste").prop("disabled", true);
+        svuotaLayerAste();
+        aggiornaPulsanteAsta();
+        return;
 
-            return;
-
-        } else {
-            // abilito il checkbox
-            $("#chkAste").prop("disabled", false);
-
-            // controllo se il checkbox è selezionato, altrimenti non faccio nulla
-            if(!$("#chkAste").is(":checked")){
-                console.log("checkbox aste non selezionato, non faccio nulla");
-                asteById.clear();
-                layerAste.clearLayers();
-
-                return;
-
-            } else {
-
-
-                
-
-                // aggiungo il layer al map se non è già presente
-                if(!map.hasLayer(layerAste)){
-                    map.addLayer(layerAste);
-                }
-
-        }
-        aggiornaPulsanteAsta();   
     }
 
+    // abilito il checkbox
+    $("#chkAste").prop("disabled", false);
 
-    //recupero il bbox
-    const b = map.getBounds();
+    // controllo se il checkbox è selezionato, altrimenti non faccio nulla
+    if (!$("#chkAste").is(":checked")) {
 
-    const url =
-        "layers/aste.php?" +
+        console.log("checkbox aste non selezionato, non faccio nulla");
 
-        "xmin="+b.getWest()+
+        svuotaLayerAste();
+        aggiornaPulsanteAsta();
+        return;
 
-        "&ymin="+b.getSouth()+
+    }
 
-        "&xmax="+b.getEast()+
+    const p = getParametriMappa(mappa);
 
-        "&ymax="+b.getNorth();
+    const firmaQuery = p.params.toString();
 
-    
+    // se il viewport è completamente contenuto
+    // nell'area già caricata evito una nuova query
+    if (
+        cacheLayer.aste.bounds &&
+        cacheLayer.aste.bounds.contains(p.viewport) &&
+        cacheLayer.aste.firmaQuery === firmaQuery
+    ) {
+        return;
+    }
 
-    // recupero i dati geojson dal server e li aggiungo al layer    
-    fetch(url)
+    const url = "layers/aste.php?" + p.params.toString();
 
-    .then(r=>r.json())
+    fetchJson(url, cacheLayer.aste)
 
-    .then(data=>{
+        .then(r => r.json())
 
-        layerAste.clearLayers();
+        .then(data => {
 
-        layerAste.addData(data);
+            layerAste.clearLayers();
 
-    });
+            layerAste.addData(data);
 
+            // aggiungo il layer alla mappa se non è già presente
+            if (!mappa.hasLayer(layerAste)) {
+                mappa.addLayer(layerAste);
+            }
+
+            // salvo la cache
+            cacheLayer.aste.bounds = p.bounds;
+            cacheLayer.aste.firmaQuery = firmaQuery;
+            cacheLayer.aste.ultimoAggiornamento = new Date();
+
+            // Riapplica lo stile alle aste selezionate
+            applicaEvidenziazioneAste();
+
+            aggiornaPulsanteAsta();
+
+        })
+
+        .catch(err => {
+
+            if (err.name === "AbortError")
+                return;
+
+            console.error(err);
+
+        });
 }
 
 
@@ -195,3 +225,49 @@ function aggiornaPulsanteAsta() {
             acceso ? "Nascondi il grafo" : "Mostra il grafo"
         );
 }
+
+
+// funzioni da usare in caso di ricerca via 
+
+let idsAsteEvidenziate = [];
+
+function evidenziaAste(idsAste) {
+
+    idsAsteEvidenziate = idsAste;
+
+    // Accende il layer
+    $('#chkAste').prop('checked', true).trigger('change');
+
+    applicaEvidenziazioneAste();
+}
+
+
+
+
+function applicaEvidenziazioneAste() {
+
+    layerAste.eachLayer(function(layer) {
+
+        const id = layer.feature.properties.id_asta;
+
+        if (idsAsteEvidenziate.includes(id)) {
+
+            layer.setStyle({
+                color: "limegreen",
+                weight: 5
+            });
+
+        } else {
+
+            layer.setStyle({
+                color: "#007bff",
+                weight: 2
+            });
+
+        }
+
+    });
+
+}
+
+

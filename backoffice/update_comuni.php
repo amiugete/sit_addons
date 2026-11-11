@@ -39,64 +39,20 @@ else {
   echo "Comune: ".$key." - Percentuale: ".$value."<br>";
 }*/
 
+try {
+    /* FACIO TUTTO IN UNA TRANSACTION*/
+
 
 //exit();
-if(count($comuni_percent)>0){
+  if(count($comuni_percent)>0){
     //echo "<br><br>Insert in percorsi_comuni_percentuali<br>";
     /*$insert_comuni_percentuali = "INSERT INTO anagrafe_percorsi.percorsi_comuni
     (cod_percorso, versione, id_comune, competenza) 
       VALUES
       ($1, $2, $3, $4)";*/
 
-    $insert_comuni_percentuali = "INSERT INTO anagrafe_percorsi.percorsi_comuni
-        (cod_percorso, versione, id_comune, competenza)  
-        VALUES ($1, $2, $3, $4)
-        ON CONFLICT (cod_percorso, versione, id_comune) /* or you may use [DO NOTHING;] */ 
-        DO UPDATE  SET competenza=EXCLUDED.competenza;";
-
-
-    foreach($comuni_percent as $id_comune => $percentuale){
-      $result_comuni_percentuali = pg_prepare($conn_sit, "insert_comuni_percentuali_".$id_comune, $insert_comuni_percentuali);
-      //echo "<br><br> ERRORI COMUNI PERCENTUALI PREP: <br>";
-      //echo  pg_last_error($conn_sit);
-      $result_comuni_percentuali = pg_execute($conn_sit, "insert_comuni_percentuali_".$id_comune, array($cod_percorso, $vers, $id_comune, $percentuale)); 
-      if (pg_last_error($conn_sit)){
-        echo "<br><br> ERRORI COMUNI PERCENTUALI EXEC: <br>";
-        echo  pg_last_error($conn_sit);
-        echo  pg_result_error($result_comuni_percentuali);
-        $res_ok= $res_ok+1;
-        }
-    }
+    
     if ($checkTest == 0){
-      /*$insert_uo_comuni = "INSERT INTO UNIOPE.ANAGR_SER_PER_UO_COMUNI 
-        (ID_SER_PER_UO, ID_COMUNE, PERCENTUALE) 
-        VALUES
-        (:p1, :p2, :p3)";
-
-      foreach($comuni_percent as $id_comune => $percentuale){
-        $result_uo_com = oci_parse($oraconn, $insert_uo_comuni);
-        # passo i parametri
-        oci_bind_by_name($result_uo_com, ':p1', $id_ser_uo);
-        oci_bind_by_name($result_uo_com, ':p2', $id_comune);
-        oci_bind_by_name($result_uo_com, ':p3', $percentuale);
-        $risuocom=oci_execute($result_uo_com);
-
-        if (!$risuocom) {
-          echo "<br>ci sono errori<br>";
-          $e = oci_error($result_uo_com);  // For oci_execute errors pass the statement handle
-          echo $e;
-          echo $e['message'];
-          echo htmlentities($e['message']);
-          echo "\n<pre>\n";
-          echo htmlentities($e['sqltext']);
-          echo "\n%".($e['offset']+1)."s", "^";
-          echo  "\n</pre>\n";
-        }
-
-        echo "<br> sono arrivato qua a inserire i comuni";
-        oci_free_statement($result_uo_com);
-      }
-      */
 
       $upsert_uo_comuni = "
       MERGE INTO UNIOPE.ANAGR_SER_PER_UO_COMUNI t
@@ -144,12 +100,54 @@ if(count($comuni_percent)>0){
 
 
     }
-}
 
-if ($res_ok==0){
-    echo '<font color="green"> Percentuale comuni salvata correttamente!</font>';
-} else {
-    echo $res_ok.'<font color="red"> ERRORE - contatta assterritorio@amiu.genova.it</font>';
-}
+    pg_query($conn_sit, "BEGIN");
+
+    $insert_comuni_percentuali = "INSERT INTO anagrafe_percorsi.percorsi_comuni
+        (cod_percorso, versione, id_comune, competenza)  
+        VALUES ($1, $2, $3, $4)
+        ON CONFLICT (cod_percorso, versione, id_comune) /* or you may use [DO NOTHING;] */ 
+        DO UPDATE  SET competenza=EXCLUDED.competenza;";
+
+
+    foreach($comuni_percent as $id_comune => $percentuale){
+      $result_comuni_percentuali = pg_prepare($conn_sit, "insert_comuni_percentuali_".$id_comune, $insert_comuni_percentuali);
+      //echo "<br><br> ERRORI COMUNI PERCENTUALI PREP: <br>";
+      //echo  pg_last_error($conn_sit);
+      $result_comuni_percentuali = pg_execute($conn_sit, "insert_comuni_percentuali_".$id_comune, array($cod_percorso, $vers, $id_comune, $percentuale)); 
+      if (pg_last_error($conn_sit)){
+        echo "<br><br> ERRORI COMUNI PERCENTUALI EXEC: <br>";
+        echo  pg_last_error($conn_sit);
+        echo  pg_result_error($result_comuni_percentuali);
+        $res_ok= $res_ok+1;
+        }
+    }
+
+
+    if ($res_ok==0){
+        pg_query($conn_sit, "COMMIT");
+        http_response_code(200);
+        echo json_encode([
+            'ok' => true,
+            'messaggio' => 'Percentuale competenza Comuni salvata correttamente!'
+        ]);
+    }else{
+        pg_query($conn_sit, "ROLLBACK");
+        http_response_code(400);
+        echo json_encode([
+            'ok' => false,
+            'messaggio' => "Impossibile salvare la percentuale competenza Comuni. Errore: " . $e->getMessage()
+        ]);
+    }
+  }
+}            
+catch (Exception $e) {
+    pg_query($conn_sit, "ROLLBACK");
+    http_response_code(400);
+    echo json_encode([
+            'ok' => false,
+            'messaggio' => "Impossibile salvare la percentuale competenza Comuni. Errore: " . $e->getMessage()
+    ]);
+} 
 
 ?>

@@ -1,16 +1,3 @@
-function apriPannelloRisultati(){
-
-    risultati.classList.remove("chiuso");
-
-    setTimeout(() => {
-
-        map.invalidateSize();
-
-    },300);
-
-}
-
-
 /* Funzione asincrona per vedere il dettaglio delle aste
 
 La funzione deve fare solo quattro cose:
@@ -25,6 +12,7 @@ La funzione deve fare solo quattro cose:
 
 async function caricaDettaglioAsta(idAsta) {
 
+    nascondiNotaRisultati();
     // Mostra un piccolo spinner nella card
     $("#cardAsta").removeClass("d-none");
     $("#cardAstaBody").html(`
@@ -238,6 +226,21 @@ function creaAccordionPiazzola(piazzola) {
                 <div class="accordion-body">
 
                     <div class="small text-muted mb-3">
+                        ${
+                            piazzola.info.foto == 1
+                                ? `
+                                    <a href="#"
+                                    class="me-2"
+                                    title="Visualizza foto piazzola"
+                                    onclick="apriFotoPiazzola('${piazzola.info.id_piazzola}'); return false;">
+                                    
+                                        <i class="fa-solid fa-camera"></i>
+
+                                    </a>
+                                `
+                                : ""
+                        }
+
 
                         ${piazzola.info.via}
                         ${piazzola.info.numero_civico ?? ""}
@@ -402,6 +405,8 @@ function creaBloccoTipoElemento(tipoElemento, elementi, rifiuto) {
 
 
 async function caricaDettaglioPiazzola(idPiazzola) {
+    
+    //nascondiNotaRisultati();
 
     $("#cardPiazzola").removeClass("d-none");
 
@@ -446,8 +451,14 @@ function mostraDettaglioPiazzola(piazzola, idPiazzola) {
 
     const iconaPap =
         piazzola.is_pap == "1"
-            ? '<i class="fa-solid fa-user ms-2"></i>'
+            ? '<i class="fa-solid fa-user ms-2" title="Piazzola PAP (ossia con cliente associato)"></i>'
             : "";
+
+    const iconaInterventi =
+        piazzola.interventi == "1"
+            ? '<i class="fa-solid fa-wrench title="Interventi aperti o presi in carico da manutenzione cassonetti""></i>'
+            : "";
+
 
     $("#cardPiazzolaHeader").html(`
     <div class="d-flex justify-content-between align-items-center w-100">
@@ -455,6 +466,7 @@ function mostraDettaglioPiazzola(piazzola, idPiazzola) {
         <div>
             Piazzola ${idPiazzola}
             ${iconaPap}
+            ${iconaInterventi}
         </div>
 
         <button
@@ -472,6 +484,21 @@ function mostraDettaglioPiazzola(piazzola, idPiazzola) {
         <div class="mb-2">
 
             <div class="fw-semibold">
+            ${
+                piazzola.foto == 1
+                    ? `
+                        <button type="button"
+                    class="btn btn-link p-0 me-2"
+                        title="Visualizza foto piazzola"
+                        onclick="apriFotoPiazzola('${idPiazzola}'); return false;">
+                        
+                            <i class="fa-solid fa-camera"></i>
+
+                        </button>
+                    `
+                    : ""
+            }
+            
                 ${piazzola.via}
                 ${piazzola.numero_civico ?? ""}
             </div>
@@ -492,11 +519,47 @@ function mostraDettaglioPiazzola(piazzola, idPiazzola) {
 
     `;
 
+
+    
+
     html += '<div class="d-flex flex-column gap-1">';
 
     piazzola.rifiuti
         .sort((a,b)=>a.ordinamento-b.ordinamento)
         .forEach(r=>{
+
+
+            
+            const giorni = Number(r.giorni);
+            const freqStimata = Number(r.freq_stimata);
+
+            const id_tipo_elemento = Number(r.id);
+            const interventi_elementi = Number(r.num_interventi);
+            
+
+            // tronco il tipo elemento
+            const tipoElemVisualizzato = r.tipo_elem && r.tipo_elem.length > 15
+            ? r.tipo_elem.substring(0, 13) + '..'
+            : r.tipo_elem;
+
+            //console.log('Giorni ' +giorni+ ' Freq cds'+freqStimata)
+
+            let classeFrequenza = 'btn-outline-info btn-freq';
+            let titoloFrequenza = `Freq ${giorni} gg`
+
+            /*
+            if (giorni < freqStimata) {
+                classeFrequenza = 'btn-warning';
+                titoloFrequenza =
+                    ;`Freq inferiore a CdS: ${giorni} gg contro ${freqStimata}`
+            }
+            else if (giorni > freqStimata) {
+                classeFrequenza = 'btn-success-dark';
+                titoloFrequenza =
+                    `Freq. superiore a CdS: ${giorni} gg contro ${freqStimata}`;
+            }
+            */
+
 
             html += `
 
@@ -504,23 +567,75 @@ function mostraDettaglioPiazzola(piazzola, idPiazzola) {
 
                     <div>
 
-                        <i class="fa-solid fa-circle me-2"
-                           style="color:${r.colore}"></i>
+                        <!--i class="fa-solid fa-circle me-2"
+                           style="color:${r.colore}"></i-->
 
-                        ${r.tipo_elem}
-
-                    </div>
-
-                    <span class="badge"
+                        <span class="badge"
                           style="
                             background:${r.colore};
                             color:white;
-                            min-width:32px;
-                          ">
+                          "
+                          title="${r.rifiuto}">
 
                         ${r.num}
 
-                    </span>
+                        </span>
+
+                        
+
+                        <span title="${r.tipo_elem}">
+                            ${tipoElemVisualizzato}
+                        </span> 
+                        
+                        ${
+                         interventi_elementi > 0
+                            ? '<i class="fa-solid fa-wrench" title="Interventi aperti o presi in carico da manutenzione cassonetti"></i>'
+                            :  ''
+                        }
+
+                        <!-- Consuntivazione --> 
+                        <small> 
+                        
+                        ${r.data_last_sv
+                            ? `${r.data_last_sv}`
+                            : ''
+                        }
+
+
+
+                        ${
+                         r.anomalie == null || r.anomalie === 0
+                            ? '<i class="fa-solid fa-check ms-2 text-success"></i>'
+                            :  r.anomalie > 0
+                                ? '<i class="fa-solid fa-triangle-exclamation ms-2 text-warning" title = "Anomalia ultima consuntivazione"></i>'
+                                :''
+                        }
+
+                        </small>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-1">
+
+                        ${
+                            r.giorni != null
+                                ? `
+                                    <button type="button"
+                                            class="btn btn-sm ${classeFrequenza}"
+                                            title="${titoloFrequenza}${r.turni ? ` - Turni: ${r.turni}` : ''}"
+                                            onclick="mostraPercorsi(${idPiazzola}, '${r.tipo_elemento}')">
+
+                                        <small>${giorni}</small>
+                                        <!--i class="fa-solid fa-route ms-1"></i-->
+
+                                    </button>
+                                `
+                                : ''
+                        }
+
+                    </div>
+
+
+
 
                 </div>
 
@@ -533,6 +648,7 @@ function mostraDettaglioPiazzola(piazzola, idPiazzola) {
     $("#cardPiazzolaBody").html(html);
 
 }
+
 
 
 
@@ -570,6 +686,29 @@ async function apriDettaglioPiazzola(idPiazzola) {
               success: function(response) {
                   $("#body_dettaglio_piazzola").html(response);
 
+                  //inizializzo la select2 che ho nel body del modal
+   
+                  $('#body_dettaglio_piazzola #criticita').select2({
+                    placeholder: 'Seleziona criticità',
+                    dropdownParent: $('#modalDettaglioPiazzola'),
+                    allowClear: true,
+                    width: '100%'
+                  });
+        
+                  $("#body_dettaglio_piazzola #civico").select2({
+                    width: '100%',
+                    dropdownParent: $('#modalDettaglioPiazzola'),
+                    placeholder: 'Seleziona civico',
+                    allowClear: true
+                  });
+
+                  $("#body_dettaglio_piazzola #transitabilita").select2({
+                    width: '100%',
+                    dropdownParent: $('#modalDettaglioPiazzola'),
+                    placeholder: 'Seleziona transitabilità',
+                    allowClear: true
+                  });
+
                   //console.log($("#body_dettaglio").html(response))
                   var modal = new bootstrap.Modal(document.getElementById("modalDettaglioPiazzola"));
                   modal.show();
@@ -586,3 +725,14 @@ async function apriDettaglioPiazzola(idPiazzola) {
 }
 
 
+
+function apriFotoPiazzola(idPiazzola) {
+
+    $("#modalFotoPiazzola").modal("show");
+
+    $("#contenutoFotoPiazzola").html(
+        `<img src="../foto/sit/${idPiazzola}.jpg"
+              class="img-fluid rounded">`
+    );
+
+}

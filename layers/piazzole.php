@@ -4,6 +4,7 @@ $res_ok=0;
 #require('../validate_input.php');
 header('Content-Type: application/json; charset=utf-8');
 
+error_log("INIZIO piazzole.php");
 
 
 require_once '../conn_ok.php';
@@ -16,99 +17,82 @@ $xmax = isset($_GET['xmax']) ? floatval($_GET['xmax']) : null;
 $ymax = isset($_GET['ymax']) ? floatval($_GET['ymax']) : null;
 
 
-echo ini_get('error_log');
+$id_comune = isset($_GET['id_comune']) ? intval($_GET['id_comune']) : null;
+$id_via = isset($_GET['id_via']) ? intval($_GET['id_via']) : null;
+
+
+
+//echo $filter; 
+//exit();
+//echo ini_get('error_log');
 
 if(!$conn_sit) {
     die('Connessione fallita !<br />');
 } else {
 
-    $query_pos="
-select p.id_piazzola, 
-v.id_comune, 
-a.id_ut, 
-a.id_circoscrizione as id_municipio, 
-a.id_quartiere,
-v.id_via,
-p.id_asta,
-COALESCE(pap.is_pap,0) AS is_pap,
-p.ecopunto, 
-p.suolo_privato,
-pap.rifiuti,
-pap.colore_piazzola,
-/*ST_Y(ST_Transform(g.geoloc,4326)::geometry) as lat,
-ST_X(ST_Transform(g.geoloc,4326)::geometry) as lon*/
-ST_AsGeoJSON(ST_Transform(g.geoloc,4326)::geometry) as geometry
-from elem.piazzole p 
-join geo.piazzola g on g.id = p.id_piazzola 
-join elem.aste a on a.id_asta = p.id_asta 
-join topo.vie v on v.id_via = a.id_via
---left join elem.elementi e on e.id_piazzola = p.id_piazzola 
---left join elem.elementi_privati ep on ep.id_elemento = e.id_elemento 
-LEFT JOIN (
-    SELECT
-        e.id_piazzola,
-        CASE
-            WHEN COUNT(*) = COUNT(ep.id_elemento)
-            THEN 1
-            ELSE 0
-        END AS is_pap, 
-   case 
-	   when count(distinct tr.colore_piazzola)=1 then max(tr.colore_piazzola) 
-	   else null
-   end as colore_piazzola, 
-   jsonb_agg(
-    DISTINCT jsonb_build_object(
-    	'id', te.tipo_rifiuto,
-        'ordine', tr.ordinamento,
-        'nome', tr.nome_stampa
-    )
-    --ORDER BY tr.ordinamento
-) AS rifiuti
-    FROM elem.elementi e
-    join elem.tipi_elemento te on te.tipo_elemento = e.tipo_elemento
-    join elem.tipi_rifiuto tr on tr.tipo_rifiuto = te.tipo_rifiuto
-    LEFT JOIN elem.elementi_privati ep
-           ON ep.id_elemento = e.id_elemento
-    GROUP BY e.id_piazzola
-) pap
-	ON pap.id_piazzola = p.id_piazzola
-WHERE p.data_eliminazione is null
-AND 
-    g.geoloc &&
-    ST_Transform(
-        ST_MakeEnvelope(
-            $1,
-            $2,
-            $3,
-            $4,
-            4326
-        ),
-        ST_SRID(g.geoloc)
-    )
-";
-    
-    $result = pg_prepare($conn_sit, "query_pos", $query_pos);
-    if (!pg_last_error($conn_sit)){
-        #$res_ok=0;
-    } else {
-        echo pg_last_error($conn_sit);
-        $res_ok= $res_ok+1;
+   // costruisco dinamicamente solo le clausole necessarie, con parametri veri
+    $params = array($xmin, $ymin, $xmax, $ymax);
+    $filter = '';
+
+    if ($id_comune) {
+        $params[] = $id_comune;
+        $filter .= ' AND v.id_comune = $' . count($params) . ' ';
+    }
+    if ($id_via) {
+        $params[] = $id_via;
+        $filter .= ' AND b.id_via = $' . count($params) . ' ';
     }
 
+    $query_pos = "
+    WITH base AS MATERIALIZED (
+    SELECT p.id_piazzola, 
+        p.id_asta,
+        p.ecopunto,
+        p.suolo_privato,
+        g.geoloc, a.id_via, 
+        a.id_ut, a.id_circoscrizione, a.id_quartiere
+    FROM elem.piazzole p
+    JOIN geo.piazzola g ON g.id = p.id_piazzola
+    JOIN elem.aste a ON a.id_asta = p.id_asta
+    WHERE p.data_eliminazione IS NULL
+    AND g.geoloc && ST_Transform(ST_MakeEnvelope(\$1,\$2,\$3,\$4,4326), ST_SRID(g.geoloc))
+)
+SELECT b.id_piazzola,
+       v.id_comune,
+       b.id_ut,
+       b.id_circoscrizione AS id_municipio,
+       b.id_quartiere,
+       v.id_via,
+       b.id_asta,
+       COALESCE(pap.is_pap,0) AS is_pap,
+       b.ecopunto,
+       b.suolo_privato,
+       pap.rifiuti,
+       pap.colore_piazzola,
+       ST_AsGeoJSON(ST_Transform(b.geoloc,4326)::geometry) AS geometry
+FROM base b
+JOIN topo.vie v ON v.id_via = b.id_via
+LEFT JOIN LATERAL (SELECT
+        CASE WHEN COUNT(*) = COUNT(ep.id_elemento) THEN 1 ELSE 0 END AS is_pap,
+        CASE WHEN COUNT(DISTINCT tr.colore_piazzola) = 1 THEN MAX(tr.colore_piazzola) ELSE NULL END AS colore_piazzola,
+        jsonb_agg(DISTINCT jsonb_build_object(
+            'id', te.tipo_rifiuto,
+            'ordine', tr.ordinamento,
+            'nome', tr.nome_stampa
+        )) AS rifiuti
+    FROM elem.elementi e
+    JOIN elem.tipi_elemento te ON te.tipo_elemento = e.tipo_elemento
+    JOIN elem.tipi_rifiuto tr ON tr.tipo_rifiuto = te.tipo_rifiuto
+    LEFT JOIN elem.elementi_privati ep ON ep.id_elemento = e.id_elemento
+    WHERE e.id_piazzola = b.id_piazzola) pap ON true  
+    WHERE 1=1 ". $filter.";";
+
+    //echo "BBOX: xmin=$xmin ymin=$ymin xmax=$xmax ymax=$ymax id_comune=" . var_export($id_comune, true) . " id_via=" . var_export($id_via, true);
+    //echo $query_pos;
+    //exit(); 
     $t0 = microtime(true);
 
-    $result = pg_execute($conn_sit, "query_pos", array($xmin, $ymin, $xmax, $ymax));
-    
-        if (!pg_last_error($conn_sit)){
-        #$res_ok=0;
-    } else {
-        echo pg_last_error($conn_sit);
-        $res_ok= $res_ok+1;
-    }
-   
-
-
-    $rows = array();
+    $result = pg_query_params($conn_sit, $query_pos, $params);
     //echo "<br>ok fino a qua";
     if ($result === false) {
         die("ERRORE EXECUTE: ".pg_last_error($conn_sit));

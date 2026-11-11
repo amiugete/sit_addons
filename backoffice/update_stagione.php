@@ -39,61 +39,82 @@ $vers = intval($_POST['old_vers']);
 //echo "versione: ".$vers."<br>";
 
 //exit();
+try {
+    /* FACIO TUTTO IN UNA TRANSACTION*/
+    pg_query($conn_sit, "BEGIN");
 
-// update turno su SIT elem.percorsi
-$update_sit0="UPDATE elem.percorsi p
-SET stagionalita = $1,
-ddmm_switch_on = $2,
-ddmm_switch_off = $3
-where cod_percorso LIKE $4 and (data_attivazione > now() or data_dismissione is null or data_attivazione is null )";
+    // update turno su SIT elem.percorsi
+    $update_sit0="UPDATE elem.percorsi p
+    SET stagionalita = $1,
+    ddmm_switch_on = $2,
+    ddmm_switch_off = $3
+    where cod_percorso LIKE $4 and (data_attivazione > now() or data_dismissione is null or data_attivazione is null )";
 
-$result_usit0 = pg_prepare($conn_sit, "update_sit0", $update_sit0);
-if (!pg_last_error($conn_sit)){
-    #$res_ok=0;
-} else {
-    echo "<br><br>Update elem.percorsi<br>". pg_last_error($conn_sit);
-    $res_ok= $res_ok+1;
-}
-$result_usit0 = pg_execute($conn_sit, "update_sit0", array($stag, $switchON, $switchOFF, $cod_percorso)); 
-if (!pg_last_error($conn_sit)){
-    #$res_ok=0;
-} else {
-    echo "<br><br>Update elem.percorsi<br>". pg_last_error($conn_sit);
-    $res_ok= $res_ok+1;
-}
+    $result_usit0 = pg_prepare($conn_sit, "update_sit0", $update_sit0);
+    if (!pg_last_error($conn_sit)){
+        #$res_ok=0;
+    } else {
+        echo "<br><br>Update elem.percorsi<br>". pg_last_error($conn_sit);
+        $res_ok= $res_ok+1;
+    }
+    $result_usit0 = pg_execute($conn_sit, "update_sit0", array($stag, $switchON, $switchOFF, $cod_percorso)); 
+    if (!pg_last_error($conn_sit)){
+        #$res_ok=0;
+    } else {
+        echo "<br><br>Update elem.percorsi<br>". pg_last_error($conn_sit);
+        $res_ok= $res_ok+1;
+    }
 
-// update turno su SIT anagrafe_percorsi.elenco_percorsi
-$update_sit1="UPDATE anagrafe_percorsi.elenco_percorsi ep
-SET stagionalita = $1,
-ddmm_switch_on = $2,
-ddmm_switch_off = $3,
-data_ultima_modifica=now() 
-where cod_percorso LIKE $4 and data_inizio_validita > now()";
-
-
-$result_usit1 = pg_prepare($conn_sit, "update_sit1", $update_sit1);
-if (!pg_last_error($conn_sit)){
-    #$res_ok=0;
-} else {
-    echo "<br><br>Update anagrafe_percorsi.elenco_percorsi<br>". pg_last_error($conn_sit);
-    $res_ok= $res_ok+1;
-}
+    // update turno su SIT anagrafe_percorsi.elenco_percorsi
+    $update_sit1="UPDATE anagrafe_percorsi.elenco_percorsi ep
+    SET stagionalita = $1,
+    ddmm_switch_on = $2,
+    ddmm_switch_off = $3,
+    data_ultima_modifica=now() 
+    where cod_percorso LIKE $4 and data_inizio_validita > now()";
 
 
-$result_usit1 = pg_execute($conn_sit, "update_sit1", array($stag, $switchON, $switchOFF, $cod_percorso)); 
-if (!pg_last_error($conn_sit)){
-    #$res_ok=0;
-} else {
-    echo "<br><br>Update anagrafe_percorsi.elenco_percorsi<br>". pg_last_error($conn_sit);
-    $res_ok= $res_ok+1;
-}
+    $result_usit1 = pg_prepare($conn_sit, "update_sit1", $update_sit1);
+    if (!pg_last_error($conn_sit)){
+        #$res_ok=0;
+    } else {
+        echo "<br><br>Update anagrafe_percorsi.elenco_percorsi<br>". pg_last_error($conn_sit);
+        $res_ok= $res_ok+1;
+    }
+
+
+    $result_usit1 = pg_execute($conn_sit, "update_sit1", array($stag, $switchON, $switchOFF, $cod_percorso)); 
+    if (!pg_last_error($conn_sit)){
+        #$res_ok=0;
+    } else {
+        echo "<br><br>Update anagrafe_percorsi.elenco_percorsi<br>". pg_last_error($conn_sit);
+        $res_ok= $res_ok+1;
+    }
 
 
 
-if ($res_ok==0){
-    echo '<font color="green"> Nuova stagionalità salvata correttamente!</font>';
-} else {
-    echo $res_ok.'<font color="red"> ERRORE - contatta assterritorio@amiu.genova.it</font>';
-}
-
+    if ($res_ok==0){
+        pg_query($conn_sit, "COMMIT");
+        http_response_code(200);
+        echo json_encode([
+            'ok' => true,
+            'messaggio' => 'Nuova stagionalità salvata correttamente!'
+        ]);
+    }else{
+        pg_query($conn_sit, "ROLLBACK");
+        http_response_code(400);
+        echo json_encode([
+            'ok' => false,
+            'messaggio' => "Impossibile salvare la squadra. Errore: " . $e->getMessage()
+        ]);
+    }
+}            
+catch (Exception $e) {
+    pg_query($conn_sit, "ROLLBACK");
+    http_response_code(400);
+    echo json_encode([
+            'ok' => false,
+            'messaggio' => "Impossibile salvare la stagionalità. Errore: " . $e->getMessage()
+    ]);
+} 
 ?>

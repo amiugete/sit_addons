@@ -12,7 +12,11 @@ $id_via = $_GET['id_via'];
 
 $query_civ = "select id, cod_strada, testo, cod_civico, numero
 from geo.v_civici where cod_strada = $1
-order by numero::int, colore::int";
+order by 
+numero::int,
+CASE WHEN lettera IS NULL THEN 0 ELSE 1 END,
+lettera,
+colore::int";
 
 $result_civ = pg_prepare($conn_sit, "select_civ", $query_civ);
 if (!pg_last_error($conn_sit)){

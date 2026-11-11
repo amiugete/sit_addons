@@ -68,3 +68,41 @@
     justify-content: center;
     box-shadow: 0 2px 6px rgba(0,0,0,.35);
 }
+
+
+
+
+/*.piazzola-selezionata .piazzola-marker {
+
+    border: 4px solid #ffd600 !important;
+    transform: scale(1.25);
+    box-shadow: 0 0 12px rgba(255,214,0,.9);
+    z-index: 1000;
+
+}*/
+
+.piazzola-selezionata .piazzola-marker::before {
+
+    border:4px solid #ffd600;
+    box-shadow:0 0 12px rgba(255,214,0,.9);
+
+}
+
+.piazzola-selezionata {
+    z-index:1000 !important;
+}
+
+
+
+/*usato per info panel*/
+.btn-success-dark {
+    background-color: #157347;
+    border-color: #157347;
+    color: white;
+}
+
+.btn-success-dark:hover {
+    background-color: #105c38;
+    border-color: #105c38;
+    color: white;
+}

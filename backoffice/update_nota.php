@@ -21,70 +21,86 @@ $cod_percorso = $_POST['id_percorso'];
 $vers = intval($_POST['old_vers']);
 //echo $vers."<br>";
 
+try {
+    /* FACIO TUTTO IN UNA TRANSACTION*/
+    pg_query($conn_sit, "BEGIN");
 
-//echo "<br><br>Update elem.percorsi<br>";
+    $nota_storico='Nuova nota versione: '.$nota;
 
-$nota_storico='Nuova nota versione: '.$nota;
-/*$insert_sit0="INSERT INTO util.sys_history (\"type\", \"action\", description, datetime,  id_percorso, id_user)
- VALUES( 'PERCORSO', 'UPDATE', $1 , CURRENT_TIMESTAMP, (select id_percorso from elem.percorsi 
- WHERE cod_percorso LIKE $2 and (data_dismissione is null or data_dismissione> now())), 
- (select id_user from util.sys_users su where \"name\" ilike $3));";
-*/
-$insert_sit0="INSERT INTO util.sys_history (\"type\", \"action\", description, datetime,  id_percorso, id_user)
-(select 'PERCORSO', 'UPDATE', $1 , CURRENT_TIMESTAMP, 
- id_percorso, (select id_user from util.sys_users su where \"name\" ilike $2)
- from elem.percorsi 
- WHERE cod_percorso LIKE $3 and (data_dismissione is null or data_dismissione> now())) ;";
+    $insert_sit0="INSERT INTO util.sys_history (\"type\", \"action\", description, datetime,  id_percorso, id_user)
+    (select 'PERCORSO', 'UPDATE', $1 , CURRENT_TIMESTAMP, 
+    id_percorso, (select id_user from util.sys_users su where \"name\" ilike $2)
+    from elem.percorsi 
+    WHERE cod_percorso LIKE $3 and (data_dismissione is null or data_dismissione> now())) ;";
 
-$result_isit0 = pg_prepare($conn_sit, "insert_sit0", $insert_sit0);
-if (!pg_last_error($conn_sit)){
-    #$res_ok=0;
-} else {
-    pg_last_error($conn_sit);
-    $res_ok= $res_ok+1;
-}
-$result_isit0 = pg_execute($conn_sit, "insert_sit0", array($nota_storico,  $_SESSION['username'], $cod_percorso)); 
-if (!pg_last_error($conn_sit)){
-    #$res_ok=0;
-} else {
-    //echo pg_last_error($conn_sit);
-    echo $nota_storico;
-    echo $cod_percorso;
-    echo $_SESSION['username'];
-    echo "<br><br>Insert util.sys_history<br>". pg_last_error($conn_sit);
-    $res_ok= $res_ok+1;
-}
+    $result_isit0 = pg_prepare($conn_sit, "insert_sit0", $insert_sit0);
+    if (!pg_last_error($conn_sit)){
+        #$res_ok=0;
+    } else {
+        pg_last_error($conn_sit);
+        $res_ok= $res_ok+1;
+    }
+    $result_isit0 = pg_execute($conn_sit, "insert_sit0", array($nota_storico,  $_SESSION['username'], $cod_percorso)); 
+    if (!pg_last_error($conn_sit)){
+        #$res_ok=0;
+    } else {
+        //echo pg_last_error($conn_sit);
+        echo $nota_storico;
+        echo $cod_percorso;
+        echo $_SESSION['username'];
+        echo "<br><br>Insert util.sys_history<br>". pg_last_error($conn_sit);
+        $res_ok= $res_ok+1;
+    }
 
 
 
 
-$update_sit1="UPDATE anagrafe_percorsi.elenco_percorsi ep
-SET nota_versione = $1, data_ultima_modifica=now() 
-where cod_percorso LIKE $2 and data_fine_validita > now() and versione_testata = $3";
+    $update_sit1="UPDATE anagrafe_percorsi.elenco_percorsi ep
+    SET nota_versione = $1, data_ultima_modifica=now() 
+    where cod_percorso LIKE $2 and data_fine_validita > now() and versione_testata = $3";
 
-$result_usit1 = pg_prepare($conn_sit, "update_sit1", $update_sit1);
-if (!pg_last_error($conn_sit)){
-    #$res_ok=0;
-} else {
-    echo "<br><br>Update anagrafe_percorsi.elenco_percorsi<br>". pg_last_error($conn_sit);
-    $res_ok= $res_ok+1;
-}
-$result_usit1 = pg_execute($conn_sit, "update_sit1", array($nota, $cod_percorso, $vers)); 
+    $result_usit1 = pg_prepare($conn_sit, "update_sit1", $update_sit1);
+    if (!pg_last_error($conn_sit)){
+        #$res_ok=0;
+    } else {
+        echo "<br><br>Update anagrafe_percorsi.elenco_percorsi<br>". pg_last_error($conn_sit);
+        $res_ok= $res_ok+1;
+    }
+    $result_usit1 = pg_execute($conn_sit, "update_sit1", array($nota, $cod_percorso, $vers)); 
 
-if (!pg_last_error($conn_sit)){
-    #$res_ok=0;
-} else {
-    echo "<br><br>Update anagrafe_percorsi.elenco_percorsi<br>". pg_last_error($conn_sit);
-    $res_ok= $res_ok+1;
-}
-
-
+    if (!pg_last_error($conn_sit)){
+        #$res_ok=0;
+    } else {
+        echo "<br><br>Update anagrafe_percorsi.elenco_percorsi<br>". pg_last_error($conn_sit);
+        $res_ok= $res_ok+1;
+    }
 
 
-if ($res_ok==0){
-    echo '<font color="green"> Nuova nota versione salvata correttamente!</font>';
-} else {
-    echo $res_ok.'<font color="red"> ERRORE - contatta assterritorio@amiu.genova.it</font>';
-}
+
+
+    if ($res_ok==0){
+        pg_query($conn_sit, "COMMIT");
+        http_response_code(200);
+        echo json_encode([
+            'ok' => true,
+            'messaggio' => 'Nuova nota salvata correttamente!'
+        ]);
+    }else{
+        pg_query($conn_sit, "ROLLBACK");
+        http_response_code(400);
+        echo json_encode([
+            'ok' => false,
+            'messaggio' => "Impossibile salvare la nota. Errore: " . $e->getMessage()
+        ]);
+    }
+}            
+catch (Exception $e) {
+    pg_query($conn_sit, "ROLLBACK");
+    http_response_code(400);
+    echo json_encode([
+            'ok' => false,
+            'messaggio' => "Impossibile salvare la nota. Errore: " . $e->getMessage()
+    ]);
+} 
 
 ?>
