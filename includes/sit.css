@@ -1,63 +1,89 @@
+/* ==========================================================================
+   STILI GENERALI
+   ========================================================================== */
+
 html {
     font-size: 14px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
-/*body {
-  /*font-family: 'Roboto', Arial, sans-serif;
-  font-family: 'Open Sans', Arial, sans-serif;
-}*/
-
 iframe {
-  width: 80% !important; /* o una larghezza fissa */
-  max-width: 80% !important;
-  display: block !important;
+    display: block !important;
+    width: 80% !important;
+    max-width: 80% !important;
 }
 
 .row-small {
-  display: flex;
-  justify-content: center;
+    display: flex;
+    justify-content: center;
 }
 
-.tag-small{
-  width: 80% !important; /* o una larghezza fissa */
-  max-width: 80% !important;
+.tag-small {
+    width: 80% !important;
+    max-width: 80% !important;
 }
+
+.pc {
+    margin: auto;
+}
+
+.disabled-link {
+    pointer-events: none;
+}
+
+i {
+    margin-right: 0.2em;
+    margin-left: 0.2em;
+}
+
+
+/* ==========================================================================
+   LAYOUT E FORM
+   ========================================================================== */
 
 .form-row {
-  display: flex;
-  align-items: center;     /* allinea verticalmente */
-  gap: 10px;               /* spazio tra label e input */
-  /*margin-bottom: 10px;*/     /* spaziatura tra righe */
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .row {
-  margin-bottom: 1%;
+    margin-bottom: 1%;
 }
 
-/* opzionale: larghezza fissa per allineare tutte le label */
-/*label {
-  min-width: 100px;        
-}*/
-
-.form-check-label{
-  min-width: 0px; 
+.form-check-label {
+    min-width: 0;
 }
 
+.form-check-input {
+    width: 16px;
+    height: 16px;
+    border: 1px solid #a3a5a8;
+    cursor: pointer;
+}
+
+.container-fluid {
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+/* Gruppo di comuni con checkbox e campo percentuale */
 #comuni {
-  display: flex !important;     /* forzo flex se qualche regola lo impedisce */
-  gap: 12px;
-  flex-wrap: wrap;              /* evita overflow se schermo stretto */
-  align-items: flex-start;
+    display: flex !important;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 12px;
 }
 
 .comuni-row {
-  display: flex;                /* mantiene label+checkbox+input in riga */
-  align-items: center;
-  gap: 7px;
-  flex: 0 0 auto;               /* NON si allarghi: usa la larghezza del contenuto */
-  width: auto !important;   /* separazione righe */
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 7px;
+    width: auto !important;
 }
 
 .comuni-row label {
@@ -68,78 +94,72 @@ iframe {
     width: 60px;
 }
 
+
+/* ==========================================================================
+   HEADER E NAVBAR
+   ========================================================================== */
+
+.banner,
+.banner div {
+    position: fixed;
+    width: 100%;
+    height: 77px;
+}
+
 .banner {
     top: 0;
-    background: url(../img/bg-navbar-rid.png);
     z-index: 1030;
-    padding-left: 0;
     padding-right: 0;
+    padding-left: 0;
+    background: url("../img/bg-navbar-rid.png");
 }
-
 
 .banner div {
-    background: url(../img/lanterna-rid.png) right no-repeat;
     z-index: 1000;
-    font-size: 36px;
+    background: url("../img/lanterna-rid.png") right no-repeat;
     color: #fff;
-    /*padding-top: 10px;*/
-}
-
-
-.banner, .banner div {
-    position: fixed;
-    height: 77px;
-    width: 100%;
-}
-
-/*.container {
-    padding-top: 117px;
-}*/
-
-.pc{
-    margin: auto;
-}
-
-
-.container-fluid {
-    padding-right: 15px;
-    padding-left: 15px;
-    margin-right: auto;
-    margin-left: auto;
+    font-size: 36px;
 }
 
 .navbar {
-    background: #006426;
+    position: fixed;
+    z-index: 1030;
+    width: 100%;
+    min-height: 40px;
     padding-top: 0;
     padding-bottom: 0;
-    min-height: 40px;
-    position: fixed;
-    width: 100%;
-    z-index: 1030;
+    background: #006426;
     color: #fff;
 }
 
+.navbar-light {
+    color: #fff;
+}
 
 .navbar-light .navbar-brand {
     color: rgba(255, 255, 255, 0.9);
 }
 
-.navbar-light {
-    color: rgba(255, 255, 255, 1);
-}
-
-.navbar-light .navbar-nav .show > .nav-link, .navbar-light .navbar-nav .active > .nav-link, .navbar-light .navbar-nav .nav-link.show, .navbar-light .navbar-nav .nav-link.active {
-    color: rgba(255, 255, 255, 1);
-}
-
-
-.navbar-light .navbar-nav .nav-link:hover, .navbar-light .navbar-nav .nav-link:focus {
-    color: rgba(255, 255, 255, 1);
-    font-style: italic;
+.navbar-light .navbar-nav .show > .nav-link,
+.navbar-light .navbar-nav .active > .nav-link,
+.navbar-light .navbar-nav .nav-link.show,
+.navbar-light .navbar-nav .nav-link.active,
+.navbar-light .navbar-nav .nav-link:hover,
+.navbar-light .navbar-nav .nav-link:focus {
+    color: #fff;
 }
 
 .navbar-light .navbar-nav .nav-link {
-    color: rgba(0255, 255, 255, 0.7);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.navbar-light .navbar-nav .nav-link:hover,
+.navbar-light .navbar-nav .nav-link:focus {
+    font-style: italic;
+}
+
+.navbar-light .navbar-text {
+    color: rgba(0, 0, 0, 0.8);
 }
 
 .navbar-sticky-top {
@@ -147,18 +167,8 @@ iframe {
 }
 
 .navbar-inverse {
-    /*background-color: #222;*/
     border-color: #080808;
 }
-
-/*.navbar-light .navbar-nav .nav-link.disabled {
-    color: rgba(0, 0, 0, 0.8);
-}*/
-
-.navbar-light .navbar-text {
-    color: rgba(0, 0, 0, 0.8);
-}
-
 
 .navbar-brand {
     float: left;
@@ -169,168 +179,58 @@ iframe {
 }
 
 
-/*.dropdown-menu.show {
-  min-width: 100%;
-  width: max-content;
-}*/
+/* ==========================================================================
+   MENU MULTILIVELLO
+   ========================================================================== */
 
-
-.disabled-link {
-  pointer-events: none;
-}
-
-
-
- i {
-    /*display: inline-block;*/
-    margin-right: 0.2em;
-    margin-left: 0.2em;
-  }
-
-
-  @media screen {
-    div.printFooter {
-      display: none;
+/* Desktop */
+@media (min-width: 992px) {
+    .dropdown-menu li {
+        position: relative;
     }
-    div.printHeader {
+
+    .nav-item .submenu {
+        position: absolute;
+        top: -7px;
+        left: 100%;
         display: none;
     }
-  }
 
-  
-/* Smartphones ----------- */
-@media only screen and (max-width: 520px) {
-    #sit_btn1 { display: none; }
-  }
-
-  @media only screen and (max-width: 520px) {
-    #delete_btn1 { display: none; }
-  }
-
-
-
-/* PRINT */
-  @media print
-   {
-   	
-    /*Il print footer */
-    div.printFooter {
-        position:absolute;
-        bottom:0;
-        left: 0;
-        right: 0;
+    .nav-item .submenu-left {
+        right: 100%;
+        left: auto;
     }
 
-    div.printHeader {
-        position: fixed;
-        top: 0;
-      }
-
-   	/* commentata riga 191 del file bootstrap.css per consentire la stampa dei colori*/ 
-   	    /*.fa{ 
-        -webkit-print-color-adjust: exact;
-		}
-
-	  .fas{ 
-    -webkit-print-color-adjust: exact;
-		}
-		
-	  p.bodyText {
-		  font-family:georgia, times, serif;
-		  -webkit-print-color-adjust: exact;
-		  color-adjust: exact;
-	  }*/
-	  
-	  .rows-print-as-pages .row {
-		page-break-before: auto;
-	  }
-	  
-	  .btn {
-    		display: none;
-  		}
-	  
-	  
-	   table,
-		table tr td,
-		table tr th {
-			page-break-inside: avoid;
-            width: 50%;
-            float: left;
-            word-break: break-word;
-            padding-left: 10px;
-		}
-
-		/*.collapse {
-   	display: block !important;
-   	height: auto !important;
-	}*/
-	
-
-	
-	#break {
-		 page-break-before: always;
-	}
-	
-	.fa-inverse {
-        color: #fff !important;
+    .dropdown-menu > li:hover {
+        background-color: #f1f1f1;
     }
 
+    .dropdown-menu > li:hover > .submenu {
+        display: block;
+    }
+}
 
-    .isDisabled {
-        cursor: not-allowed;
-        opacity: 0.5;
-      }
-      .isDisabled > a {
-        color: currentColor;
-        display: inline-block;  /* For IE11/ MS Edge bug */
-        pointer-events: none;
-        text-decoration: none;
-      }
-
-
-	.noprint{
-		display:none
-	  }
-	  
-	  
-   }
-
-
-  
-/* ============ Multidrop ============ */
-
-/* ============ desktop view ============ */
-@media all and (min-width: 992px) {
-	.dropdown-menu li{ position: relative; 	}
-	.nav-item .submenu{ 
-		display: none;
-		position: absolute;
-		left:100%; top:-7px;
-	}
-	.nav-item .submenu-left{ 
-		right:100%; left:auto;
-	}
-	.dropdown-menu > li:hover{ background-color: #f1f1f1 }
-	.dropdown-menu > li:hover > .submenu{ display: block; }
-}	
-/* ============ desktop view .end// ============ */
-
-/* ============ small devices ============ */
+/* Tablet e smartphone */
 @media (max-width: 991px) {
-  .dropdown-menu .dropdown-menu{
-      margin-left:0.7rem; margin-right:0.7rem; margin-bottom: .5rem;
-  }
-}	
-
-#modal-content {
-  max-height: none;
+    .dropdown-menu .dropdown-menu {
+        margin: 0 0.7rem 0.5rem;
+    }
 }
 
 
-/* per il modal dei dettagli piazzole faccio le cose in grande*/
-.modal-piazzola, .modal-percorsi{
-    max-width: 98vw;
+/* ==========================================================================
+   MODAL
+   ========================================================================== */
+
+#modal-content {
+    max-height: none;
+}
+
+/* Modal di dettaglio piazzole e percorsi */
+.modal-piazzola,
+.modal-percorsi {
     width: 98vw;
+    max-width: 98vw;
 }
 
 .modal-piazzola .modal-content,
@@ -341,151 +241,106 @@ iframe {
 .modal-piazzola .modal-body,
 .modal-percorsi .modal-body {
     overflow-y: auto;
-}
-
-.modal-piazzola .modal-body,
-.modal-percorsi .modal-body {
     padding: 1rem;
 }
 
+/* Compatta gli spazi nella scheda testata */
+#testata-tab-pane {
+    padding: 1% !important;
+}
+
+#testata-tab-pane div[class*="col-md-"] {
+    margin: 0 !important;
+}
 
 
+/* ==========================================================================
+   BOTTONI
+   ========================================================================== */
 
-/*------------------ BOTTONI PERSONALIZZATI  -----------------------------*/
-
+.btn-rsu,
+.btn-carta,
+.btn-multi,
+.btn-org {
+    color: #fff;
+}
 
 .btn-rsu {
-  background-color: #6c757d !important; /* grigio */
-  color: white;
+    background-color: #6c757d !important;
 }
+
 .btn-carta {
-  background-color: #1053a1 !important;/* blu */
-  color: white;
+    background-color: #1053a1 !important;
 }
+
 .btn-multi {
-  background-color: #eeab00 !important;/* giallo */
-  color: white;
-;
+    background-color: #eeab00 !important;
 }
+
 .btn-org {
-  background-color: #883001 !important; /* rosso */
-  color: white;
+    background-color: #883001 !important;
 }
 
-/* opzionale: effetto hover migliorabile */
-.btn-rsu:hover, .btn-carta:hover, .btn-multi:hover, .btn-org:hover {
-  opacity: 0.85;
-  color: white !important;
-  /*background-color: inherit !important;*/
+.btn-rsu:hover,
+.btn-carta:hover,
+.btn-multi:hover,
+.btn-org:hover {
+    opacity: 0.85;
+    color: #fff !important;
 }
 
-
-
-
-
-.toast {
-    opacity: 0;
-    transform: translateX(20px);
-    transition: all .4s ease-in-out;
+.btn-save,
+.btn-cancel,
+.btn-freq {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
 }
 
-.toast.show {
-    opacity: 1;
-    transform: translateX(0);
+.btn-save,
+.btn-cancel {
+    width: 32px;
+    height: 32px;
 }
 
+.btn-freq {
+    width: 20px;
+    height: 20px;
+}
 
+.azioni-col {
+    white-space: nowrap;
+}
 
-
-
-
-/* Bordi select2*/
-.select2-container--bootstrap-5 .select2-selection {
+#btnSalvaPosPiazzola.disabled {
+    pointer-events: none;
+    cursor: not-allowed;
+    color: #6c757d;
+    background-color: #e9ecef;
     border: 1px solid #ced4da;
+    text-decoration: none;
+    box-shadow: none;
 }
 
 
-/* posizione freccia select2 */
-.select2-container--bootstrap-5 .select2-selection__arrow {
-    position: absolute;
-    top: 50%;
-    right: 10px;
-    left: auto !important;
-    transform: translateY(-50%);
-}
+/* ==========================================================================
+   TOAST E MESSAGGI
+   ========================================================================== */
 
-
-
-/* posizione freccia select2 */
-.select2-container--bootstrap-5 .select2-selection__arrow b {
-    display: block !important;
-    width: 0;
-    height: 0;
-
-    border-color: #6c757d transparent transparent transparent !important;
-    border-style: solid !important;
-    border-width: 5px 4px 0 4px !important;
-}
-
-.highcharts-figure,
-.highcharts-data-table table {
-    min-width: 320px;
-    max-width: 660px;
-    margin: 1em auto;
-}
-
-.highcharts-data-table table {
-    font-family: Verdana, sans-serif;
-    border-collapse: collapse;
-    border: 1px solid #ebebeb;
-    margin: 10px auto;
-    text-align: center;
-    width: 100%;
-    max-width: 500px;
-}
-
-.highcharts-data-table caption {
-    padding: 1em 0;
-    font-size: 1.2em;
-    color: #555;
-}
-
-.highcharts-data-table th {
-    font-weight: 600;
-    padding: 0.5em;
-}
-
-.highcharts-data-table td,
-.highcharts-data-table th,
-.highcharts-data-table caption {
-    padding: 0.5em;
-}
-
-.highcharts-data-table thead tr,
-.highcharts-data-table tr:nth-child(even) {
-    background: #f8f8f8;
-}
-
-.highcharts-data-table tr:hover {
-    background: #f1f7ff;
-}
-
-/* STILI PER I TOAST */
+/* Transizione e aspetto comune dei toast */
 .toast {
-    /*position: fixed;
-    bottom: 20px;
-    right: 20px;*/
+    z-index: 9999;
     width: auto;
-    box-shadow: none !important;
-    background: #333;
-    color: #fff;
     padding: 12px 18px;
     border-radius: 8px;
+    background: #333;
+    box-shadow: none !important;
+    color: #fff;
     font-size: 14px;
     opacity: 0;
     transform: translateY(20px);
-    transition: all 0.3s ease;
-    z-index: 9999;
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .toast.show {
@@ -510,26 +365,252 @@ iframe {
     background: #17a2b8;
 }
 
-.tab-pane {
-    padding: 2%;
+/* Messaggi statici con aspetto simile ai toast */
+.toast-like {
+    position: relative;
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
 }
 
-.form-check-input {
-    width: 16px;
-    height: 16px;
-    border: 1px solid #a3a5a8;
-    cursor: pointer;
+.toast-info {
+    border-color: #b6effb;
+    background-color: #cff4fc;
+    color: #055160;
 }
 
-/*classe usata quando si modificano tipo elemento, rimpimento e frequenza da dettagli elementi in editing piazzola*/
+.toast-info-warning {
+    border-color: #fbb6b6;
+    background-color: #fccfcf;
+    color: #600505;
+}
+
+
+/* ==========================================================================
+   SELECT2 E TOM SELECT
+   ========================================================================== */
+
+/* Stile Select2 con tema Bootstrap 5 */
+.select2-container--bootstrap-5 .select2-selection {
+    border: 1px solid #ced4da;
+    border-radius: var(--bs-border-radius) !important;
+}
+
+.select2-container--bootstrap-5.select2-container--disabled .select2-selection {
+    background-color: var(--bs-secondary-bg);
+    color: var(--bs-secondary-color);
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.select2-container--bootstrap-5.select2-container--disabled .select2-selection__arrow b {
+    opacity: 0.5;
+}
+
+/* Posizionamento e forma della freccia */
+.select2-container--bootstrap-5 .select2-selection__arrow {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    left: auto !important;
+    transform: translateY(-50%);
+}
+
+.select2-container--bootstrap-5 .select2-selection__arrow b {
+    display: block !important;
+    width: 0;
+    height: 0;
+    border: 5px 4px 0 4px !important;
+    border-style: solid !important;
+    border-color: #6c757d transparent transparent transparent !important;
+}
+
+/* Select2 specifiche del dettaglio piazzola */
+#criticita + .select2-container--default .select2-selection--multiple,
+#civico + .select2-container--default .select2-selection--single,
+#transitabilita + .select2-container--default .select2-selection--single,
+#rifiuto + .select2-container--default .select2-selection--single,
+#tipoElemento + .select2-container--default .select2-selection--single {
+    min-height: 34px;
+    padding: 2px 0.375rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    background-color: #fff;
+    font-family: var(--bs-font-sans-serif);
+    font-size: 1rem;
+}
+
+/* Campo di ricerca interno */
+#criticita + .select2-container--default .select2-search__field,
+#civico + .select2-container--default .select2-search__field,
+#transitabilita + .select2-container--default .select2-search__field,
+#rifiuto + .select2-container--default .select2-search__field,
+#tipoElemento + .select2-container--default .select2-search__field {
+    margin-top: 3px;
+    font-family: var(--bs-font-sans-serif);
+    font-size: 1rem;
+}
+
+/* Elementi selezionati */
+#criticita + .select2-container--default .select2-selection__choice,
+#civico + .select2-container--default .select2-selection__choice,
+#transitabilita + .select2-container--default .select2-selection__choice,
+#rifiuto + .select2-container--default .select2-selection__choice,
+#tipoElemento + .select2-container--default .select2-selection__choice {
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    background-color: #e9ecef;
+    color: #212529;
+    font-family: var(--bs-font-sans-serif);
+}
+
+/* Opzioni del menu */
+#criticita + .select2-container--default .select2-results__option,
+#civico + .select2-container--default .select2-results__option,
+#transitabilita + .select2-container--default .select2-results__option,
+#rifiuto + .select2-container--default .select2-results__option,
+#tipoElemento + .select2-container--default .select2-results__option {
+    font-family: var(--bs-font-sans-serif) !important;
+}
+
+/* Evidenziazione del controllo quando è attivo */
+#criticita + .select2-container--default.select2-container--focus .select2-selection--multiple,
+#civico + .select2-container--default.select2-container--focus .select2-selection--single,
+#civico + .select2-container--default.select2-container--open .select2-selection--single,
+#transitabilita + .select2-container--default.select2-container--focus .select2-selection--single,
+#transitabilita + .select2-container--default.select2-container--open .select2-selection--single,
+#rifiuto + .select2-container--default.select2-container--focus .select2-selection--single,
+#rifiuto + .select2-container--default.select2-container--open .select2-selection--single,
+#tipoElemento + .select2-container--default.select2-container--focus .select2-selection--single,
+#tipoElemento + .select2-container--default.select2-container--open .select2-selection--single {
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Pulsante per cancellare la selezione (X) */
+.select2-selection--single {
+    position: relative;
+}
+
+.select2-selection__clear {
+    position: absolute !important;
+    top: 50%;
+    right: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none;
+    background: transparent;
+    transform: translateY(-50%);
+}
+
+.select2-selection__clear span {
+    display: none;
+}
+
+.select2-selection__clear::before {
+    content: "\f057"; /* Font Awesome circle-xmark */
+    color: var(--bs-danger);
+    font-family: "Font Awesome 6 Free";
+    font-size: 1rem;
+    font-weight: 900;
+}
+
+.ts-control input {
+    width: 100% !important;
+}
+
+
+/* ==========================================================================
+   TABELLE E GRAFICI
+   ========================================================================== */
+
+/* Tabelle generate da Highcharts */
+.highcharts-figure,
+.highcharts-data-table table {
+    min-width: 320px;
+    max-width: 660px;
+    margin: 1em auto;
+}
+
+.highcharts-data-table table {
+    width: 100%;
+    max-width: 500px;
+    margin: 10px auto;
+    border: 1px solid #ebebeb;
+    border-collapse: collapse;
+    font-family: Verdana, sans-serif;
+    text-align: center;
+}
+
+.highcharts-data-table caption {
+    padding: 1em 0;
+    color: #555;
+    font-size: 1.2em;
+}
+
+.highcharts-data-table th,
+.highcharts-data-table td,
+.highcharts-data-table caption {
+    padding: 0.5em;
+}
+
+.highcharts-data-table th {
+    font-weight: 600;
+}
+
+.highcharts-data-table thead tr,
+.highcharts-data-table tr:nth-child(even) {
+    background: #f8f8f8;
+}
+
+.highcharts-data-table tr:hover {
+    background: #f1f7ff;
+}
+
+/* Evidenziazione delle righe in base allo stato */
+.riga-sospesa {
+    --bs-table-bg: #c0c0c0 !important;
+    --bs-table-color: #6d6d6d !important;
+}
+
+.riga-eliminata {
+    --bs-table-bg: #ff8e7c !important;
+}
+
+.riga-aggiunta {
+    --bs-table-bg: #c4ffbc !important;
+}
+
 .dettaglio-elemento-modificato {
     background-color: #fffd81 !important;
     color: #ff0000 !important;
 }
 
+
+/* ==========================================================================
+   TAB E CONTENUTI
+   ========================================================================== */
+
+.tab-pane {
+    padding: 2%;
+}
+
+
+/* ==========================================================================
+   MAPPE LEAFLET E PANNELLI LATERALI
+   ========================================================================== */
+
 #mappa_piazzola {
     width: 100%;
-    /*height: calc(100vh - 120px);*/
     height: 600px;
 }
 
@@ -542,207 +623,56 @@ iframe {
     position: absolute;
     top: 0;
     bottom: 0;
-    /*right: 0;
-    left: 0;
-    width: 100%;*/
-    height: 100%;
     z-index: 1;
+    height: 100%;
 }
 
 #dett_tappa {
-    position: absolute; 
+    position: absolute;
     right: 0;
-    height: 100%;
     z-index: 1;
+    height: 100%;
 }
 
-.toast-like {
-    position: relative;
-    padding: 0.75rem 1rem;
-    margin-bottom: 1rem;
-    border: 1px solid transparent;
-    border-radius: 0.375rem;
-    font-size: 0.875rem;
-    line-height: 1.5;
-}
-
-.toast-info {
-    color: #055160;
-    background-color: #cff4fc;
-    border-color: #b6effb;
-}
-
-.toast-info-warning {
-    color: #600505;
-    background-color: #fccfcf;
-    border-color: #fbb6b6;
-}
-
-
-/*select2 critictà dettagli piazzola*/
-#criticita + .select2-container--default .select2-selection--multiple,
-#civico + .select2-container--default .select2-selection--single,
-#transitabilita + .select2-container--default .select2-selection--single,
-#rifiuto + .select2-container--default .select2-selection--single,
-#tipoElemento + .select2-container--default .select2-selection--single   {
-        min-height: 34px;
-        border: 1px solid #dee2e6;
-        border-radius: 0.375rem;
-        background-color: #fff;
-        padding: 2px 0.375rem;
-        font-family: var(--bs-font-sans-serif);
-        font-size: 1rem;
-    }
-
-    /* Campo di ricerca interno */
-    #criticita + .select2-container--default .select2-selection--multiple .select2-search__field,
-    #civico + .select2-container--default .select2-selection--single .select2-search__field,
-    #transitabilita + .select2-container--default .select2-selection--single .select2-search__field,
-    #rifiuto + .select2-container--default .select2-selection--single .select2-search__field,
-    #tipoElemento + .select2-container--default .select2-selection--single .select2-search__field {
-        margin-top: 3px;
-        font-family: var(--bs-font-sans-serif);
-        font-size: 1rem;
-    }
-
-    /* Elementi selezionati */
-    #criticita + .select2-container--default .select2-selection--multiple .select2-selection__choice,
-    #civico + .select2-container--default .select2-selection--single .select2-selection__choice, 
-    #transitabilita + .select2-container--default .select2-selection--single .select2-selection__choice,
-    #rifiuto + .select2-container--default .select2-selection--single .select2-selection__choice,
-    #tipoElemento + .select2-container--default .select2-selection--single .select2-selection__choice{
-        font-family: var(--bs-font-sans-serif);
-        background-color: #e9ecef;
-        border: 1px solid #ced4da;
-        border-radius: 0.25rem;
-        color: #212529;
-    }
-
-    /* Elementi del dropdown */
-    #criticita + .select2-container--default .select2-results__option,
-    #civico + .select2-container--default .select2-results__option, 
-    #transitabilita + .select2-container--default .select2-results__option,
-    #rifiuto + .select2-container--default .select2-results__option,
-    #tipoElemento + .select2-container--default .select2-results__option{
-        font-family: var(--bs-font-sans-serif) !important;
-    }
-
-    /* stile focus (evidenziazione quando clicco sulla select) */
-    #criticita + .select2-container--default.select2-container--focus .select2-selection--multiple,
-    #civico + .select2-container--default.select2-container--focus .select2-selection--single,
-    #civico + .select2-container--default.select2-container--open .select2-selection--single,
-    #transitabilita + .select2-container--default.select2-container--focus .select2-selection--single,
-    #transitabilita + .select2-container--default.select2-container--open .select2-selection--single,
-    #rifiuto + .select2-container--default.select2-container--focus .select2-selection--single,
-    #rifiuto + .select2-container--default.select2-container--open .select2-selection--single,
-    #tipoElemento + .select2-container--default.select2-container--focus .select2-selection--single,
-    #tipoElemento + .select2-container--default.select2-container--open .select2-selection--single {
-        border-color: #86b7fe;
-        outline: 0;
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-    }
-
-    .riga-sospesa {
-        --bs-table-bg: #c0c0c0 !important;
-        --bs-table-color: #6d6d6d !important;
-    }
-
-    .riga-eliminata {
-        --bs-table-bg: #ff8e7c !important;
-    }
-
-    .riga-aggiunta {
-        --bs-table-bg: #c4ffbc !important;
-    }
-
-    .btn-save,
-    .btn-cancel {
-        width: 32px;
-        height: 32px;
-        padding: 0;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .btn-freq {
-        width: 20px;
-        height: 20px;
-        padding: 0;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .azioni-col {
-        white-space: nowrap;
-    }
-
-    #btnSalvaPosPiazzola.disabled{
-        cursor: not-allowed;
-        pointer-events: none;
-        color: #6c757d;
-        background-color: #e9ecef;
-        border: 1px solid #ced4da;
-        text-decoration: none;
-        box-shadow: none;
-    }
-
-    #testata-tab-pane div[class*="col-md-"] {
-        margin: 0px !important;
-    }
-
-    #testata-tab-pane {
-        padding: 1% !important;
-    }
-
-    .d-flex.h-100 {
-    height: 100vh;
+/* Layout della mappa principale con pannelli laterali */
+.d-flex.h-100 {
     width: 100%;
+    height: 100vh;
     overflow: hidden;
 }
 
-
 #mapContainer {
-    flex: 1 1 auto;
-    min-width: 0;   /* 🔥 FONDAMENTALE */
     position: relative;
     display: flex;
+    flex: 1 1 auto;
     flex-direction: column;
+    min-width: 0;
 }
 
-/* MAPPA sotto */
 #mappa_principale {
     top: 35px;
     width: 100%;
     height: 95%;
 }
 
-/* UI SOPRA la mappa (ma separata) */
+/* Overlay dei comandi sulla mappa */
 #mapUI {
     position: absolute;
-    inset: 0;
     z-index: 1000;
-    pointer-events: none; /* IMPORTANTISSIMO */
+    inset: 0;
+    pointer-events: none;
 }
 
-/* bottoni cliccabili */
 .map-btn {
     position: absolute;
-    top: 0px;
-    background: white;
-    border: 1px solid #ccc;
+    top: 0;
     padding: 6px 10px;
+    border: 1px solid #ccc;
     border-radius: 4px;
-
-    pointer-events: auto; /* riattiva click */
+    background: #fff;
+    pointer-events: auto;
 }
 
-
-
-
-
-/* posizioni */
 #btnFiltri {
     left: 10px;
 }
@@ -751,24 +681,19 @@ iframe {
     right: 10px;
 }
 
-/* SIDEBAR NON deve usare transform per questo caso */
+/* Sidebar: la classe .chiuso la comprime senza usare transform */
 .sidebar {
-    width: 320px;
     flex: 0 0 320px;
-    transition: all 0.3s ease;
+    width: 320px;
+    overflow-y: auto;
     background: #fff;
-    overflow-y: auto ; /* dovrebbe fare la scrollbar quando necessario*/
+    transition: all 0.3s ease;
 }
-
 
 .sidebar-content {
     padding: 10px;
 }
 
-
-
-
-/* chiusura vera tipo Lizmap */
 .sidebar.chiuso {
     flex: 0 0 0;
     width: 0;
@@ -777,79 +702,79 @@ iframe {
 }
 
 
+/* ==========================================================================
+   STAMPA E RESPONSIVE
+   ========================================================================== */
 
-/*#panelFiltri.chiuso {
-    width: 0;
-    overflow: hidden;
+/* Elementi visibili solo a schermo */
+@media screen {
+    div.printFooter,
+    div.printHeader {
+        display: none;
+    }
 }
 
-#panelRisultati.chiuso {
-    width: 0;
-    overflow: hidden;
-}*/
-
-.ts-control input {
-    width: 100% !important;
+/* Nasconde alcuni pulsanti sugli schermi piccoli */
+@media (max-width: 520px) {
+    #sit_btn1,
+    #delete_btn1 {
+        display: none;
+    }
 }
 
+/* Regole di stampa */
+@media print {
+    div.printFooter {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
 
-/*select2 con stesso aspetto delle card e dei pulsanti Bootstrap:*/
-.select2-container--bootstrap-5 .select2-selection {
-    border-radius: var(--bs-border-radius) !important;
-}
+    div.printHeader {
+        position: fixed;
+        top: 0;
+    }
 
+    .rows-print-as-pages .row {
+        page-break-before: auto;
+    }
 
-.select2-container--bootstrap-5.select2-container--disabled .select2-selection {
-    background-color: var(--bs-secondary-bg);
-    color: var(--bs-secondary-color);
-    opacity: .65;
-    cursor: not-allowed;
-}
+    .btn {
+        display: none;
+    }
 
-.select2-container--bootstrap-5.select2-container--disabled .select2-selection__arrow b {
-    opacity: .5;
-}
+    table,
+    table tr td,
+    table tr th {
+        width: 50%;
+        float: left;
+        padding-left: 10px;
+        word-break: break-word;
+        page-break-inside: avoid;
+    }
 
-/* rimuovere scelta */
-/* il contenitore della select */
-.select2-selection--single{
-    position: relative;
-}
+    #break {
+        page-break-before: always;
+    }
 
-/* bottone */
-.select2-selection__clear{
+    .fa-inverse {
+        color: #fff !important;
+    }
 
-    position:absolute !important;
-    right:26px;
-    top:50%;
-    transform:translateY(-50%);
+    .isDisabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
 
-    width:20px;
-    height:20px;
+    .isDisabled > a {
+        display: inline-block; /* Compatibilità IE11 / Edge */
+        color: currentColor;
+        pointer-events: none;
+        text-decoration: none;
+    }
 
-    margin:0 !important;
-    padding:0 !important;
-
-    border:none;
-    background:transparent;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-}
-
-/* nasconde la X originale */
-.select2-selection__clear span{
-    display:none;
-}
-
-/* FontAwesome */
-.select2-selection__clear::before{
-
-    font-family:"Font Awesome 6 Free";
-    font-weight:900;
-    content:"\f057";     /* circle-xmark */
-
-    color:var(--bs-danger);
-    font-size:1rem;
+    .noprint {
+        display: none;
+    }
 }

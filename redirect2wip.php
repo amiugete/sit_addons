@@ -3,12 +3,12 @@
 Serve a reindirizzare alla pagina wip.php se l'ambiente non è di test, 
 in modo da evitare che in produzione gli utenti possano accedere a pagine in sviluppo.
 */
-    ?>
-    <div class="comtainer-fluid">
-    <?php
-    if(($_ENV['APP_ENV'] ?? '') === 'test11111111') {
+    
+    if(($_ENV['APP_ENV'] ?? '') === 'test') {
     $checkTest=1;
-    } else {
+    } else {?>
+        <div class="comtainer-fluid">
+        <?php
         $checkTest=0; 
         //header("Location: ./wip.php"); ?>
             <?php require './modal_wip.php' ?>
