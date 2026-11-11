@@ -1,5 +1,4 @@
 <?php
-
 // setcookie funziona solo se non ci sono degli output prima per cui l'ho spostato qua;
 require_once('./check_utente.php');
 
@@ -160,9 +159,11 @@ if ($check_modal!=1){?>
 <?php }?>
 
 <!-- Per questo non uso composer perchè il pacchetto è obsoleto -->
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<link rel="stylesheet" type="text/css" href="./node_modules/daterangepicker/daterangepicker.css" />
 
-<link rel="stylesheet" href="./main.css">
+<!--link rel="stylesheet" type="text/css" href="./includes/main.css"-->
+
+<link rel="stylesheet" type="text/css"  href="./includes/sit.css">
 
 <?php if (!isset($check_modal)){
     $check_modal=0;
@@ -189,113 +190,7 @@ $(function() {
 <script src="https://code.highcharts.com/modules/export-data.js"></script>
 <script src="https://code.highcharts.com/modules/accessibility.js"></script>
 
-<style>
-.highcharts-figure,
-.highcharts-data-table table {
-    min-width: 320px;
-    max-width: 660px;
-    margin: 1em auto;
-}
 
-.highcharts-data-table table {
-    font-family: Verdana, sans-serif;
-    border-collapse: collapse;
-    border: 1px solid #ebebeb;
-    margin: 10px auto;
-    text-align: center;
-    width: 100%;
-    max-width: 500px;
-}
-
-.highcharts-data-table caption {
-    padding: 1em 0;
-    font-size: 1.2em;
-    color: #555;
-}
-
-.highcharts-data-table th {
-    font-weight: 600;
-    padding: 0.5em;
-}
-
-.highcharts-data-table td,
-.highcharts-data-table th,
-.highcharts-data-table caption {
-    padding: 0.5em;
-}
-
-.highcharts-data-table thead tr,
-.highcharts-data-table tr:nth-child(even) {
-    background: #f8f8f8;
-}
-
-.highcharts-data-table tr:hover {
-    background: #f1f7ff;
-}
-
-/* STILI PER I TOAST */
-.toast {
-    /*position: fixed;
-    bottom: 20px;
-    right: 20px;*/
-    width: auto;
-    box-shadow: none !important;
-    background: #333;
-    color: #fff;
-    padding: 12px 18px;
-    border-radius: 8px;
-    font-size: 14px;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.3s ease;
-    z-index: 9999;
-}
-
-.toast.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.toast.success {
-    background: #28a745;
-}
-
-.toast.error {
-    background: #dc3545;
-}
-
-.toast.warning {
-    background: #ffc107;
-    color: #212529;
-}
-
-.toast.info {
-    background: #17a2b8;
-}
-
-.tab-pane {
-    padding: 2%;
-}
-
-.form-check-input {
-    width: 16px;
-    height: 16px;
-    border: 1px solid #a3a5a8;
-    cursor: pointer;
-}
-
-/*classe usata quando si modificano tipo elemento, rimpimento e frequenza da dettagli elementi in editing piazzola*/
-.dettaglio-elemento-modificato {
-    background-color: #fffd81 !important;
-    color: #ff0000 !important;
-}
-
-#mappa_piazzola {
-    width: 100%;
-    /*height: calc(100vh - 120px);*/
-    height: 600px;
-}
-</style>
 
 
 

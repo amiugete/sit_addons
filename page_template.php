@@ -28,3 +28,5 @@ if ((int)$id_role_SIT === 0) {
 </main>
 </div>
 <?php require_once './includes/footer.php'; ?>
+</body>
+</html>

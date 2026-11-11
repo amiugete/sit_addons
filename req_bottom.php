@@ -103,12 +103,12 @@ integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwV
 <script src="./vendor/eternicode/bootstrap-datepicker/dist/locales/bootstrap-datepicker.it.min.js"  charset="UTF-8"></script>
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.1.1/list.min.js"></script>
+<!--script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.1.1/list.min.js"></script-->
 
 
 
 <!-- Per questo non uso composer perchè il pacchetto è obsoleto -->
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<script type="text/javascript" src="./node_modules/daterangepicker/daterangepicker.js"></script>
 
 
 
