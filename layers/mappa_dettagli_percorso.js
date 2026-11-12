@@ -47,7 +47,7 @@ layerAstePercorso = L.geoJSON(null, {
     onEachFeature: function(feature, layer) {
         layer.on('click', function(e) {
             L.DomEvent.stopPropagation(e);
-            evidenziaAsta(feature.properties.id_asta);
+            evidenziaAsta(feature.properties.id_asta, 0, cod_percorso, nome_servizio);
         });
     }
 
@@ -99,12 +99,13 @@ function caricaAstePercorso(cod_percorso) {
 
 caricaAstePercorso(cod_percorso);
 
-/*RIPARTIRE DA QUESTA FUNZIONE
-    aggiungere tutta la parte invece di piazzole non percorso, che al momento non viene visualizzata
-*/
-function caricaInfoAsta(properties) {
+
+function caricaInfoAsta(properties, cod_percorso, nome_servizio) {
     console.log(properties.dict_elem_piazzole)
     console.log(properties.dict_elem_piazzole_np)
+
+    checkPiazzole = 0;
+    checkPiazzoleNp = 0;
 
      html = `
         <h6>Dettaglio asta ${properties.nome_via}</h6>
@@ -141,6 +142,8 @@ function caricaInfoAsta(properties) {
             });
 
             html_elem += `</ul></div>`;
+
+            checkPiazzole += 1;
         }
 
         for (const [id_piazzola_np, elementi_np] of Object.entries(properties.dict_elem_piazzole_np ?? {})) {
@@ -177,6 +180,25 @@ function caricaInfoAsta(properties) {
             });
 
             html_elem += `</ul></div>`;
+
+            checkPiazzoleNp += 1;
+        }
+
+        if (checkPiazzoleNp > 0 && checkPiazzole > 0) {
+            html_elem += `
+                <p class="alert alert-info">
+                    Su questa asta ci sono alcuni contenitori compatibili con il servizio <i>${nome_servizio}</i> non associati al percorso. 
+                </p>
+            `;
+        }
+
+        if (checkPiazzoleNp > 0 && checkPiazzole === 0) {
+            html_elem += `
+                <p class="alert alert-warning">
+                    Ci sono contenitori compatibili con il servizio <i>${nome_servizio}</i>, ma non sono associati al percorso.
+                    <br> Associali al servizio o elimina l'asta. 
+                </p>
+            `;
         }
 
         /* aggiungere un bottone che mi permette di rimuovere tutte le piazzole e l'asta, se le piazzole sono associate al percorso quando clicco sul bottone mi deve chiedere conferma molto esplicita,
@@ -195,11 +217,15 @@ function caricaInfoAsta(properties) {
         */
 
     }else {
-        /* nel toast aggiungere un bottone che gli fa eliminare l'asta*/
         html_elem +=`
-            <p class="toast-like toast-info-warning">
-                Nessun elemento associato a questa asta.
-            </p>
+            <div class="alert alert-danger">
+                Nessun contenitore su questa asta. 
+                <div class="d-flex justify-content-end mt-2">
+                    <button class="btn btn-sm btn-danger" id="eliminaAsta-${properties.id_asta}" onclick="eliminaAsta('${properties.id_asta}')">
+                        <i class="fa-solid fa-xmark"></i> Elimina asta
+                    </button>
+                </div>
+            </div>
         `;
     }
     html += `<div id="info_elem">${html_elem}</div>`;
@@ -207,11 +233,33 @@ function caricaInfoAsta(properties) {
     $('#info_tappa').html(html);
 }
 
+function eliminaAsta(id_asta) {
+    if (confirm('Sei sicuro di voler eliminare l\'asta ' + id_asta + '?')) {
+        /*fetch(`./layers/elimina_asta.php?id_asta=${id_asta}`, {
+            method: 'DELETE'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Errore eliminazione asta');
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert(data.message);
+            // Ricarica le aste del percorso dopo l'eliminazione
+            caricaAstePercorso(cod_percorso);
+        })
+        .catch(error => console.error(error));*/
+    }
+}
+
 
 // la funzione viene chiamata al click del bottone su tabella piazzole
-function evidenziaAsta(id_asta, id_piazzola) {
+function evidenziaAsta(id_asta, id_piazzola, cod_percorso, nome_servizio) {
 
     console.log('sono passata dalla piazzola '+id_piazzola)
+
+    console.log('il servizio è '+nome_servizio)
 
     astaSelezionata = true;
 
@@ -229,7 +277,7 @@ function evidenziaAsta(id_asta, id_piazzola) {
             });
 
             // Recupero le proprietà alfanumeriche
-            caricaInfoAsta(layer.feature.properties);
+            caricaInfoAsta(layer.feature.properties, cod_percorso, nome_servizio);
             
             bbox_feature = L.geoJSON(layer.feature).getBounds();
             //console.log(bounds)
@@ -269,7 +317,7 @@ function navigaAsta(passo) {
 
     nuovaAsta = astePercorso[nuovoIndice];
 
-    evidenziaAsta(nuovaAsta.feature.properties.id_asta);
+    evidenziaAsta(nuovaAsta.feature.properties.id_asta, 0, cod_percorso, nome_servizio);
 }
 
 //disabilito pulsante indietro se sono sulla prima asta e quello avanti se sono sull'ultima
@@ -305,7 +353,7 @@ function resetMappaPercorso() {
 
     //tolgo le info e ripristino la scritta di default
     $('#info_tappa').html(`
-        <p class="toast-like toast-info">
+        <p class="alert alert-primary">
             Seleziona un'asta dalla tabella per visualizzarne i dettagli.
         </p>
     `);

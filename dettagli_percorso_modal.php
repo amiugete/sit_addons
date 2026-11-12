@@ -70,7 +70,7 @@ require_once './conn_ok.php';
         	end
         end tipo_servizio_new,
         ep.freq_settimane,
-        at2.id_servizio_uo, at2.id_servizio_sit, 
+        at2.id_servizio_uo, at2.id_servizio_sit, s.descrizione as nome_servizio,
         to_char(ep.data_inizio_validita, 'DD/MM/YYYY') as data_inizio_print,
         ep.data_inizio_validita, to_char(ep.data_fine_validita, 'DD/MM/YYYY') as data_disattivazione_testata,
         case 
@@ -93,7 +93,8 @@ require_once './conn_ok.php';
         from anagrafe_percorsi.elenco_percorsi ep
         join elem.turni t on t.id_turno = ep.id_turno
         join etl.frequenze_ok fo on fo.cod_frequenza = ep.freq_testata
-        join anagrafe_percorsi.anagrafe_tipo at2 on at2.id = ep.id_tipo 
+        join anagrafe_percorsi.anagrafe_tipo at2 on at2.id = ep.id_tipo
+        left join elem.servizi s on s.id_servizio = at2.id_servizio_sit
         where ep.cod_percorso = $1 and ep.versione_testata  = $2";
         $result = pg_prepare($conn_sit, "query_testata", $query_testata);
         $result = pg_execute($conn_sit, "query_testata", array($cod_percorso, $versione)); 
@@ -127,6 +128,7 @@ require_once './conn_ok.php';
           $nota_versione = $r["nota_versione"];
           $gestione_arera = $r["gestione_arera"];
           $freq_sit=$r["freq_testata"];
+          $nome_servizio=$r["nome_servizio"];
         }
         if(intval($flg_in_attivazione)==1){
           $check_in_attivazione=1;

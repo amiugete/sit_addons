@@ -79,7 +79,7 @@
 
     $(posizioneTab).one('shown.bs.tab', function () {
         mappercorso.invalidateSize();
-        evidenziaAsta(row.id_asta, row.id);
+        evidenziaAsta(row.id_asta, row.id, cod_percorso, nome_servizio);
     });
 
     bootstrap.Tab.getOrCreateInstance(posizioneTab).show();

@@ -20,13 +20,14 @@
       </div>
     </div>
     <div id="info_tappa">
-        <p class="toast-like toast-info">Seleziona un'asta dalla tabella per visualizzarne i dettagli.</p>
+        <p class="alert alert-primary">Seleziona un'asta dalla tabella per visualizzarne i dettagli.</p>
     </div>
   </div>
 </div>
 
 <script> 
   cod_percorso = <?php echo json_encode($cod_percorso); ?>; 
+  nome_servizio = <?php echo json_encode($nome_servizio); ?>;
   console.log('il cod percorso in javascript è '+ cod_percorso)
 </script>
 <script  src="./layers/mappa_dettagli_percorso.js"></script>
