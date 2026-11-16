@@ -141,7 +141,7 @@
               while($r2bis = oci_fetch_assoc($result2bis)) { 
                   //$valore=  $r2['id_via']. ";".$r2['desvia'];            
             ?>
-              <option name="turno" <?php if ($r2bis['ID_TURNO']==$r["id_turno"]) { echo 'selected '; }?>
+              <option name="turno" <?php if ($r2bis['ID_TURNO']==$turno) { echo 'selected '; }?>
                   value="<?php echo $r2bis['ID_TURNO']?>" ><?php echo $r2bis['DESCR'];?></option>
             <?php } 
               oci_free_statement($result2bis);
