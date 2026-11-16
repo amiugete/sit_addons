@@ -183,9 +183,9 @@ data-filter-options="{ filterAlgorithm: 'or' }"></th>
       }
   });
 
-  var $table = $('#percorsi');
+  var $tableP = $('#percorsi');
 
-  $table.on('post-body.bs.table', function () {
+  $tableP.on('post-body.bs.table', function () {
     if ($('#export-btn-filtered').length === 0) {
       $('.fixed-table-toolbar .columns')
         .append('<button id="export-btn-filtered" class="btn btn-secondary ms-2" title="Esporta file Excel"><i class="bi bi-download"></i> Esporta tabella</button>');
@@ -193,13 +193,13 @@ data-filter-options="{ filterAlgorithm: 'or' }"></th>
   });
   
   $(function() {
-    $table.bootstrapTable()
+    $tableP.bootstrapTable()
   });
   
 
 
   function queryParams(params) {
-    var options = $table.bootstrapTable('getOptions')
+    var options = $tableP.bootstrapTable('getOptions')
     if (!options.pagination) {
       params.limit = options.totalRows
     }
@@ -344,11 +344,11 @@ $(function() {
     // Funzione da eseguire alla chiusura del modal
     //console.log("Modal chiuso");
     // Qui puoi chiamare qualsiasi altra funzione
-    var data_percorsi=$('#js-date3').val();
+    //var data_percorsi=$('#js-date3').val();
     var attivi=$('#flag_attivi').is(':checked') ? 'f' : 't';
     //console.log('Attivi: '+attivi);
-    //console.log($table);
-    $table.bootstrapTable('refresh', {
+    //console.log($tableP);
+    $tableP.bootstrapTable('refresh', {
       url: "./tables/percorsi_raggruppati.php?ut=<?php echo $_POST['ut0'];?>&solo_attivi="+attivi+""
     });   
     //console.log('refresh fatto');
