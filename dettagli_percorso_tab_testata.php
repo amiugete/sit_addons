@@ -525,7 +525,7 @@
           <div class="col-md-11" >
             <div class="d-flex align-items-center gap-2">
               <label class="form-check-label" for="sq_ut"><b>Squadra</b></label>
-              <select name="sq_ut" id="sq_ut" class="form-select" data-size="5"  data-live-search="true" required="">
+              <select name="sq_ut" id="sq_ut" class="form-select" data-size="5"  data-live-search="true" required="" <?php echo !$utgc ? 'disabled' : ''; ?>>
                 <?php
                 $query0_1="select id_squadra, 
                 concat(cod_squadra, ' - ', desc_squadra) as descr 
@@ -606,7 +606,7 @@
                   <?php if ($utr == '') { ?>
                     <input type="text" class="form-control" placeholder="Nessuna squadra per la rimessa" readonly>
                   <?php } else { ?>
-                    <select name="sq_utr" id="sq_utr" class="form-select" data-size="5"  data-live-search="true" required="">
+                    <select name="sq_utr" id="sq_utr" class="form-select" data-size="5"  data-live-search="true" required="" <?php echo !$utr ? 'disabled' : ''; ?>>
                       <?php
                       $query0_1r="select id_squadra, 
                       concat(cod_squadra, ' - ', desc_squadra) as descr 
