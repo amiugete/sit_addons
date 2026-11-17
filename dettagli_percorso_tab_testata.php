@@ -525,6 +525,9 @@
           <div class="col-md-11" >
             <div class="d-flex align-items-center gap-2">
               <label class="form-check-label" for="sq_ut"><b>Squadra</b></label>
+              <?php if ($utgc == '') { ?>
+                    <input type="text" class="form-control" placeholder="Nessuna squadra per l'UT" readonly>
+                  <?php } else { ?>
               <select name="sq_ut" id="sq_ut" class="form-select" data-size="5"  data-live-search="true" required="" <?php echo !$utgc ? 'disabled' : ''; ?>>
                 <?php
                 $query0_1="select id_squadra, 
@@ -542,6 +545,7 @@
                   value="<?php echo $r0_1['id_squadra']?>" ><?php echo $r0_1['descr'] ?></option>
                 <?php } ?>
               </select>
+              <?php } ?>
             </div>
           </div>
           <div class="col-md-1">
