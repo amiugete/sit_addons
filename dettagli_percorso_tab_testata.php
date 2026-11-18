@@ -526,8 +526,8 @@
             <div class="d-flex align-items-center gap-2">
               <label class="form-check-label" for="sq_ut"><b>Squadra</b></label>
               <?php if ($utgc == '') { ?>
-                    <input type="text" class="form-control" placeholder="Nessuna squadra per l'UT" readonly>
-                  <?php } else { ?>
+                    <input type="text" class="form-control" name="sq_ut" id="sq_ut" placeholder="Nessuna squadra per l'UT" readonly>
+              <?php } else { ?>
               <select name="sq_ut" id="sq_ut" class="form-select" data-size="5"  data-live-search="true" required="" <?php echo !$utgc ? 'disabled' : ''; ?>>
                 <?php
                 $query0_1="select id_squadra, 
@@ -592,7 +592,11 @@
         <span><strong> UT Esecutrice: </strong><?php echo $utgc ? $utgc : '-'; ?> (Data attivazione: <?php echo $data_att_print_gc; ?>)</span>
         <div class="d-flex align-items-center gap-2">
           <label class="form-label mb-0 text-nowrap" for="sq_ut"><b>Squadra</b></label>
-          <input type="text" name="sq_ut" id="sq_ut" class="form-control" value="<?php echo $squadra_gc;?>" readonly="">
+          <?php if ($utgc == '') { ?>
+              <input type="text" class="form-control" name="sq_ut" id="sq_ut" placeholder="Nessuna squadra per l'UT" readonly>
+          <?php } else { ?>
+            <input type="text" name="sq_ut" id="sq_ut" class="form-control" value="<?php echo $squadra_gc;?>" readonly="">
+          <?php } ?>
         </div>
       </div>
     <?php }
@@ -608,7 +612,7 @@
                 <div class="d-flex align-items-center gap-2">
                   <label class="form-check-label" for="sq_utr"><b>Squadra</b></label>
                   <?php if ($utr == '') { ?>
-                    <input type="text" class="form-control" placeholder="Nessuna squadra per la rimessa" readonly>
+                    <input type="text" class="form-control" name="sq_utr" id="sq_utr" placeholder="Nessuna squadra per la rimessa" readonly>
                   <?php } else { ?>
                     <select name="sq_utr" id="sq_utr" class="form-select" data-size="5"  data-live-search="true" required="" <?php echo !$utr ? 'disabled' : ''; ?>>
                       <?php
