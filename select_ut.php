@@ -106,7 +106,7 @@ require_once('conn_ok.php');
       console.log(stato_versioni)
       console.log("Flag disattivi ON");
       $(function() {    // Faccio refres della data-url
-      $table.bootstrapTable('refresh', {
+      $tableP.bootstrapTable('refresh', {
         url: "./tables/percorsi_raggruppati.php?ut=<?php echo $_POST['ut0'];?>&solo_attivi=f"
       }); 
 
@@ -116,7 +116,7 @@ require_once('conn_ok.php');
       console.log(stato_versioni)
       console.log("Flag disattivi OFF");
       $(function() {    // Faccio refres della data-url
-      $table.bootstrapTable('refresh', {
+      $tableP.bootstrapTable('refresh', {
         url: "./tables/percorsi_raggruppati.php?ut=<?php echo $_POST['ut0'];?>&solo_attivi=t"
       }); 
 
