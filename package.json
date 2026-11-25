@@ -8,6 +8,7 @@
     "leaflet.markercluster": "^1.5.3",
     "select2": "^4.1.0",
     "select2-bootstrap-theme": "^0.1.0-beta.10",
+    "tablednd": "^1.0.5",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   }
 }

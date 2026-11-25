@@ -11,6 +11,7 @@
         data-show-search-clear-button="false"   
         data-show-export="false" 
         data-search="false" 
+        data-reorderable-rows="true"
         data-click-to-select="true" data-show-print="false"  
         data-virtual-scroll="false"
         data-show-pagination-switch="false"
@@ -79,7 +80,7 @@
 
     $(posizioneTab).one('shown.bs.tab', function () {
         mappercorso.invalidateSize();
-        evidenziaAsta(row.id_asta, row.id, cod_percorso, nome_servizio);
+        evidenziaAstaPercorso(row.id_asta, row.id, cod_percorso, nome_servizio);
     });
 
     bootstrap.Tab.getOrCreateInstance(posizioneTab).show();
