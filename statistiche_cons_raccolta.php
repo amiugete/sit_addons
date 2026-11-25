@@ -351,8 +351,14 @@ if ((int)$id_role_SIT === 0) {
 
     <div class="card shadow-sm dashboard-chart-card">
 
-        <div class="card-header">
-            Andamento mensile normalizzato dei disservizi
+        <div class="card-header dashboard-chart-header">
+            <h5>Andamento mensile normalizzato dei disservizi</h5>
+             <button type="button"
+                class="btn btn-sm btn-outline-secondary"
+                onclick="esportaGrafico('chart_disservizi_mese', 'disservizi_mensili')"
+                title="Esporta grafico PNG">
+            <i class="bi bi-download"></i>
+        </button>
         </div>
 
         <div class="card-body">
@@ -370,8 +376,14 @@ if ((int)$id_role_SIT === 0) {
 
     <div class="card shadow-sm dashboard-chart-card">
 
-        <div class="card-header">
-            Andamento mensile normalizzato delle causali
+        <div class="card-header dashboard-chart-header">
+            <h5>Distribuzione delle causali mese per mese</h5>
+             <button type="button"
+                class="btn btn-sm btn-outline-secondary"
+                onclick="esportaGrafico('chart_disservizi_mese', 'distribuzione_causali_mensile')"
+                title="Esporta grafico PNG">
+            <i class="bi bi-download"></i>
+        </button>
         </div>
 
         <div class="card-body">
@@ -389,10 +401,15 @@ if ((int)$id_role_SIT === 0) {
 
     <div class="card shadow-sm dashboard-chart-card">
 
-        <div class="card-header">
-            Disservizi normalizzati per giorno della settimana
+        <div class="card-header dashboard-chart-header">
+            <h5>Andamento normalizzato dei disservizi per giorno della settimana</h5>
+             <button type="button"
+                class="btn btn-sm btn-outline-secondary"
+                onclick="esportaGrafico('chart_disservizi_mese', 'disservizi_per_giorno_settimana')"
+                title="Esporta grafico PNG">
+            <i class="bi bi-download"></i>
+        </button>
         </div>
-
         <div class="card-body">
 
             <div
@@ -408,10 +425,15 @@ if ((int)$id_role_SIT === 0) {
 
     <div class="card shadow-sm dashboard-chart-card">
 
-        <div class="card-header">
-            Heatmap causali per giorno della settimana
+        <div class="card-header dashboard-chart-header">
+            <h5>Distribuzione causali per giorno della settimana</h5>
+             <button type="button"
+                class="btn btn-sm btn-outline-secondary"
+                onclick="esportaGrafico('chart_disservizi_mese', 'distribuzio_casuali_giorno_settimana')"
+                title="Esporta grafico PNG">
+            <i class="bi bi-download"></i>
+        </button>
         </div>
-
         <div class="card-body">
 
             <div

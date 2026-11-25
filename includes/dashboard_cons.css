@@ -73,8 +73,28 @@
 
 
 
+/* Titolo grafici*/
+.dashboard-chart-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
 
+.dashboard-chart-header h5 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
 
+.dashboard-chart-header .btn {
+    flex-shrink: 0;
+}
+
+.dashboard-chart-header h5 {
+    min-width: 0;
+    overflow-wrap: break-word;
+}
 
 
 /* --------------------------

@@ -291,7 +291,20 @@ function aggiornaGraficoDisserviziMese(dati) {
                 symbol: 'circle',
                 symbolSize: 8
             }
-        ]
+        ]/*,
+        toolbox: {
+            right: 10,
+            top: 5,
+            feature: {
+                saveAsImage: {
+                    title: 'Esporta come immagine',
+                    name: 'disservizi_mensili',
+                    type: 'png',
+                    pixelRatio: 2,
+                    backgroundColor: '#ffffff'
+                }
+            }
+        },*/
 
     }, true);
 }
@@ -845,4 +858,26 @@ function esportaExcel() {
         wb,
         'statistiche_raccolta.xlsx'
     );
+}
+
+
+function esportaGrafico(id, nomeFile) {
+    const chart = echarts.getInstanceByDom(
+        document.getElementById(id)
+    );
+
+    if (!chart) {
+        return;
+    }
+
+    const immagine = chart.getDataURL({
+        type: 'png',
+        pixelRatio: 2,
+        backgroundColor: '#ffffff'
+    });
+
+    const link = document.createElement('a');
+    link.href = immagine;
+    link.download = nomeFile + '.png';
+    link.click();
 }
