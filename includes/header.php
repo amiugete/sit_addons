@@ -29,7 +29,7 @@ $pageDescription = $pageDescription ?? 'Sistema Informativo Territoriale AMIU';
     -->
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta name="author" content="APTE - Assterritorio">
-
+    <meta name="google" content="notranslate">
 
     <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></title>
     <?php

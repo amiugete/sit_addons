@@ -1,0 +1,227 @@
+/* ==========================================================
+   DASHBOARD  PER PAGINE STATISTICHE CONSUNTIVAZIONE
+   ========================================================== */
+
+/* --------------------------
+   Layout generale
+   -------------------------- */
+
+.dashboard-container {
+    padding-bottom: 2rem;
+}
+
+.dashboard-filter-card {
+    margin-bottom: 1rem;
+}
+
+.dashboard-section {
+    margin-bottom: 1rem;
+}
+
+/* --------------------------
+   KPI
+   -------------------------- */
+
+.dashboard-kpi-card {
+    min-height: 130px;
+    border: 0;
+    transition: all 0.2s ease;
+}
+
+.dashboard-kpi-card:hover {
+    transform: translateY(-2px);
+}
+
+.dashboard-kpi-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+    color: #6c757d;
+    margin-bottom: 0.75rem;
+}
+
+.dashboard-kpi-value {
+    font-size: 2.25rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-kpi-subtitle {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+/* Varianti colore KPI */
+
+.dashboard-kpi-primary {
+    border-left: 5px solid #0d6efd;
+}
+
+.dashboard-kpi-success {
+    border-left: 5px solid #198754;
+}
+
+.dashboard-kpi-warning {
+    border-left: 5px solid #ffc107;
+}
+
+.dashboard-kpi-danger {
+    border-left: 5px solid #dc3545;
+}
+
+
+
+
+
+
+
+/* --------------------------
+   Filtri
+   -------------------------- */
+
+.dashboard-filters label {
+    font-weight: 500;
+}
+
+.dashboard-checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.dashboard-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* --------------------------
+   Card grafici
+   -------------------------- */
+
+.dashboard-chart-card {
+    margin-bottom: 1rem;
+}
+
+.dashboard-chart-card .card-header {
+    font-weight: 600;
+}
+
+/* --------------------------
+   Contenitori grafici
+   -------------------------- */
+
+.dashboard-chart-sm {
+    width: 100%;
+    height: 350px;
+}
+
+.dashboard-chart {
+    width: 100%;
+    height: 450px;
+}
+
+.dashboard-chart-lg {
+    width: 100%;
+    height: 550px;
+}
+
+.dashboard-chart-xl {
+    width: 100%;
+    height: 700px;
+}
+
+/* Heatmap */
+.dashboard-heatmap {
+    width: 100%;
+    height: 750px;
+}
+
+/* --------------------------
+   Tabelle
+   -------------------------- */
+
+.dashboard-table-container {
+    overflow-x: auto;
+}
+
+.dashboard-table th {
+    white-space: nowrap;
+}
+
+.dashboard-table td {
+    white-space: nowrap;
+}
+
+/* --------------------------
+   Loader
+   -------------------------- */
+
+.dashboard-loading {
+    min-height: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dashboard-loading-text {
+    color: #6c757d;
+    font-size: 0.95rem;
+}
+
+/* --------------------------
+   Messaggi
+   -------------------------- */
+
+.dashboard-no-data {
+    min-height: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #6c757d;
+    font-style: italic;
+}
+
+/* --------------------------
+   Responsive
+   -------------------------- */
+
+@media (max-width: 992px) {
+
+    .dashboard-chart {
+        height: 400px;
+    }
+
+    .dashboard-chart-lg {
+        height: 450px;
+    }
+
+    .dashboard-chart-xl,
+    .dashboard-heatmap {
+        height: 600px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .dashboard-kpi-value {
+        font-size: 1.5rem;
+    }
+
+    .dashboard-chart,
+    .dashboard-chart-lg,
+    .dashboard-chart-xl,
+    .dashboard-heatmap {
+        height: 350px;
+    }
+
+    .dashboard-actions {
+        flex-direction: column;
+    }
+
+    .dashboard-actions .btn {
+        width: 100%;
+    }
+}

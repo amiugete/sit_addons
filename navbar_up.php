@@ -275,14 +275,17 @@ if ($check_modal!=1){
           Reportistica
           </a>
           <ul class="dropdown-menu" id="navbarDropdown3" aria-labelledby="navbarDropdown3">
-            <li><a class="dropdown-item" href="#">Reportistica avanzata &raquo; </a>
+            <li><a class="dropdown-item" href="#">Reportistica consuntivazione &raquo; </a>
             <ul class="submenu dropdown-menu">
+              <li><a class="dropdown-item" href="./statistiche_cons_raccolta.php">Statistiche raccolta</a></li>
+
               <li><a class="dropdown-item" href="./consuntivazione_ekovision.php">Report consuntivazione Ekovision</a></li>
               <!--li><a class="dropdown-item" href="./report_indicatori_arera.php">Report indicatori ARERA (uso interno)</a></li-->
-              <li><a class="dropdown-item" href="./report_contenitori_bilaterali.php">Report contenitori bilaterali</a></li>
+              
             </ul>
-            
-              <li><a class="dropdown-item" href="#">Reportistica ARERA &raquo; </a>
+            </li>
+            <li><a class="dropdown-item" href="./report_contenitori_bilaterali.php">Report contenitori bilaterali</a></li>
+            <li><a class="dropdown-item" href="#">Reportistica ARERA &raquo; </a>
             <ul class="submenu dropdown-menu">
               <li><a class="dropdown-item" href="https://tamer.amiu.genova.it/xtreg" target="_blank">Accesso a TREG</a></li>
               <?php if ($check_edit == 1 || $check_coge == 't') { ?>
@@ -299,14 +302,8 @@ if ($check_modal!=1){
               <a class="dropdown-item" href="./esportazione_driver_ekovision.php">Report driver ekovision (esportazione)</a>
             </ul>
             <?php } ?>
-              <li><a class="dropdown-item" href="#">Report dati in tempo reale da totem (Raccolta)&raquo; </a>
-              <ul class="submenu dropdown-menu">
-                <li><a class="dropdown-item" href="./report_totem_percorsi.php"> Dettaglio per percorso </a></li>
-                <li><a class="dropdown-item" href="./report_totem_piazzola.php"> Dettaglio per piazzole </a></li>
-          
-        
-              </ul>
-              <li><a class="dropdown-item" href="#">Report pesi &raquo; </a>
+             
+            <li><a class="dropdown-item" href="#">Report pesi &raquo; </a>
             <ul class="submenu dropdown-menu">
               <li><a class="dropdown-item" href="./report_pesi_percorso.php">Report dettaglio pesi per percorso</a></li>
               <li><a class="dropdown-item" href="./report_pesi_ut.php">Report pesi aggregato per UT</a></li>
@@ -405,6 +402,52 @@ if ($check_modal!=1){
               return false;
           }
       </script>
+
+      
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle"
+          href="#"
+          role="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false">
+            Collegamenti
+        </a>
+
+        <ul class="dropdown-menu" id="TotemDropdown">
+        <li><a class="dropdown-item" href="#">Totem &raquo; </a>
+            <ul class="submenu dropdown-menu">
+              <li>
+                  <a class="dropdown-item"
+                    target="_blank"
+                    href="https://totem2.amiu.genova.it/totem/">
+                    Backoffice
+                  </a>
+              </li>
+
+              <li>
+                  <a class="dropdown-item" href="#">
+                      Report dati raccolta &raquo;
+                  </a>
+
+                  <ul class="submenu dropdown-menu">
+                      <li>
+                          <a class="dropdown-item"
+                            href="./report_totem_percorsi.php">
+                            Dettaglio per percorso
+                          </a>
+                      </li>
+                      <li>
+                          <a class="dropdown-item"
+                            href="./report_totem_piazzola.php">
+                            Dettaglio per piazzole
+                          </a>
+                      </li>
+                  </ul>
+
+              </li>
+            </ul>
+            </ul>
+        </li>
         <li id="link_pc2" class="nav-item">
           <!--a class="nav-link" target="SIT" href="<?php echo $url_sit?>"> Torna a SIT</a-->
           <a class="nav-link" target="SIT" title="Chiudere funzionalità avanzate" href="#" onclick="return closeWindow();"> Torna a SIT</a>
