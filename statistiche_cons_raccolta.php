@@ -139,7 +139,7 @@ if ((int)$id_role_SIT === 0) {
                                     type="checkbox"
                                     id="solo_arera"
                                     name="solo_arera"
-                                    checked>
+                                    >
 
                                 <label
                                     class="form-check-label"

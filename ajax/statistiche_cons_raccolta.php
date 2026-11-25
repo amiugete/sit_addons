@@ -106,7 +106,7 @@ WITH dati AS (
           $8::boolean = false
           OR COALESCE(lower(causale), '') NOT IN (
               'festivo',
-              'non previsto'
+              'percorso non previsto'
           )
       )
 ),
