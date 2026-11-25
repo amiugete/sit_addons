@@ -200,8 +200,8 @@ if ((int)$id_role_SIT === 0) {
                         type="button"
                         class="btn btn-primary"
                         id="btn_aggiorna">
-
-                        Visualiza i dati 
+                        <i class="bi bi-arrow-clockwise"></i>
+                        Visualizza / aggiorna i dati 
 
                     </button>
 
