@@ -19,9 +19,8 @@ if ((int)$id_role_SIT === 0) {
 <!-- FLUID è più esteso su tutto lo schermo -->
 <div class="container-fluid">
 <!--div class="container"-->
-<?php require_once './redirect2wip.php'; ?>
+<?php #require_once './redirect2wip.php'; ?>
 
-<!-- CONTENUTO DELLA PAGINA -->
 <!-- CONTENUTO DELLA PAGINA -->
 <main class="dashboard-container">
 
